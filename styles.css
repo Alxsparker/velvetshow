@@ -1294,10 +1294,256 @@ img { display: block; max-width: 100%; }
 }
 
 /* ============================================================
+   PRICING
+   ============================================================ */
+
+.pricing {
+  padding: 100px 24px;
+  background: var(--bg-raised);
+}
+
+.pricing__inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.pricing__card {
+  background: var(--card);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-lg);
+  padding: 48px;
+  margin: 48px auto 64px;
+  max-width: 580px;
+  text-align: center;
+  position: relative;
+}
+
+.pricing__badge {
+  display: inline-block;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: var(--r-sm);
+  margin-bottom: 16px;
+}
+
+.pricing__name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.pricing__price {
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.pricing__currency {
+  font-size: 36px;
+  vertical-align: top;
+  margin-top: 12px;
+  display: inline-block;
+}
+
+.pricing__regular {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-faint);
+  display: block;
+  margin-bottom: 28px;
+  text-decoration: line-through;
+  text-decoration-color: var(--text-faint);
+}
+
+.pricing__features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  text-align: left;
+}
+
+.pricing__features li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 15px;
+  color: var(--text-soft);
+}
+
+.pricing__features li::before {
+  content: '✓ ';
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.pricing__trial {
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 12px;
+  display: flex;
+}
+
+.pricing__buy {
+  width: 100%;
+  justify-content: center;
+  display: flex;
+  font-size: 18px;
+  padding: 16px 24px;
+}
+
+.pricing__note {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  margin: 16px 0 0;
+  line-height: 1.6;
+}
+
+.pricing__compare { margin-top: 16px; }
+
+.pricing__compare-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pricing__compare-grid {
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.pricing__compare-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.pricing__compare-row:last-child { border-bottom: none; }
+
+.pricing__compare-row span {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.pricing__compare-row--header span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  background: var(--panel);
+}
+
+.pricing__compare-row .hi {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.pricing__compare-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-faint);
+  text-align: right;
+}
+
+/* ============================================================
+   ROADMAP
+   ============================================================ */
+
+.roadmap {
+  padding: 100px 24px;
+}
+
+.roadmap__inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.roadmap__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+  text-align: left;
+}
+
+.roadmap__item {
+  background: var(--card);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-lg);
+  padding: 28px;
+}
+
+.roadmap__icon {
+  font-size: 24px;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 12px;
+}
+
+.roadmap__item h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin: 0 0 10px;
+}
+
+.roadmap__item p {
+  font-size: 14px;
+  color: var(--text-soft);
+  margin: 0;
+  line-height: 1.6;
+}
+
+@media (max-width: 860px) {
+  .roadmap__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .roadmap__grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
    VELVET REMOTE SECTION
    ============================================================ */
 
 .remote { padding: 100px 24px; }
+
+.remote__video {
+  max-width: 900px;
+  margin: 0 auto 64px;
+  border: 1.5px solid var(--hairline-strong);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.remote__video-el {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
 .remote__intro {
   max-width: 680px;
