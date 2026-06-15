@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Velvet Show &amp; Velvet Remote</title>
+  <meta name="description" content="Privacy policy for Velvet Show and Velvet Remote.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .privacy {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 120px 24px 100px;
+    }
+    .privacy h1 {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin: 0 0 12px;
+    }
+    .privacy .updated {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin: 0 0 56px;
+    }
+    .privacy h2 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 48px 0 12px;
+    }
+    .privacy p, .privacy li {
+      font-size: 16px;
+      color: var(--text-soft);
+      line-height: 1.7;
+    }
+    .privacy ul {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+    .privacy a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+    .privacy a:hover { text-decoration: underline; }
+    .privacy .highlight {
+      background: var(--card);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-md);
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 16px;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="menubar__title"><a href="/" style="text-decoration:none;color:inherit;">VELVET SHOW</a></span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="privacy">
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: June 15, 2026</p>
+
+    <div class="highlight">
+      Velvet Show and Velvet Remote do not collect, transmit, or store any personal data. No account is required. No analytics. No tracking.
+    </div>
+
+    <h2>Velvet Show — macOS</h2>
+    <p>Velvet Show is a macOS application that runs entirely on your local machine. It reads from a local SQLite database (ShowBuddy) and stores all its own data in a local JSON file on your Mac.</p>
+    <ul>
+      <li>No data is sent to any server.</li>
+      <li>No analytics or crash reporting is enabled.</li>
+      <li>No account or registration is required.</li>
+      <li>The app requests access to your local audio files folder (macOS sandbox) — this access stays on your device.</li>
+    </ul>
+
+    <h2>Velvet Remote — iPhone &amp; iPad</h2>
+    <p>Velvet Remote is a companion app for Velvet Show. It communicates exclusively with Velvet Show running on a Mac on your local network or via USB cable.</p>
+    <ul>
+      <li>No data is sent to any external server.</li>
+      <li>No personal information is collected or stored.</li>
+      <li>No account or registration is required.</li>
+      <li>The app uses the Local Network permission to discover Velvet Show via Bonjour on your local network. This permission is used solely for device discovery and does not transmit any personal data.</li>
+      <li>The last connected server name is stored locally on the device to enable automatic reconnection. This information never leaves your device.</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <p>If you have any questions about this privacy policy, contact us at:</p>
+    <p><a href="mailto:alexandre.chalon@gmail.com">alexandre.chalon@gmail.com</a></p>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="footer__name">Velvet Show</span>
+      </div>
+      <p class="footer__credit">Created by Alexandre Chalon</p>
+      <p class="footer__copy">© 2026 Velvet Show. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
