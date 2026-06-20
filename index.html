@@ -5,14 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Velvet Show — The live performance app for musicians</title>
   <meta name="description" content="Velvet Show is a macOS app for live musicians. Songs, lyrics, stage notes, MIDI cues and setlists, run from one screen.">
-  <meta property="og:title" content="Velvet Show — The live performance app for musicians">
-  <meta property="og:description" content="Setlists, backtracks, lyrics, MIDI cues and iPhone/iPad remote. Built for the stage. Free 30-day trial.">
-  <meta property="og:url" content="https://velvetshow.app/">
-  <meta property="og:type" content="website">
-  <link rel="canonical" href="https://velvetshow.app/">
-  <link rel="alternate" hreflang="en" href="https://velvetshow.app/">
-  <link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/">
-  <link rel="alternate" hreflang="x-default" href="https://velvetshow.app/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -34,8 +26,7 @@
         <a href="#cues">MIDI Cues</a>
         <a href="#stage">Stage Screen</a>
         <a href="#panic">Panic</a>
-        <a href="#remote">Velvet Remote</a>
-        <a href="https://www.dropbox.com/scl/fi/gfud6gbbrb1bsv6bhq2ik/VELVET-SHOW-v1.0.zip?rlkey=nip3xswkads7hycurxpvmpmza&dl=1" target="_blank" rel="noopener" class="menubar__cta">Download Free Trial</a>
+        <a href="#beta" data-download-link target="_blank" rel="noopener" class="menubar__cta">Download Beta</a>
       </nav>
     </div>
   </header>
@@ -44,17 +35,17 @@
   <section class="hero">
     <div class="hero__bg" aria-hidden="true"></div>
     <div class="hero__content">
-      <p class="eyebrow">macOS · v1.0</p>
+      <p class="eyebrow">macOS · Private Beta</p>
       <h1 class="hero__title">The live performance<br>app for musicians.</h1>
       <p class="hero__subtitle">
         Run your songs, lyrics, stage notes and MIDI cues from one
         clean Mac app — built for the show, not the spreadsheet.
       </p>
       <div class="hero__actions">
-        <a href="https://www.dropbox.com/scl/fi/gfud6gbbrb1bsv6bhq2ik/VELVET-SHOW-v1.0.zip?rlkey=nip3xswkads7hycurxpvmpmza&dl=1" target="_blank" rel="noopener" class="btn btn--primary">Download Free Trial</a>
-        <a href="#pricing" class="btn btn--ghost">See Pricing</a>
+        <a href="#beta" data-download-link target="_blank" rel="noopener" class="btn btn--primary">Download Beta</a>
+        <a href="#beta" class="btn btn--ghost">Get Beta Access</a>
       </div>
-      <p class="hero__meta">macOS v1.0 · 30-day free trial · Direct download</p>
+      <p class="hero__meta">macOS Beta · 30-day trial · Direct download</p>
     </div>
 
     <!-- Demo video -->
@@ -361,83 +352,6 @@
     </div>
   </section>
 
-  <!-- ============ VELVET REMOTE ============ -->
-  <section class="feature feature--alt remote" id="remote">
-    <div class="remote__intro">
-      <p class="eyebrow eyebrow--center">Companion App · iPhone &amp; iPad</p>
-      <h2 class="feature__title feature__title--center">Velvet Remote — Control the show from your hands.</h2>
-      <p class="feature__text feature__text--center">
-        A free companion app for iPhone and iPad. Connect over Wi-Fi or USB cable — no pairing, no IP address.
-        Velvet Show is discovered automatically on your local network.
-      </p>
-    </div>
-
-    <!-- 3-screen live video -->
-    <div class="remote__video">
-      <video
-        class="remote__video-el"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="metadata"
-        aria-label="Velvet Show running on Mac, Velvet Remote on iPad showing lyrics and timeline, and Velvet Remote on iPhone showing the upcoming songs list — all connected live.">
-        <source src="assets/video/video3devices.mp4" type="video/mp4">
-      </video>
-    </div>
-
-    <div class="remote__devices">
-
-      <!-- iPad -->
-      <div class="remote__device remote__device--ipad">
-        <div class="remote__device-copy">
-          <p class="remote__device-title">iPad — Prompter &amp; Timeline</p>
-          <ul class="feature__list">
-            <li>Full-screen lyrics and stage notes, auto-scrolling</li>
-            <li>Real-time timeline: memos, playhead, progress bar</li>
-            <li>Track name, remaining time, next track</li>
-            <li>Play / Pause · Next with Filter transition</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- iPhone -->
-      <div class="remote__device remote__device--iphone">
-        <div class="remote__device-copy">
-          <p class="remote__device-title">iPhone — Queue &amp; Remote</p>
-          <ul class="feature__list">
-            <li>Live upcoming songs list — tap to queue next</li>
-            <li>Played tracks disappear automatically</li>
-            <li>Next +2 preview in the header</li>
-            <li>Play / Pause · Next — wide tap targets for the stage</li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="remote__transport">
-      <div class="transport-chip">
-        <span class="transport-chip__icon transport-chip__icon--wifi">&#9679;</span>
-        <span>Wi-Fi — automatic Bonjour discovery</span>
-      </div>
-      <div class="transport-chip">
-        <span class="transport-chip__icon transport-chip__icon--usb">&#9679;</span>
-        <span>USB cable — priority when plugged in</span>
-      </div>
-      <div class="transport-chip">
-        <span class="transport-chip__icon transport-chip__icon--reconnect">&#9854;</span>
-        <span>Auto-reconnect on network loss</span>
-      </div>
-    </div>
-
-    <div class="remote__testflight">
-      <p class="remote__testflight-label">Coming soon on the App Store</p>
-      <p class="remote__testflight-sub">Leave your email below to be notified when Velvet Remote is available.</p>
-    </div>
-
-  </section>
-
   <!-- ============ BUILT FOR ============ -->
   <section class="audience">
     <p class="feature__label feature__label--center">Built for live musicians</p>
@@ -467,103 +381,47 @@
     </p>
   </section>
 
-  <!-- ============ PRICING ============ -->
-  <section class="pricing" id="pricing">
-    <div class="pricing__inner">
-
-      <p class="feature__label feature__label--center">Pricing</p>
-      <h2 class="feature__title feature__title--center">One purchase. Yours forever.</h2>
+  <!-- ============ BETA ============ -->
+  <section class="beta" id="beta">
+    <div class="beta__inner">
+      <p class="feature__label feature__label--center">Join the Beta</p>
+      <h2 class="feature__title feature__title--center">Velvet Show is currently in private beta.</h2>
       <p class="feature__text feature__text--center">
-        No subscription. No account. Try it free for 30 days —
-        buy only if it works for your show.
+        Download the macOS beta and run the guided demo show — no
+        account, no App Store, no commitment. Prefer to be notified about
+        future builds first? Leave your details below.
       </p>
 
-      <div class="pricing__card">
-        <div class="pricing__badge">Early Adopter</div>
-        <div class="pricing__name">Velvet Show</div>
-        <div class="pricing__price">
-          <span class="pricing__currency">$</span>79
-          <span class="pricing__regular"> — regular $149</span>
-        </div>
-        <ul class="pricing__features">
-          <li>macOS app — full version, no limitations</li>
-          <li>Velvet Remote for iPhone — free on the App Store</li>
-          <li>Velvet Remote for iPad — free on the App Store</li>
-          <li>All current features included</li>
-          <li>Free updates for version 1.x</li>
-          <li>One-time payment, no subscription</li>
-        </ul>
-        <a href="https://www.dropbox.com/scl/fi/gfud6gbbrb1bsv6bhq2ik/VELVET-SHOW-v1.0.zip?rlkey=nip3xswkads7hycurxpvmpmza&dl=1" target="_blank" rel="noopener" class="btn btn--ghost pricing__trial">Try free for 30 days</a>
-        <a href="https://velvetshow.lemonsqueezy.com/checkout/buy/9d35d3c7-eaaf-463d-9d60-d191452e75b1" target="_blank" rel="noopener" class="btn btn--primary pricing__buy">Buy Now — $79</a>
-        <p class="pricing__note">Payment by email until the store is live. You'll receive a license key within 24h.</p>
+      <div class="betadownload">
+        <a href="#beta" data-download-link target="_blank" rel="noopener" class="btn btn--primary betadownload__btn">Download Beta</a>
+        <p class="betadownload__meta">macOS Beta · 30-day trial · Direct download</p>
+        <p class="betadownload__note">
+          Distributed directly from the official Velvet Show beta channel.
+        </p>
       </div>
 
-      <div class="pricing__compare">
-        <p class="pricing__compare-label">How it compares</p>
-        <div class="pricing__compare-grid">
-          <div class="pricing__compare-row pricing__compare-row--header">
-            <span></span><span>Velvet Show</span><span>ShowBuddy†</span><span>Stage Traxx</span><span>QLab Audio</span>
-          </div>
-          <div class="pricing__compare-row">
-            <span>Price (full feature set)</span><span class="hi">$79</span><span>$318+</span><span>$49</span><span>$399</span>
-          </div>
-          <div class="pricing__compare-row">
-            <span>MIDI automation</span><span class="hi">✓</span><span>✓</span><span>✗</span><span>✓</span>
-          </div>
-          <div class="pricing__compare-row">
-            <span>iPhone remote</span><span class="hi">✓</span><span>✗</span><span>✗</span><span>✗</span>
-          </div>
-          <div class="pricing__compare-row">
-            <span>iPad prompter</span><span class="hi">✓</span><span>✗</span><span>✗</span><span>✗</span>
-          </div>
-          <div class="pricing__compare-row">
-            <span>Live timeline</span><span class="hi">✓</span><span>✗</span><span>✗</span><span>✗</span>
-          </div>
-          <div class="pricing__compare-row">
-            <span>No extra hardware needed</span><span class="hi">✓</span><span>✗</span><span>✓</span><span>✓</span>
-          </div>
-        </div>
-        <p class="pricing__compare-note">† ShowBuddy Setlist ($119) + ShowBuddy Active ($199 min.) required for MIDI/lighting — no iPhone/iPad remote included. Prices verified June 2026 on dmxis.com.</p>
-      </div>
+      <div class="beta__divider"><span>or request access</span></div>
 
-    </div>
-  </section>
-
-  <!-- ============ ROADMAP ============ -->
-  <section class="roadmap" id="roadmap">
-    <div class="roadmap__inner">
-      <p class="feature__label feature__label--center">Roadmap</p>
-      <h2 class="feature__title feature__title--center">What's coming next.</h2>
-      <p class="feature__text feature__text--center">
-        Velvet Show is actively developed. Early adopters shape the roadmap.
-      </p>
-      <div class="roadmap__grid">
-        <div class="roadmap__item">
-          <span class="roadmap__icon">⬡</span>
-          <h3>OSC Support</h3>
-          <p>Send OSC messages to any compatible software — lighting, video, show control.</p>
+      <form class="betaform" id="betaform" action="mailto:alexandre.chalon@gmail.com" method="GET">
+        <div class="betaform__row">
+          <label for="bf-name">Name</label>
+          <input type="text" id="bf-name" name="name" placeholder="Your name" required>
         </div>
-        <div class="roadmap__item">
-          <span class="roadmap__icon">⬡</span>
-          <h3>Bluetooth Footswitch</h3>
-          <p>Trigger Next and Play/Pause hands-free from a Bluetooth pedal — no cables, no touching the Mac.</p>
+        <div class="betaform__row">
+          <label for="bf-email">Email</label>
+          <input type="email" id="bf-email" name="email" placeholder="you@example.com" required>
         </div>
-        <div class="roadmap__item">
-          <span class="roadmap__icon">⬡</span>
-          <h3>Multiple Remotes</h3>
-          <p>Connect several iPhones and iPads simultaneously — the whole band on the same show.</p>
+        <div class="betaform__row">
+          <label for="bf-software">Current software</label>
+          <input type="text" id="bf-software" name="software" placeholder="e.g. ShowBuddy, QLab, BandHelper, none">
         </div>
-        <div class="roadmap__item">
-          <span class="roadmap__icon">⬡</span>
-          <h3>Cloud Backup</h3>
-          <p>Sync setlists and memos across Macs. Never lose a show configuration.</p>
+        <div class="betaform__row">
+          <label for="bf-mac">Mac model</label>
+          <input type="text" id="bf-mac" name="mac" placeholder="e.g. MacBook Pro M1, 2021">
         </div>
-        <div class="roadmap__item">
-          <span class="roadmap__icon">⬡</span>
-          <h3>Advanced ShowBuddy Import</h3>
-          <p>Deeper integration with ShowBuddy — import memos, cues and metadata automatically.</p>
-        </div>
-      </div>
+        <button type="submit" class="btn btn--primary betaform__submit">Get Beta Access</button>
+        <p class="betaform__note">Opens an email to alexandre.chalon@gmail.com with your details — no data is stored on this site.</p>
+      </form>
     </div>
   </section>
 
@@ -584,7 +442,7 @@
         Demo music by Kevin MacLeod (<a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a>),
         licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.
       </p>
-      <p class="footer__copy">© 2026 Velvet Show. All rights reserved. · <a href="privacy.html">Privacy Policy</a></p>
+      <p class="footer__copy">© 2026 Velvet Show. All rights reserved.</p>
     </div>
   </footer>
 

@@ -40,6 +40,35 @@ All design tokens live at the top of `styles.css` under `:root`:
 - `--red` — Panic only
 - `--font-display` (Oswald), `--font-body` (Inter), `--font-mono` (JetBrains Mono)
 
+## Beta download link (single source of truth)
+
+All three "Download Beta" buttons (menu bar, hero, beta section) are driven
+by **one constant** at the top of `script.js`:
+
+```js
+var VELVET_SHOW_DOWNLOAD_URL = 'https://github.com/Alxsparker/velvetshow/releases/download/v1.0.0/VELVET.SHOW.v1.0-2.zip';
+```
+
+The file is distributed via **GitHub Releases** on the `Alxsparker/velvetshow`
+repo (tag `v1.0.0`), not Dropbox Transfer — Releases links are permanent and
+do not expire, which was the original problem with the Dropbox link this
+replaced.
+
+**To ship a new build, edit only this one line in `script.js`.** Nothing in
+`index.html` needs to change — each button is marked with a
+`data-download-link` attribute and has its `href` set from this constant on
+page load. The HTML `href="#beta"` you'll see on those buttons in the source
+is just a safe fallback (scrolls to the beta section) in the rare case
+JavaScript fails to load — it is not a second place you need to edit.
+
+To publish a new version:
+1. Go to `https://github.com/Alxsparker/velvetshow/releases/new`
+2. Create a new tag (e.g. `v1.1.0`), upload the new `.zip` or `.dmg` as an
+   asset, publish.
+3. Copy the asset's download URL (format:
+   `.../releases/download/{tag}/{filename}`) into `VELVET_SHOW_DOWNLOAD_URL`
+   in `script.js`.
+
 ## Beta form
 
 The "Join the Beta" form has no backend. On submit, `script.js` builds a
