@@ -1,0 +1,359 @@
+{
+  "archivedMidiEventIDs": [],
+  "audioFileMetaCacheByID": {},
+  "concertHistory": [],
+  "customGenreColors": {},
+  "customOrderBySetID": {},
+  "editableMemosByAudioFileID": {
+    "-1000001": [
+      {
+        "countIn": 0,
+        "id": "A0000001-0000-0000-0000-000000000001",
+        "lightShowID": null,
+        "memo": "🎸 INTRO — Here we go!\n\nWelcome to the Velvet Demo Show.\nThis memo appears automatically at the right moment.\n\nYour band, your setlist, your stage.",
+        "memoLength": 12,
+        "memoTime": 2,
+        "shortName": "Intro",
+        "sourceShowMemoID": null,
+        "startMidiEventID": null,
+        "endMidiEventID": null
+      },
+      {
+        "countIn": 0,
+        "id": "A0000001-0000-0000-0000-000000000002",
+        "lightShowID": null,
+        "memo": "💡 MIDI CUE — Warm Light\n\nA MIDI event just fired automatically.\nAny connected lighting, video or show-control software can react instantly.",
+        "memoLength": 8,
+        "memoTime": 20,
+        "shortName": "Warm Light →",
+        "sourceShowMemoID": null,
+        "startMidiEventID": null,
+        "endMidiEventID": null
+      },
+      {
+        "countIn": 0,
+        "id": "A0000001-0000-0000-0000-000000000003",
+        "lightShowID": null,
+        "memo": "🎤 CHORUS — Full energy!\n\nSing it. This memo cues you in\nbefore the chorus hits.",
+        "memoLength": 8,
+        "memoTime": 60,
+        "shortName": "Chorus",
+        "sourceShowMemoID": null,
+        "startMidiEventID": null,
+        "endMidiEventID": null
+      }
+    ],
+    "-1000002": [
+      {
+        "countIn": 0,
+        "id": "A0000002-0000-0000-0000-000000000001",
+        "lightShowID": null,
+        "memo": "🎹 Piano intro — let it breathe.\n\nThis is your intimate moment.\nSlow down. Connect with the room.",
+        "memoLength": 10,
+        "memoTime": 3,
+        "shortName": "Piano intro",
+        "sourceShowMemoID": null,
+        "startMidiEventID": null,
+        "endMidiEventID": null
+      },
+      {
+        "countIn": 0,
+        "id": "A0000002-0000-0000-0000-000000000002",
+        "lightShowID": null,
+        "memo": "💡 MIDI CUE — Blue Scene\n\nSoft blue wash activated.\nMIDI fired silently in the background.",
+        "memoLength": 8,
+        "memoTime": 30,
+        "shortName": "Blue Scene →",
+        "sourceShowMemoID": null,
+        "startMidiEventID": -2000002,
+        "endMidiEventID": null
+      }
+    ],
+    "-1000003": [
+      {
+        "countIn": 0,
+        "id": "A0000003-0000-0000-0000-000000000001",
+        "lightShowID": null,
+        "memo": "🎸 Groove time!\n\nFeel the bass. Stay locked with the drummer.\nThis memo keeps you on the same page.",
+        "memoLength": 10,
+        "memoTime": 5,
+        "shortName": "Groove in",
+        "sourceShowMemoID": null,
+        "startMidiEventID": null,
+        "endMidiEventID": null
+      },
+      {
+        "countIn": 0,
+        "id": "A0000003-0000-0000-0000-000000000002",
+        "lightShowID": null,
+        "memo": "⬇ BREAKDOWN — pull back.\n\nHalf tempo. Let the bassist carry it.",
+        "memoLength": 8,
+        "memoTime": 90,
+        "shortName": "Breakdown",
+        "sourceShowMemoID": null,
+        "startMidiEventID": null,
+        "endMidiEventID": null
+      }
+    ],
+    "-1000004": [
+      {
+        "countIn": 0,
+        "id": "A0000004-0000-0000-0000-000000000001",
+        "lightShowID": null,
+        "memo": "🌌 Electric Sky — ambient bridge.\n\nThis track fades in automatically from the previous one.\nNo button pressed. Velvet Show handled it.",
+        "memoLength": 10,
+        "memoTime": 5,
+        "shortName": "Auto fade in",
+        "sourceShowMemoID": null,
+        "startMidiEventID": null,
+        "endMidiEventID": null
+      },
+      {
+        "countIn": 0,
+        "id": "A0000004-0000-0000-0000-000000000002",
+        "lightShowID": null,
+        "memo": "💡 MIDI CUE — Energy Scene\n\nFull energy blast. Lights, laser, strobes — your call.",
+        "memoLength": 8,
+        "memoTime": 60,
+        "shortName": "Energy Scene →",
+        "sourceShowMemoID": null,
+        "startMidiEventID": -2000003,
+        "endMidiEventID": null
+      }
+    ],
+    "-1000005": [
+      {
+        "countIn": 0,
+        "id": "A0000005-0000-0000-0000-000000000001",
+        "lightShowID": null,
+        "memo": "⚡ FINALE — give everything.\n\nLast song. Make it count.",
+        "memoLength": 10,
+        "memoTime": 3,
+        "shortName": "Finale",
+        "sourceShowMemoID": null,
+        "startMidiEventID": null,
+        "endMidiEventID": null
+      },
+      {
+        "countIn": 0,
+        "id": "A0000005-0000-0000-0000-000000000002",
+        "lightShowID": null,
+        "memo": "🎤 Last chorus — hold the note.\n\nWatch the audience. This is the moment.\n\nTo remove this demo: Settings › Demo / Get Started.",
+        "memoLength": 12,
+        "memoTime": 100,
+        "shortName": "Last chorus",
+        "sourceShowMemoID": null,
+        "startMidiEventID": null,
+        "endMidiEventID": null
+      }
+    ]
+  },
+  "genreColors": {},
+  "hasMigratedFromShowBuddy": false,
+  "hasImportedShowBuddyTrims": false,
+  "isNormalizationEnabled": false,
+  "isQuickLibraryVisible": true,
+  "isSafePlayEnabled": true,
+  "liveAdditionsBySetID": {},
+  "memoAttachmentsByMemoID": {},
+  "midiCuesByAudioFileID": {
+    "-1000001": [
+      {
+        "colorName": null,
+        "id": "C0000001-0000-0000-0000-000000000001",
+        "label": "Warm Light",
+        "midiEventID": -2000001,
+        "time": 22
+      }
+    ],
+    "-1000002": [
+      {
+        "colorName": null,
+        "id": "C0000002-0000-0000-0000-000000000001",
+        "label": "Blue Scene",
+        "midiEventID": -2000002,
+        "time": 32
+      }
+    ],
+    "-1000004": [
+      {
+        "colorName": null,
+        "id": "C0000004-0000-0000-0000-000000000001",
+        "label": "Energy Scene",
+        "midiEventID": -2000003,
+        "time": 62
+      }
+    ]
+  },
+  "normTargetLUFS": -16,
+  "playedSetElementIDsBySetID": {},
+  "selectedConcertGenreRaw": "all",
+  "songColorsByShowID": {},
+  "tempoOverridesByAudioFileID": {},
+  "trackColorsByAudioFileID": {},
+  "trashedTracks": [],
+  "trimsByAudioFileID": {},
+  "velvetMidiEvents": [
+    {
+      "category": "Demo",
+      "midiEventID": -2000001,
+      "name": "Warm Light"
+    },
+    {
+      "category": "Demo",
+      "midiEventID": -2000002,
+      "name": "Blue Scene"
+    },
+    {
+      "category": "Demo",
+      "midiEventID": -2000003,
+      "name": "Energy Scene"
+    },
+    {
+      "category": "Demo",
+      "midiEventID": -2000004,
+      "name": "Stage Rest"
+    }
+  ],
+  "velvetMidiMessages": [
+    {
+      "channel": 15,
+      "data1": 60,
+      "data2": 100,
+      "message": 9,
+      "midiEventID": -2000001,
+      "midiMessageID": -1,
+      "outDevice": null,
+      "time": null
+    },
+    {
+      "channel": 15,
+      "data1": 62,
+      "data2": 100,
+      "message": 9,
+      "midiEventID": -2000002,
+      "midiMessageID": -2,
+      "outDevice": null,
+      "time": null
+    },
+    {
+      "channel": 15,
+      "data1": 64,
+      "data2": 127,
+      "message": 9,
+      "midiEventID": -2000003,
+      "midiMessageID": -3,
+      "outDevice": null,
+      "time": null
+    },
+    {
+      "channel": 15,
+      "data1": 0,
+      "data2": 0,
+      "message": 9,
+      "midiEventID": -2000004,
+      "midiMessageID": -4,
+      "outDevice": null,
+      "time": null
+    }
+  ],
+  "velvetShowOrder": [
+    -3000001
+  ],
+  "velvetShows": [
+    {
+      "colorHex": 51455,
+      "createdAt": "2026-06-14T00:00:00Z",
+      "folder": null,
+      "id": -3000001,
+      "name": "Velvet Demo Show",
+      "note": "Demo project — remove in Settings › Demo / Get Started.",
+      "tracks": [
+        {
+          "audioFileID": -1000001,
+          "createdAt": "2026-06-14T00:00:00Z",
+          "endBehavior": "autoStop",
+          "id": -4000001,
+          "playbackMode": "manual"
+        },
+        {
+          "audioFileID": -1000002,
+          "createdAt": "2026-06-14T00:00:00Z",
+          "endBehavior": "autoStop",
+          "id": -4000002,
+          "playbackMode": "manual"
+        },
+        {
+          "audioFileID": -1000003,
+          "createdAt": "2026-06-14T00:00:00Z",
+          "endBehavior": "autoStop",
+          "id": -4000003,
+          "playbackMode": "manual"
+        },
+        {
+          "audioFileID": -1000004,
+          "createdAt": "2026-06-14T00:00:00Z",
+          "endBehavior": "autoStop",
+          "id": -4000004,
+          "playbackMode": "manual"
+        },
+        {
+          "audioFileID": -1000005,
+          "createdAt": "2026-06-14T00:00:00Z",
+          "endBehavior": "autoStop",
+          "id": -4000005,
+          "playbackMode": "manual"
+        }
+      ]
+    }
+  ],
+  "velvetTracks": [
+    {
+      "duration": 231,
+      "fileURL": "file:///placeholder/DemoMedia/opening_act.mp3",
+      "genre": "Demo",
+      "id": -1000001,
+      "importedAt": "2026-06-14T00:00:00Z",
+      "note": "Kevin MacLeod — Big Rock (CC BY 4.0)",
+      "title": "Opening Act"
+    },
+    {
+      "duration": 187,
+      "fileURL": "file:///placeholder/DemoMedia/still_waters.mp3",
+      "genre": "Demo",
+      "id": -1000002,
+      "importedAt": "2026-06-14T00:00:00Z",
+      "note": "Kevin MacLeod — Gymnopedie No 1 (CC BY 4.0)",
+      "title": "Still Waters"
+    },
+    {
+      "duration": 288,
+      "fileURL": "file:///placeholder/DemoMedia/groove_machine.mp3",
+      "genre": "Demo",
+      "id": -1000003,
+      "importedAt": "2026-06-14T00:00:00Z",
+      "note": "Kevin MacLeod — Cold Funk (CC BY 4.0)",
+      "title": "Groove Machine"
+    },
+    {
+      "duration": 345,
+      "fileURL": "file:///placeholder/DemoMedia/electric_sky.mp3",
+      "genre": "Demo",
+      "id": -1000004,
+      "importedAt": "2026-06-14T00:00:00Z",
+      "note": "Kevin MacLeod — Infinite Perspective (CC BY 4.0)",
+      "title": "Electric Sky"
+    },
+    {
+      "duration": 195,
+      "fileURL": "file:///placeholder/DemoMedia/the_last_note.mp3",
+      "genre": "Demo",
+      "id": -1000005,
+      "importedAt": "2026-06-14T00:00:00Z",
+      "note": "Kevin MacLeod — Upbeat Forever (CC BY 4.0)",
+      "title": "The Last Note"
+    }
+  ],
+  "version": 3,
+  "volumeByAudioFileID": {}
+}

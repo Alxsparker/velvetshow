@@ -1,0 +1,3 @@
+/* InfoPlist.strings — English */
+
+"NSLocalNetworkUsageDescription" = "Velvet Remote uses the local network to automatically discover Velvet Show.";

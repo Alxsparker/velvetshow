@@ -6,20 +6,53 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1FA7D7092FD4C680001703EF /* PrompterWindowSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA7D7082FD4C680001703EF /* PrompterWindowSupport.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1FA7D6D12FD428CB001703EF /* VELVET SHOW.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VELVET SHOW.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1FA7D7082FD4C680001703EF /* PrompterWindowSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterWindowSupport.swift; sourceTree = "<group>"; };
+		2FA7D6D12FD428CB001703EF /* Velvet Remote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Velvet Remote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2FA7D6E02FD428CB001703EF /* Exceptions for "VELVET SHOW" folder in "Velvet Remote" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				PrompterShared.swift,
+				PrompterView.swift,
+				VelvetRemoteProtocol.swift,
+			);
+			target = 2FA7D6D02FD428CB001703EF /* Velvet Remote */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1FA7D6D32FD428CB001703EF /* VELVET SHOW */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2FA7D6E02FD428CB001703EF /* Exceptions for "VELVET SHOW" folder in "Velvet Remote" target */,
+			);
 			path = "VELVET SHOW";
+			sourceTree = "<group>";
+		};
+		2FA7D6D32FD428CB001703EF /* Velvet Remote */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Velvet Remote";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		1FA7D6CE2FD428CB001703EF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2FA7D6CE2FD428CB001703EF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,7 +66,9 @@
 			isa = PBXGroup;
 			children = (
 				1FA7D6D32FD428CB001703EF /* VELVET SHOW */,
+				2FA7D6D32FD428CB001703EF /* Velvet Remote */,
 				1FA7D6D22FD428CB001703EF /* Products */,
+				1FA7D7082FD4C680001703EF /* PrompterWindowSupport.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -41,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				1FA7D6D12FD428CB001703EF /* VELVET SHOW.app */,
+				2FA7D6D12FD428CB001703EF /* Velvet Remote.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,6 +106,28 @@
 			productReference = 1FA7D6D12FD428CB001703EF /* VELVET SHOW.app */;
 			productType = "com.apple.product-type.application";
 		};
+		2FA7D6D02FD428CB001703EF /* Velvet Remote */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2FA7D6DC2FD428CC001703EF /* Build configuration list for PBXNativeTarget "Velvet Remote" */;
+			buildPhases = (
+				2FA7D6CD2FD428CB001703EF /* Sources */,
+				2FA7D6CE2FD428CB001703EF /* Frameworks */,
+				2FA7D6CF2FD428CB001703EF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2FA7D6D32FD428CB001703EF /* Velvet Remote */,
+			);
+			name = "Velvet Remote";
+			packageProductDependencies = (
+			);
+			productName = "Velvet Remote";
+			productReference = 2FA7D6D12FD428CB001703EF /* Velvet Remote.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -83,6 +141,9 @@
 					1FA7D6D02FD428CB001703EF = {
 						CreatedOnToolsVersion = 26.5;
 					};
+					2FA7D6D02FD428CB001703EF = {
+						CreatedOnToolsVersion = 26.5;
+					};
 				};
 			};
 			buildConfigurationList = 1FA7D6CC2FD428CB001703EF /* Build configuration list for PBXProject "VELVET SHOW" */;
@@ -91,6 +152,7 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = 1FA7D6C82FD428CB001703EF;
 			minimizedProjectReferenceProxies = 1;
@@ -100,6 +162,7 @@
 			projectRoot = "";
 			targets = (
 				1FA7D6D02FD428CB001703EF /* VELVET SHOW */,
+				2FA7D6D02FD428CB001703EF /* Velvet Remote */,
 			);
 		};
 /* End PBXProject section */
@@ -112,10 +175,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2FA7D6CF2FD428CB001703EF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1FA7D6CD2FD428CB001703EF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1FA7D7092FD4C680001703EF /* PrompterWindowSupport.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2FA7D6CD2FD428CB001703EF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -251,8 +329,18 @@
 				DEVELOPMENT_TEAM = 6BWHRGMAFW;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -295,8 +383,18 @@
 				DEVELOPMENT_TEAM = 6BWHRGMAFW;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -329,6 +427,61 @@
 			};
 			name = Release;
 		};
+		2FA7D6DD2FD428CC001703EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = 6BWHRGMAFW;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = VelvetRemoteInfo.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fr.loveandlive.VelvetRemote;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2FA7D6DE2FD428CC001703EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = 6BWHRGMAFW;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = VelvetRemoteInfo.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fr.loveandlive.VelvetRemote;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -346,6 +499,15 @@
 			buildConfigurations = (
 				1FA7D6DD2FD428CC001703EF /* Debug */,
 				1FA7D6DE2FD428CC001703EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2FA7D6DC2FD428CC001703EF /* Build configuration list for PBXNativeTarget "Velvet Remote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2FA7D6DD2FD428CC001703EF /* Debug */,
+				2FA7D6DE2FD428CC001703EF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

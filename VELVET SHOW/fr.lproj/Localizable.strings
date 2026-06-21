@@ -1,0 +1,164 @@
+/* Localizable.strings — Français (langue source)
+   VELVET SHOW — Phase 2 i18n : MidiSettingsView
+   Clé = valeur courante affichée. Valeur = identique (français = source).
+   Les chaînes interpolées, dynamiques ou issues de modèles sont exclues. */
+
+// MARK: – En-tête réglages
+"Préférences" = "Préférences";
+"Rafraîchir la liste des destinations MIDI" = "Rafraîchir la liste des destinations MIDI";
+"Moteur CoreMIDI prêt" = "Moteur CoreMIDI prêt";
+"Réglages" = "Réglages";
+
+// MARK: – Sortie MIDI
+"Sortie MIDI" = "Sortie MIDI";
+"Aucune destination MIDI détectée — branche ton interface USB-MIDI puis clique Rafraîchir." = "Aucune destination MIDI détectée — branche ton interface USB-MIDI puis clique Rafraîchir.";
+"Destination" = "Destination";
+"Aucune" = "Aucune";
+"Aucune sortie MIDI configurée — les messages seront loggés « SANS DESTINATION »." = "Aucune sortie MIDI configurée — les messages seront loggés « SANS DESTINATION ».";
+
+// MARK: – Avance d'envoi
+"Avance d'envoi" = "Avance d'envoi";
+"Avance" = "Avance";
+"Envoie les cues MIDI en avance pour compenser la latence DMX / projecteurs. N'altère pas les positions des mémos." = "Envoie les cues MIDI en avance pour compenser la latence DMX / projecteurs. N'altère pas les positions des mémos.";
+
+// MARK: – Comportement au seek
+"Comportement au seek" = "Comportement au seek";
+"Seek" = "Seek";
+
+// MARK: – Sécurité concert
+"Sécurité concert" = "Sécurité concert";
+"Confirmer le changement de morceau pendant la lecture" = "Confirmer le changement de morceau pendant la lecture";
+
+// MARK: – Cue de repos
+"Cue de repos" = "Cue de repos";
+"Scène MIDI envoyée automatiquement quand aucun morceau n'est en lecture." = "Scène MIDI envoyée automatiquement quand aucun morceau n'est en lecture.";
+"Scène" = "Scène";
+"Délai" = "Délai";
+"Immédiat" = "Immédiat";
+"1 seconde" = "1 seconde";
+"2 secondes" = "2 secondes";
+"Envoyer lors de :" = "Envoyer lors de :";
+"Stop manuel" = "Stop manuel";
+"Fin naturelle d'un morceau" = "Fin naturelle d'un morceau";
+"Fin du dernier morceau du concert" = "Fin du dernier morceau du concert";
+"Entre deux morceaux (AUTO SHOW désactivé)" = "Entre deux morceaux (AUTO SHOW désactivé)";
+"Envoyé quand le morceau suivant est chargé mais pas encore lancé." = "Envoyé quand le morceau suivant est chargé mais pas encore lancé.";
+"Désactivé" = "Désactivé";
+
+// MARK: – Filtres bibliothèque MIDI (MidiLibraryFilter)
+"Tous" = "Tous";
+"Non utilisés" = "Non utilisés";
+"Doublons" = "Doublons";
+"Velvet natifs" = "Velvet natifs";
+"Archivés" = "Archivés";
+
+// MARK: – Types de messages MIDI (MidiMessageType)
+"Note On" = "Note On";
+"Note Off" = "Note Off";
+"Control Change" = "Control Change";
+"Program Change" = "Program Change";
+"CC#" = "CC#";
+"Prog" = "Prog";
+"Vélocité" = "Vélocité";
+"Valeur" = "Valeur";
+
+// MARK: – Erreurs import fichier MIDI
+"Impossible de créer la séquence MIDI." = "Impossible de créer la séquence MIDI.";
+"Impossible de lire le fichier. Vérifier que c'est un fichier MIDI valide (.mid)." = "Impossible de lire le fichier. Vérifier que c'est un fichier MIDI valide (.mid).";
+"Aucun événement Note On, CC ou PC trouvé dans ce fichier." = "Aucun événement Note On, CC ou PC trouvé dans ce fichier.";
+
+// MARK: – Erreurs import MaestroDMX
+"Format non reconnu — fichier show MaestroDMX attendu." = "Format non reconnu — fichier show MaestroDMX attendu.";
+"Aucun cue avec suffixe de note valide trouvé dans ce fichier." = "Aucun cue avec suffixe de note valide trouvé dans ce fichier.";
+
+// MARK: – Bibliothèque MIDI
+"Bibliothèque MIDI" = "Bibliothèque MIDI";
+"MaestroDMX Show…" = "MaestroDMX Show…";
+"Fichier MIDI (.mid)…" = "Fichier MIDI (.mid)…";
+"Wolfmix… (bientôt)" = "Wolfmix… (bientôt)";
+"QLab… (bientôt)" = "QLab… (bientôt)";
+"Lightkey… (bientôt)" = "Lightkey… (bientôt)";
+"Importer" = "Importer";
+"Nouvel événement" = "Nouvel événement";
+"Filtre" = "Filtre";
+"Aucun événement dans cette catégorie." = "Aucun événement dans cette catégorie.";
+"Nom de l'événement" = "Nom de l'événement";
+"Créer" = "Créer";
+"Annuler" = "Annuler";
+
+// MARK: – Import fichier MIDI
+"Importer fichier MIDI" = "Importer fichier MIDI";
+"Fermer" = "Fermer";
+"Sélectionne un fichier .mid / .smf exporté depuis Ableton, Logic, Cubase, Reaper, QLab… Les messages Note On, CC et Program Change sont importés comme événements réutilisables dans la bibliothèque MIDI. SysEx, Pitch Bend et MIDI Clock sont ignorés." = "Sélectionne un fichier .mid / .smf exporté depuis Ableton, Logic, Cubase, Reaper, QLab… Les messages Note On, CC et Program Change sont importés comme événements réutilisables dans la bibliothèque MIDI. SysEx, Pitch Bend et MIDI Clock sont ignorés.";
+"Choisir un fichier .mid…" = "Choisir un fichier .mid…";
+"Import appliqué" = "Import appliqué";
+"ℹ Déjà couverts : un event existant contient déjà ce message MIDI. Pas de création." = "ℹ Déjà couverts : un event existant contient déjà ce message MIDI. Pas de création.";
+
+// MARK: – Import MaestroDMX
+"Importer MaestroDMX" = "Importer MaestroDMX";
+"Entre les noms de scènes et leurs numéros de cue (1–98). Chaque cue correspond à Note On canal 16, note = cue + 28, vélocité 0." = "Entre les noms de scènes et leurs numéros de cue (1–98). Chaque cue correspond à Note On canal 16, note = cue + 28, vélocité 0.";
+"Importer depuis fichier show…" = "Importer depuis fichier show…";
+"Nom de la scène" = "Nom de la scène";
+"Cue n°" = "Cue n°";
+"Note" = "Note";
+"Ex : PURPLE RAIN" = "Ex : PURPLE RAIN";
+"1–98" = "1–98";
+"Ajouter une ligne" = "Ajouter une ligne";
+"Analyser" = "Analyser";
+"Rapport d'analyse" = "Rapport d'analyse";
+"⚠ Conflits de nom : même nom, message MIDI différent. Les deux events seront conservés si tu appliques." = "⚠ Conflits de nom : même nom, message MIDI différent. Les deux events seront conservés si tu appliques.";
+"ℹ Déjà couvert : un event existant contient déjà ce Note On ch16 (même cue MaestroDMX). Pas de création — l'event existant est réutilisé tel quel, même s'il porte un nom différent ou contient des messages supplémentaires (ex. PC ch1)." = "ℹ Déjà couvert : un event existant contient déjà ce Note On ch16 (même cue MaestroDMX). Pas de création — l'event existant est réutilisé tel quel, même s'il porte un nom différent ou contient des messages supplémentaires (ex. PC ch1).";
+
+// MARK: – Ligne événement MIDI (MidiEventGlobalRow)
+"Velvet" = "Velvet";
+"ShowBuddy" = "ShowBuddy";
+"Archivé" = "Archivé";
+"Tester l'envoi" = "Tester l'envoi";
+"Restaurer — réapparaît dans les pickers" = "Restaurer — réapparaît dans les pickers";
+"Cue de repos actif — archivage interdit" = "Cue de repos actif — archivage interdit";
+"Supprimer (non utilisé)" = "Supprimer (non utilisé)";
+"Event ShowBuddy — non modifiable" = "Event ShowBuddy — non modifiable";
+"Aucun message MIDI." = "Aucun message MIDI.";
+"Supprimer" = "Supprimer";
+"L'événement et tous ses messages MIDI seront supprimés. Cette action est irréversible." = "L'événement et tous ses messages MIDI seront supprimés. Cette action est irréversible.";
+"Archiver quand même" = "Archiver quand même";
+
+// MARK: – Éditeur événement Velvet (VelvetMidiEventRow)
+"Nom" = "Nom";
+"OK" = "OK";
+"Renommer" = "Renommer";
+"Tester l'envoi vers la destination configurée" = "Tester l'envoi vers la destination configurée";
+"Supprimer l'événement" = "Supprimer l'événement";
+"Supprimer ce message" = "Supprimer ce message";
+"Type" = "Type";
+"Ajouter" = "Ajouter";
+"Ajouter un message" = "Ajouter un message";
+"L'événement et tous ses messages MIDI seront supprimés." = "L'événement et tous ses messages MIDI seront supprimés.";
+
+// MARK: – Nettoyage fin de morceau (TailMidiCleanupSheet)
+"Mémos MIDI de fin de morceau" = "Mémos MIDI de fin de morceau";
+"Fenêtre :" = "Fenêtre :";
+"Fenêtre" = "Fenêtre";
+"Aucun mémo MIDI dans la fenêtre" = "Aucun mémo MIDI dans la fenêtre";
+"Désactiver MIDI" = "Désactiver MIDI";
+"Retire l'envoi MIDI — le mémo et son texte restent intacts" = "Retire l'envoi MIDI — le mémo et son texte restent intacts";
+"Supprimer…" = "Supprimer…";
+"Supprime le mémo entier (confirmation demandée)" = "Supprime le mémo entier (confirmation demandée)";
+"Supprimer le mémo" = "Supprimer le mémo";
+
+// MARK: – Avancé / Maintenance
+"Nettoyage MIDI" = "Nettoyage MIDI";
+"Mémos MIDI de fin de morceau…" = "Mémos MIDI de fin de morceau…";
+"Liste les mémos MIDI déclenchés dans les dernières secondes des morceaux (stop cue, Purple Rain…) — ils peuvent écraser les scènes du morceau entrant pendant un crossfade. Aucune modification sans validation." = "Liste les mémos MIDI déclenchés dans les dernières secondes des morceaux (stop cue, Purple Rain…) — ils peuvent écraser les scènes du morceau entrant pendant un crossfade. Aucune modification sans validation.";
+"Trims ShowBuddy" = "Trims ShowBuddy";
+"Importe les débuts/fins de morceaux définis dans ShowBuddy. Seuls les morceaux sans trim Velvet sont mis à jour — les trims que tu as réglés toi-même ne sont pas touchés." = "Importe les débuts/fins de morceaux définis dans ShowBuddy. Seuls les morceaux sans trim Velvet sont mis à jour — les trims que tu as réglés toi-même ne sont pas touchés.";
+"Importer les trims ShowBuddy…" = "Importer les trims ShowBuddy…";
+"Correction TrimEnd" = "Correction TrimEnd";
+"Relit ShowBuddy.db et recalcule les fins de morceaux. À utiliser si des morceaux s'arrêtent trop tôt après un import. Un backup est créé avant toute modification." = "Relit ShowBuddy.db et recalcule les fins de morceaux. À utiliser si des morceaux s'arrêtent trop tôt après un import. Un backup est créé avant toute modification.";
+"Corriger les trims ShowBuddy…" = "Corriger les trims ShowBuddy…";
+"Avancé / Maintenance" = "Avancé / Maintenance";
+
+// MARK: – Bibliothèque audio
+"Bibliothèque audio" = "Bibliothèque audio";
+"Dossier non autorisé — la lecture audio peut échouer." = "Dossier non autorisé — la lecture audio peut échouer.";
+"Oublier l'autorisation actuelle" = "Oublier l'autorisation actuelle";

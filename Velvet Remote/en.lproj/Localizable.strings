@@ -1,0 +1,18 @@
+/* Localizable.strings — English
+   Velvet Remote — iOS companion app for VELVET SHOW */
+
+// MARK: - Connection status
+"remote.connected.wifi" = "Connected — Wi-Fi";
+"remote.connected.usb"  = "Connected — USB";
+"remote.disconnected"   = "Disconnected";
+"remote.searching"      = "Searching for Velvet Show...";
+"remote.notFound.title" = "Velvet Show not found";
+"remote.notFound.mac" = "Make sure Velvet Show is running on your Mac";
+"remote.notFound.network" = "Make sure both devices are on the same network";
+"remote.notFound.permission" = "Make sure Local Network permission is enabled";
+"remote.retry" = "Retry";
+
+// MARK: - Transport labels
+"remote.transport.wifi"  = "Wi-Fi";
+"remote.transport.usb"   = "USB";
+"remote.transport.other" = "Network";
