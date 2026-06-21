@@ -4,22 +4,19 @@
 // ============================================================
 // SINGLE SOURCE OF TRUTH — Beta download URL
 // ------------------------------------------------------------
-// Every "Download Beta" button on the site (menu bar, hero,
-// beta section) reads its href from this one constant.
-// To point the site at a new build/transfer link, change this
-// one value and nothing else.
+// Every "Download Beta" button on the site reads this URL.
+// GitHub "latest" always points to the latest published release.
+// Keep the release asset name exactly: VELVET.SHOW.zip
 // ============================================================
-var VELVET_SHOW_DOWNLOAD_URL = 'https://github.com/Alxsparker/velvetshow/releases/download/v1.0.0/VELVET.SHOW.v1.0-2.zip';
+var VELVET_SHOW_DOWNLOAD_URL =
+  'https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip';
 
 (function () {
-  // Apply the download URL to every element marked with
-  // data-download-link, so the link only needs to be defined once.
   var downloadLinks = document.querySelectorAll('[data-download-link]');
   downloadLinks.forEach(function (el) {
     el.setAttribute('href', VELVET_SHOW_DOWNLOAD_URL);
   });
 
-  // Scroll-reveal: add .is-visible to sections as they enter the viewport.
   var revealEls = document.querySelectorAll(
     '.feature__grid, .panic__inner, .audience__grid, .audience__title, .audience__migrate, .beta__inner, .concept'
   );
@@ -46,8 +43,6 @@ var VELVET_SHOW_DOWNLOAD_URL = 'https://github.com/Alxsparker/velvetshow/release
     });
   }
 
-  // Beta form: build a mailto link from the filled fields so the request
-  // arrives as a readable email, no backend required.
   var form = document.getElementById('betaform');
   if (form) {
     form.addEventListener('submit', function (e) {
