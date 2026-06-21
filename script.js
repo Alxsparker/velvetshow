@@ -9,8 +9,8 @@
 // Keep the release asset name exactly: VELVET.SHOW.zip
 // ============================================================
 var VELVET_SHOW_DOWNLOAD_URL =
-  'https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip';
-
+var VELVET_SHOW_DOWNLOAD_URL =
+  'https://github.com/Alxsparker/velvetshow/releases/download/v0.11-maestro-osc/VELVET.SHOW.zip';
 (function () {
   var downloadLinks = document.querySelectorAll('[data-download-link]');
   downloadLinks.forEach(function (el) {
