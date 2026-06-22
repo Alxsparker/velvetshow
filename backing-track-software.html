@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backing Track Software for Live Musicians — Velvet Show</title>
+  <meta name="description" content="Velvet Show is professional backing track software for live musicians on macOS. MIDI automation, OSC, lyrics prompter, lighting control and iPhone remote in one app.">
+  <meta name="keywords" content="backing track software, backing track app mac, live backing track software, best backing track software musicians, show control software">
+  <link rel="canonical" href="https://velvetshow.app/backing-track-software">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .lp { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .lp h1 { font-family: 'Oswald', sans-serif; font-size: clamp(2rem,5vw,3rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; }
+    .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 .75rem; text-transform: uppercase; letter-spacing: .04em; }
+    .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: .95rem; }
+    .lp ul { color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem; font-size: .95rem; }
+    .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+  </style>
+</head>
+<body>
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--red"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span>
+        <span class="menubar__title">VELVET SHOW</span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/#remote">Velvet Remote</a>
+        <a href="/#maestrodmx">MaestroDMX</a>
+        <a href="/#beta" id="dl-nav">Download</a>
+      </nav>
+    </div>
+  </header>
+  <div class="lp">
+    <p class="eyebrow">Backing Track Software</p>
+    <h1>Professional backing track software for live musicians</h1>
+    <p>Velvet Show is a macOS app that handles your backing tracks and your entire show control from one window — audio playback, MIDI cues, OSC events, lyrics, lighting and a live remote for your iPhone or iPad.</p>
+    <h2>More than just a backing track player</h2>
+    <p>Most backing track apps stop at audio playback. Velvet Show treats backing tracks as the foundation of a complete show control system. Every song has its own timeline — and on that timeline, you place not just audio, but MIDI cues, OSC messages, lyrics, chords and stage notes.</p>
+    <ul>
+      <li>Import any audio format — MP3, WAV, AIFF, AAC</li>
+      <li>Unlimited shows and songs, organized by event or set</li>
+      <li>Color-coded grid for fast navigation live on stage</li>
+      <li>Waveform display with remaining time and auto-advance</li>
+      <li>MIDI cues fire automatically at precise positions in the track</li>
+      <li>OSC messages trigger lighting, video and external systems over WiFi</li>
+      <li>Lyrics and chords scroll in sync with the music</li>
+      <li>Stage screen output to iPad or second display</li>
+      <li>Velvet Remote — play, pause, next song from your iPhone</li>
+    </ul>
+    <h2>Who uses Velvet Show?</h2>
+    <p>Solo performers, duos, bands, wedding musicians and show-control professionals. Anyone who runs backing tracks live and wants their lights, lyrics and remote control to work from the same app — without running three separate tools and manually triggering everything.</p>
+    <h2>Alternatives comparison</h2>
+    <p>If you've been using <strong>ShowBuddy</strong>, <strong>Stage Traxx</strong>, <strong>BandHelper</strong> or a QLab-based setup, Velvet Show covers the same core workflow and adds MIDI automation, OSC and iPhone remote control in one macOS app.</p>
+    <div class="cta-row">
+      <a href="/#beta" id="dl-hero" class="btn btn--primary" target="_blank" rel="noopener">Download Velvet Show — Free</a>
+      <a href="/" class="btn btn--ghost">See all features</a>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand"><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="footer__name">Velvet Show</span></div>
+      <p class="footer__copy">&copy; 2026 Velvet Show &middot; <a href="/">velvetshow.app</a></p>
+    </div>
+  </footer>
+  <script>
+    const url = 'https://github.com/Alxsparker/velvetshow/releases/download/v0.13/VELVET.SHOW.zip';
+    ['dl-nav','dl-hero'].forEach(id => { const el = document.getElementById(id); if(el) el.href = url; });
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lyrics Prompter for Live Musicians — Velvet Show</title>
+  <meta name="description" content="Velvet Show includes a professional lyrics prompter for live musicians. Lyrics and chords scroll automatically during backing track playback. iPad stage screen. iPhone remote. macOS.">
+  <meta name="keywords" content="lyrics prompter for musicians, lyrics teleprompter live music, chords prompter stage, iPad lyrics display, backing track lyrics software">
+  <link rel="canonical" href="https://velvetshow.app/lyrics-prompter-for-musicians">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .lp { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .lp h1 { font-family: 'Oswald', sans-serif; font-size: clamp(2rem,5vw,3rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; }
+    .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 .75rem; text-transform: uppercase; letter-spacing: .04em; }
+    .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: .95rem; }
+    .lp ul { color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem; font-size: .95rem; }
+    .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+  </style>
+</head>
+<body>
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--red"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span>
+        <span class="menubar__title">VELVET SHOW</span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/#remote">Velvet Remote</a>
+        <a href="/#maestrodmx">MaestroDMX</a>
+        <a href="/#beta" id="dl-nav">Download</a>
+      </nav>
+    </div>
+  </header>
+  <div class="lp">
+    <p class="eyebrow">Lyrics Prompter</p>
+    <h1>Lyrics prompter for live musicians — synced to your backing tracks</h1>
+    <p>Velvet Show includes a professional lyrics prompter built directly into your backing track workflow. Lyrics and chords scroll automatically as the music plays — you never touch a scroll wheel or tap a button mid-song.</p>
+    <h2>How the lyrics prompter works</h2>
+    <p>Each song in Velvet Show has a timeline. On that timeline, you place lyric blocks at the exact position where they should appear. When the backing track plays, the lyrics scroll in sync — automatically. Chords, key changes and stage notes appear at exactly the right moment.</p>
+    <ul>
+      <li>Import lyrics from plain text in one click</li>
+      <li>Place lyric blocks directly on the waveform timeline</li>
+      <li>Chords and key changes synced to the music</li>
+      <li>Stage notes and arrangement reminders on the same timeline</li>
+      <li>Large type, high contrast — readable under stage lighting</li>
+      <li>Stage screen output to iPad or second monitor</li>
+      <li>Velvet Remote shows lyrics on iPad — full screen, scrolls automatically</li>
+    </ul>
+    <h2>iPad as a stage prompter</h2>
+    <p>Velvet Show outputs to a second display — your iPad, a monitor at the back of the stage, or any external screen. The stage screen shows the current song title, a countdown timer, the next song, and the current lyric block in large readable type. You can also use <strong>Velvet Remote</strong> on your iPad: it connects to Velvet Show over local WiFi and displays lyrics in real time, with playback controls at the bottom.</p>
+    <h2>No more scrolling PDFs mid-song</h2>
+    <p>If you've been managing lyrics in a PDF viewer, a notes app or a second device you manually scroll during performance — Velvet Show replaces all of that. One app, one timeline, everything in sync.</p>
+    <div class="cta-row">
+      <a href="/#beta" id="dl-hero" class="btn btn--primary" target="_blank" rel="noopener">Download Velvet Show — Free</a>
+      <a href="/" class="btn btn--ghost">See all features</a>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand"><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="footer__name">Velvet Show</span></div>
+      <p class="footer__copy">&copy; 2026 Velvet Show &middot; <a href="/">velvetshow.app</a></p>
+    </div>
+  </footer>
+  <script>
+    const url = 'https://github.com/Alxsparker/velvetshow/releases/download/v0.13/VELVET.SHOW.zip';
+    ['dl-nav','dl-hero'].forEach(id => { const el = document.getElementById(id); if(el) el.href = url; });
+  </script>
+</body>
+</html>

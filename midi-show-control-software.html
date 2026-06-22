@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIDI Show Control Software for Live Musicians — Velvet Show</title>
+  <meta name="description" content="Velvet Show is macOS MIDI show control software for live musicians. Place MIDI cues on a timeline, trigger lighting scenes automatically during playback. MaestroDMX, OSC and iPhone remote included.">
+  <meta name="keywords" content="MIDI show control software, MIDI cue software mac, lighting automation musicians, MaestroDMX control, OSC show control, live performance MIDI">
+  <link rel="canonical" href="https://velvetshow.app/midi-show-control-software">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .lp { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .lp h1 { font-family: 'Oswald', sans-serif; font-size: clamp(2rem,5vw,3rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; }
+    .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 .75rem; text-transform: uppercase; letter-spacing: .04em; }
+    .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: .95rem; }
+    .lp ul { color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem; font-size: .95rem; }
+    .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+  </style>
+</head>
+<body>
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--red"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span>
+        <span class="menubar__title">VELVET SHOW</span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/#remote">Velvet Remote</a>
+        <a href="/#maestrodmx">MaestroDMX</a>
+        <a href="/#beta" id="dl-nav">Download</a>
+      </nav>
+    </div>
+  </header>
+  <div class="lp">
+    <p class="eyebrow">MIDI Show Control</p>
+    <h1>MIDI show control software for live musicians on macOS</h1>
+    <p>Velvet Show puts MIDI show control directly on your backing track timeline. Place cues at precise positions, and they fire automatically during playback — lighting scenes, video triggers, DMX changes, anything your rig responds to via MIDI or OSC.</p>
+    <h2>How it works</h2>
+    <p>Open a song in Velvet Show. On the waveform timeline, you'll see your audio and two cue tracks — one for MIDI, one for OSC. Drop a cue at the exact position where you want a lighting change. When the track plays, the cue fires automatically. No manual triggering, no second operator.</p>
+    <ul>
+      <li>MIDI timeline cues — place anywhere on the waveform</li>
+      <li>Program Changes, Control Changes, Note On/Off — full MIDI spec</li>
+      <li>OSC timeline cues — fire messages over local network</li>
+      <li>Manual MIDI and OSC — send messages on demand between songs</li>
+      <li>Import MaestroDMX cue list directly into the timeline</li>
+      <li>Master Brightness control for MaestroDMX</li>
+      <li>MIDI + OSC simultaneously on the same timeline</li>
+      <li>OSC Events Library — save and reuse cue presets</li>
+    </ul>
+    <h2>Works with your existing lighting system</h2>
+    <p>Velvet Show sends MIDI and OSC — it doesn't replace your lighting software. <strong>MaestroDMX</strong> remains the DMX engine. Velvet Show tells it what to do and when. The same applies to QLab, Companion, Resolume, OBS and any other MIDI or OSC-compatible system.</p>
+    <h2>Compared to QLab</h2>
+    <p>QLab is powerful but complex, expensive and optimized for theatre productions. Velvet Show is built for working musicians who want MIDI automation without managing a full production system. If you play 3 nights a week and want lights to follow the music automatically — Velvet Show is the right tool.</p>
+    <div class="cta-row">
+      <a href="/#beta" id="dl-hero" class="btn btn--primary" target="_blank" rel="noopener">Download Velvet Show — Free</a>
+      <a href="/" class="btn btn--ghost">See all features</a>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand"><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="footer__name">Velvet Show</span></div>
+      <p class="footer__copy">&copy; 2026 Velvet Show &middot; <a href="/">velvetshow.app</a></p>
+    </div>
+  </footer>
+  <script>
+    const url = 'https://github.com/Alxsparker/velvetshow/releases/download/v0.13/VELVET.SHOW.zip';
+    ['dl-nav','dl-hero'].forEach(id => { const el = document.getElementById(id); if(el) el.href = url; });
+  </script>
+</body>
+</html>
