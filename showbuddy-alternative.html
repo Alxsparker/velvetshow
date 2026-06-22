@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ShowBuddy Alternative — Velvet Show for macOS</title>
-  <meta name="description" content="Looking for a ShowBuddy alternative? Velvet Show is a macOS backing track app with MIDI show control, OSC, lyrics prompter and iPhone remote. Free to try.">
+  <meta name="description" content="Looking for a ShowBuddy alternative? Velvet Show is a macOS show control app with OSC, MaestroDMX integration and native iPhone remote — all in one app for $79. ShowBuddy Setlist + Active costs $318+.">
   <meta name="keywords" content="ShowBuddy alternative, ShowBuddy mac, backing track software mac, show control software">
   <link rel="canonical" href="https://velvetshow.app/showbuddy-alternative">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,16 +24,23 @@
     .compare td:first-child { color: var(--text); font-weight: 500; }
     .compare .yes { color: #4DA3FF; }
     .compare .no { color: var(--text-muted); opacity: .5; }
+    .compare .warn { color: #FF9F43; }
     .compare tr:hover td { background: var(--card); }
+    .price-hero { background: var(--card); border: 1px solid var(--hairline); border-radius: 10px; padding: 2rem; margin: 2rem 0; }
+    .price-hero__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-top: 1.25rem; }
+    .price-hero__item { text-align: center; }
+    .price-hero__label { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .4rem; }
+    .price-hero__price { font-family: 'Oswald', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); }
+    .price-hero__sub { font-size: .72rem; color: var(--text-muted); margin-top: .25rem; }
+    .price-hero__item--velvet .price-hero__price { color: #4DA3FF; }
+    .price-hero__item--warning .price-hero__price { color: #FF9F43; }
   </style>
 </head>
 <body>
   <header class="menubar">
     <div class="menubar__inner">
       <div class="menubar__brand">
-        <span class="dot dot--red"></span>
-        <span class="dot dot--idle"></span>
-        <span class="dot dot--idle"></span>
+        <span class="dot dot--red"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span>
         <span class="menubar__title">VELVET SHOW</span>
       </div>
       <nav class="menubar__nav" aria-label="Primary">
@@ -47,45 +54,81 @@
 
   <div class="lp">
     <p class="eyebrow">ShowBuddy Alternative</p>
-    <h1>A better ShowBuddy alternative for macOS musicians</h1>
-    <p>If you've been using <strong>ShowBuddy</strong> to manage your backing tracks, you already know what good show control feels like. Velvet Show takes everything that works and adds MIDI automation, OSC support, a real-time iPhone remote and MaestroDMX integration — all in one macOS app.</p>
+    <h1>A ShowBuddy alternative that costs less and does more</h1>
+    <p>ShowBuddy Setlist is a solid backing track app. But to get full show control — DMX lighting, OSC, video — you also need Show Buddy Active, a separate license. The two together cost $318 minimum. Velvet Show does everything in one app for $79.</p>
 
-    <h2>Why musicians switch from ShowBuddy to Velvet Show</h2>
-    <p>ShowBuddy is a solid tool for managing backing tracks and setlists. But as your show grows more complex — lighting cues, multiple devices, live OSC control — you start running into its limits. Velvet Show is built for exactly that next step.</p>
-    <ul>
-      <li>Full MIDI timeline automation — cues fire automatically during playback</li>
-      <li>OSC engine built in — control MaestroDMX, QLab, Companion over WiFi</li>
-      <li>Velvet Remote for iPhone and iPad — real-time two-way sync over local network</li>
-      <li>Lyrics and chords synced to the waveform — not a separate scrolling view</li>
-      <li>Stage screen output for iPad or second monitor</li>
-      <li>PANIC button always one keystroke away</li>
-    </ul>
+    <h2>Price comparison</h2>
+    <div class="price-hero">
+      <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .5rem;">What you pay for a complete show control setup</p>
+      <div class="price-hero__grid">
+        <div class="price-hero__item price-hero__item--velvet">
+          <div class="price-hero__label">Velvet Show</div>
+          <div class="price-hero__price">$79</div>
+          <div class="price-hero__sub">One app · everything included<br>30-day free trial</div>
+        </div>
+        <div class="price-hero__item price-hero__item--warning">
+          <div class="price-hero__label">Show Buddy Setlist + Active</div>
+          <div class="price-hero__price">$318+</div>
+          <div class="price-hero__sub">Two separate apps required<br>Setlist $119 + Active $199</div>
+        </div>
+        <div class="price-hero__item">
+          <div class="price-hero__label">Stage Traxx 4</div>
+          <div class="price-hero__price">~$55</div>
+          <div class="price-hero__sub">App Store in-app purchase<br>No OSC, no DMX, no remote</div>
+        </div>
+        <div class="price-hero__item">
+          <div class="price-hero__label">BandHelper</div>
+          <div class="price-hero__price">$$$</div>
+          <div class="price-hero__sub">Annual subscription<br>No backing tracks, no OSC</div>
+        </div>
+      </div>
+    </div>
 
     <h2>Feature comparison</h2>
     <table class="compare">
-      <thead><tr><th>Feature</th><th>Velvet Show</th><th>ShowBuddy</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Velvet Show</th>
+          <th>SB Setlist</th>
+          <th>SB Active</th>
+        </tr>
+      </thead>
       <tbody>
-        <tr><td>Backing tracks &amp; setlists</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-        <tr><td>Color-coded song grid</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-        <tr><td>Timeline MIDI cues (automatic)</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>OSC show control</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>MaestroDMX integration</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>iPhone/iPad remote (local network)</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>Lyrics &amp; chords on waveform</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>Stage screen (iPad / 2nd monitor)</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>PANIC mode</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>macOS native</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Backing tracks &amp; setlists</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td></tr>
+        <tr><td>Lyrics on timeline</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td></tr>
+        <tr><td>MIDI cues on timeline</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>OSC output (native)</td><td class="yes">✓</td><td class="no">—</td><td class="warn">receives only</td></tr>
+        <tr><td>MaestroDMX direct integration</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+        <tr><td>Import MaestroDMX cue list</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+        <tr><td>iPhone/iPad remote (native App)</td><td class="yes">✓ Free</td><td class="no">—</td><td class="warn">TouchOSC required</td></tr>
+        <tr><td>iPad lyrics prompter</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+        <tr><td>Stage screen output</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+        <tr><td>Apple Silicon native</td><td class="yes">✓</td><td class="warn">Rosetta (DMXIS)</td><td class="yes">✓</td></tr>
+        <tr><td>macOS / Windows</td><td class="yes">macOS</td><td class="yes">Both</td><td class="yes">Both</td></tr>
+        <tr><td>Number of apps needed</td><td class="yes">1</td><td class="warn">2</td><td class="warn">2</td></tr>
+        <tr><td>Price</td><td class="yes">$79</td><td class="warn">$119</td><td class="warn">$199–$499</td></tr>
       </tbody>
     </table>
 
-    <h2>Who should make the switch?</h2>
-    <p>Velvet Show is the right ShowBuddy alternative if you're a solo performer, duo or band who wants to add lighting automation to the mix without managing a second piece of software. If you use MaestroDMX, need MIDI cues to fire automatically, or want your iPhone as a live remote — Velvet Show is built for you.</p>
+    <h2>The key differences</h2>
+    <ul>
+      <li><strong>One app vs two.</strong> ShowBuddy Setlist handles your tracks and lyrics. Show Buddy Active handles your lights. You need both — that's $318 minimum, two separate windows to manage live.</li>
+      <li><strong>OSC output.</strong> Velvet Show sends OSC natively to MaestroDMX, QLab, Companion and any network-connected system. ShowBuddy Active can receive OSC (via TouchOSC) but doesn't send it.</li>
+      <li><strong>MaestroDMX integration.</strong> Velvet Show connects directly to MaestroDMX — import your cue list, trigger scenes via MIDI or OSC, control Master Brightness. No equivalent in ShowBuddy.</li>
+      <li><strong>iPhone remote.</strong> Velvet Remote is a free native iOS app that connects to Velvet Show over your local WiFi. ShowBuddy Active requires a third-party app like TouchOSC for wireless control.</li>
+      <li><strong>Price.</strong> Velvet Show is $79 for everything. ShowBuddy Setlist + Active starts at $318.</li>
+    </ul>
 
-    <h2>Migration is straightforward</h2>
-    <p>Your songs are your songs. Velvet Show imports audio files directly — bring your existing tracks, rebuild your setlists in minutes. No lock-in, no subscription.</p>
+    <h2>What ShowBuddy does better</h2>
+    <p>To be fair: Show Buddy Active has more advanced DMX capabilities — multiple universes, video output, a full fixture editor and a 2D visualizer. If you have a complex professional lighting rig and need deep DMX programming, Show Buddy Active is more powerful on the lighting side.</p>
+    <p>Velvet Show is the better choice if you want everything — backing tracks, lyrics, MIDI, OSC, lighting automation and iPhone remote — in one $79 app, without managing two separate pieces of software on stage.</p>
+
+    <h2>Migration from ShowBuddy</h2>
+    <p>Your audio files are your audio files. Import them into Velvet Show directly. Rebuild your setlists in a few minutes. No lock-in, no subscription, no data export needed.</p>
 
     <div class="cta-row">
-      <a href="/#beta" id="dl-hero" class="btn btn--primary" target="_blank" rel="noopener">Download Velvet Show — Free</a>
+      <a href="/#beta" id="dl-hero" class="btn btn--primary" target="_blank" rel="noopener">Download Velvet Show — 30-day free trial</a>
       <a href="/" class="btn btn--ghost">See all features</a>
     </div>
   </div>
