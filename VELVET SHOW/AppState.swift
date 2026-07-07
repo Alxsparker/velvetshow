@@ -932,27 +932,76 @@ final class AppState {
 
     // MARK: - Lighting control profile
 
-    /// Profil de contrôle lumière sélectionné par l'utilisateur.
-    /// MaestroDMX reste le défaut pour préserver le comportement historique :
-    /// les panneaux live envoient toujours CC14 ch16 et /show/cue/index.
-    enum LightingControlProfile: String, CaseIterable, Identifiable {
-        case maestroDMX
-        case wolfmix
-        case qlab
-        case lightkey
-        case customMIDI
-        case customOSC
+    /// État de confiance d'un profil lumière. C'est la seule source utilisée
+    /// par l'UI Phase 1 pour autoriser ou verrouiller les contrôles live.
+    enum VerificationState: String, CaseIterable, Identifiable {
+        case verifiedLive
+        case experimental
+        case unverifiedMapping
+        case researchOnly
 
         var id: String { rawValue }
 
         var label: String {
             switch self {
-            case .maestroDMX: return "MaestroDMX"
-            case .wolfmix:    return "Wolfmix"
-            case .qlab:       return "QLab"
-            case .lightkey:   return "Lightkey"
-            case .customMIDI: return "Custom MIDI"
-            case .customOSC:  return "Custom OSC"
+            case .verifiedLive:      return "Verified Live"
+            case .experimental:      return "Experimental"
+            case .unverifiedMapping: return "Mapping Unverified"
+            case .researchOnly:      return "Research Only"
+            }
+        }
+
+        var detail: String {
+            switch self {
+            case .verifiedLive:
+                return "Tested in real concert conditions. Live controls are available."
+            case .experimental:
+                return "Available for timeline cues and test workflows only. Live controls stay locked."
+            case .unverifiedMapping:
+                return "Documented on paper, but not confirmed by a real runtime capture. Nothing is sent live."
+            case .researchOnly:
+                return "Not audited enough to define a reliable mapping. No sending is available from live controls."
+            }
+        }
+
+        var allowsLiveControls: Bool { self == .verifiedLive }
+    }
+
+    /// Profil de contrôle lumière sélectionné par l'utilisateur.
+    /// MaestroDMX reste le défaut pour préserver le comportement historique.
+    enum LightingControlProfile: String, CaseIterable, Identifiable {
+        case maestroDMX       = "maestroDMX"
+        case showBuddyActive  = "showBuddyActive"
+        case dmxis            = "dmxis"
+        case qlcPlus          = "qlcPlus"
+        case lightkey         = "lightkey"
+        case genericMIDI      = "customMIDI"
+        case genericOSC       = "customOSC"
+
+        var id: String { rawValue }
+
+        var label: String {
+            switch self {
+            case .maestroDMX:      return "MaestroDMX"
+            case .showBuddyActive: return "ShowBuddy Active"
+            case .dmxis:           return "DMXIS"
+            case .qlcPlus:         return "QLC+"
+            case .lightkey:        return "Lightkey"
+            case .genericMIDI:     return "Generic MIDI"
+            case .genericOSC:      return "Generic OSC"
+            }
+        }
+
+        var verificationState: VerificationState {
+            switch self {
+            case .maestroDMX:
+                return .verifiedLive
+            case .genericMIDI, .genericOSC:
+                return .experimental
+            case .showBuddyActive, .dmxis:
+                return .unverifiedMapping
+            case .qlcPlus, .lightkey:
+                return .researchOnly
             }
         }
 
@@ -960,49 +1009,55 @@ final class AppState {
             switch self {
             case .maestroDMX:
                 return "Full support for the current live cue picker and master brightness controls."
-            case .customMIDI:
-                return "Uses the same MIDI messages as the current live controls. Use only with a receiver mapped to that behavior."
-            case .customOSC:
-                return "Uses the same OSC addresses as the current live controls. Use only with a receiver mapped to that behavior."
-            case .wolfmix, .qlab, .lightkey:
-                return "Preset placeholder. Timeline MIDI/OSC cues still work, but the Maestro-style live controls are disabled until a verified mapping is added."
+            case .genericMIDI:
+                return "Generic MIDI remains available for timeline and test workflows, but live controls are locked until a verified mapping exists."
+            case .genericOSC:
+                return "Generic OSC remains available for timeline and test workflows, but live controls are locked until a verified mapping exists."
+            case .showBuddyActive:
+                return "MIDI/OSC/Art-Net capabilities were found in research, but the runtime mapping has not been captured yet."
+            case .dmxis:
+                return "DMXIS must be treated as a distinct MIDI profile. Its mapping is not verified for live use."
+            case .qlcPlus:
+                return "QLC+ is a candidate profile, but no dedicated audit has been completed yet."
+            case .lightkey:
+                return "Lightkey is a candidate profile, but no dedicated audit has been completed yet."
             }
         }
 
         var supportsMaestroStyleLiveControls: Bool {
-            switch self {
-            case .maestroDMX, .customMIDI, .customOSC:
-                return true
-            case .wolfmix, .qlab, .lightkey:
-                return false
+            verificationState.allowsLiveControls
+        }
+
+        static func persistedProfile(for raw: String?) -> LightingControlProfile {
+            guard let raw else { return .maestroDMX }
+            if let profile = LightingControlProfile(rawValue: raw) { return profile }
+            switch raw {
+            case "qlab":
+                return .qlcPlus
+            case "wolfmix":
+                return .showBuddyActive
+            default:
+                return .showBuddyActive
             }
         }
     }
 
     var lightingControlProfile: LightingControlProfile = {
-        if let raw = UserDefaults.standard.string(forKey: "lightingControlProfile"),
-           let profile = LightingControlProfile(rawValue: raw) { return profile }
-        return .maestroDMX
+        LightingControlProfile.persistedProfile(
+            for: UserDefaults.standard.string(forKey: "lightingControlProfile")
+        )
     }() {
         didSet {
             UserDefaults.standard.set(lightingControlProfile.rawValue, forKey: "lightingControlProfile")
-            switch lightingControlProfile {
-            case .customMIDI:
-                maestroControlProtocol = .midi
-            case .customOSC:
-                maestroControlProtocol = .osc
-            case .maestroDMX, .wolfmix, .qlab, .lightkey:
-                break
-            }
         }
     }
 
     var lightingLiveControlsAvailable: Bool {
-        lightingControlProfile.supportsMaestroStyleLiveControls
+        lightingControlProfile.verificationState.allowsLiveControls
     }
 
     var lightingLiveControlsUnavailableMessage: String {
-        "\(lightingControlProfile.label) does not have a verified live-control mapping yet. Timeline MIDI/OSC cues are unaffected."
+        "\(lightingControlProfile.label) is \(lightingControlProfile.verificationState.label). Timeline MIDI/OSC cues are unaffected, but live controls require a Verified Live profile."
     }
 
     // MARK: - Protocole de contrôle manuel lighting (MIDI / OSC / Both)

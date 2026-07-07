@@ -31,6 +31,17 @@ struct MidiSettingsView: View {
     @State private var isAdvancedExpanded   = false
     @State private var isRestCueExpanded    = false
 
+    private var lightingVerificationColor: Color {
+        switch appState.lightingControlProfile.verificationState {
+        case .verifiedLive:
+            return .green
+        case .experimental:
+            return .orange
+        case .unverifiedMapping, .researchOnly:
+            return VSColor.warning
+        }
+    }
+
     // MARK: Résumé Rest cue (label fermé du DisclosureGroup)
 
     private var restCueSceneName: String {
@@ -156,14 +167,13 @@ struct MidiSettingsView: View {
 
             Divider()
 
-            // ── Lighting Manual Control ─────────────────────────────
-            // Pilote les deux panneaux manuels lighting (luminosité globale
-            // CC14/`/show/brightness` + picker de cues `/show/cue/index`).
-            // Indépendant des cues OSC sur la timeline et du Rest Cue.
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Lighting / DMX Manual Control")
+            // ── Lighting Profile / Transport ─────────────────────────
+            // Phase 1 : sépare le moteur lumière choisi du protocole de
+            // transport utilisé par les panneaux live MaestroDMX existants.
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Lighting Profile")
                     .font(.subheadline.bold())
-                Text("Choose the target profile used by the live brightness panel and manual cue picker. Timeline cues and Rest Cue settings are unaffected.")
+                Text("Choose the light engine profile Velvet Show should describe in the live controls. Timeline MIDI/OSC cues and Rest Cue settings are unaffected.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
@@ -177,6 +187,38 @@ struct MidiSettingsView: View {
                 Text(appState.lightingControlProfile.detail)
                     .font(.caption2)
                     .foregroundStyle(appState.lightingLiveControlsAvailable ? .secondary : VSColor.warning)
+
+                HStack(spacing: 6) {
+                    Text(appState.lightingControlProfile.verificationState.label)
+                        .font(.caption.bold())
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule()
+                                .fill(lightingVerificationColor.opacity(0.16))
+                        )
+                        .foregroundStyle(lightingVerificationColor)
+
+                    Text(appState.lightingControlProfile.verificationState.detail)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                if !appState.lightingLiveControlsAvailable {
+                    Label(appState.lightingLiveControlsUnavailableMessage,
+                          systemImage: "lock.fill")
+                        .font(.caption)
+                        .foregroundStyle(VSColor.warning)
+                }
+
+                Divider()
+
+                Text("Manual Control Transport")
+                    .font(.subheadline.bold())
+                Text("Transport applies only to the existing live brightness panel and manual cue picker. It does not change the scheduler or timeline cues.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
 
                 Picker("Protocol", selection: $appState.maestroControlProtocol) {
                     ForEach(AppState.MaestroControlProtocol.allCases) { p in

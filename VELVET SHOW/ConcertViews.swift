@@ -637,6 +637,17 @@ struct ShowTimelineStrip: View {
 
 // MARK: - Luminosité globale MaestroDMX (CC14, Channel 16)
 
+private func lightingVerificationColor(for state: AppState.VerificationState) -> Color {
+    switch state {
+    case .verifiedLive:
+        return .green
+    case .experimental:
+        return .orange
+    case .unverifiedMapping, .researchOnly:
+        return VSColor.warning
+    }
+}
+
 struct MaestroBrightnessPopover: View {
     let appState: AppState
 
@@ -646,6 +657,25 @@ struct MaestroBrightnessPopover: View {
                 .font(.system(size: 10, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(.secondary)
+
+            HStack(spacing: 6) {
+                Text(appState.lightingControlProfile.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(.secondary.opacity(0.16), in: Capsule())
+                    .foregroundStyle(.secondary)
+                Text(appState.lightingControlProfile.verificationState.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(
+                        lightingVerificationColor(for: appState.lightingControlProfile.verificationState)
+                            .opacity(0.16),
+                        in: Capsule()
+                    )
+                    .foregroundStyle(lightingVerificationColor(for: appState.lightingControlProfile.verificationState))
+            }
 
             Text("\(appState.maestroBrightnessValue)")
                 .font(.system(size: 32, weight: .medium).monospacedDigit())
@@ -840,6 +870,16 @@ struct MaestroManualPopover: View {
                     .padding(.vertical, 1)
                     .background(VelvetPalette.gold.opacity(0.18), in: Capsule())
                     .foregroundStyle(VelvetPalette.gold)
+                Text(appState.lightingControlProfile.verificationState.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 1)
+                    .background(
+                        lightingVerificationColor(for: appState.lightingControlProfile.verificationState)
+                            .opacity(0.16),
+                        in: Capsule()
+                    )
+                    .foregroundStyle(lightingVerificationColor(for: appState.lightingControlProfile.verificationState))
                 Spacer()
                 HStack(spacing: 4) {
                     Circle()
