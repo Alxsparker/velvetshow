@@ -662,6 +662,8 @@ struct MaestroBrightnessPopover: View {
                 appState.sendMaestroBrightness(newValue)
             }
             .frame(width: 90, height: 90)
+            .disabled(!appState.lightingLiveControlsAvailable)
+            .opacity(appState.lightingLiveControlsAvailable ? 1 : 0.45)
 
             HStack(spacing: 12) {
                 Button {
@@ -693,6 +695,8 @@ struct MaestroBrightnessPopover: View {
                 .buttonStyle(.borderless)
                 .help("+1")
             }
+            .disabled(!appState.lightingLiveControlsAvailable)
+            .opacity(appState.lightingLiveControlsAvailable ? 1 : 0.45)
 
             HStack(spacing: 8) {
                 ForEach([0, 32, 64, 96, 127], id: \.self) { preset in
@@ -708,11 +712,35 @@ struct MaestroBrightnessPopover: View {
                     .tint(preset == appState.maestroBrightnessValue ? VelvetPalette.nowPlayingYellow : nil)
                 }
             }
+            .disabled(!appState.lightingLiveControlsAvailable)
+            .opacity(appState.lightingLiveControlsAvailable ? 1 : 0.45)
 
-            if appState.maestroDestination == nil {
-                Label("No MIDI Destination", systemImage: "exclamationmark.triangle")
+            // Avertissements protocol-aware : on n'affiche le manque MIDI que
+            // si le protocole demande du MIDI, idem pour OSC. Si AUCUN n'est
+            // configuré, on affiche le warning générique de fallback.
+            let proto       = appState.maestroControlProtocol
+            let midiMissing = proto.usesMidi && appState.maestroDestination == nil
+            let oscMissing  = proto.usesOsc  && !appState.maestroOscTargetIsConfigured
+            if !appState.lightingLiveControlsAvailable {
+                Label(appState.lightingLiveControlsUnavailableMessage, systemImage: "exclamationmark.triangle")
                     .font(.caption2)
                     .foregroundStyle(.orange)
+                    .multilineTextAlignment(.center)
+            } else if midiMissing && oscMissing {
+                Label("No control destination configured", systemImage: "exclamationmark.triangle")
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+            } else {
+                if midiMissing {
+                    Label("No MIDI destination selected", systemImage: "exclamationmark.triangle")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                }
+                if oscMissing {
+                    Label("No OSC target configured", systemImage: "exclamationmark.triangle")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                }
             }
         }
         .padding(16)
@@ -785,7 +813,7 @@ struct BrightnessKnobView: View {
     }
 }
 
-// MARK: - Panneau MIDI manuel MaestroDMX
+// MARK: - Panneau lighting manuel
 
 struct MaestroManualPopover: View {
     let appState: AppState
@@ -798,8 +826,20 @@ struct MaestroManualPopover: View {
             HStack(spacing: 6) {
                 Image(systemName: "light.cylindrical.ceiling.fill")
                     .foregroundStyle(VelvetPalette.gold)
-                Text("MIDI Manuel · MaestroDMX")
+                Text("Lighting Manual Control")
                     .font(.callout.bold())
+                Text(appState.lightingControlProfile.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 1)
+                    .background(.secondary.opacity(0.16), in: Capsule())
+                    .foregroundStyle(.secondary)
+                Text(appState.maestroControlProtocol.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 1)
+                    .background(VelvetPalette.gold.opacity(0.18), in: Capsule())
+                    .foregroundStyle(VelvetPalette.gold)
                 Spacer()
                 HStack(spacing: 4) {
                     Circle()
@@ -811,8 +851,15 @@ struct MaestroManualPopover: View {
                 }
             }
             Divider()
-            if events.isEmpty {
-                Text("No MaestroDMX events found in the database.")
+            if !appState.lightingLiveControlsAvailable {
+                Label(appState.lightingLiveControlsUnavailableMessage, systemImage: "exclamationmark.triangle")
+                    .font(.caption)
+                    .foregroundStyle(VSColor.warning)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 20)
+            } else if events.isEmpty {
+                Text("No compatible lighting events found in the database.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -828,20 +875,46 @@ struct MaestroManualPopover: View {
                                 isSelected: selectedEventID == event.midiEventID
                             ) {
                                 selectedEventID = event.midiEventID
-                                appState.dispatch(event: event)
+                                appState.sendMaestroManualCue(event)
                             }
                         }
                     }
                 }
             }
-            if let dest = appState.maestroDestination {
-                Text("→ \(dest.displayName)")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("⚠ No MIDI destination selected")
-                    .font(.caption2)
-                    .foregroundStyle(VSColor.warning)
+            // Avertissements protocol-aware (mêmes règles que le panneau Brightness).
+            let proto       = appState.maestroControlProtocol
+            let midiMissing = proto.usesMidi && appState.maestroDestination == nil
+            let oscMissing  = proto.usesOsc  && !appState.maestroOscTargetIsConfigured
+
+            VStack(alignment: .leading, spacing: 2) {
+                if proto.usesMidi {
+                    if let dest = appState.maestroDestination {
+                        Text("→ MIDI: \(dest.displayName)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                if proto.usesOsc, appState.maestroOscTargetIsConfigured {
+                    Text("→ OSC: \(appState.maestroOscHost):\(appState.maestroOscPort)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                if midiMissing && oscMissing {
+                    Text("⚠ No control destination configured")
+                        .font(.caption2)
+                        .foregroundStyle(VSColor.warning)
+                } else {
+                    if midiMissing {
+                        Text("⚠ No MIDI destination selected")
+                            .font(.caption2)
+                            .foregroundStyle(VSColor.warning)
+                    }
+                    if oscMissing {
+                        Text("⚠ No OSC target configured")
+                            .font(.caption2)
+                            .foregroundStyle(VSColor.warning)
+                    }
+                }
             }
         }
     }
@@ -1847,8 +1920,14 @@ struct SetSongsView: View {
                 Text(set.name ?? "Untitled Show")
                     .font(.system(size: 17, weight: .black))
                     .lineLimit(1)
+                    .truncationMode(.tail)
+                    .layoutPriority(0)
 
                 // Compteur toujours visible — clic for permuter Played ↔ Restants.
+                // lineLimit(1) + fixedSize : empêche le texte de wrapper sur
+                // plusieurs lignes quand l'espace horizontal est étroit
+                // (sidebar gauche ouverte), ce qui rendait toute la barre
+                // top-bar verticalement trop grande.
                 let remainingCount = songs.count - playedCount
                 Button {
                     showRemainingCount.toggle()
@@ -1857,36 +1936,28 @@ struct SetSongsView: View {
                          ? "Remaining \(remainingCount)/\(songs.count)"
                          : "Played \(playedCount)/\(songs.count)")
                         .font(.caption.bold().monospacedDigit())
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
                         .foregroundStyle(playedCount > 0 ? .primary : .secondary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(Color.white.opacity(0.065), in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .layoutPriority(1)
                 .help(showRemainingCount ? "Show played songs" : "Show remaining songs")
                 Text(Self.compactDuration(remainingDuration))
                     .font(.caption.bold().monospacedDigit())
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .layoutPriority(1)
 
                 // Recherche intégrée dans la barre — visible hors mode édition.
+                // (Bouton Tracks library déplacé dans la toolbar principale
+                // de l'app pour rester toujours visible.)
                 if !appState.isShowEditMode {
                     HStack(spacing: 5) {
-                        Button {
-                            appState.isQuickLibraryVisible.toggle()
-                        } label: {
-                            Image(systemName: appState.isQuickLibraryVisible
-                                  ? "books.vertical.fill"
-                                  : "books.vertical")
-                                .font(.system(size: 13))
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                        .tint(appState.isQuickLibraryVisible ? VSColor.interactive : nil)
-                        .keyboardShortcut("b", modifiers: .command)
-                        .help(appState.isQuickLibraryVisible
-                              ? "Close Quick Songs (⌘B)"
-                              : "Open Songs to add a song (⌘B)")
-
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(searchText.isEmpty ? Color.secondary : VelvetPalette.nowPlayingYellow)
                             .font(.system(size: 13))
@@ -2302,7 +2373,7 @@ struct SetSongsView: View {
             Spacer(minLength: 0)
 
             Button(role: .destructive) {
-                appState.removeFromShow(songID: song.element.setElementID, in: set)
+                confirmRemoveFromConcert = song
             } label: {
                 Image(systemName: "trash")
                     .font(.system(size: 11))
@@ -2695,7 +2766,11 @@ struct SetSongsView: View {
                 confirmRemoveFromConcert = nil
             }
         } message: {
-            Text("The song will be removed from this show only. Library, memos, trims and audio settings remain intact.")
+            if appState.isVelvetShow(set) {
+                Text("The song will be removed from this Velvet show only. Library, memos, trims and audio settings remain intact.")
+            } else {
+                Text("This show comes from ShowBuddy. Velvet Show will hide this song from this show inside Velvet only. ShowBuddy.db and the original ShowBuddy setlist are not modified; resetting Velvet edits or re-importing may show it again.")
+            }
         }
         }
     }

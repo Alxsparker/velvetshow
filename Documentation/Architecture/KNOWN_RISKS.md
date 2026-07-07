@@ -1,0 +1,15 @@
+# Known Risks — Velvet Show
+
+Risques connus à protéger explicitement dans toute évolution future de l'architecture lumière/automation de Velvet Show. Ce document doit être relu avant toute modification touchant MIDI, OSC, le scheduler, ou les profils lumière.
+
+- **Ne jamais casser MaestroDMX.** C'est le seul chemin aujourd'hui vérifié en conditions réelles de concert. Toute modification qui touche, même indirectement, l'encodage ou l'envoi des messages MaestroDMX doit être considérée comme à haut risque.
+- **Protéger MIDIEngine.** Le moteur MIDI est un transport générique et ne doit jamais être spécialisé pour un moteur lumière particulier. Toute modification doit préserver son caractère générique.
+- **Protéger OSCEngine.** Même exigence que MIDIEngine : rester un transport générique, indépendant de tout profil lumière.
+- **Protéger le scheduler.** Le point d'orchestration qui déclenche les cues (timeline, mémos, événements programmés) est un chemin critique en concert : une régression ici peut se traduire par un silence lumière pendant un morceau. Toute modification doit être accompagnée de tests de non-régression.
+- **Ne jamais renommer `maestro*` avant migration complète.** Les symboles internes commençant par `maestro` ne doivent pas être renommés tant que la migration vers le modèle Extension/Lighting Profile n'est pas terminée et validée. Un renommage prématuré introduit un risque de régression sans bénéfice immédiat.
+- **Vérifier chaque mapping avant activation live.** Aucun profil dont le mapping (MIDI, OSC, ou autre) n'a pas été vérifié par une capture réelle ne doit être activable en contrôle live. Un mapping non vérifié peut déclencher un comportement inattendu sur scène (changement de banque, de preset, ou de valeur non désiré).
+- **Toujours privilégier une évolution additive.** Toute nouvelle capacité s'ajoute sans modifier le comportement de l'existant. Un changement qui nécessite de modifier un comportement déjà en production doit être signalé et discuté avant d'être entrepris, jamais fait en silence dans le cadre d'un ajout de fonctionnalité.
+- **Ne jamais modifier un comportement live sans tests.** Tout changement touchant un chemin utilisé en concert (dispatch MIDI/OSC, scheduler, contrôles live) doit être couvert par des tests de non-régression ou, à défaut, une checklist manuelle documentée, avant d'être considéré comme prêt.
+- **Ne jamais activer un profil non vérifié en concert.** Un profil dont le `VerificationState` (voir [ARCHITECTURE_DECISIONS.md](ARCHITECTURE_DECISIONS.md)) n'est pas `verifiedLive` ne doit jamais être sélectionnable pour un usage en concert réel, même à la demande explicite de l'utilisateur — seul le mode test permet d'interagir avec un profil `experimental`, `unverifiedMapping` ou `researchOnly`.
+
+Voir aussi [ARCHITECTURE_DECISIONS.md](ARCHITECTURE_DECISIONS.md) pour le détail du modèle qui matérialise ces garde-fous, et [ROADMAP_ARCHITECTURE.md](ROADMAP_ARCHITECTURE.md) pour l'ordre dans lequel ces risques doivent être traités phase par phase.

@@ -1277,6 +1277,12 @@ final class AudioEngine {
                     self.activeNode.volume = target  // valeur exacte garantie
                     self.fadeTimer?.invalidate()
                     self.fadeTimer = nil
+                    // Bumper la génération AVANT completion : sinon les Tasks
+                    // déjà queuées entre 2 ticks Timer passent leur guard
+                    // (`gen` identique), rentrent dans ce bloc et rappellent
+                    // `completion` en boucle (stopImmediately spam des
+                    // centaines de fois). Cf. crash log djay 26/06.
+                    self.fadeGeneration &+= 1
                     completion?()
                 }
             }

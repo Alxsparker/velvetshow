@@ -117,6 +117,16 @@ When the import sheet opens:
 
 If your audio files are stored in a ShowBuddy MediaFiles folder, point Velvet Show to it via **Settings → Change audio library…** This allows Velvet Show to read files in place without duplicating them.
 
+### Deleting or hiding songs
+
+Velvet Show distinguishes between songs it owns and songs that come from a shared ShowBuddy source.
+
+- **Velvet songs** — songs imported directly into Velvet Show can be moved to **Velvet Trash** from the Songs library. This removes them from Velvet Show and from Velvet shows, while keeping their Velvet data restorable from the Trash.
+- **Songs inside a show** — removing a song from a show only removes that reference. The song stays in the library.
+- **ShowBuddy songs** — songs read from ShowBuddy are shared external source data. If you remove one from a ShowBuddy show inside Velvet Show, it is hidden from that show in Velvet only. Velvet Show does not delete it from the original ShowBuddy setlist and never modifies `ShowBuddy.db`; resetting Velvet edits or re-importing may show it again.
+
+This protects shared audio libraries from accidental destructive changes.
+
 ---
 
 ## 6. Creating Your First Show
@@ -327,6 +337,8 @@ When you replace a song's audio file using **Replace Audio**, the original file 
 Velvet Show stores: shows, setlists, Live Notes, MIDI cues, trims, volume settings, colors, concert history.
 
 Velvet Show **never modifies** your original audio files or ShowBuddy.db. Your source files are always safe.
+
+Moving a Velvet-imported song to **Velvet Trash** removes it from Velvet Show and Velvet shows, but keeps a restorable snapshot. ShowBuddy-sourced songs are not deleted by Velvet Show because they belong to the shared ShowBuddy library.
 
 ### Restoring
 

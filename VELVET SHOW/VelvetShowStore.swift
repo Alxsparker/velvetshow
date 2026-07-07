@@ -68,6 +68,8 @@ struct VelvetShowState: Codable {
         case archivedMidiEventIDs
         case oscCuesByAudioFileID
         case velvetOscEvents
+        case videosByAudioFileID
+        case midiInputBindings
     }
 
     init(from decoder: Decoder) throws {
@@ -108,6 +110,8 @@ struct VelvetShowState: Codable {
         archivedMidiEventIDs  = try container.decodeIfPresent([Int64].self, forKey: .archivedMidiEventIDs) ?? []
         oscCuesByAudioFileID  = try container.decodeIfPresent([String: [TimelineOscCue]].self, forKey: .oscCuesByAudioFileID) ?? [:]
         velvetOscEvents       = try container.decodeIfPresent([OscEvent].self, forKey: .velvetOscEvents) ?? []
+        videosByAudioFileID   = try container.decodeIfPresent([String: VelvetTrackVideo].self, forKey: .videosByAudioFileID) ?? [:]
+        midiInputBindings     = try container.decodeIfPresent([MidiInputBinding].self, forKey: .midiInputBindings) ?? []
     }
 
     /// Numéro de version du schéma. Incrémenté at chaque migration structurelle.
@@ -246,6 +250,14 @@ struct VelvetShowState: Codable {
     /// Bibliothèque d'OscEvents nommés — équivalent OSC de velvetMidiEvents.
     /// Chaque entrée porte name + category + host/port/address/value.
     var velvetOscEvents: [OscEvent] = []
+
+    /// Vidéos locales associées à un morceau (.mp4/.mov/.m4v), indexées par
+    /// audioFileID. Le fichier réel est copié dans `mediaDirectoryURL`.
+    var videosByAudioFileID: [String: VelvetTrackVideo] = [:]
+
+    /// Bindings MIDI input → action transport (footswitch USB / BT MIDI).
+    /// Un seul binding par action max (l'UI assure l'unicité).
+    var midiInputBindings: [MidiInputBinding] = []
 }
 
 // MARK: - Statut de sauvegarde
@@ -420,6 +432,29 @@ final class VelvetShowStore {
     func discardMediaFile(at url: URL) {
         guard url.path.hasPrefix(mediaDirectoryURL.path) else { return }
         try? FileManager.default.removeItem(at: url)
+    }
+
+    /// Copie un fichier vidéo (mp4 / mov / m4v) dans `Media/` et retourne le
+    /// nom de fichier final. Suit la même convention de nommage que
+    /// `importMediaFile`. Le nom est ensuite stocké dans
+    /// `VelvetTrackVideo.fileName` ; l'URL absolue est résolue à la lecture.
+    func importVideoFile(from sourceURL: URL) throws -> String {
+        let copied = try importMediaFile(from: sourceURL)
+        return copied.lastPathComponent
+    }
+
+    /// Reconstruit l'URL absolue d'une vidéo à partir du nom stocké. Renvoie
+    /// nil si le fichier a été supprimé du disque entre temps.
+    func videoURL(forFileName name: String) -> URL? {
+        let url = mediaDirectoryURL.appendingPathComponent(name)
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
+
+    /// Supprime le fichier vidéo du dossier Media. No-op si le fichier
+    /// n'existe pas ou si le chemin est hors du sandbox Media.
+    func discardVideoFile(named name: String) {
+        let url = mediaDirectoryURL.appendingPathComponent(name)
+        discardMediaFile(at: url)
     }
 
     /// Copie un fichier source dans `Attachments/<uuid>.<ext>` et retourne

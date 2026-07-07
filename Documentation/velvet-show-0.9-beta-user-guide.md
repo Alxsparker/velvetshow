@@ -87,6 +87,13 @@ Detailed information for the selected track. Editable fields:
 - **Trim** — set in/out points for the audio file
 - **Volume** — dB offset independent of system volume
 
+**Deleting songs**
+
+Velvet Show distinguishes between songs it owns and songs that come from ShowBuddy:
+- Velvet-imported songs can be moved to **Velvet Trash** from the Songs library and restored later.
+- Removing a song from a Velvet show only removes it from that show; the library entry remains.
+- ShowBuddy songs are shared external source data. Removing one from a ShowBuddy show hides it in Velvet only. Velvet Show does not delete it from the original ShowBuddy setlist and never modifies `ShowBuddy.db`; resetting Velvet edits or re-importing may show it again.
+
 ---
 
 ### Shows Mode
