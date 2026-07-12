@@ -40,6 +40,7 @@ final class LicenseManager {
     init() {
         if let key = keychainRead(account: Self.keychainKeyAccount) {
             state = .activated(key: key)
+            Task { await self.validateOnLaunch(key: key) }
         }
     }
 
@@ -57,7 +58,7 @@ final class LicenseManager {
         state = .validating
 
         do {
-            let instanceID = try await validateWithLemonSqueezy(key: key)
+            let instanceID = try await activateWithLemonSqueezy(key: key)
             keychainWrite(value: key, account: Self.keychainKeyAccount)
             keychainWrite(value: instanceID, account: Self.keychainInstanceAccount)
             state = .activated(key: key)
@@ -66,17 +67,53 @@ final class LicenseManager {
         }
     }
 
-    func deactivate() {
+    /// Deactivates on LemonSqueezy first (frees the activation slot server-side),
+    /// then always clears the local Keychain regardless of network outcome — a
+    /// failed/offline deactivate call must never leave the user stuck with a
+    /// license they can't remove from this Mac.
+    func deactivate() async {
+        if let key = keychainRead(account: Self.keychainKeyAccount),
+           let instanceID = keychainRead(account: Self.keychainInstanceAccount) {
+            try? await deactivateWithLemonSqueezy(key: key, instanceID: instanceID)
+        }
         keychainDelete(account: Self.keychainKeyAccount)
         keychainDelete(account: Self.keychainInstanceAccount)
         state = .notActivated
         inputKey = ""
     }
 
+    /// Re-checks the stored license with LemonSqueezy on each launch, using the
+    /// real `instance_id` from `/activate`. Fails open: a network error or
+    /// timeout leaves the cached Keychain state untouched (the app stays usable
+    /// offline) — only an explicit `valid: false` from the server clears it.
+    private func validateOnLaunch(key: String) async {
+        guard let instanceID = keychainRead(account: Self.keychainInstanceAccount) else { return }
+        guard let url = URL(string: "https://api.lemonsqueezy.com/v1/licenses/validate") else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONEncoder().encode([
+            "license_key": key,
+            "instance_id": instanceID
+        ])
+
+        guard let (data, response) = try? await URLSession.shared.data(for: request),
+              let http = response as? HTTPURLResponse, http.statusCode == 200,
+              let json = try? JSONDecoder().decode(LemonSqueezyValidateResponse.self, from: data)
+        else { return }
+
+        if !json.valid {
+            keychainDelete(account: Self.keychainKeyAccount)
+            keychainDelete(account: Self.keychainInstanceAccount)
+            state = .notActivated
+        }
+    }
+
     // MARK: - LemonSqueezy API
 
-    private func validateWithLemonSqueezy(key: String) async throws -> String {
-        guard let url = URL(string: "https://api.lemonsqueezy.com/v1/licenses/validate") else {
+    private func activateWithLemonSqueezy(key: String) async throws -> String {
+        guard let url = URL(string: "https://api.lemonsqueezy.com/v1/licenses/activate") else {
             throw LicenseError.invalidURL
         }
 
@@ -97,13 +134,29 @@ final class LicenseManager {
             throw LicenseError.networkError
         }
 
-        let json = try JSONDecoder().decode(LemonSqueezyResponse.self, from: data)
+        let json = try JSONDecoder().decode(LemonSqueezyActivateResponse.self, from: data)
 
-        guard http.statusCode == 200, json.valid else {
+        guard http.statusCode == 200, json.activated, let instanceID = json.instance?.id else {
             throw LicenseError.invalidKey(json.error ?? "Invalid license key.")
         }
 
-        return json.instance?.id ?? machineID
+        return instanceID
+    }
+
+    private func deactivateWithLemonSqueezy(key: String, instanceID: String) async throws {
+        guard let url = URL(string: "https://api.lemonsqueezy.com/v1/licenses/deactivate") else {
+            throw LicenseError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode([
+            "license_key": key,
+            "instance_id": instanceID
+        ])
+
+        _ = try await URLSession.shared.data(for: request)
     }
 
     // MARK: - Machine ID
@@ -159,14 +212,18 @@ final class LicenseManager {
 
 // MARK: - LemonSqueezy Response
 
-private struct LemonSqueezyResponse: Decodable {
-    let valid: Bool
+private struct LemonSqueezyActivateResponse: Decodable {
+    let activated: Bool
     let error: String?
     let instance: LicenseInstance?
 
     struct LicenseInstance: Decodable {
         let id: String
     }
+}
+
+private struct LemonSqueezyValidateResponse: Decodable {
+    let valid: Bool
 }
 
 // MARK: - Errors

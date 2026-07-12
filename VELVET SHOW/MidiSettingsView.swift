@@ -3249,7 +3249,7 @@ private struct LicenseSection: View {
             titleVisibility: .visible
         ) {
             Button("Deactivate", role: .destructive) {
-                licenseManager.deactivate()
+                Task { await licenseManager.deactivate() }
             }
             Button("Cancel", role: .cancel) {}
         } message: {
