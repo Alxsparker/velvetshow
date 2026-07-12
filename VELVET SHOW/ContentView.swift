@@ -98,24 +98,29 @@ private struct FixedAppToolbar: View {
     @State private var isShowingMediaLibraryRemap = false
 
     var body: some View {
-        Grid(horizontalSpacing: 0, verticalSpacing: 0) {
-            GridRow {
+        ZStack {
+            HStack(spacing: 0) {
                 leftControls
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .clipped()
 
-                ModeSelector(selection: $appState.mode)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .help("Switch between Songs and Shows")
-                    .anchorPreference(key: TourAnchorsKey.self, value: .bounds) {
-                        [TourAnchor.sidebarModeSwitcher: $0]
-                    }
+                Color.clear
+                    .frame(width: 180)
 
                 rightControls
                     .frame(maxWidth: .infinity, alignment: .trailing)
+                    .clipped()
             }
+            .padding(.leading, 124)
+            .padding(.trailing, 16)
+
+            ModeSelector(selection: $appState.mode)
+                .fixedSize(horizontal: true, vertical: false)
+                .help("Switch between Songs and Shows")
+                .anchorPreference(key: TourAnchorsKey.self, value: .bounds) {
+                    [TourAnchor.sidebarModeSwitcher: $0]
+                }
         }
-        .padding(.leading, 124)
-        .padding(.trailing, 16)
         .padding(.top, 6)
         .padding(.bottom, 2)
         .frame(height: 44)
@@ -152,11 +157,6 @@ private struct FixedAppToolbar: View {
         HStack(spacing: 14) {
             focusButton
                 .frame(width: 116, alignment: .leading)
-
-            Text(appState.mode == .trackLibrary ? "Songs" : "VELVET SHOW")
-                .font(.headline.weight(.bold))
-                .lineLimit(1)
-                .frame(width: 150, alignment: .leading)
 
             modeSpecificControls
         }
@@ -971,30 +971,27 @@ private struct EmptyLibraryView: View {
 private struct TrackLibraryRoot: View {
     @Bindable var appState: AppState
 
+    private var isColumnsVisible: Bool {
+        appState.trackLibraryVisibility != .detailOnly
+    }
+
     var body: some View {
-        // Mode focus (bouton ↙ Columns) : fiche seule, pleine largeur.
-        // NavigationSplitView ne répond pas de façon fiable aux changements
-        // programmatiques de columnVisibility sur macOS — on gère le switch
-        // manuellement for garantir un comportement prévisible.
-        if appState.trackLibraryVisibility == .detailOnly {
+        if isColumnsVisible {
+            HStack(spacing: 0) {
+                CategoriesSidebar(appState: appState)
+                    .frame(width: 270)
+                Divider()
+
+                CategoryTracksColumn(appState: appState)
+                    .frame(width: 340)
+                Divider()
+
+                TrackDetailColumn(appState: appState)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        } else {
             TrackDetailColumn(appState: appState)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-            // Mode normal : 3 colonnes via NavigationSplitView.
-            // `.prominentDetail` = la fiche domine, les colonnes gauches
-            // démarrent compactes. `navigationSplitViewColumnWidth` est
-            // l'API native — respectée et persistée correctement par macOS.
-            NavigationSplitView(columnVisibility: $appState.trackLibraryVisibility) {
-                CategoriesSidebar(appState: appState)
-                    .navigationSplitViewColumnWidth(min: 160, ideal: 200, max: 280)
-            } content: {
-                CategoryTracksColumn(appState: appState)
-                    .navigationSplitViewColumnWidth(min: 220, ideal: 260, max: 360)
-            } detail: {
-                TrackDetailColumn(appState: appState)
-            }
-            .navigationSplitViewStyle(.prominentDetail)
-            .toolbar(removing: .sidebarToggle)
         }
     }
 }
@@ -1017,6 +1014,7 @@ private struct CategoriesSidebar: View {
             }
         }
         .listStyle(.inset)
+        .contentMargins(.vertical, 0, for: .scrollContent)
         .sheet(item: $importSourceURL) { item in
             AudioImportSheet(appState: appState, sourceURL: item.url)
         }
@@ -1138,6 +1136,7 @@ private struct CategoryTracksColumn: View {
                 }
             }
             .listStyle(.inset)
+            .contentMargins(.vertical, 0, for: .scrollContent)
             .overlay {
                 if appState.selectedCategoryID == nil && trackSearchText.isEmpty {
                     ContentUnavailableView(

@@ -16,19 +16,27 @@ struct ShowLibraryRoot: View {
         appState.showsSidebarVisibility == .detailOnly
     }
 
+    private var isShowsSidebarVisible: Bool {
+        appState.showsSidebarVisibility != .detailOnly
+    }
+
     var body: some View {
-        NavigationSplitView(columnVisibility: $appState.showsSidebarVisibility) {
-            SetsSidebar(appState: appState)
-                .navigationSplitViewColumnWidth(min: 220, ideal: 280, max: 320)
-        } detail: {
+        HStack(spacing: 0) {
+            if isShowsSidebarVisible {
+                SetsSidebar(appState: appState)
+                    .frame(width: 320)
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+                Divider()
+            }
+
             ShowDetailColumn(
                 appState: appState,
                 isFocusMode: isFocusMode,
                 toggleFocusMode: toggleFocusMode
             )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .navigationSplitViewStyle(.balanced)
-        .toolbar(removing: .sidebarToggle)
+        .animation(.easeInOut(duration: 0.22), value: isShowsSidebarVisible)
     }
 
     /// Le triangle "focus concert" collapse simultanément les deux
