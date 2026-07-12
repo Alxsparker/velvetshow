@@ -1118,7 +1118,7 @@ struct TrackColorSheet: View {
 // MARK: - Transition Pads
 
 /// Panneau DJ de sélection d'effet de transition. Présenté en `.sheet`.
-/// 3 pads : FADE, FILTER, SLOW FADE.
+/// Deux choix live : FONDU DJ fiable et AUTOMIX BPM-aware.
 /// Navigation clavier : ←/→ cyclent les pads, ↩ confirme, ⎋ annule.
 struct TransitionPadPanel: View {
     @Bindable var appState: AppState
@@ -1127,7 +1127,7 @@ struct TransitionPadPanel: View {
     let onConfirm: (TransitionEffect) -> Void
     let onCancel: () -> Void
 
-    @State private var selected: TransitionEffect = .fade
+    @State private var selected: TransitionEffect = .filter
     @Environment(\.dismiss) private var dismiss
 
     private let available: [TransitionEffect] = TransitionEffect.allCases.filter { $0.isAvailable }
@@ -1148,7 +1148,7 @@ struct TransitionPadPanel: View {
 
             // ── Pads ─────────────────────────────────────────────────────────
             HStack(spacing: 10) {
-                ForEach(TransitionEffect.allCases.filter { $0.isAvailable }, id: \.self) { effect in
+                ForEach(available, id: \.self) { effect in
                     TransitionPad(effect: effect, isSelected: selected == effect) {
                         selected = effect
                     }
@@ -1173,8 +1173,8 @@ struct TransitionPadPanel: View {
             .padding(.top, 20)
             .padding(.bottom, 22)
         }
-        .frame(width: 460)
-        .onAppear { selected = appState.lastTransitionEffect.isAvailable ? appState.lastTransitionEffect : .fade }
+        .frame(width: 360)
+        .onAppear { selected = appState.lastTransitionEffect.isAvailable ? appState.lastTransitionEffect : .filter }
         .onKeyPress(.leftArrow)  { cycleEffect(by: -1); return .handled }
         .onKeyPress(.rightArrow) { cycleEffect(by:  1); return .handled }
     }
