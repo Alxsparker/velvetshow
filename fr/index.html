@@ -61,7 +61,7 @@
         <a href="#beta" data-download-link target="_blank" rel="noopener" class="btn btn--primary">Télécharger pour macOS</a>
         <a href="#remote" class="btn btn--ghost">Obtenir Velvet Remote</a>
       </div>
-      <p class="hero__meta">macOS · Essai gratuit 30 jours · Licence complète 79€</p>
+      <p class="hero__meta">macOS · Essai gratuit 30 jours · Licence complète 79$</p>
     </div>
     <div class="hero__window">
       <div class="appwin">
@@ -119,6 +119,7 @@
           <li>Grille colorée — navigation au premier coup d'œil sous n'importe quel éclairage</li>
           <li>Timeline avec forme d'onde et temps restant</li>
           <li>Avance automatique entre les morceaux</li>
+          <li>Un fondu DJ fluide à chaque changement de morceau</li>
           <li>Bouton PANIC toujours visible</li>
         </ul>
       </div>
@@ -165,7 +166,7 @@
           <li>Import des paroles en un clic</li>
           <li>Accords et changements de tonalité synchronisés sur la forme d'onde</li>
           <li>Cues MIDI, OSC et mémos sur la même timeline</li>
-          <li>Affichage BPM et tap-tempo par morceau</li>
+          <li>Détection automatique du BPM, morceau par morceau</li>
         </ul>
       </div>
     </div>
@@ -186,13 +187,6 @@
           <p class="compat__label">Compatible avec</p>
           <div class="compat__chips">
             <span class="chip chip--dmx">MaestroDMX</span>
-            <span class="chip">myDMX</span>
-            <span class="chip">Zero 88</span>
-            <span class="chip">Wolfmix</span>
-            <span class="chip">QLC+</span>
-            <span class="chip">Resolume</span>
-            <span class="chip">Companion</span>
-            <span class="chip">OBS</span>
             <span class="chip chip--more">+ tout système MIDI</span>
           </div>
         </div>
@@ -234,7 +228,7 @@
           <div class="cuepanel">
             <div class="cuepanel__row"><span class="cuepanel__time">00:08.0</span><span class="cuepanel__name">Scène 1 — wash intro</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/scene/1</span></div>
             <div class="cuepanel__row cuepanel__row--active"><span class="cuepanel__time">01:12.0</span><span class="cuepanel__name">Luminosité — 80%</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/brightness 0.8</span><span class="cuepanel__live">● LIVE</span></div>
-            <div class="cuepanel__row"><span class="cuepanel__time">02:44.5</span><span class="cuepanel__name">QLab — cue Q12</span><span class="cuepanel__tag cuepanel__tag--osc">/cue/Q12/start</span></div>
+            <div class="cuepanel__row"><span class="cuepanel__time">02:44.5</span><span class="cuepanel__name">Pont — reset scène</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/scene/5</span></div>
             <div class="cuepanel__row"><span class="cuepanel__time">03:30.0</span><span class="cuepanel__name">Outro — blackout</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/brightness 0</span></div>
           </div>
         </div>
@@ -258,8 +252,6 @@
           <p class="compat__label">Compatible avec</p>
           <div class="compat__chips">
             <span class="chip chip--dmx">MaestroDMX</span>
-            <span class="chip">QLab</span>
-            <span class="chip">Companion</span>
             <span class="chip chip--more">+ tout système OSC</span>
           </div>
         </div>
@@ -357,18 +349,18 @@
       <div class="remote__modes">
         <div class="remote__mode">
           <div class="remote__mode-icon"><span class="remote__mode-icon-inner">⟐</span></div>
-          <h3 class="remote__mode-title">Apple Continuity</h3>
-          <p class="remote__mode-text">iPad comme prompteur sans fil via Apple Continuity. Aucun réseau requis — fonctionne via Bluetooth + WiFi automatiquement.</p>
+          <h3 class="remote__mode-title">Prompteur sans fil</h3>
+          <p class="remote__mode-text">Transformez votre iPad en prompteur de scène sans fil avec Sidecar, ou dupliquez l'écran sur n'importe quel moniteur avec AirPlay — directement intégré à macOS, sans application supplémentaire.</p>
           <div class="remote__mode-chain">
             <span class="remote__chip">Mac</span><span class="remote__arrow">↓</span>
-            <span class="remote__chip">Apple Continuity</span><span class="remote__arrow">↓</span>
-            <span class="remote__chip">Prompteur iPad</span>
+            <span class="remote__chip">Sidecar / AirPlay</span><span class="remote__arrow">↓</span>
+            <span class="remote__chip">Prompteur sans fil</span>
           </div>
         </div>
         <div class="remote__mode">
           <div class="remote__mode-icon"><span class="remote__mode-icon-inner">⇆</span></div>
           <h3 class="remote__mode-title">Réseau Local</h3>
-          <p class="remote__mode-text">Connexion via WiFi local pour une synchronisation bidirectionnelle en temps réel. Velvet Remote détecte Velvet Show automatiquement — aucune configuration.</p>
+          <p class="remote__mode-text">Connexion via WiFi local pour une synchronisation bidirectionnelle en temps réel. Velvet Remote détecte Velvet Show automatiquement via Bonjour — aucune configuration.</p>
           <div class="remote__mode-chain">
             <span class="remote__chip">Velvet Show (Mac)</span><span class="remote__arrow">↓ WiFi</span>
             <span class="remote__chip remote__chip--ipad">iPad — Prompteur</span>
@@ -404,11 +396,11 @@
     <div class="panic__inner">
       <div class="panic__copy">
         <p class="feature__label feature__label--panic">Mode PANIC</p>
-        <h2 class="feature__title">Un raccourci. Tout s'arrête.</h2>
+        <h2 class="feature__title">Un raccourci. Ne perdez jamais le fil.</h2>
         <p class="feature__text">
-          Si une corde lâche ou que la salle a besoin d'un moment — appuyez sur PANIC.
-          L'audio s'arrête, l'écran de scène bascule vers un affichage calme,
-          et le show se met en pause proprement jusqu'à ce que vous soyez prêt à reprendre.
+          Vous perdez le fil sur scène ? Appuyez sur PANIC.
+          Vos paroles et mémos apparaissent instantanément sur votre Mac,
+          en grand format lisible — pendant que la musique continue.
         </p>
       </div>
       <div class="panic__demo">
@@ -416,7 +408,7 @@
           <span class="panicbtn__icon">⏻</span>
           <span class="panicbtn__label">PANIC</span>
         </div>
-        <p class="panic__hint">⌥ + ⌘ + P — une touche, accessible dans le noir.</p>
+        <p class="panic__hint">⌘⇧P — un raccourci, accessible dans le noir.</p>
       </div>
     </div>
   </section>
@@ -453,27 +445,27 @@
       <h2 class="migration__title">Vous venez d'une autre app ? Velvet Show prend le relais.</h2>
       <div class="migration__grid">
         <a href="/fr/alternative-showbuddy.html" class="migration__card">
-          <div class="migration__card-from">Vous quittez · 318€+ (2 apps)</div>
+          <div class="migration__card-from">Vous quittez · 318$+ (2 apps)</div>
           <div class="migration__card-title">ShowBuddy</div>
-          <div class="migration__card-desc">Setlist (119€) + Active (199€) — deux apps, deux fenêtres en live. Velvet Show fait tout pour 79€, avec OSC natif et télécommande iPhone.</div>
+          <div class="migration__card-desc">Setlist (119$) + Active (199$) — deux apps, deux fenêtres en live. Velvet Show fait tout pour 79$, avec OSC natif et télécommande iPhone.</div>
           <span class="migration__card-cta">Voir le comparatif →</span>
         </a>
         <a href="/fr/alternative-stage-traxx.html" class="migration__card">
-          <div class="migration__card-from">Vous quittez · ~55€</div>
+          <div class="migration__card-from">Vous quittez · ~55$</div>
           <div class="migration__card-title">Stage Traxx</div>
-          <div class="migration__card-desc">Excellent pour les backing tracks — mais pas d'OSC, pas d'intégration MaestroDMX, pas de télécommande native. Velvet Show ajoute tout ça pour 79€.</div>
+          <div class="migration__card-desc">Excellent pour les backing tracks — mais pas d'OSC, pas d'intégration MaestroDMX, pas de télécommande native. Velvet Show ajoute tout ça pour 79$.</div>
           <span class="migration__card-cta">Voir le comparatif →</span>
         </a>
         <a href="/fr/logiciel-backing-track.html" class="migration__card">
           <div class="migration__card-from">Vous quittez · abonnement</div>
           <div class="migration__card-title">BandHelper</div>
-          <div class="migration__card-desc">Modèle abonnement, pas de backing track. Velvet Show est un achat unique à 79€ avec audio, MIDI, OSC et show control intégrés.</div>
+          <div class="migration__card-desc">Modèle abonnement, pas de backing track. Velvet Show est un achat unique à 79$ avec audio, MIDI, OSC et show control intégrés.</div>
           <span class="migration__card-cta">En savoir plus →</span>
         </a>
         <a href="/fr/logiciel-show-control-midi.html" class="migration__card">
           <div class="migration__card-from">Vous quittez · complexe + cher</div>
           <div class="migration__card-title">QLab</div>
-          <div class="migration__card-desc">Puissant mais conçu pour le théâtre. Velvet Show apporte l'automation MIDI et OSC pensée pour les musiciens live — à 79€.</div>
+          <div class="migration__card-desc">Puissant mais conçu pour le théâtre. Velvet Show apporte l'automation MIDI et OSC pensée pour les musiciens live — à 79$.</div>
           <span class="migration__card-cta">En savoir plus →</span>
         </a>
       </div>
@@ -522,7 +514,7 @@
       </p>
       <div class="betadownload">
         <a href="#beta" data-download-link target="_blank" rel="noopener" class="btn btn--primary betadownload__btn">Télécharger pour macOS</a>
-        <p class="betadownload__meta">macOS · Essai gratuit 30 jours · Licence complète 79€</p>
+        <p class="betadownload__meta">macOS · Essai gratuit 30 jours · Licence complète 79$</p>
         <p class="betadownload__note">Distribué directement depuis le canal officiel Velvet Show.</p>
       </div>
       <div class="beta__divider"><span>ou demander l'accès</span></div>

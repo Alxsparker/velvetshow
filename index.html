@@ -111,6 +111,7 @@
           <li>Color-coded grid — navigate at a glance under any lighting</li>
           <li>Waveform timeline with remaining time</li>
           <li>Auto-advance between songs</li>
+          <li>Seamless DJ-style fade between every song</li>
           <li>PANIC button always visible</li>
         </ul>
       </div>
@@ -157,7 +158,7 @@
           <li>Import lyrics in one click</li>
           <li>Chords and key changes synced to the waveform</li>
           <li>Cue MIDI, OSC, and memos from the same timeline</li>
-          <li>BPM display and tap-tempo per song</li>
+          <li>Automatic BPM detection for every song</li>
         </ul>
       </div>
     </div>
@@ -178,13 +179,6 @@
           <p class="compat__label">Works with</p>
           <div class="compat__chips">
             <span class="chip chip--dmx">MaestroDMX</span>
-            <span class="chip">myDMX</span>
-            <span class="chip">Zero 88</span>
-            <span class="chip">Wolfmix</span>
-            <span class="chip">QLC+</span>
-            <span class="chip">Resolume</span>
-            <span class="chip">Companion</span>
-            <span class="chip">OBS</span>
             <span class="chip chip--more">+ any MIDI system</span>
           </div>
         </div>
@@ -226,7 +220,7 @@
           <div class="cuepanel">
             <div class="cuepanel__row"><span class="cuepanel__time">00:08.0</span><span class="cuepanel__name">Scene 1 — Intro wash</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/scene/1</span></div>
             <div class="cuepanel__row cuepanel__row--active"><span class="cuepanel__time">01:12.0</span><span class="cuepanel__name">Brightness — 80%</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/brightness 0.8</span><span class="cuepanel__live">● LIVE</span></div>
-            <div class="cuepanel__row"><span class="cuepanel__time">02:44.5</span><span class="cuepanel__name">QLab — fire cue Q12</span><span class="cuepanel__tag cuepanel__tag--osc">/cue/Q12/start</span></div>
+            <div class="cuepanel__row"><span class="cuepanel__time">02:44.5</span><span class="cuepanel__name">Bridge — scene reset</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/scene/5</span></div>
             <div class="cuepanel__row"><span class="cuepanel__time">03:30.0</span><span class="cuepanel__name">Outro — blackout</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/brightness 0</span></div>
           </div>
         </div>
@@ -250,8 +244,6 @@
           <p class="compat__label">Works with</p>
           <div class="compat__chips">
             <span class="chip chip--dmx">MaestroDMX</span>
-            <span class="chip">QLab</span>
-            <span class="chip">Companion</span>
             <span class="chip chip--more">+ any OSC system</span>
           </div>
         </div>
@@ -349,18 +341,18 @@
       <div class="remote__modes">
         <div class="remote__mode">
           <div class="remote__mode-icon"><span class="remote__mode-icon-inner">⟐</span></div>
-          <h3 class="remote__mode-title">Apple Continuity</h3>
-          <p class="remote__mode-text">iPad as a wireless prompter via Apple Continuity. No network required — works over Bluetooth + WiFi automatically.</p>
+          <h3 class="remote__mode-title">Wireless Prompter</h3>
+          <p class="remote__mode-text">Turn your iPad into a wireless stage prompter with Sidecar, or mirror to any screen with AirPlay — built right into macOS, no extra app required.</p>
           <div class="remote__mode-chain">
             <span class="remote__chip">Mac</span><span class="remote__arrow">↓</span>
-            <span class="remote__chip">Apple Continuity</span><span class="remote__arrow">↓</span>
-            <span class="remote__chip">iPad Prompter</span>
+            <span class="remote__chip">Sidecar / AirPlay</span><span class="remote__arrow">↓</span>
+            <span class="remote__chip">Wireless Prompter</span>
           </div>
         </div>
         <div class="remote__mode">
           <div class="remote__mode-icon"><span class="remote__mode-icon-inner">⇆</span></div>
           <h3 class="remote__mode-title">Local Network</h3>
-          <p class="remote__mode-text">Connect over WiFi for real-time two-way sync. Velvet Remote discovers Velvet Show automatically — no setup needed.</p>
+          <p class="remote__mode-text">Connect over WiFi for real-time two-way sync. Velvet Remote discovers Velvet Show automatically via Bonjour — no setup needed.</p>
           <div class="remote__mode-chain">
             <span class="remote__chip">Velvet Show (Mac)</span><span class="remote__arrow">↓ WiFi</span>
             <span class="remote__chip remote__chip--ipad">iPad — Prompter</span>
@@ -396,11 +388,11 @@
     <div class="panic__inner">
       <div class="panic__copy">
         <p class="feature__label feature__label--panic">Panic Mode</p>
-        <h2 class="feature__title">One shortcut. Everything goes quiet.</h2>
+        <h2 class="feature__title">One shortcut. Never lose your place.</h2>
         <p class="feature__text">
-          If a string breaks or the room needs a moment — press PANIC.
-          Audio stops, the stage screen switches to a calm safety display,
-          and the show pauses cleanly until you're ready to continue.
+          Lose your place on stage? Press PANIC.
+          Your lyrics and notes appear instantly, right on your Mac,
+          in bold readable type — while the music keeps playing.
         </p>
       </div>
       <div class="panic__demo">
@@ -408,7 +400,7 @@
           <span class="panicbtn__icon">⏻</span>
           <span class="panicbtn__label">PANIC</span>
         </div>
-        <p class="panic__hint">⌥ + ⌘ + P — one key, reachable in the dark.</p>
+        <p class="panic__hint">⌘⇧P — one shortcut, reachable in the dark.</p>
       </div>
     </div>
   </section>
