@@ -11,6 +11,7 @@ import SwiftUI
 
 struct ShowLibraryRoot: View {
     @Bindable var appState: AppState
+    @AppStorage("showLibrarySidebarWidth") private var showsSidebarWidth: Double = 320
 
     private var isFocusMode: Bool {
         appState.showsSidebarVisibility == .detailOnly
@@ -24,9 +25,9 @@ struct ShowLibraryRoot: View {
         HStack(spacing: 0) {
             if isShowsSidebarVisible {
                 SetsSidebar(appState: appState)
-                    .frame(width: 320)
+                    .frame(width: showsSidebarWidth)
                     .transition(.move(edge: .leading).combined(with: .opacity))
-                Divider()
+                ResizableColumnDivider(width: $showsSidebarWidth, range: 240...460)
             }
 
             ShowDetailColumn(
@@ -133,25 +134,58 @@ struct SetsSidebar: View {
         }
     }
 
-    var body: some View {
-        List(selection: $appState.selectedSetID) {
-            ForEach(showBuddySets) { set in
-                showRow(set)
+    private var sidebarHeader: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "rectangle.stack")
+                .font(.caption.bold())
+                .foregroundStyle(.secondary)
+            Text("Shows")
+                .font(.caption.bold())
+                .foregroundStyle(.secondary)
+            Spacer(minLength: 0)
+            Button {
+                isCreatingVelvetShow = true
+            } label: {
+                Image(systemName: "plus")
+                    .font(.system(size: 13, weight: .bold))
+                    .frame(width: 26, height: 24)
+                    .contentShape(Rectangle())
             }
-
-            ForEach(velvetSets) { set in
-                showRow(set)
-                    .anchorPreference(key: TourAnchorsKey.self, value: .bounds) { anchor in
-                        DemoIDRange.shows.contains(set.id) ? [TourAnchor.demoShowRow: anchor] : [:]
-                    }
-            }
-            .onMove { from, to in
-                appState.moveVelvetShows(fromOffsets: from, toOffset: to)
-            }
+            .buttonStyle(.plain)
+            .foregroundStyle(VSColor.interactive)
+            .help("New Show")
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .contentMargins(.vertical, 0, for: .scrollContent)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color.primary.opacity(0.055))
+        .overlay(alignment: .bottom) {
+            Divider().opacity(0.45)
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            sidebarHeader
+
+            List(selection: $appState.selectedSetID) {
+                ForEach(showBuddySets) { set in
+                    showRow(set)
+                }
+
+                ForEach(velvetSets) { set in
+                    showRow(set)
+                        .anchorPreference(key: TourAnchorsKey.self, value: .bounds) { anchor in
+                            DemoIDRange.shows.contains(set.id) ? [TourAnchor.demoShowRow: anchor] : [:]
+                        }
+                }
+                .onMove { from, to in
+                    appState.moveVelvetShows(fromOffsets: from, toOffset: to)
+                }
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .contentMargins(.vertical, 0, for: .scrollContent)
+        }
         .background(.ultraThinMaterial)
         .toolbar(removing: .sidebarToggle)
         .confirmationDialog(
@@ -308,6 +342,7 @@ struct ShowDetailColumn: View {
     let appState: AppState
     var isFocusMode: Bool = false
     var toggleFocusMode: (() -> Void)? = nil
+    @AppStorage("showLibraryQuickSongsWidth") private var quickSongsWidth: Double = 300
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -316,9 +351,9 @@ struct ShowDetailColumn: View {
                 HStack(spacing: 0) {
                     if appState.isQuickLibraryVisible {
                         QuickLibraryColumn(appState: appState, set: set)
-                            .frame(minWidth: 240, idealWidth: 300, maxWidth: 360)
+                            .frame(width: quickSongsWidth)
                             .transition(.move(edge: .leading).combined(with: .opacity))
-                        Divider()
+                        ResizableColumnDivider(width: $quickSongsWidth, range: 240...420)
                     }
                     SetSongsView(
                         appState: appState,

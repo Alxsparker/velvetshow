@@ -89,7 +89,6 @@ private struct FixedAppToolbar: View {
     let updateChecker: UpdateChecker
     let openPrompter: () -> Void
     @State private var importSourceURL: IdentifiableURL?
-    @State private var isCreatingVelvetShow = false
     @State private var isConfirmingResetAll = false
     @State private var isShowingStylesPanel = false
     @State private var isShowingMigrationSheet = false
@@ -105,13 +104,13 @@ private struct FixedAppToolbar: View {
                     .clipped()
 
                 Color.clear
-                    .frame(width: 180)
+                    .frame(width: 190)
 
                 rightControls
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .clipped()
             }
-            .padding(.leading, 124)
+            .padding(.leading, 8)
             .padding(.trailing, 16)
 
             ModeSelector(selection: $appState.mode)
@@ -120,16 +119,27 @@ private struct FixedAppToolbar: View {
                 .anchorPreference(key: TourAnchorsKey.self, value: .bounds) {
                     [TourAnchor.sidebarModeSwitcher: $0]
                 }
+
+            HStack {
+                Spacer()
+                ToolbarClock()
+            }
+            .padding(.trailing, 340)
+            .allowsHitTesting(false)
         }
         .padding(.top, 6)
         .padding(.bottom, 2)
         .frame(height: 44)
-        .background(.bar)
+        .background {
+            Rectangle()
+                .fill(.bar)
+                .glassEffect(.regular, in: Rectangle())
+                .overlay(alignment: .bottom) {
+                    Divider().opacity(0.45)
+                }
+        }
         .sheet(item: $importSourceURL) { item in
             AudioImportSheet(appState: appState, sourceURL: item.url)
-        }
-        .sheet(isPresented: $isCreatingVelvetShow) {
-            VelvetShowEditorSheet(mode: .create, appState: appState)
         }
         .confirmationDialog(
             "Reset all shows?",
@@ -154,9 +164,13 @@ private struct FixedAppToolbar: View {
     }
 
     private var leftControls: some View {
-        HStack(spacing: 14) {
-            focusButton
-                .frame(width: 116, alignment: .leading)
+        HStack(spacing: 8) {
+            settingsMenu
+
+            if appState.mode == .trackLibrary {
+                focusButton
+                    .frame(width: 104, alignment: .leading)
+            }
 
             modeSpecificControls
         }
@@ -202,7 +216,8 @@ private struct FixedAppToolbar: View {
                 Label("Prompter", systemImage: "rectangle.on.rectangle")
             }
             .labelStyle(.iconOnly)
-            .tint(prompterTint)
+            .buttonStyle(.plain)
+            .toolbarGlassControl(tint: prompterTint, minWidth: 36)
             .help(prompterHelp)
 
             Button {
@@ -211,6 +226,8 @@ private struct FixedAppToolbar: View {
                 Text(appState.isPanicPrompterVisible ? "🚨 PANIC ON" : "🚨 PANIC")
                     .font(.callout.weight(.black))
             }
+            .buttonStyle(.plain)
+            .toolbarGlassControl(tint: VSColor.danger, isProminent: appState.isPanicPrompterVisible, minWidth: 92)
             .keyboardShortcut("p", modifiers: [.command, .shift])
             .help("Show or hide the backup Prompter built into the main window (⌘⇧P)")
         }
@@ -226,28 +243,12 @@ private struct FixedAppToolbar: View {
                 Label("Import a Song", systemImage: "square.and.arrow.down")
             }
             .labelStyle(.iconOnly)
+            .buttonStyle(.plain)
+            .toolbarGlassControl(minWidth: 36)
             .help("Import a Song")
 
         case .showLibrary:
-            HStack(spacing: 8) {
-                settingsMenu
-
-                Button {
-                    isConfirmingResetAll = true
-                } label: {
-                    Image(systemName: "arrow.counterclockwise.circle")
-                }
-                .disabled(appState.sets.isEmpty)
-                .help("Reset all shows")
-
-                Button {
-                    isCreatingVelvetShow = true
-                } label: {
-                    Label("New Show", systemImage: "plus")
-                }
-                .labelStyle(.iconOnly)
-                .help("New Show")
-
+            HStack(spacing: 6) {
                 Button {
                     appState.toggleShowsSidebar()
                 } label: {
@@ -255,6 +256,8 @@ private struct FixedAppToolbar: View {
                           ? "sidebar.left"
                           : "sidebar.leading")
                 }
+                .buttonStyle(.plain)
+                .toolbarGlassControl(minWidth: 36)
                 .help(appState.showsSidebarVisibility == .detailOnly
                       ? "Show Shows sidebar"
                       : "Hide Shows sidebar")
@@ -266,6 +269,8 @@ private struct FixedAppToolbar: View {
                           ? "books.vertical.fill"
                           : "books.vertical")
                 }
+                .buttonStyle(.plain)
+                .toolbarGlassControl(tint: appState.isQuickLibraryVisible ? VSColor.interactive : nil, minWidth: 36)
                 .keyboardShortcut("b", modifiers: .command)
                 .help(appState.isQuickLibraryVisible
                       ? "Hide Tracks library (⌘B)"
@@ -289,6 +294,12 @@ private struct FixedAppToolbar: View {
             Button("Styles & Colors...") {
                 isShowingStylesPanel = true
             }
+            Button {
+                isConfirmingResetAll = true
+            } label: {
+                Label("Reset all shows", systemImage: "arrow.counterclockwise.circle")
+            }
+            .disabled(appState.sets.isEmpty)
             Divider()
             Button {
                 openWindow(id: "midiSettings")
@@ -327,9 +338,19 @@ private struct FixedAppToolbar: View {
                 }
             }
         } label: {
-            Label("Settings", systemImage: "gearshape")
+            HStack(spacing: 8) {
+                Image(systemName: "gearshape")
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(.secondary)
+            }
+            .frame(minWidth: 52, minHeight: 28)
+            .padding(.horizontal, 6)
         }
-        .labelStyle(.iconOnly)
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .toolbarGlassSurface()
+        .foregroundStyle(Color.secondary)
         .help("Themes, MIDI, audio library, trash, and migration")
     }
 
@@ -356,7 +377,8 @@ private struct FixedAppToolbar: View {
             Label("Focus", systemImage: "arrow.up.left.and.arrow.down.right")
                 .labelStyle(.titleAndIcon)
         }
-        .tint(isFocused ? VSColor.interactive : nil)
+        .buttonStyle(.plain)
+        .toolbarGlassControl(tint: isFocused ? VSColor.interactive : nil, minWidth: 92)
         .help(isFocused
               ? "Editor focus is on — click to show columns (T)"
               : "Editor focus: hide columns and use full width (T)")
@@ -418,13 +440,37 @@ private struct DjayVinylButton: View {
     }
 }
 
+private struct ToolbarClock: View {
+    var body: some View {
+        TimelineView(.periodic(from: Date(), by: 30)) { context in
+            Text(context.date, format: .dateTime.hour().minute())
+                .font(.system(size: 14, weight: .semibold).monospacedDigit())
+                .foregroundStyle(.secondary.opacity(0.9))
+                .lineLimit(1)
+                .frame(width: 52, height: 26)
+        }
+        .accessibilityLabel("Current time")
+    }
+}
+
 private struct ModeSelector: View {
     @Binding var selection: LibraryMode
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 4) {
             modeButton("Songs", mode: .trackLibrary, color: .red)
             modeButton("Shows", mode: .showLibrary, color: .green)
+        }
+        .padding(2)
+        .background {
+            Capsule()
+                .fill(toolbarNeutralFill(for: colorScheme))
+                .glassEffect(.regular.tint(toolbarNeutralGlassTint(for: colorScheme)), in: Capsule())
+                .overlay {
+                    Capsule()
+                        .stroke(toolbarNeutralStroke(for: colorScheme), lineWidth: 1)
+                }
         }
         .fixedSize()
     }
@@ -438,12 +484,13 @@ private struct ModeSelector: View {
             Text(title)
                 .font(.system(size: 13, weight: isSelected ? .bold : .semibold))
                 .foregroundStyle(isSelected ? .white : .secondary)
-                .frame(width: 62, height: 28)
+                .frame(width: 58, height: 26)
                 .background {
                     if isSelected {
                         Capsule()
-                            .fill(color.gradient)
-                            .shadow(color: color.opacity(0.35), radius: 5, x: 0, y: 2)
+                            .fill(color.gradient.opacity(0.92))
+                            .glassEffect(.regular.tint(color.opacity(0.28)).interactive(), in: Capsule())
+                            .shadow(color: color.opacity(0.22), radius: 4, x: 0, y: 1)
                     } else {
                         Capsule()
                             .fill(.clear)
@@ -454,6 +501,93 @@ private struct ModeSelector: View {
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
+}
+
+private struct ToolbarGlassControlModifier: ViewModifier {
+    var tint: Color?
+    var isProminent: Bool
+    var minWidth: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        let hasTint = tint != nil || isProminent
+        let resolvedTint = tint ?? VSColor.interactive
+
+        content
+            .font(.system(size: 13, weight: isProminent ? .black : .semibold))
+            .foregroundStyle(isProminent ? Color.white : (hasTint ? resolvedTint : Color.secondary))
+            .frame(minWidth: minWidth, minHeight: 28)
+            .padding(.horizontal, 6)
+            .background {
+                toolbarControlBackground(hasTint: hasTint, resolvedTint: resolvedTint)
+            }
+    }
+
+    @ViewBuilder
+    private func toolbarControlBackground(hasTint: Bool, resolvedTint: Color) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 9, style: .continuous)
+        let fill = hasTint ? resolvedTint.opacity(isProminent ? 0.18 : 0.08) : toolbarNeutralFill(for: colorScheme)
+        let stroke = hasTint ? resolvedTint.opacity(0.22) : toolbarNeutralStroke(for: colorScheme)
+
+        if colorScheme == .dark || hasTint {
+            shape
+                .fill(fill)
+                .glassEffect(.regular.tint(hasTint ? resolvedTint.opacity(isProminent ? 0.24 : 0.10) : toolbarNeutralGlassTint(for: colorScheme)).interactive(),
+                             in: shape)
+                .overlay { shape.stroke(stroke, lineWidth: 1) }
+        } else {
+            shape
+                .fill(fill)
+                .overlay { shape.stroke(stroke, lineWidth: 1) }
+        }
+    }
+}
+
+private struct ToolbarGlassSurfaceModifier: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        content
+            .background {
+                let shape = RoundedRectangle(cornerRadius: 9, style: .continuous)
+                if colorScheme == .dark {
+                    shape
+                        .fill(toolbarNeutralFill(for: colorScheme))
+                        .glassEffect(.regular.tint(toolbarNeutralGlassTint(for: colorScheme)), in: shape)
+                        .overlay { shape.stroke(toolbarNeutralStroke(for: colorScheme), lineWidth: 1) }
+                } else {
+                    shape
+                        .fill(toolbarNeutralFill(for: colorScheme))
+                        .overlay { shape.stroke(toolbarNeutralStroke(for: colorScheme), lineWidth: 1) }
+                }
+            }
+    }
+}
+
+private extension View {
+    func toolbarGlassControl(
+        tint: Color? = nil,
+        isProminent: Bool = false,
+        minWidth: CGFloat = 36
+    ) -> some View {
+        modifier(ToolbarGlassControlModifier(tint: tint, isProminent: isProminent, minWidth: minWidth))
+    }
+
+    func toolbarGlassSurface() -> some View {
+        modifier(ToolbarGlassSurfaceModifier())
+    }
+}
+
+private func toolbarNeutralFill(for colorScheme: ColorScheme) -> Color {
+    colorScheme == .dark ? Color.white.opacity(0.04) : Color.black.opacity(0.06)
+}
+
+private func toolbarNeutralGlassTint(for colorScheme: ColorScheme) -> Color {
+    colorScheme == .dark ? Color.white.opacity(0.04) : Color.black.opacity(0.035)
+}
+
+private func toolbarNeutralStroke(for colorScheme: ColorScheme) -> Color {
+    colorScheme == .dark ? Color.white.opacity(0.09) : Color.black.opacity(0.14)
 }
 
 /// Capsule unifiée for toutes les pastilles d'état de la toolbar :
@@ -970,6 +1104,8 @@ private struct EmptyLibraryView: View {
 
 private struct TrackLibraryRoot: View {
     @Bindable var appState: AppState
+    @AppStorage("trackLibraryCategoriesWidth") private var categoriesWidth: Double = 270
+    @AppStorage("trackLibrarySongsWidth") private var songsWidth: Double = 340
 
     private var isColumnsVisible: Bool {
         appState.trackLibraryVisibility != .detailOnly
@@ -979,12 +1115,12 @@ private struct TrackLibraryRoot: View {
         if isColumnsVisible {
             HStack(spacing: 0) {
                 CategoriesSidebar(appState: appState)
-                    .frame(width: 270)
-                Divider()
+                    .frame(width: categoriesWidth)
+                ResizableColumnDivider(width: $categoriesWidth, range: 180...360)
 
                 CategoryTracksColumn(appState: appState)
-                    .frame(width: 340)
-                Divider()
+                    .frame(width: songsWidth)
+                ResizableColumnDivider(width: $songsWidth, range: 240...460)
 
                 TrackDetailColumn(appState: appState)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
