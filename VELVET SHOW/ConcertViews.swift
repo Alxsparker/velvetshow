@@ -1115,135 +1115,15 @@ struct TrackColorSheet: View {
     }
 }
 
-// MARK: - Transition Pads
-
-/// Panneau DJ de sélection d'effet de transition. Présenté en `.sheet`.
-/// Deux choix live : FONDU DJ fiable et AUTOMIX BPM-aware.
-/// Navigation clavier : ←/→ cyclent les pads, ↩ confirme, ⎋ annule.
-struct TransitionPadPanel: View {
-    @Bindable var appState: AppState
-    let incomingTitle: String
-    let currentTitle: String
-    let onConfirm: (TransitionEffect) -> Void
-    let onCancel: () -> Void
-
-    @State private var selected: TransitionEffect = .filter
-    @Environment(\.dismiss) private var dismiss
-
-    private let available: [TransitionEffect] = TransitionEffect.allCases.filter { $0.isAvailable }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            // ── Contexte ─────────────────────────────────────────────────────
-            VStack(spacing: 3) {
-                Text("Current: \"\(currentTitle)\"")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text("Next: \"\(incomingTitle)\"")
-                    .font(.subheadline.bold())
-            }
-            .multilineTextAlignment(.center)
-            .padding(.top, 24)
-            .padding(.bottom, 20)
-
-            // ── Pads ─────────────────────────────────────────────────────────
-            HStack(spacing: 10) {
-                ForEach(available, id: \.self) { effect in
-                    TransitionPad(effect: effect, isSelected: selected == effect) {
-                        selected = effect
-                    }
-                }
-            }
-            .padding(.horizontal, 20)
-
-            // ── Boutons bas ──────────────────────────────────────────────────
-            HStack {
-                Button("Cancel") { onCancel(); dismiss() }
-                    .keyboardShortcut(.escape, modifiers: [])
-                Spacer()
-                Button("Start") {
-                    appState.lastTransitionEffect = selected
-                    onConfirm(selected)
-                    dismiss()
-                }
-                .buttonStyle(.borderedProminent)
-                .keyboardShortcut(.defaultAction)
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 22)
-        }
-        .frame(width: 360)
-        .onAppear { selected = appState.lastTransitionEffect.isAvailable ? appState.lastTransitionEffect : .filter }
-        .onKeyPress(.leftArrow)  { cycleEffect(by: -1); return .handled }
-        .onKeyPress(.rightArrow) { cycleEffect(by:  1); return .handled }
-    }
-
-    private func cycleEffect(by delta: Int) {
-        guard !available.isEmpty else { return }
-        let idx = available.firstIndex(of: selected) ?? 0
-        selected = available[(idx + delta + available.count) % available.count]
-    }
-}
-
-/// Un pad individuel du panneau Transition Pads.
-struct TransitionPad: View {
-    let effect: TransitionEffect
-    let isSelected: Bool
-    let onTap: () -> Void
-
-    private var accentColor: Color { VelvetPalette.nowPlayingYellow }
-
-    var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 7) {
-                Image(systemName: effect.icon)
-                    .font(.title2)
-                    .symbolRenderingMode(.hierarchical)
-                Text(effect.rawValue)
-                    .font(.caption.bold())
-                    .tracking(0.8)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-            }
-            .frame(width: 76, height: 76)
-            .background(padFill, in: RoundedRectangle(cornerRadius: 10))
-            .overlay {
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(padStroke, lineWidth: isSelected ? 2 : 1)
-            }
-            .foregroundStyle(padForeground)
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var padFill: Color {
-        isSelected ? accentColor.opacity(0.15) : Color.white.opacity(0.05)
-    }
-
-    private var padStroke: Color {
-        isSelected ? accentColor : Color.white.opacity(0.18)
-    }
-
-    private var padForeground: Color {
-        isSelected ? accentColor : .primary
-    }
-}
-
-struct PendingQueuePlaybackRequest: Identifiable {
-    let id = UUID()
-    let item: ConcertQueueItem
-    let track: AudioFile
-    let element: SetElement?
-    let currentTitle: String
-}
+// Panneau de sélection d'effet retiré — un seul mode (FONDU DJ) désormais,
+// plus rien à choisir. Le double-clic (déjà la confirmation Show Safety)
+// déclenche directement le remplacement, voir requestPlay() ci-dessous.
 
 struct QueueStagePanel: View {
     @Bindable var appState: AppState
     let set: ShowSet
     let maxVisibleRows: Int?
     var showsCurrentTrack: Bool = true
-    @State private var pendingReplacement: PendingQueuePlaybackRequest?
     @State private var isManuallyExpanded = false
     @State private var isManuallyCollapsed = false
 
@@ -1305,19 +1185,6 @@ struct QueueStagePanel: View {
             if newCount == 0 {
                 isManuallyExpanded = false
                 isManuallyCollapsed = false
-            }
-        }
-        .sheet(item: $pendingReplacement) { pending in
-            TransitionPadPanel(
-                appState: appState,
-                incomingTitle: pending.track.name ?? "Untitled",
-                currentTitle: pending.currentTitle
-            ) { effect in
-                appState.removeQueueItem(pending.item, from: set)
-                appState.startReplacement(track: pending.track, set: set, element: pending.element, effect: effect)
-                pendingReplacement = nil
-            } onCancel: {
-                pendingReplacement = nil
             }
         }
     }
@@ -1474,13 +1341,11 @@ struct QueueStagePanel: View {
             return
         }
         if appState.shouldConfirmReplacement(for: context.track) {
-            let currentTitle = appState.currentlyLoadedTrack?.name ?? "current song"
-            pendingReplacement = PendingQueuePlaybackRequest(
-                item: item,
-                track: context.track,
-                element: context.element,
-                currentTitle: currentTitle
-            )
+            // Le double-clic (requis par Show Safety pour arriver jusqu'ici)
+            // est déjà la confirmation — un seul mode de transition
+            // (FONDU DJ), plus besoin d'un panneau de choix intermédiaire.
+            appState.removeQueueItem(item, from: set)
+            appState.startReplacement(track: context.track, set: set, element: context.element, effect: .filter)
             return
         }
         appState.playQueueItem(item, in: set)
@@ -1847,14 +1712,6 @@ struct ConcertStatsPanel: View {
     }()
 }
 
-/// Une demande de remplacement en attente de confirmation. Stocke la `Song`
-/// cible et le titre du song en cours for afficher un message clair.
-struct PendingReplacementRequest: Identifiable {
-    let id = UUID()
-    let song: Song
-    let currentTitle: String
-}
-
 struct SetSongsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Bindable var appState: AppState
@@ -1865,7 +1722,6 @@ struct SetSongsView: View {
     var isFocusMode: Bool = false
     var toggleFocusMode: (() -> Void)? = nil
     @State private var selectedSongID: Song.ID?
-    @State private var pendingReplacement: PendingReplacementRequest?
     @State private var draggingShowSongID: Song.ID?
     @State private var dragPreviewLocation: CGPoint?
     @State private var proposedDropIndex: Int?
@@ -2207,27 +2063,6 @@ struct SetSongsView: View {
                 }
             }
         }
-        // Transition Pads : déclenchés par le double-clic sur une tuile setlist
-        // quand un autre song est déjà en lecture (mode sécurisé activé).
-        .sheet(item: $pendingReplacement) { pending in
-            TransitionPadPanel(
-                appState: appState,
-                incomingTitle: pending.song.title,
-                currentTitle: pending.currentTitle
-            ) { effect in
-                if let audio = pending.song.audio {
-                    appState.startReplacement(
-                        track: audio,
-                        set: set,
-                        element: pending.song.element,
-                        effect: effect
-                    )
-                }
-                pendingReplacement = nil
-            } onCancel: {
-                pendingReplacement = nil
-            }
-        }
     }
 
     /// Déclenché par un double-clic sur une tuile setlist : sélection
@@ -2248,8 +2083,10 @@ struct SetSongsView: View {
         }
 
         if appState.shouldConfirmReplacement(for: song) {
-            let currentTitle = appState.currentlyLoadedTrack?.name ?? "current song"
-            pendingReplacement = PendingReplacementRequest(song: song, currentTitle: currentTitle)
+            // Le double-clic (requis par Show Safety pour arriver jusqu'ici)
+            // est déjà la confirmation — un seul mode de transition
+            // (FONDU DJ), plus besoin d'un panneau de choix intermédiaire.
+            appState.startReplacement(track: audio, set: set, element: song.element, effect: .filter)
             return
         }
 

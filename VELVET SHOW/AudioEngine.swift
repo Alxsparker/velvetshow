@@ -208,6 +208,12 @@ final class AudioEngine {
     nonisolated(unsafe) private var crossfadeTimer: Timer?
     private var crossfadeGeneration: Int = 0
 
+    /// Durée du mix en cours, mémorisée à `startCrossfade` — réutilisée par
+    /// le filet de sécurité de `scheduleSentinelle` pour forcer la
+    /// récupération d'un nœud si sa queue CoreAudio n'a pas naturellement
+    /// drainé après une marge confortable au-delà de la fin du fondu.
+    private var crossfadeMixDuration: TimeInterval = 0
+
     /// Nœud actuellement en lecture (lecteur actif).
     private var activeNode: AVAudioPlayerNode!
     /// Nœud entrant pendant un crossfade. nil = pas de crossfade en cours.
@@ -884,6 +890,7 @@ final class AudioEngine {
         print("[AUDIO] incomingNode PLAY — \(inName) \(url.lastPathComponent) gain→\(String(format:"%.2f",newGain))")
         isCrossfading = true
         crossfadeStartHostTime = CACurrentMediaTime()
+        crossfadeMixDuration = duration
 
         let oldName = currentURL?.lastPathComponent ?? "?"
         let newName = url.lastPathComponent
@@ -1030,6 +1037,18 @@ final class AudioEngine {
 
     /// Schédule 1 frame sur `node` (vol=0, inaudible). Quand le callback
     /// dataPlayedBack se déclenche, la queue est vide → stop() est safe.
+    ///
+    /// Filet de sécurité : cette sentinelle ne se déclenche qu'une fois que
+    /// TOUT ce qui était programmé sur `node` avant elle a fini de jouer —
+    /// potentiellement le reste du morceau entier si la transition a eu
+    /// lieu tôt dedans (fréquent en test, remplacements rapprochés). Avec
+    /// seulement 3 nœuds, ça peut vider le pool de nœuds disponibles for
+    /// plusieurs minutes d'affilée. Un second minuteur, avec la même garde
+    /// de génération, force la libération après une marge confortable au-
+    /// delà de la fin du fondu — le nœud est alors silencieux depuis
+    /// longtemps, stop() n'introduit plus le risque de clic évoqué plus
+    /// haut. Le premier des deux (sentinelle réelle ou timeout) qui se
+    /// déclenche gagne ; l'autre devient un no-op via la garde `coolingGen`.
     private func scheduleSentinelle(on node: AVAudioPlayerNode) {
         guard let file = audioFile else { return }
         guard file.processingFormat.sampleRate > 0 else { return }
@@ -1047,6 +1066,17 @@ final class AudioEngine {
                       : capturedNode === self.nodeB ? "nodeB" : "nodeC"
                 print("[XFADE] Sentinelle — \(n) stop() safe, propre")
             }
+        }
+
+        let timeoutMs = Int((crossfadeMixDuration + 1.5) * 1000)
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(max(timeoutMs, 1500)))
+            guard let self, self.coolingGen(capturedNode) == gen else { return }
+            capturedNode.stop()
+            self.setClean(capturedNode, true)
+            let n = capturedNode === self.nodeA ? "nodeA"
+                  : capturedNode === self.nodeB ? "nodeB" : "nodeC"
+            print("[XFADE] Sentinelle timeout — \(n) forcé propre (buffer pas encore drainé)")
         }
     }
 

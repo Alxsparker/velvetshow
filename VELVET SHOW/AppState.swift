@@ -22,13 +22,12 @@ import AVFoundation
 
 /// Effets de transition DJ disponibles au remplacement de song.
 /// Les anciens modes restent décodables pour compatibilité, mais l'UX live
-/// n'expose plus que le fondu filtré fiable et l'Automix BPM-aware.
+/// n'expose plus qu'un seul mode : le fondu filtré fiable (FONDU DJ).
 enum TransitionEffect: String, CaseIterable, Codable {
     case fade     = "FADE"
     case slowFade = "SLOW FADE"
     case echo     = "ECHO"
     case filter   = "FILTER"
-    case automix  = "AUTOMIX"
     case backspin = "BACKSPIN"
 
     var icon: String {
@@ -37,7 +36,6 @@ enum TransitionEffect: String, CaseIterable, Codable {
         case .slowFade: return "tortoise.fill"
         case .echo:     return "waveform.path.ecg"
         case .filter:   return "slider.horizontal.3"
-        case .automix:  return "metronome"
         case .backspin: return "arrow.counterclockwise"
         }
     }
@@ -45,7 +43,6 @@ enum TransitionEffect: String, CaseIterable, Codable {
     var displayTitle: String {
         switch self {
         case .filter:  return "FONDU DJ"
-        case .automix: return "AUTOMIX"
         default:       return rawValue
         }
     }
@@ -53,27 +50,23 @@ enum TransitionEffect: String, CaseIterable, Codable {
     var subtitle: String {
         switch self {
         case .filter:  return "Filtre"
-        case .automix: return "BPM"
         default:       return ""
         }
     }
 
     var isAvailable: Bool {
         switch self {
-        case .filter, .automix: return true
+        case .filter:   return true
         case .fade, .slowFade, .echo, .backspin: return false
         }
     }
 
     /// Duration du fade-out for `audioEngine.stop(fadeOutDuration:)`.
-    /// AUTOMIX utilise cette valeur comme fallback quand les BPM ne permettent
-    /// pas une durée musicale fiable.
     var fadeOutDuration: TimeInterval {
         switch self {
         case .fade:     return 1.2
         case .slowFade: return 3.0
         case .filter:   return 2.0
-        case .automix:  return 2.0
         default:        return 0.0
         }
     }
@@ -87,7 +80,6 @@ enum TransitionEffect: String, CaseIterable, Codable {
         case .fade:     return Int(1.2 * 1000) + 40
         case .slowFade: return Int(3.0 * 1000) + 40
         case .filter:   return Int(2.0 * 1000) + 40
-        case .automix:  return Int(2.0 * 1000) + 40
         case .echo:     return Int(2.5 * 1000) + 40
         default:        return Int(1.2 * 1000) + 40
         }
@@ -3520,13 +3512,11 @@ final class AppState {
                 self.replacementTask = nil
             }
 
-        } else if effect == .fade || effect == .slowFade || effect == .filter || effect == .automix {
-            // ── CROSSFADE (FONDU DJ / AUTOMIX) ───────────────────────────────
+        } else if effect == .fade || effect == .slowFade || effect == .filter {
+            // ── CROSSFADE (FONDU DJ) ─────────────────────────────────────────
             // Les deux fades (out sur l'ancien nœud, in sur le nouveau)
             // courent en parallèle — aucun silence entre les songs.
             // FONDU DJ ajoute un sweep low-pass sur le song sortant.
-            // AUTOMIX V1 garde ce pipeline fiable et choisit une durée musicale
-            // sur 4 temps quand les BPM courant/suivant sont compatibles.
             // Pas de replacementTask : le timing est piloté par les completions
             // de fade audio, pas par Task.sleep.
             audioEngine.cancelCrossfade()
@@ -3540,8 +3530,8 @@ final class AppState {
             let trim         = effectiveTrim(for: track)
             let newVolDB     = volumeOffsetDB(for: track)
             let newNormDB    = effectiveNormGainDB(for: track)
-            let mixDuration  = resolvedTransitionDuration(effect: effect, incoming: track)
-            let useFilter    = effect == .filter || effect == .automix
+            let mixDuration  = effect.fadeOutDuration
+            let useFilter    = effect == .filter
             pendingCrossfadeTrack = track
 
             do {
@@ -3589,6 +3579,25 @@ final class AppState {
                 // song entrant — pas d'info périmée pendant le fade.
                 pendingCrossfadeSetElementID = element?.setElementID
                 updateUpcomingTrack()
+            } catch AudioEngine.AudioError.noCleanNodeAvailable {
+                // Les 3 nœuds sont encore en cooling (transitions trop
+                // rapprochées) — pas de panneau d'erreur en plein concert,
+                // pas de reload forcé : on abandonne cette tentative et le
+                // song en cours continue sans interruption. L'utilisateur
+                // peut retenter dans l'instant qui suit (un nœud se libère
+                // dès que la queue CoreAudio de l'ancien crossfade draine).
+                print("[XFADE] Replacement skipped — no clean node available, keeping current song")
+                pendingCrossfadeTrack = nil
+                isReplacingTrack = false
+                // startReplacement() avait déjà, avant même de tenter le
+                // crossfade : marqué le song courant "joué" et coupé son
+                // scheduler MIDI, en anticipation d'un remplacement qui
+                // n'a finalement pas eu lieu — on annule les deux for que
+                // ce song (qui continue réellement de jouer) reste cohérent.
+                if let setID = currentlyLoadedSetID, let elementID = currentlyLoadedSetElementID {
+                    playedSetElementIDsBySetID[setID]?.remove(elementID)
+                }
+                startMidiScheduler()
             } catch {
                 // Fichier illisible : fallback sur fade-out + délai classique.
                 lastError = error.localizedDescription
@@ -3647,7 +3656,7 @@ final class AppState {
     static let resumeFadeInSeconds: TimeInterval = 0.4
 
     func requestPause() {
-        // Un crossfade en cours (FONDU DJ ou AUTOMIX) anime le song sortant
+        // Un crossfade en cours (FONDU DJ) anime le song sortant
         // et le song entrant sur deux fades indépendants. `audioEngine.pause`
         // n'agit que sur le nœud actif (sortant) via le même timer que le
         // fade-out du crossfade : l'appeler pendant une transition annule
@@ -3757,78 +3766,6 @@ final class AppState {
         if let o = store.state.tempoOverridesByAudioFileID[String(track.audioFileID)], o > 0 { return o }
         if let vt = velvetTrack(for: track), let t = vt.tempo, t > 0 { return t }
         return lightShowsByAudioFileID[track.audioFileID]?.first?.tempo
-    }
-
-    /// Fenêtre audio réellement disponible (secondes) pour un mix AUTOMIX
-    /// entre le song en cours et le song entrant, trims in/out compris.
-    /// Retourne `nil` si l'une des deux fenêtres ne peut pas être déterminée
-    /// (durée inconnue et pas de trim out) — dans ce cas l'appelant n'impose
-    /// aucune borne supplémentaire plutôt que de risquer un calcul erroné.
-    ///
-    /// Limite connue : ceci borne la fenêtre au silence de *trim*, pas au
-    /// contenu audio réel. Un song dont le trim in tombe sur un passage
-    /// silencieux du fichier peut donc démarrer son mix avant que la musique
-    /// ne soit réellement audible — aucune détection de silence n'existe
-    /// dans le pipeline audio actuel (voir Documentation/Audits pour le
-    /// détail de cette limite documentée, pas corrigée dans cette passe).
-    private func automixAvailableWindow(incoming: AudioFile) -> TimeInterval? {
-        // Song sortant : temps restant dans SA fenêtre effective (trim
-        // compris) depuis la position actuelle — même valeur que celle
-        // utilisée par tickAutoNext pour armer un Auto Next.
-        let outgoingRemaining = audioEngine.effectiveRemaining
-
-        // Song entrant : fenêtre trim in → trim out, ou trim in → fin de
-        // fichier si aucun trim out n'est défini (même convention que
-        // scanTailMidiMemos : trim.end > 0 sinon fallback sur lengthSecs).
-        let incomingTrim = effectiveTrim(for: incoming)
-        let incomingStart = max(0, incomingTrim.start)
-        let incomingEnd: TimeInterval?
-        if incomingTrim.end > incomingStart {
-            incomingEnd = incomingTrim.end
-        } else if let len = incoming.lengthSecs, len > 0 {
-            incomingEnd = len
-        } else {
-            incomingEnd = nil
-        }
-        guard let incomingEnd else { return outgoingRemaining }
-        let incomingWindow = max(0, incomingEnd - incomingStart)
-        return min(outgoingRemaining, incomingWindow)
-    }
-
-    private func resolvedTransitionDuration(effect: TransitionEffect, incoming: AudioFile) -> TimeInterval {
-        guard effect == .automix else { return effect.fadeOutDuration }
-        guard let current = currentlyLoadedTrack,
-              let currentBPM = effectiveTempo(for: current),
-              let incomingBPM = effectiveTempo(for: incoming),
-              currentBPM > 0,
-              incomingBPM > 0 else {
-            print("[AUTOMIX] BPM missing (current or incoming); fallback Fondu DJ")
-            return TransitionEffect.filter.fadeOutDuration
-        }
-
-        let ratio = incomingBPM / currentBPM
-        let compatibility = abs(1.0 - ratio)
-        guard compatibility <= 0.08 else {
-            print("[AUTOMIX] BPM mismatch \(String(format: "%.1f", currentBPM)) → \(String(format: "%.1f", incomingBPM)); fallback Fondu DJ")
-            return TransitionEffect.filter.fadeOutDuration
-        }
-
-        let fourBeats = 240.0 / currentBPM
-        var duration = min(4.0, max(1.8, fourBeats))
-
-        // Morceaux courts / trims serrés : ne jamais programmer un mix plus
-        // long que ce qui est réellement jouable des deux côtés. Sans cette
-        // borne, le song entrant serait promu "now playing" alors que son
-        // fade-in continue de monter en volume après la fin réelle de
-        // l'audio programmé — silence perçu au début du morceau suivant.
-        if let window = automixAvailableWindow(incoming: incoming), duration > window {
-            let clamped = max(0.05, window)
-            print("[AUTOMIX] window too short (\(String(format: "%.2f", window))s available for a \(String(format: "%.2f", duration))s mix) — clamping to \(String(format: "%.2f", clamped))s")
-            duration = clamped
-        }
-
-        print("[AUTOMIX] BPM OK \(String(format: "%.1f", currentBPM)) → \(String(format: "%.1f", incomingBPM)); mix \(String(format: "%.2f", duration))s")
-        return duration
     }
 
     /// Définit (ou efface avec nil) le BPM édité par l'utilisateur.
@@ -4115,10 +4052,6 @@ final class AppState {
                 selectedShowSetElementIDBySetID[setID] = song.element.setElementID
                 // Lecture active → crossfade Filter (même pipeline que tickAutoNext).
                 // Silence (stopped/paused) → startPlayback direct, pas de fondu.
-                // AUTOMIX volontairement exclu ici : Next/Previous doivent rester
-                // prévisibles (durée fixe) sous pression live — AUTOMIX reste un
-                // choix explicite de l'utilisateur via TransitionPadPanel (voir
-                // Documentation/Audits pour le détail de ce choix).
                 if audioEngine.state == .playing || audioEngine.state == .stopping {
                     startReplacement(track: audio, set: set, element: song.element, effect: .filter)
                 } else {
@@ -5336,10 +5269,6 @@ final class AppState {
         let allSongs = songs(in: set)
         guard let currentSong = allSongs.first(where: { $0.element.setElementID == elementID }) else { return }
 
-        // AUTOMIX volontairement exclu d'AUTO SHOW : la fenêtre de
-        // déclenchement ci-dessous (effectiveRemaining <= fadeOutDuration)
-        // suppose une durée fixe connue à l'avance. AUTOMIX reste un choix
-        // manuel explicite via TransitionPadPanel (voir Documentation/Audits).
         let triggerEffect: TransitionEffect
         switch endBehavior(for: currentSong, in: set) {
         case .autoStop, .smart:
