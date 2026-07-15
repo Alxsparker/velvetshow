@@ -3580,24 +3580,27 @@ final class AppState {
                 pendingCrossfadeSetElementID = element?.setElementID
                 updateUpcomingTrack()
             } catch AudioEngine.AudioError.noCleanNodeAvailable {
-                // Les 3 nœuds sont encore en cooling (transitions trop
-                // rapprochées) — pas de panneau d'erreur en plein concert,
-                // pas de reload forcé : on abandonne cette tentative et le
-                // song en cours continue sans interruption. L'utilisateur
-                // peut retenter dans l'instant qui suit (un nœud se libère
-                // dès que la queue CoreAudio de l'ancien crossfade draine).
-                print("[XFADE] Replacement skipped — no clean node available, keeping current song")
+                // Release peut libérer les nœuds de crossfade plus tard que
+                // Debug. Le double-clic doit quand même remplacer le song :
+                // fallback sûr sans second nœud, avec fade-out puis chargement.
+                print("[XFADE] No clean node available — fallback to fade-out replacement")
                 pendingCrossfadeTrack = nil
-                isReplacingTrack = false
-                // startReplacement() avait déjà, avant même de tenter le
-                // crossfade : marqué le song courant "joué" et coupé son
-                // scheduler MIDI, en anticipation d'un remplacement qui
-                // n'a finalement pas eu lieu — on annule les deux for que
-                // ce song (qui continue réellement de jouer) reste cohérent.
-                if let setID = currentlyLoadedSetID, let elementID = currentlyLoadedSetElementID {
-                    playedSetElementIDsBySetID[setID]?.remove(elementID)
+                audioEngine.stop(fadeOutDuration: mixDuration)
+                let delayMillis = Int(mixDuration * 1000) + 40
+                replacementTask = Task { @MainActor [weak self] in
+                    do { try await Task.sleep(for: .milliseconds(delayMillis)) } catch { return }
+                    guard let self else { return }
+                    self.load(track: track)
+                    self.currentlyLoadedSetID = set.setID
+                    self.currentlyLoadedSetElementID = element?.setElementID
+                    self.recordHistory(track: track, in: set)
+                    self.audioEngine.play()
+                    self.videoController.play()
+                    self.startMidiScheduler()
+                    self.updateNextNaturalIndicator()
+                    self.isReplacingTrack = false
+                    self.replacementTask = nil
                 }
-                startMidiScheduler()
             } catch {
                 // Fichier illisible : fallback sur fade-out + délai classique.
                 lastError = error.localizedDescription
