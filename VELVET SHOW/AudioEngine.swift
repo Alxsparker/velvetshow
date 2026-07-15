@@ -38,6 +38,7 @@
 import Foundation
 import AVFoundation
 import QuartzCore  // CACurrentMediaTime
+import CoreAudio   // [XFADE METRICS] instrumentation temporaire (device + overloads HAL)
 
 @MainActor
 @Observable
@@ -178,10 +179,27 @@ final class AudioEngine {
     var onPlaybackEndished: (() -> Void)?
     nonisolated(unsafe) private var scopedFolderURL: URL?
     nonisolated(unsafe) private var timer: Timer?
-    nonisolated(unsafe) private var fadeTimer: Timer?
-    nonisolated(unsafe) private var filterTimer: Timer?
-    private var filterGeneration: Int = 0
-    private var fadeGeneration: Int = 0
+    // Rampes de volume et de filtre : DispatchSourceTimer sur une queue
+    // série dédiée, HORS main thread. Les fades restaient sur le main
+    // thread (Timer + Task @MainActor) et se faisaient affamer par les
+    // passes de layout SwiftUI pendant la lecture (~10 pas au lieu de 120
+    // sur un fondu de 2 s en Release) — paliers audibles.
+    //
+    // Synchronisation : `rampLock` protège les epochs, les écritures de
+    // paramètre des ticks et les compteurs [XFADE METRICS]. Annuler une
+    // rampe = incrémenter son epoch sous le lock puis cancel() la source :
+    // toute tick ou completion encore en vol voit un epoch différent et
+    // devient un no-op — pas de tick zombie, pas de double completion.
+    nonisolated(unsafe) private var fadeTimer: DispatchSourceTimer?
+    nonisolated(unsafe) private var filterTimer: DispatchSourceTimer?
+    nonisolated(unsafe) private let rampLock = NSLock()
+    nonisolated(unsafe) private var fadeEpoch = 0
+    nonisolated(unsafe) private var filterEpoch = 0
+    nonisolated(unsafe) private var crossfadeEpoch = 0
+    private static let rampQueue = DispatchQueue(
+        label: "fr.loveandlive.velvetshow.audio-ramps",
+        qos: .userInteractive
+    )
     private var meterTapInstalled = false
     private var playStartHostTime: TimeInterval = 0
     private var positionAtPlayStart: TimeInterval = 0
@@ -205,14 +223,30 @@ final class AudioEngine {
     /// Mis at jour par AppState via setNormGainDB(_:) avant la lecture.
     var normGainDB: Double = 0
     private var crossfadeStartHostTime: TimeInterval = 0
-    nonisolated(unsafe) private var crossfadeTimer: Timer?
-    private var crossfadeGeneration: Int = 0
+    nonisolated(unsafe) private var crossfadeTimer: DispatchSourceTimer?
 
     /// Durée du mix en cours, mémorisée à `startCrossfade` — réutilisée par
     /// le filet de sécurité de `scheduleSentinelle` pour forcer la
     /// récupération d'un nœud si sa queue CoreAudio n'a pas naturellement
     /// drainé après une marge confortable au-delà de la fin du fondu.
     private var crossfadeMixDuration: TimeInterval = 0
+
+    // ── [XFADE METRICS] Instrumentation temporaire ──────────────────────
+    // Diagnostic des paliers perçus en archive Release : compte chaque
+    // écriture de volume des deux fades d'un FONDU DJ et photographie
+    // l'environnement de rendu. Aucun effet sur la courbe, la durée ou le
+    // comportement audio — uniquement des compteurs et un print de synthèse
+    // dans finishCrossfade. À RETIRER une fois le diagnostic tranché.
+    // Compteurs de ticks : écrits depuis rampQueue, lus depuis MainActor —
+    // toujours sous rampLock.
+    nonisolated(unsafe) private var metricsOutgoingTicks = 0
+    nonisolated(unsafe) private var metricsIncomingTicks = 0
+    nonisolated(unsafe) private var metricsMaxGapMs = 0.0
+    nonisolated(unsafe) private var metricsLastOutgoingTickAt: Double?
+    nonisolated(unsafe) private var metricsLastIncomingTickAt: Double?
+    private var metricsHALOverloads = 0
+    private var metricsOverloadsAtFadeStart = 0
+    private var halOverloadListenerInstalled = false
 
     /// Nœud actuellement en lecture (lecteur actif).
     private var activeNode: AVAudioPlayerNode!
@@ -336,9 +370,9 @@ final class AudioEngine {
 
     deinit {
         timer?.invalidate()
-        fadeTimer?.invalidate()
-        filterTimer?.invalidate()
-        crossfadeTimer?.invalidate()
+        fadeTimer?.cancel()
+        filterTimer?.cancel()
+        crossfadeTimer?.cancel()
         if let url = scopedFolderURL {
             url.stopAccessingSecurityScopedResource()
         }
@@ -463,8 +497,7 @@ final class AudioEngine {
     func play(fadeInDuration: TimeInterval = 0.2) {
         guard audioFile != nil else { return }
         guard state != .playing else { return }
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
         print("[AUDIO] play requested — file=\(currentURL?.lastPathComponent ?? "?") | state=\(state) | pos=\(String(format:"%.2f",currentPosition))s | engineRunning=\(engine.isRunning) | firstPlay=\(!hasEverPlayed)")
 
         // Play pressé pendant un echo-out (.stopping) : la chaîne active est
@@ -539,8 +572,7 @@ final class AudioEngine {
         currentPosition = target
 
         guard state == .playing else { return }
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
         activeNode.volume = 0
         scheduleSegment(from: target)
         activeNode.volume = 0
@@ -571,8 +603,7 @@ final class AudioEngine {
         }
 
         isSeeking = true
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
 
         fadeVolume(to: 0, duration: fadeOut) { [weak self] in
             guard let self else { return }
@@ -656,8 +687,7 @@ final class AudioEngine {
 
     func stopImmediately() {
         if isCrossfading { cancelCrossfade() }
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
         print("[AUDIO] stopImmediately — \(currentURL?.lastPathComponent ?? "?") state=\(state)")
         // Invalide toutes les sentinelles en vol avant les stop().
         coolingGenA &+= 1; coolingGenB &+= 1; coolingGenC &+= 1
@@ -760,8 +790,7 @@ final class AudioEngine {
     /// a été pressé entre-temps, elle sort sans appeler `stopImmediately()`.
     func stopWithEchoFade(beatDuration: TimeInterval = 0.625) {
         guard state == .playing || state == .paused else { stopImmediately(); return }
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
 
         // Étape 1 — Arme le delay de la chaîne active (peut flusher le buffer si delayTime change).
         // activeNode continue at plein volume → remplit le buffer au nouveau delayTime.
@@ -891,6 +920,7 @@ final class AudioEngine {
         isCrossfading = true
         crossfadeStartHostTime = CACurrentMediaTime()
         crossfadeMixDuration = duration
+        metricsResetForFade()  // [XFADE METRICS]
 
         let oldName = currentURL?.lastPathComponent ?? "?"
         let newName = url.lastPathComponent
@@ -916,12 +946,8 @@ final class AudioEngine {
     /// où il se trouve — le caller gère la suite (stop, nouveau crossfade...).
     func cancelCrossfade() {
         guard isCrossfading else { return }
-        crossfadeTimer?.invalidate()
-        crossfadeTimer = nil
-        crossfadeGeneration &+= 1
-        fadeTimer?.invalidate()
-        fadeTimer = nil
-        fadeGeneration &+= 1
+        cancelCrossfadeRamp()
+        cancelFadeRamp()
         // Stop le nœud entrant. Appelé uniquement depuis stopImmediately()
         // ou handleEngineConfigurationChange() — pas pendant un rendu crossfade stable.
         if let incoming = incomingNode {
@@ -956,6 +982,7 @@ final class AudioEngine {
     private func finishCrossfade() async {
         let elapsed = CACurrentMediaTime() - crossfadeStartHostTime
         let pos = min(crossfadeEffectiveEnd, crossfadeTrimStart + elapsed)
+        metricsPrintSummary(actualDuration: elapsed)  // [XFADE METRICS]
 
         // Swap sandbox.
         scopedFolderURL?.stopAccessingSecurityScopedResource()
@@ -998,6 +1025,131 @@ final class AudioEngine {
 
         let name = activeNode === nodeA ? "nodeA" : activeNode === nodeB ? "nodeB" : "nodeC"
         print("[XFADE] Swap complete: activeNode=\(name) pos=\(String(format:"%.2f",pos))s")
+    }
+
+    // MARK: - [XFADE METRICS] Instrumentation temporaire
+
+    /// Remet les compteurs at zéro au démarrage d'un crossfade et installe
+    /// (une seule fois) le listener d'overloads HAL sur le périphérique de
+    /// sortie par défaut.
+    private func metricsResetForFade() {
+        rampLock.lock()
+        metricsOutgoingTicks = 0
+        metricsIncomingTicks = 0
+        metricsMaxGapMs = 0
+        metricsLastOutgoingTickAt = nil
+        metricsLastIncomingTickAt = nil
+        rampLock.unlock()
+        installHALOverloadListenerIfNeeded()
+        metricsOverloadsAtFadeStart = metricsHALOverloads
+    }
+
+    /// Enregistre une écriture de volume et le trou depuis la précédente
+    /// (par nœud — les deux fades ont chacun leur source).
+    /// PRÉCONDITION : appelé sous `rampLock` (depuis les ticks de rampQueue).
+    nonisolated private func metricsRecordFadeTickLocked(outgoing: Bool) {
+        let now = CACurrentMediaTime()
+        if outgoing {
+            if let last = metricsLastOutgoingTickAt {
+                metricsMaxGapMs = max(metricsMaxGapMs, (now - last) * 1000)
+            }
+            metricsLastOutgoingTickAt = now
+            metricsOutgoingTicks += 1
+        } else {
+            if let last = metricsLastIncomingTickAt {
+                metricsMaxGapMs = max(metricsMaxGapMs, (now - last) * 1000)
+            }
+            metricsLastIncomingTickAt = now
+            metricsIncomingTicks += 1
+        }
+    }
+
+    /// Une seule ligne de synthèse par fondu, imprimée depuis finishCrossfade.
+    private func metricsPrintSummary(actualDuration: TimeInterval) {
+        let (outTicks, inTicks, maxGap): (Int, Int, Double) = rampLock.withLock {
+            (metricsOutgoingTicks, metricsIncomingTicks, metricsMaxGapMs)
+        }
+        let maxFrames = engine.outputNode.auAudioUnit.maximumFramesToRender
+        let latencyMs = engine.outputNode.presentationLatency * 1000
+        let overloads = metricsHALOverloads - metricsOverloadsAtFadeStart
+        let device = Self.defaultOutputDeviceName() ?? "?"
+        print("[XFADE METRICS] outgoingTicks=\(outTicks) incomingTicks=\(inTicks) maxGapMs=\(Int(maxGap.rounded())) durationS=\(String(format: "%.2f", actualDuration)) maxFrames=\(maxFrames) latencyMs=\(String(format: "%.1f", latencyMs)) device=\"\(device)\" halOverloads=\(overloads)")
+    }
+
+    // MARK: - Annulation des rampes (fade / crossfade / filtre)
+
+    /// Annule la rampe de volume du nœud actif. Le bump d'epoch sous le
+    /// lock garantit qu'aucune tick ni completion en vol ne s'exécutera
+    /// après le retour de cette fonction (une tick en cours d'écriture
+    /// termine d'abord — le lock sérialise).
+    private func cancelFadeRamp() {
+        rampLock.lock(); fadeEpoch &+= 1; rampLock.unlock()
+        fadeTimer?.cancel()
+        fadeTimer = nil
+    }
+
+    private func cancelCrossfadeRamp() {
+        rampLock.lock(); crossfadeEpoch &+= 1; rampLock.unlock()
+        crossfadeTimer?.cancel()
+        crossfadeTimer = nil
+    }
+
+    private func cancelFilterRamp() {
+        rampLock.lock(); filterEpoch &+= 1; rampLock.unlock()
+        filterTimer?.cancel()
+        filterTimer = nil
+    }
+
+    /// Compte les kAudioDeviceProcessorOverload du périphérique de sortie
+    /// par défaut (cycles de rendu HAL sautés). Lecture seule, aucun effet
+    /// sur le rendu.
+    private func installHALOverloadListenerIfNeeded() {
+        guard !halOverloadListenerInstalled else { return }
+        guard let deviceID = Self.defaultOutputDeviceID() else { return }
+        var address = AudioObjectPropertyAddress(
+            mSelector: kAudioDeviceProcessorOverload,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        let status = AudioObjectAddPropertyListenerBlock(deviceID, &address, .main) { [weak self] _, _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.metricsHALOverloads += 1
+                print("[XFADE METRICS] HAL overload #\(self.metricsHALOverloads)")
+            }
+        }
+        halOverloadListenerInstalled = (status == noErr)
+    }
+
+    private static func defaultOutputDeviceID() -> AudioDeviceID? {
+        var deviceID = AudioDeviceID(0)
+        var size = UInt32(MemoryLayout<AudioDeviceID>.size)
+        var address = AudioObjectPropertyAddress(
+            mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        let status = AudioObjectGetPropertyData(
+            AudioObjectID(kAudioObjectSystemObject), &address, 0, nil, &size, &deviceID
+        )
+        guard status == noErr, deviceID != kAudioObjectUnknown else { return nil }
+        return deviceID
+    }
+
+    private static func defaultOutputDeviceName() -> String? {
+        guard let deviceID = defaultOutputDeviceID() else { return nil }
+        var name: CFString?
+        var size = UInt32(MemoryLayout<CFString?>.size)
+        var address = AudioObjectPropertyAddress(
+            mSelector: kAudioDevicePropertyDeviceNameCFString,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        let status = withUnsafeMutablePointer(to: &name) { ptr in
+            AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, ptr)
+        }
+        guard status == noErr, let name else { return nil }
+        return name as String
     }
 
     // MARK: - 3-node helpers
@@ -1081,17 +1233,17 @@ final class AudioEngine {
     }
 
     /// Variante de `fadeVolume` for le nœud entrant.
-    /// Timer et génération indépendants — les deux fades coexistent sans
+    /// Source et epoch indépendants — les deux fades coexistent sans
     /// s'invalider mutuellement. `node` est capturé at l'appel.
+    /// Tourne sur `rampQueue` (hors main thread) : la cadence 60 Hz est
+    /// tenue même quand SwiftUI sature le main actor.
     private func fadeCrossfadeVolume(
         node: AVAudioPlayerNode,
         to target: Float,
         duration: TimeInterval,
         completion: (() -> Void)? = nil
     ) {
-        crossfadeTimer?.invalidate()
-        crossfadeGeneration &+= 1
-        let gen = crossfadeGeneration
+        cancelCrossfadeRamp()
 
         guard duration > 0 else {
             node.volume = target
@@ -1101,27 +1253,46 @@ final class AudioEngine {
 
         let startVolume = node.volume
         let startedAt   = CACurrentMediaTime()
-        crossfadeTimer = Self.commonModeTimer(interval: 1.0 / 60.0) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self, self.crossfadeGeneration == gen else { return }
-                let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
-                let volume: Float
-                if target <= 0 {
-                    volume = startVolume * Float(cos(Double(progress) * .pi / 2))
-                } else if startVolume <= 0 {
-                    volume = target * Float(sin(Double(progress) * .pi / 2))
-                } else {
-                    volume = startVolume + (target - startVolume) * Float(progress)
+        let recordMetrics = isCrossfading  // [XFADE METRICS]
+        let epoch = rampLock.withLock { crossfadeEpoch }
+
+        let source = DispatchSource.makeTimerSource(queue: Self.rampQueue)
+        source.schedule(deadline: .now() + 1.0 / 60.0, repeating: 1.0 / 60.0, leeway: .milliseconds(2))
+        source.setEventHandler { [weak self] in
+            guard let self else { return }
+            let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
+            let volume: Float
+            if target <= 0 {
+                volume = startVolume * Float(cos(Double(progress) * .pi / 2))
+            } else if startVolume <= 0 {
+                volume = target * Float(sin(Double(progress) * .pi / 2))
+            } else {
+                volume = startVolume + (target - startVolume) * Float(progress)
+            }
+            self.rampLock.lock()
+            guard self.crossfadeEpoch == epoch else { self.rampLock.unlock(); return }
+            node.volume = progress >= 1.0 ? target : volume
+            if recordMetrics { self.metricsRecordFadeTickLocked(outgoing: false) }  // [XFADE METRICS]
+            if progress >= 1.0 {
+                // Claim la fin sous le lock : plus aucune tick, une seule completion.
+                self.crossfadeEpoch &+= 1
+                self.rampLock.unlock()
+                source.cancel()
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    // Ignorée si une annulation/nouvelle rampe est passée entre-temps.
+                    guard self.rampLock.withLock({ self.crossfadeEpoch == epoch &+ 1 }) else { return }
+                    MainActor.assumeIsolated {
+                        self.crossfadeTimer = nil
+                        completion?()
+                    }
                 }
-                node.volume = volume
-                if progress >= 1.0 {
-                    node.volume = target
-                    self.crossfadeTimer?.invalidate()
-                    self.crossfadeTimer = nil
-                    completion?()
-                }
+            } else {
+                self.rampLock.unlock()
             }
         }
+        crossfadeTimer = source
+        source.activate()
     }
 
     // MARK: - Filter sweep (FILTER transition)
@@ -1130,36 +1301,50 @@ final class AudioEngine {
     /// Appelé depuis stopImmediately, cancelCrossfade, finishCrossfade
     /// et handleEngineConfigurationChange.
     private func resetFilter() {
-        filterTimer?.invalidate()
-        filterTimer = nil
-        filterGeneration &+= 1
+        // L'epoch est bumpé sous le lock avant l'écriture : toute tick de
+        // sweep en vol a fini son écriture ou la sautera — le 20000 gagne.
+        cancelFilterRamp()
         activeFilterNode.bands[0].frequency = 20000
     }
 
     /// Anime le cutoff low-pass de 20 kHz → 300 Hz sur `duration` secondes.
     /// Courbe logarithmique (perçue comme linéaire at l'oreille).
+    /// Tourne sur `rampQueue` (hors main thread), comme les fades.
     private func startFilterSweep(duration: TimeInterval) {
-        filterTimer?.invalidate()
-        filterGeneration &+= 1
-        let gen = filterGeneration
+        cancelFilterRamp()
 
         let logStart = log10(20000.0)
         let logEnd   = log10(800.0)
         let startedAt = CACurrentMediaTime()
+        // Capturé une fois : la rotation des rôles (finishCrossfade) n'a
+        // lieu qu'après resetFilter, le nœud visé ne change pas en cours de sweep.
+        let eq = activeFilterNode
+        let epoch = rampLock.withLock { filterEpoch }
 
-        filterTimer = Self.commonModeTimer(interval: 1.0 / 60.0) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self, self.filterGeneration == gen else { return }
-                let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
-                let logFreq  = logStart + (logEnd - logStart) * progress
-                self.activeFilterNode.bands[0].frequency = Float(pow(10.0, logFreq))
-                if progress >= 1.0 {
-                    self.activeFilterNode.bands[0].frequency = 800
-                    self.filterTimer?.invalidate()
-                    self.filterTimer = nil
+        let source = DispatchSource.makeTimerSource(queue: Self.rampQueue)
+        source.schedule(deadline: .now() + 1.0 / 60.0, repeating: 1.0 / 60.0, leeway: .milliseconds(2))
+        source.setEventHandler { [weak self] in
+            guard let self else { return }
+            let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
+            let logFreq  = logStart + (logEnd - logStart) * progress
+            self.rampLock.lock()
+            guard self.filterEpoch == epoch else { self.rampLock.unlock(); return }
+            eq.bands[0].frequency = progress >= 1.0 ? 800 : Float(pow(10.0, logFreq))
+            if progress >= 1.0 {
+                self.filterEpoch &+= 1
+                self.rampLock.unlock()
+                source.cancel()
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    guard self.rampLock.withLock({ self.filterEpoch == epoch &+ 1 }) else { return }
+                    MainActor.assumeIsolated { self.filterTimer = nil }
                 }
+            } else {
+                self.rampLock.unlock()
             }
         }
+        filterTimer = source
+        source.activate()
     }
 
     // MARK: - Reconfiguration périphérique audio
@@ -1264,18 +1449,16 @@ final class AudioEngine {
         timer = nil
     }
 
+    /// Rampe de volume du nœud actif, sur `rampQueue` (hors main thread) :
+    /// la cadence 60 Hz est tenue même quand SwiftUI sature le main actor.
+    /// La completion est toujours livrée sur MainActor, une seule fois, et
+    /// abandonnée si la rampe a été annulée entre-temps (epoch divergent).
     private func fadeVolume(
         to target: Float,
         duration: TimeInterval,
         completion: (() -> Void)? = nil
     ) {
-        fadeTimer?.invalidate()
-        // Incrémente la génération : toute task @MainActor en vol créée par
-        // le timer précédent verra une génération différente et s'annulera.
-        // Évite les tasks fantômes qui continueraient at écrire playerNode.volume
-        // ou at déclencher la completion après qu'un nouveau fade a commencé.
-        fadeGeneration &+= 1
-        let gen = fadeGeneration
+        cancelFadeRamp()
 
         guard duration > 0 else {
             activeNode.volume = target
@@ -1283,40 +1466,59 @@ final class AudioEngine {
             return
         }
 
-        let startVolume = activeNode.volume
+        // Capturé une fois : la rotation des rôles (finishCrossfade) n'a
+        // lieu qu'après la fin du fade, le nœud visé ne change pas en cours
+        // de rampe.
+        let node = activeNode!
+        let startVolume = node.volume
         let startedAt = CACurrentMediaTime()
-        fadeTimer = Self.commonModeTimer(interval: 1.0 / 60.0) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self, self.fadeGeneration == gen else { return }
-                let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
-                // Equal-power uniquement for les fades vers/depuis le silence :
-                // - to 0 : cos(t·π/2) — −3 dB au milieu, chute régulière.
-                // - depuis 0 : sin(t·π/2) — montée régulière.
-                // Linéaire for les transitions partielles (gain offset, étapes echo) :
-                // la formule cos donnerait 0 en fin de fade au lieu de la cible.
-                let volume: Float
-                if target <= 0 {
-                    volume = startVolume * Float(cos(Double(progress) * .pi / 2))
-                } else if startVolume <= 0 {
-                    volume = target * Float(sin(Double(progress) * .pi / 2))
-                } else {
-                    volume = startVolume + (target - startVolume) * Float(progress)
+        let recordMetrics = isCrossfading  // [XFADE METRICS]
+        let epoch = rampLock.withLock { fadeEpoch }
+
+        let source = DispatchSource.makeTimerSource(queue: Self.rampQueue)
+        source.schedule(deadline: .now() + 1.0 / 60.0, repeating: 1.0 / 60.0, leeway: .milliseconds(2))
+        source.setEventHandler { [weak self] in
+            guard let self else { return }
+            let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
+            // Equal-power uniquement for les fades vers/depuis le silence :
+            // - to 0 : cos(t·π/2) — −3 dB au milieu, chute régulière.
+            // - depuis 0 : sin(t·π/2) — montée régulière.
+            // Linéaire for les transitions partielles (gain offset, étapes echo) :
+            // la formule cos donnerait 0 en fin de fade au lieu de la cible.
+            let volume: Float
+            if target <= 0 {
+                volume = startVolume * Float(cos(Double(progress) * .pi / 2))
+            } else if startVolume <= 0 {
+                volume = target * Float(sin(Double(progress) * .pi / 2))
+            } else {
+                volume = startVolume + (target - startVolume) * Float(progress)
+            }
+            self.rampLock.lock()
+            guard self.fadeEpoch == epoch else { self.rampLock.unlock(); return }
+            node.volume = progress >= 1.0 ? target : volume  // valeur exacte garantie en fin
+            if recordMetrics { self.metricsRecordFadeTickLocked(outgoing: true) }  // [XFADE METRICS]
+            if progress >= 1.0 {
+                // Claim la fin sous le lock AVANT la completion : plus aucune
+                // tick, et une seule completion possible (l'équivalent du bump
+                // de génération pré-completion — cf. crash log djay 26/06).
+                self.fadeEpoch &+= 1
+                self.rampLock.unlock()
+                source.cancel()
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    // Ignorée si une annulation/nouvelle rampe est passée entre-temps.
+                    guard self.rampLock.withLock({ self.fadeEpoch == epoch &+ 1 }) else { return }
+                    MainActor.assumeIsolated {
+                        self.fadeTimer = nil
+                        completion?()
+                    }
                 }
-                self.activeNode.volume = volume
-                if progress >= 1.0 {
-                    self.activeNode.volume = target  // valeur exacte garantie
-                    self.fadeTimer?.invalidate()
-                    self.fadeTimer = nil
-                    // Bumper la génération AVANT completion : sinon les Tasks
-                    // déjà queuées entre 2 ticks Timer passent leur guard
-                    // (`gen` identique), rentrent dans ce bloc et rappellent
-                    // `completion` en boucle (stopImmediately spam des
-                    // centaines de fois). Cf. crash log djay 26/06.
-                    self.fadeGeneration &+= 1
-                    completion?()
-                }
+            } else {
+                self.rampLock.unlock()
             }
         }
+        fadeTimer = source
+        source.activate()
     }
 
     private func installMeterTap() {
