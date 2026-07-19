@@ -3085,6 +3085,8 @@ final class AppState {
                 trimStart: trim.start,
                 trimEnd: trim.end,
                 volumeOffsetDB: volumeOffsetDB,
+                diagnosticTrackID: String(track.audioFileID),
+                diagnosticTrackName: track.name,
                 accessFolder: folder
             )
             self.currentlyLoadedTrack = track
