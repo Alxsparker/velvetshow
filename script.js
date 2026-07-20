@@ -9,7 +9,7 @@
 // To point the site at a new build/transfer link, change this
 // one value and nothing else.
 // ============================================================
-var VELVET_SHOW_DOWNLOAD_URL = 'https://github.com/Alxsparker/velvetshow/releases/download/v1.3/VELVET.SHOW.zip';
+var VELVET_SHOW_DOWNLOAD_URL = 'https://github.com/Alxsparker/velvetshow/releases/download/v1.0/VELVET.SHOW.zip';
 
 (function () {
   // Apply the download URL to every element marked with
