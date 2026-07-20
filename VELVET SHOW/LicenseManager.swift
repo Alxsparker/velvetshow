@@ -29,6 +29,9 @@ final class LicenseManager {
 
     // MARK: - Constants
 
+    /// Official LemonSqueezy purchase checkout (supports discount codes).
+    static let checkoutURL = URL(string: "https://velvetshow.lemonsqueezy.com/checkout/buy/dc45e379-8a71-436f-b028-8215cd330ff5")!
+
     // Replace with your actual LemonSqueezy product ID after setup
     private static let lsProductID = "1146874"
     private static let keychainService = "app.velvetshow.license"

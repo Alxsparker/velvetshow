@@ -120,7 +120,7 @@ struct LicenseView: View {
 
                 HStack(spacing: 12) {
                     Button("Buy on velvetshow.app — $79") {
-                        NSWorkspace.shared.open(URL(string: "https://velvetshow.lemonsqueezy.com/checkout/buy/9d35d3c7-eaaf-463d-9d60-d191452e75b1")!)
+                        NSWorkspace.shared.open(LicenseManager.checkoutURL)
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
