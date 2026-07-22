@@ -38,6 +38,15 @@ final class VelvetRemoteServer {
     /// Appelé sur @MainActor quand un client envoie une commande.
     var onCommand: ((String) -> Void)?
 
+    /// Appelé sur @MainActor quand un client vient de se connecter —
+    /// AppState en profite pour diffuser un état frais (les broadcasts
+    /// étant désormais coupés quand personne n'écoute).
+    var onClientConnected: (() -> Void)?
+
+    /// Vrai si au moins un client est connecté. Permet à AppState de ne
+    /// même pas construire l'état (buildRemoteState) sans auditoire.
+    var hasClients: Bool { !connections.isEmpty }
+
     // MARK: - Start / Stop
 
     func start() {
@@ -176,6 +185,7 @@ final class VelvetRemoteServer {
                     print("[VelvetRemote] Client connected — \(connection.endpoint) (\(id.uuidString.prefix(8)))")
                     self.startPing(for: id, connection: connection)
                     if let state = self.lastState { self.send(state, to: connection) }
+                    self.onClientConnected?()
                 case .failed(let error):
                     print("[VelvetRemote] Client \(id.uuidString.prefix(8)) failed: \(error)")
                     self.remove(id)
@@ -253,21 +263,25 @@ final class VelvetRemoteServer {
 
     func broadcast(_ update: RemoteStateUpdate) {
         lastState = update
-        guard !connections.isEmpty,
-              let data = try? encoder.encode(update),
-              let line = String(data: data, encoding: .utf8)
-        else { return }
-
-        let payload = (line + "\n").data(using: .utf8)!
-        for connection in connections.values {
-            connection.send(content: payload, completion: .idempotent)
+        guard !connections.isEmpty else { return }
+        let targets = Array(connections.values)
+        // Encodage JSON sur la queue série du serveur (plus sur le main
+        // thread). L'encoder n'est utilisé QUE sur cette queue.
+        queue.async { [encoder] in
+            guard let data = try? encoder.encode(update),
+                  let line = String(data: data, encoding: .utf8) else { return }
+            let payload = (line + "\n").data(using: .utf8)!
+            for connection in targets {
+                connection.send(content: payload, completion: .idempotent)
+            }
         }
     }
 
     private func send(_ update: RemoteStateUpdate, to connection: NWConnection) {
-        guard let data = try? encoder.encode(update),
-              let line = String(data: data, encoding: .utf8)
-        else { return }
-        connection.send(content: (line + "\n").data(using: .utf8)!, completion: .idempotent)
+        queue.async { [encoder] in
+            guard let data = try? encoder.encode(update),
+                  let line = String(data: data, encoding: .utf8) else { return }
+            connection.send(content: (line + "\n").data(using: .utf8)!, completion: .idempotent)
+        }
     }
 }

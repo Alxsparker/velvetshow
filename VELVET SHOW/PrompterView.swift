@@ -24,6 +24,10 @@
 //
 
 import SwiftUI
+import Combine
+#if os(macOS)
+import AVKit
+#endif
 
 #if os(macOS)
 struct PrompterView: View {
@@ -47,7 +51,9 @@ struct PrompterView: View {
             currentPosition: appState.audioEngine.effectivePosition,
             timelineMemos: timelineMemos,
             palette: appState.prompterTheme.palette,
-            upcomingTitle: appState.upcomingTrack?.name
+            upcomingTitle: appState.upcomingTrack?.name,
+            showsClock: true,
+            videoPlayer: appState.videoController.currentURL != nil ? appState.videoController.player : nil
         )
         .frame(minWidth: 800, minHeight: 500)
         .background {
@@ -122,6 +128,17 @@ struct PrompterPreviewView: View {
     /// iOS uniquement : false masque le header (titre, timer, next song) quand
     /// RemotePrompterView affiche son propre bandeau compact à la place.
     var showHeader: Bool = true
+    /// Fenêtre Prompter réelle : affiche l'heure courante au centre du header.
+    /// Les previews intégrées la gardent masquée pour rester compactes.
+    var showsClock: Bool = false
+    @State private var currentDate = Date()
+    private let clockTimer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
+    /// AVPlayer fourni par AppState quand une vidéo est associée au morceau
+    /// en cours. nil = pas de vidéo → rendu classique (paroles ou tiret).
+    /// iOS ignore ce paramètre — AVKit n'est utilisé que côté macOS en V1.
+    #if os(macOS)
+    var videoPlayer: AVPlayer? = nil
+    #endif
 
     var body: some View {
         ZStack {
@@ -129,9 +146,30 @@ struct PrompterPreviewView: View {
 
             VStack(spacing: 20) {
                 if showHeader { header }
+                #if os(macOS)
+                if let videoPlayer {
+                    // Vidéo : prend toute la zone centrale, exactement comme
+                    // le mémo texte le ferait. La timeline waveform reste
+                    // visible en bas pour conserver les repères temporels.
+                    // Note : on utilise AVPlayerView (AppKit) plutôt que
+                    // SwiftUI.VideoPlayer pour éviter un crash Swift runtime
+                    // sur l'init des métadonnées génériques de _AVKit_SwiftUI
+                    // qui survient en Release sur certaines configs macOS.
+                    MacAVPlayerView(player: videoPlayer)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .clipped()
+                        .background(Color.black)
+                        .layoutPriority(3)
+                } else {
+                    currentMemoView
+                        .frame(maxHeight: .infinity)
+                        .layoutPriority(3)
+                }
+                #else
                 currentMemoView
                     .frame(maxHeight: .infinity)
                     .layoutPriority(3)
+                #endif
                 #if os(macOS)
                 // Le mémo suivant est annoncé par la timeline (bloc mis en
                 // évidence — bordure, halo, titre agrandi). Les titres de
@@ -146,6 +184,9 @@ struct PrompterPreviewView: View {
             }
             .padding(.horizontal, 48)
             .padding(.vertical, 28)
+        }
+        .onReceive(clockTimer) { date in
+            currentDate = date
         }
     }
 
@@ -165,7 +206,17 @@ struct PrompterPreviewView: View {
                 .lineLimit(1)
                 .truncationMode(.tail)
 
-            Spacer()
+            Spacer(minLength: 16)
+
+            if showsClock {
+                Text(currentDate, format: .dateTime.hour().minute())
+                    .font(.system(size: 32, weight: .black).monospacedDigit())
+                    .foregroundStyle(palette.primaryText.opacity(0.86))
+                    .lineLimit(1)
+                    .frame(minWidth: 120, alignment: .center)
+            }
+
+            Spacer(minLength: 16)
 
             // Colonne droite : temps restant (l'info la plus regardée) avec,
             // juste en dessous, le song qui suivra réellement — lisible
@@ -272,3 +323,34 @@ struct PrompterPreviewView: View {
 }
 
 // ChordLineDetector est défini dans PrompterShared.swift (partagé Mac + iOS)
+
+// MARK: - AppKit AVPlayerView wrapper (Mac only)
+
+#if os(macOS)
+/// Wrapper SwiftUI autour de `AVPlayerView` (AppKit/AVKit "classique").
+///
+/// Remplace `SwiftUI.VideoPlayer` qui crashe en Release sur certaines builds
+/// macOS (init de métadonnées génériques de `_AVKit_SwiftUI`). AVPlayerView
+/// est l'implémentation AppKit, sans pont SwiftUI, donc sans cette init
+/// générique problématique.
+struct MacAVPlayerView: NSViewRepresentable {
+    let player: AVPlayer
+
+    func makeNSView(context: Context) -> AVPlayerView {
+        let view = AVPlayerView()
+        view.player = player
+        view.controlsStyle = .none
+        view.showsFullScreenToggleButton = false
+        view.videoGravity = .resizeAspect
+        view.wantsLayer = true
+        view.layer?.backgroundColor = NSColor.black.cgColor
+        return view
+    }
+
+    func updateNSView(_ nsView: AVPlayerView, context: Context) {
+        if nsView.player !== player {
+            nsView.player = player
+        }
+    }
+}
+#endif

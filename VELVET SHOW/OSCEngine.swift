@@ -43,12 +43,23 @@ final class OSCEngine {
     /// Last error encountered when sending — surfaced in debug UI.
     private(set) var lastError: String?
 
+    // ── Connexions persistantes ──────────────────────────────────────────
+    // Une NWConnection UDP par host:port, créée au premier envoi puis
+    // réutilisée (plus de setup ~ms + allocations par message, ordre
+    // d'émission garanti). Retirée du cache si elle échoue — le prochain
+    // envoi la recrée. `sendDatagram` est appelable depuis n'importe quel
+    // thread (scheduler temps réel inclus) : NWConnection.send est
+    // thread-safe et les envois émis avant `.ready` sont mis en attente
+    // par Network.framework.
+    nonisolated(unsafe) private var connections: [String: NWConnection] = [:]
+    nonisolated(unsafe) private let connectionsLock = NSLock()
+    private static let oscQueue = DispatchQueue(
+        label: "fr.loveandlive.velvetshow.osc",
+        qos: .userInitiated
+    )
+
     /// Send an OSC message immediately to the given host/port.
-    ///
     /// `value` is optional (commands like `/cue/scene/1` are often valueless).
-    /// The UDP connection is cancelled right after the send completes; for
-    /// V1 throughput (a handful of cues per song) this is simpler and safer
-    /// than caching connections keyed by host:port.
     func send(
         address: String,
         value: OSCValue?,
@@ -62,35 +73,59 @@ final class OSCEngine {
         let cleanHost = host.trimmingCharacters(in: .whitespaces)
         guard !cleanHost.isEmpty else { throw OSCError.invalidHost }
         guard (1...65535).contains(port) else { throw OSCError.invalidPort }
-        guard let nwPort = NWEndpoint.Port(rawValue: UInt16(port)) else {
-            throw OSCError.invalidPort
-        }
 
         let data = Self.encodePacket(address: cleanAddress, value: value)
-        let endpoint = NWEndpoint.Host(cleanHost)
-        let connection = NWConnection(host: endpoint, port: nwPort, using: .udp)
+        sendDatagram(data, host: cleanHost, port: UInt16(port))
+    }
 
-        connection.stateUpdateHandler = { [weak self] state in
-            switch state {
-            case .ready:
-                connection.send(content: data, completion: .contentProcessed { error in
-                    if let error {
-                        Task { @MainActor in
-                            self?.lastError = error.localizedDescription
-                        }
-                    }
-                    connection.cancel()
-                })
-            case .failed(let error):
-                Task { @MainActor in
+    /// Envoi d'un datagramme pré-encodé sur la connexion persistante du
+    /// couple host:port. Thread-safe — utilisé par le scheduler MIDI/OSC.
+    nonisolated func sendDatagram(_ data: Data, host: String, port: UInt16) {
+        guard let connection = connection(host: host, port: port) else { return }
+        connection.send(content: data, completion: .contentProcessed { [weak self] error in
+            if let error {
+                self?.invalidateConnection(host: host, port: port)
+                Task { @MainActor [weak self] in
                     self?.lastError = error.localizedDescription
                 }
-                connection.cancel()
+            }
+        })
+    }
+
+    nonisolated private func connection(host: String, port: UInt16) -> NWConnection? {
+        guard let nwPort = NWEndpoint.Port(rawValue: port) else { return nil }
+        let key = "\(host):\(port)"
+        connectionsLock.lock()
+        if let existing = connections[key] {
+            connectionsLock.unlock()
+            return existing
+        }
+        let connection = NWConnection(host: NWEndpoint.Host(host), port: nwPort, using: .udp)
+        connections[key] = connection
+        connectionsLock.unlock()
+        connection.stateUpdateHandler = { [weak self] state in
+            switch state {
+            case .failed(let error):
+                self?.invalidateConnection(host: host, port: port)
+                Task { @MainActor [weak self] in
+                    self?.lastError = error.localizedDescription
+                }
+            case .cancelled:
+                self?.invalidateConnection(host: host, port: port)
             default:
                 break
             }
         }
-        connection.start(queue: .global(qos: .userInitiated))
+        connection.start(queue: Self.oscQueue)
+        return connection
+    }
+
+    nonisolated private func invalidateConnection(host: String, port: UInt16) {
+        let key = "\(host):\(port)"
+        connectionsLock.lock()
+        let connection = connections.removeValue(forKey: key)
+        connectionsLock.unlock()
+        connection?.cancel()
     }
 
     // MARK: - Packet encoding (OSC 1.0)

@@ -469,6 +469,69 @@ struct VelvetTrackTrim: Codable, Hashable {
 /// Réglage de volume non destructif défini dans VELVET SHOW.
 /// Le fichier audio original n'est jamais modifié : on stocke uniquement
 /// un offset en dB, appliqué par `AudioEngine` au chargement et en temps réel.
+/// Vidéo locale associée à un morceau — affichée par le Prompter à la place
+/// des paroles quand présente. Le fichier vidéo est copié dans le dossier
+/// Media de l'app (`VelvetShowStore.mediaDirectoryURL`) et seule la
+/// référence `fileName` est sérialisée.
+// MARK: - MIDI Input (footswitch transport)
+
+/// Action de transport pilotable par MIDI input (footswitch USB ou BT).
+/// Stable : ne renomme pas les rawValue (persistance JSON).
+enum MidiInputAction: String, Codable, CaseIterable, Identifiable, Hashable {
+    case playPause       = "playPause"
+    case stop            = "stop"
+    case nextSong        = "nextSong"
+    case previousSong    = "previousSong"
+    case returnToStart   = "returnToStart"
+    case prompterPanic   = "prompterPanic"
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .playPause:     return "Play / Pause"
+        case .stop:          return "Stop"
+        case .nextSong:      return "Next Song"
+        case .previousSong:  return "Previous Song"
+        case .returnToStart: return "Return to Start"
+        case .prompterPanic: return "Prompter Panic"
+        }
+    }
+}
+
+/// Binding entre un message MIDI entrant et une action transport.
+/// Match sur (sourceUniqueID, status, channel, data1) — la vélocité/valeur
+/// (data2) est ignorée. Pour les Note On, ça permet aux footswitches qui
+/// envoient des vélocités variables de fonctionner. Note Off (status 0x80
+/// ou Note On avec velocity 0) est volontairement ignoré pour éviter le
+/// double déclenchement à la relâche.
+struct MidiInputBinding: Codable, Hashable, Identifiable {
+    var id: String { action.rawValue }
+    var action: MidiInputAction
+    var sourceUniqueID: Int32        // MIDIUniqueID (Int32 sous le capot)
+    var sourceName: String           // pour affichage UI si la source est offline
+    var status: UInt8                // upper nibble : 0x90=NoteOn, 0xB0=CC, 0xC0=PC
+    var channel: UInt8               // 0-15
+    var data1: UInt8                 // note number ou CC number
+}
+
+struct VelvetTrackVideo: Codable, Hashable {
+    /// Extensions vidéo importables. Le filePicker filtre dessus.
+    static let supportedExtensions: Set<String> = ["mp4", "mov", "m4v"]
+
+    var audioFileID: Int64
+    /// Nom du fichier dans le dossier Media (`<basename>-<uuid>.<ext>`).
+    /// L'absolu est résolu à la volée via `VelvetShowStore.mediaDirectoryURL`.
+    var fileName: String
+    var updatedAt: Date
+
+    init(audioFileID: Int64, fileName: String, updatedAt: Date = Date()) {
+        self.audioFileID = audioFileID
+        self.fileName    = fileName
+        self.updatedAt   = updatedAt
+    }
+}
+
 struct VelvetTrackVolume: Codable, Hashable {
     static let minimumDB: Double = -12
     static let maximumDB: Double = 12

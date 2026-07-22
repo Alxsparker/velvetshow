@@ -38,6 +38,7 @@
 import Foundation
 import AVFoundation
 import QuartzCore  // CACurrentMediaTime
+import CoreAudio   // [XFADE METRICS] instrumentation temporaire (device + overloads HAL)
 
 @MainActor
 @Observable
@@ -68,12 +69,83 @@ final class AudioEngine {
         }
     }
 
+    /// Photographie structurée d'une perte de continuité détectée par le
+    /// moniteur de contrôle (jamais depuis le callback audio temps réel).
+    struct ContinuityDiagnostic: Identifiable, Equatable {
+        enum Reason: String, Equatable {
+            case engineNotRunning
+            case playerNotRendering
+            case transportAheadOfRenderedAudio
+        }
+
+        let id: UUID
+        let date: Date
+        let hostTime: TimeInterval
+        let trackID: String?
+        let reasons: [Reason]
+        let engineIsRunning: Bool
+        let playerIsPlaying: Bool
+        let transportPosition: TimeInterval
+        let renderedPosition: TimeInterval?
+        let transportRenderDelta: TimeInterval?
+        let renderedSampleTime: AVAudioFramePosition?
+        let stagnationDuration: TimeInterval
+        let sampleRate: Double?
+        let bufferSize: UInt32?
+        let playbackState: PlaybackState
+        let outputDeviceUID: String?
+        let activeTrackName: String?
+        let activeTrackURL: URL?
+    }
+
+    enum AudioRenderHealth: Equatable {
+        case healthy
+        case suspectedStall(duration: TimeInterval)
+        case confirmedStall(duration: TimeInterval)
+    }
+
+    enum AudioRecoveryState: Equatable {
+        case idle, interrupted, rebuilding, validating, failed
+    }
+
+    struct AudioRecoverySnapshot: Equatable {
+        let playbackState: PlaybackState
+        let trackID: String?
+        let trackName: String?
+        let transportPosition: TimeInterval
+        let renderedPosition: TimeInterval?
+        let engineIsRunning: Bool
+        let playerIsPlaying: Bool
+        let sampleRate: Double?
+        let outputDeviceUID: String?
+        let hostTime: TimeInterval
+        let reason: String
+    }
+
+    struct AudioRecoveryEvent: Identifiable, Equatable {
+        enum Result: String, Equatable { case success, failed, ignored }
+        let id: UUID
+        let date: Date
+        let startedAt: TimeInterval
+        let endedAt: TimeInterval
+        let duration: TimeInterval
+        let coalescedNotifications: Int
+        let snapshot: AudioRecoverySnapshot
+        let resumePosition: TimeInterval
+        let result: Result
+        let engineStartError: String?
+        let renderedProofPosition: TimeInterval?
+        let renderedProofSampleTime: AVAudioFramePosition?
+    }
+
     // MARK: - État observable
 
     private(set) var state: PlaybackState = .stopped
 
     /// URL du fichier actuellement chargé (nil si rien n'est chargé).
     private(set) var currentURL: URL?
+    private var diagnosticTrackID: String?
+    private var diagnosticTrackName: String?
 
     /// Duration totale du fichier audio, en secondes.
     private(set) var totalDuration: TimeInterval = 0
@@ -111,6 +183,27 @@ final class AudioEngine {
     /// Niveau RMS courant (0..1) — mis at jour ~30 Hz par le tap audio.
     /// Consommé par le VU-mètre dans l'UI concert.
     private(set) var meterLevel: Float = 0
+
+    /// Position théorique du transport, indépendante du rendu CoreAudio.
+    /// C'est volontairement la même horloge que `livePosition`.
+    private(set) var transportPosition: TimeInterval = 0
+
+    /// Position réellement rendue par le player actif. nil tant que
+    /// `lastRenderTime` / `playerTime(forNodeTime:)` ne sont pas disponibles.
+    private(set) var renderedAudioPosition: TimeInterval?
+
+    /// Dernière anomalie publiée vers l'interface. Elle reste visible jusqu'à
+    /// un nouveau Play afin qu'une coupure transitoire ne disparaisse pas.
+    private(set) var latestContinuityDiagnostic: ContinuityDiagnostic?
+
+    /// Historique mémoire borné des diagnostics de la session courante.
+    private(set) var continuityDiagnostics: [ContinuityDiagnostic] = []
+
+    /// État synthétique observable du rendu. Informatif uniquement : aucune
+    /// transition de transport ou tentative de récupération n'en dépend.
+    private(set) var audioRenderHealth: AudioRenderHealth = .healthy
+    private(set) var audioRecoveryState: AudioRecoveryState = .idle
+    private(set) var audioRecoveryHistory: [AudioRecoveryEvent] = []
 
     // MARK: - Valeurs dérivées for l'UI
 
@@ -178,10 +271,83 @@ final class AudioEngine {
     var onPlaybackEndished: (() -> Void)?
     nonisolated(unsafe) private var scopedFolderURL: URL?
     nonisolated(unsafe) private var timer: Timer?
-    nonisolated(unsafe) private var fadeTimer: Timer?
-    nonisolated(unsafe) private var filterTimer: Timer?
-    private var filterGeneration: Int = 0
-    private var fadeGeneration: Int = 0
+    // Rampes de volume et de filtre : DispatchSourceTimer sur une queue
+    // série dédiée, HORS main thread. Les fades restaient sur le main
+    // thread (Timer + Task @MainActor) et se faisaient affamer par les
+    // passes de layout SwiftUI pendant la lecture (~10 pas au lieu de 120
+    // sur un fondu de 2 s en Release) — paliers audibles.
+    //
+    // Synchronisation : `rampLock` protège les epochs, les écritures de
+    // paramètre des ticks et les compteurs [XFADE METRICS]. Annuler une
+    // rampe = incrémenter son epoch sous le lock puis cancel() la source :
+    // toute tick ou completion encore en vol voit un epoch différent et
+    // devient un no-op — pas de tick zombie, pas de double completion.
+    nonisolated(unsafe) private var fadeTimer: DispatchSourceTimer?
+    nonisolated(unsafe) private var filterTimer: DispatchSourceTimer?
+    nonisolated(unsafe) private let rampLock = NSLock()
+    nonisolated(unsafe) private var fadeEpoch = 0
+    nonisolated(unsafe) private var filterEpoch = 0
+    nonisolated(unsafe) private var crossfadeEpoch = 0
+    private static let rampQueue = DispatchQueue(
+        label: "fr.loveandlive.velvetshow.audio-ramps",
+        qos: .userInteractive
+    )
+
+    // ── Horloge scheduler (lecture hors main thread) ─────────────────────
+    // Miroir verrouillé des ancres de position, publié à chaque transport.
+    // Purement additif : aucun changement de comportement audio. Permet au
+    // scheduler MIDI/OSC (queue dédiée) de calculer la même position que
+    // `livePosition` / `crossfadeIncomingLivePosition` sans toucher au
+    // MainActor. Sémantique identique au tick historique :
+    //   - crossfade en cours → position du song ENTRANT ;
+    //   - sinon → livePosition du song courant ;
+    //   - isPlaying == (state == .playing), comme le guard du scheduler.
+    private struct SchedulerClockSnapshot {
+        var isPlaying = false
+        var isCrossfading = false
+        var anchorPosition: TimeInterval = 0     // positionAtPlayStart
+        var anchorHostTime: TimeInterval = 0     // playStartHostTime
+        var effectiveEnd: TimeInterval = .infinity
+        var crossfadeAnchorPosition: TimeInterval = 0
+        var crossfadeAnchorHostTime: TimeInterval = 0
+        var crossfadeEnd: TimeInterval = .infinity
+    }
+    nonisolated(unsafe) private var clockSnapshot = SchedulerClockSnapshot()
+    nonisolated(unsafe) private let clockLock = NSLock()
+
+    /// Publie l'état courant vers le miroir. À appeler après toute mutation
+    /// de state / ancres / trims / crossfade (MainActor).
+    private func publishSchedulerClock() {
+        let snap = SchedulerClockSnapshot(
+            isPlaying: state == .playing,
+            isCrossfading: isCrossfading,
+            anchorPosition: positionAtPlayStart,
+            anchorHostTime: playStartHostTime,
+            effectiveEnd: effectiveEnd,
+            crossfadeAnchorPosition: crossfadeTrimStart,
+            crossfadeAnchorHostTime: crossfadeStartHostTime,
+            crossfadeEnd: crossfadeEffectiveEnd
+        )
+        clockLock.lock()
+        clockSnapshot = snap
+        clockLock.unlock()
+    }
+
+    /// Position lisible depuis n'importe quel thread — même valeur que
+    /// `crossfadeIncomingLivePosition ?? livePosition` du tick historique.
+    nonisolated func schedulerClockNow() -> (position: TimeInterval, isPlaying: Bool, effectiveEnd: TimeInterval, isCrossfading: Bool) {
+        clockLock.lock()
+        let snap = clockSnapshot
+        clockLock.unlock()
+        let now = CACurrentMediaTime()
+        if snap.isCrossfading {
+            let pos = min(snap.crossfadeEnd, snap.crossfadeAnchorPosition + (now - snap.crossfadeAnchorHostTime))
+            return (pos, snap.isPlaying || snap.isCrossfading, snap.crossfadeEnd, true)
+        }
+        guard snap.isPlaying else { return (snap.anchorPosition, false, snap.effectiveEnd, false) }
+        let pos = min(snap.effectiveEnd, snap.anchorPosition + (now - snap.anchorHostTime))
+        return (pos, true, snap.effectiveEnd, false)
+    }
     private var meterTapInstalled = false
     private var playStartHostTime: TimeInterval = 0
     private var positionAtPlayStart: TimeInterval = 0
@@ -189,6 +355,37 @@ final class AudioEngine {
     private var scheduleEpoch: Int = 0
     private var hasEverPlayed: Bool = false   // [AUDIO-DIAG] premier play détection
     private(set) var isSeeking: Bool = false
+
+    // État du moniteur de continuité — MainActor uniquement, échantillonné
+    // par le timer UI à 30 Hz. Aucun de ces champs n'est touché par le tap.
+    private static let continuityThreshold: TimeInterval = 0.300
+    private static let maximumContinuityDiagnostics = 50
+    private var renderAnchorSampleTime: AVAudioFramePosition?
+    private var renderAnchorPosition: TimeInterval = 0
+    private var lastObservedRenderedSampleTime: AVAudioFramePosition?
+    private var lastObservedTransportPosition: TimeInterval = 0
+    private var stagnationStartedAt: TimeInterval?
+    private var lastRecordedAnomalyReasons: [ContinuityDiagnostic.Reason] = []
+    private var lastMonitoredNode: AVAudioPlayerNode?
+
+    private static let recoveryValidationTimeout: TimeInterval = 0.800
+    private static let maximumRecoveryPasses = 2
+    private static let maximumRecoveryHistory = 30
+    // Tolérance empirique couvrant le décalage de lecture entre l'horloge du
+    // transport et celle du rendu, échantillonnées successivement à 30 Hz.
+    private static let recoveryRenderedLeadTolerance: TimeInterval = 0.050
+    // Décision produit : durée maximale d'audio acceptable à rejouer. Au-delà,
+    // la reprise privilégie le transport pour rester synchronisée avec le show.
+    private static let recoveryMaximumReplayDuration: TimeInterval = 1.000
+    private var recoverySnapshot: AudioRecoverySnapshot?
+    private var recoveryResumePosition: TimeInterval = 0
+    private var recoveryStartedAt: TimeInterval = 0
+    private var recoveryValidationDeadline: TimeInterval = 0
+    private var recoveryValidationSampleTime: AVAudioFramePosition?
+    private var recoveryPassCount = 0
+    private var recoveryCoalescedNotifications = 0
+    private var recoveryPassPending = false
+    private var recoveryStartError: String?
 
     // MARK: - Crossfade internals
 
@@ -205,8 +402,30 @@ final class AudioEngine {
     /// Mis at jour par AppState via setNormGainDB(_:) avant la lecture.
     var normGainDB: Double = 0
     private var crossfadeStartHostTime: TimeInterval = 0
-    nonisolated(unsafe) private var crossfadeTimer: Timer?
-    private var crossfadeGeneration: Int = 0
+    nonisolated(unsafe) private var crossfadeTimer: DispatchSourceTimer?
+
+    /// Durée du mix en cours, mémorisée à `startCrossfade` — réutilisée par
+    /// le filet de sécurité de `scheduleSentinelle` pour forcer la
+    /// récupération d'un nœud si sa queue CoreAudio n'a pas naturellement
+    /// drainé après une marge confortable au-delà de la fin du fondu.
+    private var crossfadeMixDuration: TimeInterval = 0
+
+    // ── [XFADE METRICS] Instrumentation temporaire ──────────────────────
+    // Diagnostic des paliers perçus en archive Release : compte chaque
+    // écriture de volume des deux fades d'un FONDU DJ et photographie
+    // l'environnement de rendu. Aucun effet sur la courbe, la durée ou le
+    // comportement audio — uniquement des compteurs et un print de synthèse
+    // dans finishCrossfade. À RETIRER une fois le diagnostic tranché.
+    // Compteurs de ticks : écrits depuis rampQueue, lus depuis MainActor —
+    // toujours sous rampLock.
+    nonisolated(unsafe) private var metricsOutgoingTicks = 0
+    nonisolated(unsafe) private var metricsIncomingTicks = 0
+    nonisolated(unsafe) private var metricsMaxGapMs = 0.0
+    nonisolated(unsafe) private var metricsLastOutgoingTickAt: Double?
+    nonisolated(unsafe) private var metricsLastIncomingTickAt: Double?
+    private var metricsHALOverloads = 0
+    private var metricsOverloadsAtFadeStart = 0
+    private var halOverloadListenerInstalled = false
 
     /// Nœud actuellement en lecture (lecteur actif).
     private var activeNode: AVAudioPlayerNode!
@@ -323,16 +542,16 @@ final class AudioEngine {
             queue: nil
         ) { [weak self] _ in
             Task { @MainActor [weak self] in
-                self?.handleEngineConfigurationChange()
+                self?.requestAudioRecovery(reason: "AVAudioEngineConfigurationChange")
             }
         }
     }
 
     deinit {
         timer?.invalidate()
-        fadeTimer?.invalidate()
-        filterTimer?.invalidate()
-        crossfadeTimer?.invalidate()
+        fadeTimer?.cancel()
+        filterTimer?.cancel()
+        crossfadeTimer?.cancel()
         if let url = scopedFolderURL {
             url.stopAccessingSecurityScopedResource()
         }
@@ -361,6 +580,8 @@ final class AudioEngine {
         trimStart: TimeInterval = 0,
         trimEnd: TimeInterval = 0,
         volumeOffsetDB: Double = 0,
+        diagnosticTrackID: String? = nil,
+        diagnosticTrackName: String? = nil,
         accessFolder: URL? = nil
     ) throws {
         // Décharge le précédent (ferme aussi son accès sandbox).
@@ -375,6 +596,8 @@ final class AudioEngine {
             let file = try AVAudioFile(forReading: url)
             self.audioFile = file
             self.currentURL = url
+            self.diagnosticTrackID = diagnosticTrackID
+            self.diagnosticTrackName = diagnosticTrackName
 
             let sampleRate = file.processingFormat.sampleRate
             let dur = sampleRate > 0
@@ -394,6 +617,7 @@ final class AudioEngine {
             self.activeNode.volume = playbackGain
             self.currentPosition = 0
             self.lastError = nil
+            publishSchedulerClock()
 
         } catch {
             // Échec → on relâche aussi l'accès sandbox qu'on vient
@@ -420,6 +644,7 @@ final class AudioEngine {
         let safeStart = max(0, min(start, dur))
         trimStart = safeStart
         trimEnd = (end > safeStart && end <= dur) ? end : 0
+        publishSchedulerClock()
     }
 
     /// Met at jour le gain du song chargé sans recharger le fichier.
@@ -441,6 +666,8 @@ final class AudioEngine {
         stopImmediately()
         audioFile = nil
         currentURL = nil
+        diagnosticTrackID = nil
+        diagnosticTrackName = nil
         totalDuration = 0
         currentPosition = 0
         trimStart = 0
@@ -454,11 +681,10 @@ final class AudioEngine {
 
     // MARK: - Transport
 
-    func play(fadeInDuration: TimeInterval = 0.2) {
+    func play(fadeInDuration: TimeInterval = 0) {
         guard audioFile != nil else { return }
         guard state != .playing else { return }
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
         print("[AUDIO] play requested — file=\(currentURL?.lastPathComponent ?? "?") | state=\(state) | pos=\(String(format:"%.2f",currentPosition))s | engineRunning=\(engine.isRunning) | firstPlay=\(!hasEverPlayed)")
 
         // Play pressé pendant un echo-out (.stopping) : la chaîne active est
@@ -501,8 +727,11 @@ final class AudioEngine {
             hasEverPlayed = true
             print("[AUDIO] firstPlay — this is the first playback since app launch")
         }
-        print("[AUDIO] fade-in start — vol=0 → target=\(String(format:"%.3f",targetVolume)) dur=\(fadeInDuration)s")
+        if fadeInDuration > 0 {
+            print("[AUDIO] fade-in start — vol=0 → target=\(String(format:"%.3f",targetVolume)) dur=\(fadeInDuration)s")
+        }
         state = .playing
+        resetContinuityMonitor(clearPublishedWarning: true)
         print("[AUDIO] engine state → .playing")
         if !meterTapInstalled {
             installMeterTap()
@@ -512,8 +741,11 @@ final class AudioEngine {
         playStartHostTime = CACurrentMediaTime()
         positionAtPlayStart = currentPosition
         startTimer()
-        fadeVolume(to: targetVolume, duration: fadeInDuration) {
-            print("[AUDIO] fade-in end — vol=\(String(format:"%.3f",targetVolume))")
+        publishSchedulerClock()
+        if fadeInDuration > 0 {
+            fadeVolume(to: targetVolume, duration: fadeInDuration) {
+                print("[AUDIO] fade-in end — vol=\(String(format:"%.3f",targetVolume))")
+            }
         }
     }
 
@@ -525,6 +757,7 @@ final class AudioEngine {
         activeNode.pause()
         state = .paused
         stopTimer()
+        publishSchedulerClock()
     }
 
     func seek(to position: TimeInterval) {
@@ -533,8 +766,7 @@ final class AudioEngine {
         currentPosition = target
 
         guard state == .playing else { return }
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
         activeNode.volume = 0
         scheduleSegment(from: target)
         activeNode.volume = 0
@@ -543,7 +775,9 @@ final class AudioEngine {
         didEndishSegment = false
         playStartHostTime = CACurrentMediaTime()
         positionAtPlayStart = target
+        resetContinuityMonitor(clearPublishedWarning: false)
         startTimer()
+        publishSchedulerClock()
     }
 
     /// Seek musical avec mini fade-out / fade-in for éviter tout clic.
@@ -565,8 +799,7 @@ final class AudioEngine {
         }
 
         isSeeking = true
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
 
         fadeVolume(to: 0, duration: fadeOut) { [weak self] in
             guard let self else { return }
@@ -578,7 +811,9 @@ final class AudioEngine {
             self.activeNode.play()
             self.playStartHostTime = CACurrentMediaTime()
             self.positionAtPlayStart = absTarget
+            self.resetContinuityMonitor(clearPublishedWarning: false)
             self.startTimer()
+            self.publishSchedulerClock()
             // Fade-in puis on lève le verrou.
             // Cas limite : si la fin naturelle du segment a eu lieu pendant
             // le seek (isSeeking bloquait handleEndOfSegment), la déclencher
@@ -612,6 +847,7 @@ final class AudioEngine {
         currentPosition = min(effectiveEnd, positionAtPlayStart + elapsed)
         state = .paused
         stopTimer()
+        publishSchedulerClock()
 
         fadeVolume(to: 0, duration: fadeOutDuration) { [weak self] in
             guard let self else { return }
@@ -642,6 +878,7 @@ final class AudioEngine {
         state = .stopping
         print("[AUDIO] engine state → .stopping")
         stopTimer()
+        publishSchedulerClock()
         fadeVolume(to: 0, duration: fadeOutDuration) { [weak self] in
             print("[AUDIO] fade-out end — calling stopImmediately()")
             self?.stopImmediately()
@@ -650,8 +887,7 @@ final class AudioEngine {
 
     func stopImmediately() {
         if isCrossfading { cancelCrossfade() }
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
         print("[AUDIO] stopImmediately — \(currentURL?.lastPathComponent ?? "?") state=\(state)")
         // Invalide toutes les sentinelles en vol avant les stop().
         coolingGenA &+= 1; coolingGenB &+= 1; coolingGenC &+= 1
@@ -671,6 +907,7 @@ final class AudioEngine {
         print("[AUDIO] engine state → .stopped")
         currentPosition = 0
         stopTimer()
+        publishSchedulerClock()
     }
 
     // MARK: - Internals
@@ -754,8 +991,7 @@ final class AudioEngine {
     /// a été pressé entre-temps, elle sort sans appeler `stopImmediately()`.
     func stopWithEchoFade(beatDuration: TimeInterval = 0.625) {
         guard state == .playing || state == .paused else { stopImmediately(); return }
-        fadeTimer?.invalidate()
-        fadeTimer = nil
+        cancelFadeRamp()
 
         // Étape 1 — Arme le delay de la chaîne active (peut flusher le buffer si delayTime change).
         // activeNode continue at plein volume → remplit le buffer au nouveau delayTime.
@@ -766,6 +1002,7 @@ final class AudioEngine {
         activeReverbNode.wetDryMix    = 20
         state = .stopping
         stopTimer()
+        publishSchedulerClock()
 
         let beatMs = Int(beatDuration * 1000)
         let tailMs = Int(beatDuration * 4 * 1000) + 40  // 4 répétitions + marge
@@ -884,6 +1121,9 @@ final class AudioEngine {
         print("[AUDIO] incomingNode PLAY — \(inName) \(url.lastPathComponent) gain→\(String(format:"%.2f",newGain))")
         isCrossfading = true
         crossfadeStartHostTime = CACurrentMediaTime()
+        crossfadeMixDuration = duration
+        publishSchedulerClock()
+        metricsResetForFade()  // [XFADE METRICS]
 
         let oldName = currentURL?.lastPathComponent ?? "?"
         let newName = url.lastPathComponent
@@ -909,12 +1149,8 @@ final class AudioEngine {
     /// où il se trouve — le caller gère la suite (stop, nouveau crossfade...).
     func cancelCrossfade() {
         guard isCrossfading else { return }
-        crossfadeTimer?.invalidate()
-        crossfadeTimer = nil
-        crossfadeGeneration &+= 1
-        fadeTimer?.invalidate()
-        fadeTimer = nil
-        fadeGeneration &+= 1
+        cancelCrossfadeRamp()
+        cancelFadeRamp()
         // Stop le nœud entrant. Appelé uniquement depuis stopImmediately()
         // ou handleEngineConfigurationChange() — pas pendant un rendu crossfade stable.
         if let incoming = incomingNode {
@@ -931,6 +1167,7 @@ final class AudioEngine {
         }
         resetFilter()
         isCrossfading = false
+        publishSchedulerClock()
         print("[XFADE] Cancelled")
     }
 
@@ -949,6 +1186,7 @@ final class AudioEngine {
     private func finishCrossfade() async {
         let elapsed = CACurrentMediaTime() - crossfadeStartHostTime
         let pos = min(crossfadeEffectiveEnd, crossfadeTrimStart + elapsed)
+        metricsPrintSummary(actualDuration: elapsed)  // [XFADE METRICS]
 
         // Swap sandbox.
         scopedFolderURL?.stopAccessingSecurityScopedResource()
@@ -984,6 +1222,7 @@ final class AudioEngine {
         playStartHostTime   = CACurrentMediaTime()
         positionAtPlayStart = pos
         startTimer()
+        publishSchedulerClock()
 
         // Sentinelle sur le nœud sortant : fire quand sa queue est vide → stop() safe.
         // Aucun stop() ici — outgoing est au volume 0 mais sa queue n'est pas encore vide.
@@ -991,6 +1230,131 @@ final class AudioEngine {
 
         let name = activeNode === nodeA ? "nodeA" : activeNode === nodeB ? "nodeB" : "nodeC"
         print("[XFADE] Swap complete: activeNode=\(name) pos=\(String(format:"%.2f",pos))s")
+    }
+
+    // MARK: - [XFADE METRICS] Instrumentation temporaire
+
+    /// Remet les compteurs at zéro au démarrage d'un crossfade et installe
+    /// (une seule fois) le listener d'overloads HAL sur le périphérique de
+    /// sortie par défaut.
+    private func metricsResetForFade() {
+        rampLock.lock()
+        metricsOutgoingTicks = 0
+        metricsIncomingTicks = 0
+        metricsMaxGapMs = 0
+        metricsLastOutgoingTickAt = nil
+        metricsLastIncomingTickAt = nil
+        rampLock.unlock()
+        installHALOverloadListenerIfNeeded()
+        metricsOverloadsAtFadeStart = metricsHALOverloads
+    }
+
+    /// Enregistre une écriture de volume et le trou depuis la précédente
+    /// (par nœud — les deux fades ont chacun leur source).
+    /// PRÉCONDITION : appelé sous `rampLock` (depuis les ticks de rampQueue).
+    nonisolated private func metricsRecordFadeTickLocked(outgoing: Bool) {
+        let now = CACurrentMediaTime()
+        if outgoing {
+            if let last = metricsLastOutgoingTickAt {
+                metricsMaxGapMs = max(metricsMaxGapMs, (now - last) * 1000)
+            }
+            metricsLastOutgoingTickAt = now
+            metricsOutgoingTicks += 1
+        } else {
+            if let last = metricsLastIncomingTickAt {
+                metricsMaxGapMs = max(metricsMaxGapMs, (now - last) * 1000)
+            }
+            metricsLastIncomingTickAt = now
+            metricsIncomingTicks += 1
+        }
+    }
+
+    /// Une seule ligne de synthèse par fondu, imprimée depuis finishCrossfade.
+    private func metricsPrintSummary(actualDuration: TimeInterval) {
+        let (outTicks, inTicks, maxGap): (Int, Int, Double) = rampLock.withLock {
+            (metricsOutgoingTicks, metricsIncomingTicks, metricsMaxGapMs)
+        }
+        let maxFrames = engine.outputNode.auAudioUnit.maximumFramesToRender
+        let latencyMs = engine.outputNode.presentationLatency * 1000
+        let overloads = metricsHALOverloads - metricsOverloadsAtFadeStart
+        let device = Self.defaultOutputDeviceName() ?? "?"
+        print("[XFADE METRICS] outgoingTicks=\(outTicks) incomingTicks=\(inTicks) maxGapMs=\(Int(maxGap.rounded())) durationS=\(String(format: "%.2f", actualDuration)) maxFrames=\(maxFrames) latencyMs=\(String(format: "%.1f", latencyMs)) device=\"\(device)\" halOverloads=\(overloads)")
+    }
+
+    // MARK: - Annulation des rampes (fade / crossfade / filtre)
+
+    /// Annule la rampe de volume du nœud actif. Le bump d'epoch sous le
+    /// lock garantit qu'aucune tick ni completion en vol ne s'exécutera
+    /// après le retour de cette fonction (une tick en cours d'écriture
+    /// termine d'abord — le lock sérialise).
+    private func cancelFadeRamp() {
+        rampLock.lock(); fadeEpoch &+= 1; rampLock.unlock()
+        fadeTimer?.cancel()
+        fadeTimer = nil
+    }
+
+    private func cancelCrossfadeRamp() {
+        rampLock.lock(); crossfadeEpoch &+= 1; rampLock.unlock()
+        crossfadeTimer?.cancel()
+        crossfadeTimer = nil
+    }
+
+    private func cancelFilterRamp() {
+        rampLock.lock(); filterEpoch &+= 1; rampLock.unlock()
+        filterTimer?.cancel()
+        filterTimer = nil
+    }
+
+    /// Compte les kAudioDeviceProcessorOverload du périphérique de sortie
+    /// par défaut (cycles de rendu HAL sautés). Lecture seule, aucun effet
+    /// sur le rendu.
+    private func installHALOverloadListenerIfNeeded() {
+        guard !halOverloadListenerInstalled else { return }
+        guard let deviceID = Self.defaultOutputDeviceID() else { return }
+        var address = AudioObjectPropertyAddress(
+            mSelector: kAudioDeviceProcessorOverload,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        let status = AudioObjectAddPropertyListenerBlock(deviceID, &address, .main) { [weak self] _, _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.metricsHALOverloads += 1
+                print("[XFADE METRICS] HAL overload #\(self.metricsHALOverloads)")
+            }
+        }
+        halOverloadListenerInstalled = (status == noErr)
+    }
+
+    private static func defaultOutputDeviceID() -> AudioDeviceID? {
+        var deviceID = AudioDeviceID(0)
+        var size = UInt32(MemoryLayout<AudioDeviceID>.size)
+        var address = AudioObjectPropertyAddress(
+            mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        let status = AudioObjectGetPropertyData(
+            AudioObjectID(kAudioObjectSystemObject), &address, 0, nil, &size, &deviceID
+        )
+        guard status == noErr, deviceID != kAudioObjectUnknown else { return nil }
+        return deviceID
+    }
+
+    private static func defaultOutputDeviceName() -> String? {
+        guard let deviceID = defaultOutputDeviceID() else { return nil }
+        var name: CFString?
+        var size = UInt32(MemoryLayout<CFString?>.size)
+        var address = AudioObjectPropertyAddress(
+            mSelector: kAudioDevicePropertyDeviceNameCFString,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        let status = withUnsafeMutablePointer(to: &name) { ptr in
+            AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, ptr)
+        }
+        guard status == noErr, let name else { return nil }
+        return name as String
     }
 
     // MARK: - 3-node helpers
@@ -1030,6 +1394,18 @@ final class AudioEngine {
 
     /// Schédule 1 frame sur `node` (vol=0, inaudible). Quand le callback
     /// dataPlayedBack se déclenche, la queue est vide → stop() est safe.
+    ///
+    /// Filet de sécurité : cette sentinelle ne se déclenche qu'une fois que
+    /// TOUT ce qui était programmé sur `node` avant elle a fini de jouer —
+    /// potentiellement le reste du morceau entier si la transition a eu
+    /// lieu tôt dedans (fréquent en test, remplacements rapprochés). Avec
+    /// seulement 3 nœuds, ça peut vider le pool de nœuds disponibles for
+    /// plusieurs minutes d'affilée. Un second minuteur, avec la même garde
+    /// de génération, force la libération après une marge confortable au-
+    /// delà de la fin du fondu — le nœud est alors silencieux depuis
+    /// longtemps, stop() n'introduit plus le risque de clic évoqué plus
+    /// haut. Le premier des deux (sentinelle réelle ou timeout) qui se
+    /// déclenche gagne ; l'autre devient un no-op via la garde `coolingGen`.
     private func scheduleSentinelle(on node: AVAudioPlayerNode) {
         guard let file = audioFile else { return }
         guard file.processingFormat.sampleRate > 0 else { return }
@@ -1048,20 +1424,31 @@ final class AudioEngine {
                 print("[XFADE] Sentinelle — \(n) stop() safe, propre")
             }
         }
+
+        let timeoutMs = Int((crossfadeMixDuration + 1.5) * 1000)
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(max(timeoutMs, 1500)))
+            guard let self, self.coolingGen(capturedNode) == gen else { return }
+            capturedNode.stop()
+            self.setClean(capturedNode, true)
+            let n = capturedNode === self.nodeA ? "nodeA"
+                  : capturedNode === self.nodeB ? "nodeB" : "nodeC"
+            print("[XFADE] Sentinelle timeout — \(n) forcé propre (buffer pas encore drainé)")
+        }
     }
 
     /// Variante de `fadeVolume` for le nœud entrant.
-    /// Timer et génération indépendants — les deux fades coexistent sans
+    /// Source et epoch indépendants — les deux fades coexistent sans
     /// s'invalider mutuellement. `node` est capturé at l'appel.
+    /// Tourne sur `rampQueue` (hors main thread) : la cadence 60 Hz est
+    /// tenue même quand SwiftUI sature le main actor.
     private func fadeCrossfadeVolume(
         node: AVAudioPlayerNode,
         to target: Float,
         duration: TimeInterval,
         completion: (() -> Void)? = nil
     ) {
-        crossfadeTimer?.invalidate()
-        crossfadeGeneration &+= 1
-        let gen = crossfadeGeneration
+        cancelCrossfadeRamp()
 
         guard duration > 0 else {
             node.volume = target
@@ -1071,27 +1458,46 @@ final class AudioEngine {
 
         let startVolume = node.volume
         let startedAt   = CACurrentMediaTime()
-        crossfadeTimer = Self.commonModeTimer(interval: 1.0 / 60.0) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self, self.crossfadeGeneration == gen else { return }
-                let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
-                let volume: Float
-                if target <= 0 {
-                    volume = startVolume * Float(cos(Double(progress) * .pi / 2))
-                } else if startVolume <= 0 {
-                    volume = target * Float(sin(Double(progress) * .pi / 2))
-                } else {
-                    volume = startVolume + (target - startVolume) * Float(progress)
+        let recordMetrics = isCrossfading  // [XFADE METRICS]
+        let epoch = rampLock.withLock { crossfadeEpoch }
+
+        let source = DispatchSource.makeTimerSource(queue: Self.rampQueue)
+        source.schedule(deadline: .now() + 1.0 / 60.0, repeating: 1.0 / 60.0, leeway: .milliseconds(2))
+        source.setEventHandler { [weak self] in
+            guard let self else { return }
+            let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
+            let volume: Float
+            if target <= 0 {
+                volume = startVolume * Float(cos(Double(progress) * .pi / 2))
+            } else if startVolume <= 0 {
+                volume = target * Float(sin(Double(progress) * .pi / 2))
+            } else {
+                volume = startVolume + (target - startVolume) * Float(progress)
+            }
+            self.rampLock.lock()
+            guard self.crossfadeEpoch == epoch else { self.rampLock.unlock(); return }
+            node.volume = progress >= 1.0 ? target : volume
+            if recordMetrics { self.metricsRecordFadeTickLocked(outgoing: false) }  // [XFADE METRICS]
+            if progress >= 1.0 {
+                // Claim la fin sous le lock : plus aucune tick, une seule completion.
+                self.crossfadeEpoch &+= 1
+                self.rampLock.unlock()
+                source.cancel()
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    // Ignorée si une annulation/nouvelle rampe est passée entre-temps.
+                    guard self.rampLock.withLock({ self.crossfadeEpoch == epoch &+ 1 }) else { return }
+                    MainActor.assumeIsolated {
+                        self.crossfadeTimer = nil
+                        completion?()
+                    }
                 }
-                node.volume = volume
-                if progress >= 1.0 {
-                    node.volume = target
-                    self.crossfadeTimer?.invalidate()
-                    self.crossfadeTimer = nil
-                    completion?()
-                }
+            } else {
+                self.rampLock.unlock()
             }
         }
+        crossfadeTimer = source
+        source.activate()
     }
 
     // MARK: - Filter sweep (FILTER transition)
@@ -1100,108 +1506,213 @@ final class AudioEngine {
     /// Appelé depuis stopImmediately, cancelCrossfade, finishCrossfade
     /// et handleEngineConfigurationChange.
     private func resetFilter() {
-        filterTimer?.invalidate()
-        filterTimer = nil
-        filterGeneration &+= 1
+        // L'epoch est bumpé sous le lock avant l'écriture : toute tick de
+        // sweep en vol a fini son écriture ou la sautera — le 20000 gagne.
+        cancelFilterRamp()
         activeFilterNode.bands[0].frequency = 20000
     }
 
     /// Anime le cutoff low-pass de 20 kHz → 300 Hz sur `duration` secondes.
     /// Courbe logarithmique (perçue comme linéaire at l'oreille).
+    /// Tourne sur `rampQueue` (hors main thread), comme les fades.
     private func startFilterSweep(duration: TimeInterval) {
-        filterTimer?.invalidate()
-        filterGeneration &+= 1
-        let gen = filterGeneration
+        cancelFilterRamp()
 
         let logStart = log10(20000.0)
         let logEnd   = log10(800.0)
         let startedAt = CACurrentMediaTime()
+        // Capturé une fois : la rotation des rôles (finishCrossfade) n'a
+        // lieu qu'après resetFilter, le nœud visé ne change pas en cours de sweep.
+        let eq = activeFilterNode
+        let epoch = rampLock.withLock { filterEpoch }
 
-        filterTimer = Self.commonModeTimer(interval: 1.0 / 60.0) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self, self.filterGeneration == gen else { return }
-                let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
-                let logFreq  = logStart + (logEnd - logStart) * progress
-                self.activeFilterNode.bands[0].frequency = Float(pow(10.0, logFreq))
-                if progress >= 1.0 {
-                    self.activeFilterNode.bands[0].frequency = 800
-                    self.filterTimer?.invalidate()
-                    self.filterTimer = nil
+        let source = DispatchSource.makeTimerSource(queue: Self.rampQueue)
+        source.schedule(deadline: .now() + 1.0 / 60.0, repeating: 1.0 / 60.0, leeway: .milliseconds(2))
+        source.setEventHandler { [weak self] in
+            guard let self else { return }
+            let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
+            let logFreq  = logStart + (logEnd - logStart) * progress
+            self.rampLock.lock()
+            guard self.filterEpoch == epoch else { self.rampLock.unlock(); return }
+            eq.bands[0].frequency = progress >= 1.0 ? 800 : Float(pow(10.0, logFreq))
+            if progress >= 1.0 {
+                self.filterEpoch &+= 1
+                self.rampLock.unlock()
+                source.cancel()
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    guard self.rampLock.withLock({ self.filterEpoch == epoch &+ 1 }) else { return }
+                    MainActor.assumeIsolated { self.filterTimer = nil }
                 }
+            } else {
+                self.rampLock.unlock()
             }
         }
+        filterTimer = source
+        source.activate()
     }
 
     // MARK: - Reconfiguration périphérique audio
 
-    /// Appelé quand macOS émet AVAudioEngineConfigurationChange.
-    /// Le moteur a été arrêté automatiquement et le graph invalidé :
-    /// il faut reconstruire la connexion et, si on était en lecture,
-    /// reprendre at la position courante.
-    private func handleEngineConfigurationChange() {
-        print("[VELVET] AVAudioEngineConfigurationChange — reconstruction du graph audio")
+    private func requestAudioRecovery(reason: String) {
+        guard audioRecoveryState == .idle || audioRecoveryState == .failed else {
+            recoveryPassPending = true
+            recoveryCoalescedNotifications += 1
+            return
+        }
+        recoveryPassCount = 0
+        recoveryCoalescedNotifications = 0
+        recoveryPassPending = false
+        recoveryStartedAt = CACurrentMediaTime()
+        recoverySnapshot = makeRecoverySnapshot(reason: reason)
+        startRecoveryPass()
+    }
 
-        // 1. Retire le tap RMS : son format est lié at l'ancien périphérique.
+    private func makeRecoverySnapshot(reason: String) -> AudioRecoverySnapshot {
+        let device = currentOutputDeviceDiagnostic()
+        return AudioRecoverySnapshot(
+            playbackState: state,
+            trackID: diagnosticTrackID,
+            trackName: diagnosticTrackName ?? currentURL?.lastPathComponent,
+            transportPosition: livePosition,
+            renderedPosition: renderedAudioPosition,
+            engineIsRunning: engine.isRunning,
+            playerIsPlaying: activeNode.isPlaying,
+            sampleRate: sampleRenderedPosition()?.sampleRate ?? audioFile?.processingFormat.sampleRate,
+            outputDeviceUID: device.uid,
+            hostTime: CACurrentMediaTime(),
+            reason: reason
+        )
+    }
+
+    private func startRecoveryPass() {
+        guard let snapshot = recoverySnapshot,
+              recoveryPassCount < Self.maximumRecoveryPasses else {
+            finishRecovery(result: .failed, proof: nil)
+            return
+        }
+        recoveryPassCount += 1
+        audioRecoveryState = .interrupted
+
+        let rendered = snapshot.renderedPosition
+        let renderedIsPlausible = rendered.map {
+            $0 >= effectiveStart && $0 < effectiveEnd
+                && snapshot.transportPosition - $0 >= -Self.recoveryRenderedLeadTolerance
+                && snapshot.transportPosition - $0 <= Self.recoveryMaximumReplayDuration
+        } ?? false
+        recoveryResumePosition = renderedIsPlausible
+            ? rendered!
+            : min(effectiveEnd, max(effectiveStart, snapshot.transportPosition))
+
+        audioRecoveryState = .rebuilding
+        scheduleEpoch &+= 1
+        coolingGenA &+= 1; coolingGenB &+= 1; coolingGenC &+= 1
         if meterTapInstalled {
             engine.mainMixerNode.removeTap(onBus: 0)
             meterTapInstalled = false
         }
-
-        // 2. Reconstruit les 3 chaînes de connexions → mainMixerNode.
-        //    Obligatoire après une invalidation de graph ; sans ça,
-        //    engine.start() réussit mais aucun son ne sort.
-        engine.connect(nodeA, to: filterNodeA, format: nil)
-        engine.connect(filterNodeA, to: delayNodeA,  format: nil)
-        engine.connect(delayNodeA,  to: reverbNodeA, format: nil)
-        engine.connect(reverbNodeA, to: engine.mainMixerNode, format: nil)
-        engine.connect(nodeB, to: filterNodeB, format: nil)
-        engine.connect(filterNodeB, to: delayNodeB,  format: nil)
-        engine.connect(delayNodeB,  to: reverbNodeB, format: nil)
-        engine.connect(reverbNodeB, to: engine.mainMixerNode, format: nil)
-        engine.connect(nodeC, to: filterNodeC, format: nil)
-        engine.connect(filterNodeC, to: delayNodeC,  format: nil)
-        engine.connect(delayNodeC,  to: reverbNodeC, format: nil)
-        engine.connect(reverbNodeC, to: engine.mainMixerNode, format: nil)
+        engine.stop()
+        for node in [nodeA, nodeB, nodeC] {
+            node.stop()
+            setClean(node, true)
+        }
+        for node in [nodeA, filterNodeA, delayNodeA, reverbNodeA,
+                     nodeB, filterNodeB, delayNodeB, reverbNodeB,
+                     nodeC, filterNodeC, delayNodeC, reverbNodeC] {
+            engine.disconnectNodeOutput(node)
+        }
+        connectRecoveryChain(nodeA, filterNodeA, delayNodeA, reverbNodeA)
+        connectRecoveryChain(nodeB, filterNodeB, delayNodeB, reverbNodeB)
+        connectRecoveryChain(nodeC, filterNodeC, delayNodeC, reverbNodeC)
         resetFilter()
-
-        // 3. Si un crossfade était en cours, l'abandonner proprement.
-        //    AppState reprendra le song précédent via onCrossfadeAborted.
         if isCrossfading {
             cancelCrossfade()
             onCrossfadeAborted?()
         }
 
-        // 4. Paused ou stopped : on laisse l'état tel quel.
-        //    Le prochain play() appellera engine.start() normalement.
-        guard state == .playing else {
-            print("[VELVET] Audio reconfiguration: state \(state), no automatic resume")
-            return
-        }
-
-        // 5. Était en lecture : on reprend at la position courante.
-        //    Stoppe et nettoie les nœuds non-actifs (sentinelles orphelines incluses).
-        coolingGenA &+= 1; coolingGenB &+= 1; coolingGenC &+= 1
-        for node in [nodeA, nodeB, nodeC] where node !== activeNode {
-            node.stop()
-            node.volume = 0
-            setClean(node, true)
-        }
         do {
             try engine.start()
-            scheduleSegment(from: currentPosition)
-            activeNode.volume = playbackGain
-            activeNode.play()
-            print("[AUDIO] activeNode PLAY (reconfiguration audio) — \(currentURL?.lastPathComponent ?? "?") pos=\(String(format:"%.2f",currentPosition))s")
             installMeterTap()
             meterTapInstalled = true
+            currentPosition = recoveryResumePosition
+            recoveryStartError = nil
+            guard snapshot.playbackState == .playing, audioFile != nil else {
+                state = snapshot.playbackState
+                finishRecovery(result: .success, proof: nil)
+                return
+            }
+            scheduleSegment(from: recoveryResumePosition)
+            activeNode.volume = playbackGain
+            activeNode.play()
+            state = .playing
             playStartHostTime = CACurrentMediaTime()
-            positionAtPlayStart = currentPosition
-            print("[VELVET] Audio reconfiguration: resumed at \(String(format: "%.1f", currentPosition))s")
+            positionAtPlayStart = recoveryResumePosition
+            resetContinuityMonitor(clearPublishedWarning: false)
+            publishSchedulerClock()
+            recoveryValidationSampleTime = sampleRenderedPosition()?.sampleTime
+            recoveryValidationDeadline = CACurrentMediaTime() + Self.recoveryValidationTimeout
+            audioRecoveryState = .validating
         } catch {
+            recoveryStartError = error.localizedDescription
             lastError = "Audio device changed: resume failed (\(error.localizedDescription))"
-            state = .stopped
-            stopTimer()
-            print("[VELVET] Audio reconfiguration failed: \(error)")
+            finishRecovery(result: .failed, proof: nil)
+        }
+    }
+
+    private func connectRecoveryChain(
+        _ player: AVAudioPlayerNode,
+        _ filter: AVAudioUnitEQ,
+        _ delay: AVAudioUnitDelay,
+        _ reverb: AVAudioUnitReverb
+    ) {
+        engine.connect(player, to: filter, format: nil)
+        engine.connect(filter, to: delay, format: nil)
+        engine.connect(delay, to: reverb, format: nil)
+        engine.connect(reverb, to: engine.mainMixerNode, format: nil)
+    }
+
+    private func validateRecovery(now: TimeInterval) {
+        guard audioRecoveryState == .validating else { return }
+        let proof = sampleRenderedPosition()
+        if let sample = proof?.sampleTime,
+           recoveryValidationSampleTime == nil || sample > recoveryValidationSampleTime! {
+            finishRecovery(result: .success, proof: proof)
+        } else if now >= recoveryValidationDeadline {
+            finishRecovery(result: .failed, proof: proof)
+        }
+    }
+
+    private func finishRecovery(
+        result: AudioRecoveryEvent.Result,
+        proof: (position: TimeInterval, sampleTime: AVAudioFramePosition, sampleRate: Double)?
+    ) {
+        guard let snapshot = recoverySnapshot else { return }
+        let endedAt = CACurrentMediaTime()
+        audioRecoveryHistory.append(AudioRecoveryEvent(
+            id: UUID(), date: Date(), startedAt: recoveryStartedAt, endedAt: endedAt,
+            duration: endedAt - recoveryStartedAt,
+            coalescedNotifications: recoveryCoalescedNotifications,
+            snapshot: snapshot, resumePosition: recoveryResumePosition,
+            result: result, engineStartError: recoveryStartError,
+            renderedProofPosition: proof?.position,
+            renderedProofSampleTime: proof?.sampleTime
+        ))
+        if audioRecoveryHistory.count > Self.maximumRecoveryHistory {
+            audioRecoveryHistory.removeFirst(audioRecoveryHistory.count - Self.maximumRecoveryHistory)
+        }
+        let shouldRepeat = recoveryPassPending && recoveryPassCount < Self.maximumRecoveryPasses
+        recoveryPassPending = false
+        audioRecoveryState = result == .failed ? .failed : .idle
+        if shouldRepeat {
+            audioRecoveryState = .interrupted
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.recoverySnapshot = self.makeRecoverySnapshot(
+                    reason: "coalescedConfigurationChange"
+                )
+                self.recoveryStartedAt = CACurrentMediaTime()
+                self.startRecoveryPass()
+            }
         }
     }
 
@@ -1234,18 +1745,196 @@ final class AudioEngine {
         timer = nil
     }
 
+    /// Réinitialise uniquement les ancres du diagnostic. N'agit ni sur le
+    /// moteur, ni sur le player, ni sur le scheduling audio.
+    private func resetContinuityMonitor(clearPublishedWarning: Bool) {
+        transportPosition = currentPosition
+        renderedAudioPosition = nil
+        renderAnchorSampleTime = nil
+        renderAnchorPosition = currentPosition
+        lastObservedRenderedSampleTime = nil
+        lastObservedTransportPosition = currentPosition
+        stagnationStartedAt = nil
+        lastRecordedAnomalyReasons = []
+        lastMonitoredNode = activeNode
+        audioRenderHealth = .healthy
+        if clearPublishedWarning { latestContinuityDiagnostic = nil }
+    }
+
+    /// Convertit l'horloge du player en position absolue dans le fichier.
+    /// La première valeur valide devient l'ancre de cette séquence de lecture.
+    private func sampleRenderedPosition() -> (
+        position: TimeInterval,
+        sampleTime: AVAudioFramePosition,
+        sampleRate: Double
+    )? {
+        if lastMonitoredNode !== activeNode {
+            renderAnchorSampleTime = nil
+            lastObservedRenderedSampleTime = nil
+            renderAnchorPosition = positionAtPlayStart
+            lastMonitoredNode = activeNode
+        }
+        guard let nodeTime = activeNode.lastRenderTime,
+              let playerTime = activeNode.playerTime(forNodeTime: nodeTime),
+              playerTime.sampleRate > 0 else { return nil }
+
+        if renderAnchorSampleTime == nil
+            || playerTime.sampleTime < (renderAnchorSampleTime ?? playerTime.sampleTime) {
+            renderAnchorSampleTime = playerTime.sampleTime
+            renderAnchorPosition = positionAtPlayStart
+        }
+        guard let anchor = renderAnchorSampleTime else { return nil }
+        let elapsedFrames = max(0, playerTime.sampleTime - anchor)
+        let position = min(effectiveEnd, renderAnchorPosition + Double(elapsedFrames) / playerTime.sampleRate)
+        return (position, playerTime.sampleTime, playerTime.sampleRate)
+    }
+
+    /// Capture CoreAudio effectuée seulement lors de la création d'un
+    /// diagnostic confirmé, jamais dans le callback audio ni à chaque tick.
+    private func currentOutputDeviceDiagnostic() -> (uid: String?, bufferSize: UInt32?) {
+        var deviceID = AudioDeviceID(kAudioObjectUnknown)
+        var deviceIDSize = UInt32(MemoryLayout<AudioDeviceID>.size)
+        var defaultOutputAddress = AudioObjectPropertyAddress(
+            mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        guard AudioObjectGetPropertyData(
+            AudioObjectID(kAudioObjectSystemObject),
+            &defaultOutputAddress,
+            0,
+            nil,
+            &deviceIDSize,
+            &deviceID
+        ) == noErr, deviceID != kAudioObjectUnknown else {
+            return (nil, nil)
+        }
+
+        var unmanagedUID: Unmanaged<CFString>?
+        var uidSize = UInt32(MemoryLayout<Unmanaged<CFString>?>.size)
+        var uidAddress = AudioObjectPropertyAddress(
+            mSelector: kAudioDevicePropertyDeviceUID,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        let uidStatus = AudioObjectGetPropertyData(
+            deviceID,
+            &uidAddress,
+            0,
+            nil,
+            &uidSize,
+            &unmanagedUID
+        )
+        let uid = uidStatus == noErr
+            ? unmanagedUID?.takeUnretainedValue() as String?
+            : nil
+
+        var frames: UInt32 = 0
+        var framesSize = UInt32(MemoryLayout<UInt32>.size)
+        var framesAddress = AudioObjectPropertyAddress(
+            mSelector: kAudioDevicePropertyBufferFrameSize,
+            mScope: kAudioDevicePropertyScopeOutput,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        let framesStatus = AudioObjectGetPropertyData(
+            deviceID,
+            &framesAddress,
+            0,
+            nil,
+            &framesSize,
+            &frames
+        )
+        return (
+            uid,
+            framesStatus == noErr ? frames : nil
+        )
+    }
+
+    /// Observe la continuité sans tenter aucune récupération. Toute allocation
+    /// liée au diagnostic a lieu ici, sur MainActor, jamais dans le tap audio.
+    private func monitorAudioContinuity(now: TimeInterval, transport: TimeInterval) {
+        transportPosition = transport
+        let engineRunning = engine.isRunning
+        let playerPlaying = activeNode.isPlaying
+        let rendered = sampleRenderedPosition()
+        renderedAudioPosition = rendered?.position
+
+        let transportAdvanced = transport > lastObservedTransportPosition + 0.001
+        let sampleAdvanced: Bool
+        if let sample = rendered?.sampleTime, let previous = lastObservedRenderedSampleTime {
+            sampleAdvanced = sample > previous
+        } else {
+            sampleAdvanced = rendered != nil && lastObservedRenderedSampleTime == nil
+        }
+
+        if transportAdvanced && !sampleAdvanced {
+            if stagnationStartedAt == nil { stagnationStartedAt = now }
+        } else if sampleAdvanced {
+            stagnationStartedAt = nil
+            lastRecordedAnomalyReasons = []
+        }
+
+        if let sample = rendered?.sampleTime { lastObservedRenderedSampleTime = sample }
+        lastObservedTransportPosition = transport
+        let stagnantFor = stagnationStartedAt.map { max(0, now - $0) } ?? 0
+
+        if !engineRunning || stagnantFor >= Self.continuityThreshold {
+            audioRenderHealth = .confirmedStall(duration: stagnantFor)
+        } else if stagnantFor > 0 {
+            audioRenderHealth = .suspectedStall(duration: stagnantFor)
+        } else {
+            audioRenderHealth = .healthy
+        }
+
+        var reasons: [ContinuityDiagnostic.Reason] = []
+        if !engineRunning { reasons.append(.engineNotRunning) }
+        if stagnantFor >= Self.continuityThreshold {
+            reasons.append(.playerNotRendering)
+        }
+        if transportAdvanced && stagnantFor >= Self.continuityThreshold {
+            reasons.append(.transportAheadOfRenderedAudio)
+        }
+        guard !reasons.isEmpty, reasons != lastRecordedAnomalyReasons else { return }
+        lastRecordedAnomalyReasons = reasons
+        let outputDevice = currentOutputDeviceDiagnostic()
+
+        let diagnostic = ContinuityDiagnostic(
+            id: UUID(),
+            date: Date(),
+            hostTime: now,
+            trackID: diagnosticTrackID ?? currentURL?.standardizedFileURL.path,
+            reasons: reasons,
+            engineIsRunning: engineRunning,
+            playerIsPlaying: playerPlaying,
+            transportPosition: transport,
+            renderedPosition: rendered?.position,
+            transportRenderDelta: rendered.map { transport - $0.position },
+            renderedSampleTime: rendered?.sampleTime,
+            stagnationDuration: stagnantFor,
+            sampleRate: rendered?.sampleRate,
+            bufferSize: outputDevice.bufferSize,
+            playbackState: state,
+            outputDeviceUID: outputDevice.uid,
+            activeTrackName: diagnosticTrackName ?? currentURL?.lastPathComponent,
+            activeTrackURL: currentURL
+        )
+        latestContinuityDiagnostic = diagnostic
+        continuityDiagnostics.append(diagnostic)
+        if continuityDiagnostics.count > Self.maximumContinuityDiagnostics {
+            continuityDiagnostics.removeFirst(continuityDiagnostics.count - Self.maximumContinuityDiagnostics)
+        }
+    }
+
+    /// Rampe de volume du nœud actif, sur `rampQueue` (hors main thread) :
+    /// la cadence 60 Hz est tenue même quand SwiftUI sature le main actor.
+    /// La completion est toujours livrée sur MainActor, une seule fois, et
+    /// abandonnée si la rampe a été annulée entre-temps (epoch divergent).
     private func fadeVolume(
         to target: Float,
         duration: TimeInterval,
         completion: (() -> Void)? = nil
     ) {
-        fadeTimer?.invalidate()
-        // Incrémente la génération : toute task @MainActor en vol créée par
-        // le timer précédent verra une génération différente et s'annulera.
-        // Évite les tasks fantômes qui continueraient at écrire playerNode.volume
-        // ou at déclencher la completion après qu'un nouveau fade a commencé.
-        fadeGeneration &+= 1
-        let gen = fadeGeneration
+        cancelFadeRamp()
 
         guard duration > 0 else {
             activeNode.volume = target
@@ -1253,64 +1942,114 @@ final class AudioEngine {
             return
         }
 
-        let startVolume = activeNode.volume
+        // Capturé une fois : la rotation des rôles (finishCrossfade) n'a
+        // lieu qu'après la fin du fade, le nœud visé ne change pas en cours
+        // de rampe.
+        let node = activeNode!
+        let startVolume = node.volume
         let startedAt = CACurrentMediaTime()
-        fadeTimer = Self.commonModeTimer(interval: 1.0 / 60.0) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self, self.fadeGeneration == gen else { return }
-                let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
-                // Equal-power uniquement for les fades vers/depuis le silence :
-                // - to 0 : cos(t·π/2) — −3 dB au milieu, chute régulière.
-                // - depuis 0 : sin(t·π/2) — montée régulière.
-                // Linéaire for les transitions partielles (gain offset, étapes echo) :
-                // la formule cos donnerait 0 en fin de fade au lieu de la cible.
-                let volume: Float
-                if target <= 0 {
-                    volume = startVolume * Float(cos(Double(progress) * .pi / 2))
-                } else if startVolume <= 0 {
-                    volume = target * Float(sin(Double(progress) * .pi / 2))
-                } else {
-                    volume = startVolume + (target - startVolume) * Float(progress)
+        let recordMetrics = isCrossfading  // [XFADE METRICS]
+        let epoch = rampLock.withLock { fadeEpoch }
+
+        let source = DispatchSource.makeTimerSource(queue: Self.rampQueue)
+        source.schedule(deadline: .now() + 1.0 / 60.0, repeating: 1.0 / 60.0, leeway: .milliseconds(2))
+        source.setEventHandler { [weak self] in
+            guard let self else { return }
+            let progress = min(1.0, (CACurrentMediaTime() - startedAt) / duration)
+            // Equal-power uniquement for les fades vers/depuis le silence :
+            // - to 0 : cos(t·π/2) — −3 dB au milieu, chute régulière.
+            // - depuis 0 : sin(t·π/2) — montée régulière.
+            // Linéaire for les transitions partielles (gain offset, étapes echo) :
+            // la formule cos donnerait 0 en fin de fade au lieu de la cible.
+            let volume: Float
+            if target <= 0 {
+                volume = startVolume * Float(cos(Double(progress) * .pi / 2))
+            } else if startVolume <= 0 {
+                volume = target * Float(sin(Double(progress) * .pi / 2))
+            } else {
+                volume = startVolume + (target - startVolume) * Float(progress)
+            }
+            self.rampLock.lock()
+            guard self.fadeEpoch == epoch else { self.rampLock.unlock(); return }
+            node.volume = progress >= 1.0 ? target : volume  // valeur exacte garantie en fin
+            if recordMetrics { self.metricsRecordFadeTickLocked(outgoing: true) }  // [XFADE METRICS]
+            if progress >= 1.0 {
+                // Claim la fin sous le lock AVANT la completion : plus aucune
+                // tick, et une seule completion possible (l'équivalent du bump
+                // de génération pré-completion — cf. crash log djay 26/06).
+                self.fadeEpoch &+= 1
+                self.rampLock.unlock()
+                source.cancel()
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    // Ignorée si une annulation/nouvelle rampe est passée entre-temps.
+                    guard self.rampLock.withLock({ self.fadeEpoch == epoch &+ 1 }) else { return }
+                    MainActor.assumeIsolated {
+                        self.fadeTimer = nil
+                        completion?()
+                    }
                 }
-                self.activeNode.volume = volume
-                if progress >= 1.0 {
-                    self.activeNode.volume = target  // valeur exacte garantie
-                    self.fadeTimer?.invalidate()
-                    self.fadeTimer = nil
-                    completion?()
-                }
+            } else {
+                self.rampLock.unlock()
             }
         }
+        fadeTimer = source
+        source.activate()
     }
+
+    // VU-mètre : le tap arrive ~43×/s (buffers de 1024 frames). Publier
+    // chaque valeur créait 43 Task + 43 invalidations SwiftUI par seconde
+    // sur le main thread. On lisse côté tap (attaque immédiate, retombée
+    // douce — rendu identique à l'œil) et on publie à ~15 Hz.
+    @ObservationIgnored nonisolated(unsafe) private var meterSmoothed: Float = 0
+    private var meterLastPublish: Double = 0
+    private static let meterPublishInterval: Double = 1.0 / 15.0
 
     private func installMeterTap() {
         let mixer = engine.mainMixerNode
         let format = mixer.outputFormat(forBus: 0)
         guard format.sampleRate > 0 else { return }
         mixer.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
+            guard let self else { return }
             guard let channelData = buffer.floatChannelData?[0] else { return }
             let frameCount = Int(buffer.frameLength)
             guard frameCount > 0 else { return }
             var sum: Float = 0
             for i in 0..<frameCount { sum += channelData[i] * channelData[i] }
             let rms = sqrt(sum / Float(frameCount))
-            Task { @MainActor [weak self] in
-                self?.meterLevel = rms
+
+            // Lissage sur le thread du tap (sériel) : attaque immédiate,
+            // retombée exponentielle ~70 ms — mêmes crêtes visibles.
+            if rms >= self.meterSmoothed {
+                self.meterSmoothed = rms
+            } else {
+                self.meterSmoothed = self.meterSmoothed * 0.72 + rms * 0.28
             }
+
+            // Publication différée par `tick()` sur MainActor : aucune Task,
+            // aucun print et aucune allocation dans ce callback temps réel.
         }
     }
 
     private func tick() {
         guard state == .playing else { return }
+        let now = CACurrentMediaTime()
+        validateRecovery(now: now)
+        let theoreticalPosition = min(effectiveEnd, positionAtPlayStart + (now - playStartHostTime))
+        monitorAudioContinuity(now: now, transport: theoreticalPosition)
+        if now - meterLastPublish >= Self.meterPublishInterval {
+            meterLastPublish = now
+            meterLevel = meterSmoothed
+        }
         // Garde-fou : si le moteur s'est arrêté sans que
         // AVAudioEngineConfigurationChange ait encore été livré,
         // on délègue at handleEngineConfigurationChange qui reconstruit
         // le graph correctement avant de tenter engine.start().
-        if !engine.isRunning {
-            handleEngineConfigurationChange()
+        if !engine.isRunning, audioRecoveryState == .idle {
+            requestAudioRecovery(reason: "engineNotRunningDuringPlayback")
             return
         }
-        let elapsed = CACurrentMediaTime() - playStartHostTime
+        let elapsed = now - playStartHostTime
         let newPos = positionAtPlayStart + elapsed
         // On clampe la position affichée at effectiveEnd, mais on NE
         // déclenche PAS handleEndOfSegment ici. CACurrentMediaTime est
@@ -1321,4 +2060,20 @@ final class AudioEngine {
         // `.dataPlayedBack` qui déclenche la fin — il est sample-accurate.
         currentPosition = min(effectiveEnd, newPos)
     }
+
+    #if DEBUG
+    /// Hooks LLDB réservés aux tests de continuité. Ils ne sont pas présents
+    /// dans une archive Release et ne sont jamais appelés par l'application.
+    func debugPauseEngineForContinuityTest() {
+        engine.pause()
+    }
+
+    func debugPausePlayerForContinuityTest() {
+        activeNode.pause()
+    }
+
+    func debugResumePlayerAfterContinuityTest() {
+        activeNode.play()
+    }
+    #endif
 }

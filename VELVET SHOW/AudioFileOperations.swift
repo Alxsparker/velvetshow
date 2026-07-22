@@ -623,23 +623,32 @@ struct AudioFileInfo {
 // MARK: ─────────────────────────────────────────────────────────────
 
 /// Ouvre un NSOpenPanel audio et retourne l'URL choisie.
+/// Accepte aussi .mp4/.mov/.m4v pour les vidéos karaoké (l'audio est lu
+/// depuis le container, la vidéo s'affiche sur le Prompter).
 /// Retourne nil si l'utilisateur annule ou choisit un format non supporté.
 func pickAudioFile(title: String, prompt: String) -> URL? {
     let panel = NSOpenPanel()
     panel.title = title
     panel.prompt = prompt
+    panel.message = "Audio (.mp3/.wav/.aiff/.m4a) or karaoke video (.mp4/.mov/.m4v)"
     panel.canChooseFiles = true
     panel.canChooseDirectories = false
     panel.allowsMultipleSelection = false
-    panel.allowedContentTypes = [
-        UTType(filenameExtension: "mp3")  ?? .audio,
-        UTType(filenameExtension: "wav")  ?? .audio,
-        UTType(filenameExtension: "aiff") ?? .audio,
-        UTType(filenameExtension: "aif")  ?? .audio,
-        UTType(filenameExtension: "m4a")  ?? .audio,
-    ]
+    panel.treatsFilePackagesAsDirectories = false
+    // PAS de allowedContentTypes : certains MP4 produits par HandBrake/ffmpeg
+    // n'ont pas de kMDItemContentType et apparaissent grisés sous filtre
+    // UTType. On valide l'extension à la sortie.
     guard panel.runModal() == .OK, let url = panel.url else { return nil }
-    let allowed = ["mp3", "wav", "aiff", "aif", "m4a"]
-    guard allowed.contains(url.pathExtension.lowercased()) else { return nil }
+    let allowed = ["mp3", "wav", "aiff", "aif", "m4a", "mp4", "mov", "m4v"]
+    guard allowed.contains(url.pathExtension.lowercased()) else {
+        let alert = NSAlert()
+        alert.messageText = "Unsupported file format"
+        alert.informativeText = "Velvet Show supports .mp3, .wav, .aiff, .m4a (audio) and .mp4, .mov, .m4v (karaoke video)."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
+        return nil
+    }
     return url
 }
+

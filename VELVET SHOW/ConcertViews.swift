@@ -206,7 +206,10 @@ struct VUMeterView: View {
                     .mask(alignment: .leading) {
                         Rectangle()
                             .frame(width: geo.size.width * normalized)
-                            .animation(.linear(duration: 0.05), value: normalized)
+                            // Durée calée sur l'intervalle de publication du
+                            // niveau (15 Hz ≈ 66 ms) : l'interpolation couvre
+                            // tout l'intervalle, aucun gel entre deux valeurs.
+                            .animation(.linear(duration: 0.07), value: normalized)
                     }
             }
         }
@@ -242,6 +245,13 @@ struct MiniTransportBar: View {
             // qu'aucun song n'est chargé, for une barre stable at l'écran.
             let hasTrack = appState.currentlyLoadedTrack != nil
             let engineState = appState.audioEngine.state
+
+            if let diagnostic = appState.audioEngine.latestContinuityDiagnostic {
+                Image(systemName: "waveform.badge.exclamationmark")
+                    .foregroundStyle(VSColor.danger)
+                    .accessibilityLabel("Audio continuity warning")
+                    .help(continuityDiagnosticHelp(diagnostic))
+            }
 
             Button {
                 appState.returnToBeginning()
@@ -318,6 +328,12 @@ struct MiniTransportBar: View {
                 .stroke(PerformanceChrome.panelStroke, lineWidth: 1)
         }
         .shadow(color: .black.opacity(0.24), radius: 10, x: 0, y: 5)
+    }
+
+    private func continuityDiagnosticHelp(_ diagnostic: AudioEngine.ContinuityDiagnostic) -> String {
+        let reasons = diagnostic.reasons.map(\.rawValue).joined(separator: ", ")
+        let rendered = diagnostic.renderedPosition.map { String(format: "%.3f s", $0) } ?? "unavailable"
+        return "Audio continuity warning: \(reasons)\nTransport: \(String(format: "%.3f s", diagnostic.transportPosition))\nRendered: \(rendered)\nStagnation: \(Int(diagnostic.stagnationDuration * 1000)) ms"
     }
 }
 
@@ -494,9 +510,11 @@ struct NowPlayingBanner: View {
         return String(format: "%02d:%02d", m, s)
     }
 
+    @ViewBuilder
     var body: some View {
-        guard let track else { return AnyView(EmptyView()) }
-        return AnyView(content(track: track))
+        if let track {
+            content(track: track)
+        }
     }
 
     @ViewBuilder
@@ -637,6 +655,17 @@ struct ShowTimelineStrip: View {
 
 // MARK: - Luminosité globale MaestroDMX (CC14, Channel 16)
 
+private func lightingVerificationColor(for state: AppState.VerificationState) -> Color {
+    switch state {
+    case .verifiedLive:
+        return .green
+    case .experimental:
+        return .orange
+    case .unverifiedMapping, .researchOnly:
+        return VSColor.warning
+    }
+}
+
 struct MaestroBrightnessPopover: View {
     let appState: AppState
 
@@ -646,6 +675,25 @@ struct MaestroBrightnessPopover: View {
                 .font(.system(size: 10, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(.secondary)
+
+            HStack(spacing: 6) {
+                Text(appState.lightingControlProfile.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(.secondary.opacity(0.16), in: Capsule())
+                    .foregroundStyle(.secondary)
+                Text(appState.lightingControlProfile.verificationState.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(
+                        lightingVerificationColor(for: appState.lightingControlProfile.verificationState)
+                            .opacity(0.16),
+                        in: Capsule()
+                    )
+                    .foregroundStyle(lightingVerificationColor(for: appState.lightingControlProfile.verificationState))
+            }
 
             Text("\(appState.maestroBrightnessValue)")
                 .font(.system(size: 32, weight: .medium).monospacedDigit())
@@ -662,6 +710,8 @@ struct MaestroBrightnessPopover: View {
                 appState.sendMaestroBrightness(newValue)
             }
             .frame(width: 90, height: 90)
+            .disabled(!appState.lightingLiveControlsAvailable)
+            .opacity(appState.lightingLiveControlsAvailable ? 1 : 0.45)
 
             HStack(spacing: 12) {
                 Button {
@@ -693,6 +743,8 @@ struct MaestroBrightnessPopover: View {
                 .buttonStyle(.borderless)
                 .help("+1")
             }
+            .disabled(!appState.lightingLiveControlsAvailable)
+            .opacity(appState.lightingLiveControlsAvailable ? 1 : 0.45)
 
             HStack(spacing: 8) {
                 ForEach([0, 32, 64, 96, 127], id: \.self) { preset in
@@ -708,11 +760,35 @@ struct MaestroBrightnessPopover: View {
                     .tint(preset == appState.maestroBrightnessValue ? VelvetPalette.nowPlayingYellow : nil)
                 }
             }
+            .disabled(!appState.lightingLiveControlsAvailable)
+            .opacity(appState.lightingLiveControlsAvailable ? 1 : 0.45)
 
-            if appState.maestroDestination == nil {
-                Label("No MIDI Destination", systemImage: "exclamationmark.triangle")
+            // Avertissements protocol-aware : on n'affiche le manque MIDI que
+            // si le protocole demande du MIDI, idem pour OSC. Si AUCUN n'est
+            // configuré, on affiche le warning générique de fallback.
+            let proto       = appState.maestroControlProtocol
+            let midiMissing = proto.usesMidi && appState.maestroDestination == nil
+            let oscMissing  = proto.usesOsc  && !appState.maestroOscTargetIsConfigured
+            if !appState.lightingLiveControlsAvailable {
+                Label(appState.lightingLiveControlsUnavailableMessage, systemImage: "exclamationmark.triangle")
                     .font(.caption2)
                     .foregroundStyle(.orange)
+                    .multilineTextAlignment(.center)
+            } else if midiMissing && oscMissing {
+                Label("No control destination configured", systemImage: "exclamationmark.triangle")
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+            } else {
+                if midiMissing {
+                    Label("No MIDI destination selected", systemImage: "exclamationmark.triangle")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                }
+                if oscMissing {
+                    Label("No OSC target configured", systemImage: "exclamationmark.triangle")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                }
             }
         }
         .padding(16)
@@ -785,7 +861,7 @@ struct BrightnessKnobView: View {
     }
 }
 
-// MARK: - Panneau MIDI manuel MaestroDMX
+// MARK: - Panneau lighting manuel
 
 struct MaestroManualPopover: View {
     let appState: AppState
@@ -798,8 +874,30 @@ struct MaestroManualPopover: View {
             HStack(spacing: 6) {
                 Image(systemName: "light.cylindrical.ceiling.fill")
                     .foregroundStyle(VelvetPalette.gold)
-                Text("MIDI Manuel · MaestroDMX")
+                Text("Lighting Manual Control")
                     .font(.callout.bold())
+                Text(appState.lightingControlProfile.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 1)
+                    .background(.secondary.opacity(0.16), in: Capsule())
+                    .foregroundStyle(.secondary)
+                Text(appState.maestroControlProtocol.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 1)
+                    .background(VelvetPalette.gold.opacity(0.18), in: Capsule())
+                    .foregroundStyle(VelvetPalette.gold)
+                Text(appState.lightingControlProfile.verificationState.label)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 1)
+                    .background(
+                        lightingVerificationColor(for: appState.lightingControlProfile.verificationState)
+                            .opacity(0.16),
+                        in: Capsule()
+                    )
+                    .foregroundStyle(lightingVerificationColor(for: appState.lightingControlProfile.verificationState))
                 Spacer()
                 HStack(spacing: 4) {
                     Circle()
@@ -811,8 +909,15 @@ struct MaestroManualPopover: View {
                 }
             }
             Divider()
-            if events.isEmpty {
-                Text("No MaestroDMX events found in the database.")
+            if !appState.lightingLiveControlsAvailable {
+                Label(appState.lightingLiveControlsUnavailableMessage, systemImage: "exclamationmark.triangle")
+                    .font(.caption)
+                    .foregroundStyle(VSColor.warning)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 20)
+            } else if events.isEmpty {
+                Text("No compatible lighting events found in the database.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -828,20 +933,46 @@ struct MaestroManualPopover: View {
                                 isSelected: selectedEventID == event.midiEventID
                             ) {
                                 selectedEventID = event.midiEventID
-                                appState.dispatch(event: event)
+                                appState.sendMaestroManualCue(event)
                             }
                         }
                     }
                 }
             }
-            if let dest = appState.maestroDestination {
-                Text("→ \(dest.displayName)")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("⚠ No MIDI destination selected")
-                    .font(.caption2)
-                    .foregroundStyle(VSColor.warning)
+            // Avertissements protocol-aware (mêmes règles que le panneau Brightness).
+            let proto       = appState.maestroControlProtocol
+            let midiMissing = proto.usesMidi && appState.maestroDestination == nil
+            let oscMissing  = proto.usesOsc  && !appState.maestroOscTargetIsConfigured
+
+            VStack(alignment: .leading, spacing: 2) {
+                if proto.usesMidi {
+                    if let dest = appState.maestroDestination {
+                        Text("→ MIDI: \(dest.displayName)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                if proto.usesOsc, appState.maestroOscTargetIsConfigured {
+                    Text("→ OSC: \(appState.maestroOscHost):\(appState.maestroOscPort)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                if midiMissing && oscMissing {
+                    Text("⚠ No control destination configured")
+                        .font(.caption2)
+                        .foregroundStyle(VSColor.warning)
+                } else {
+                    if midiMissing {
+                        Text("⚠ No MIDI destination selected")
+                            .font(.caption2)
+                            .foregroundStyle(VSColor.warning)
+                    }
+                    if oscMissing {
+                        Text("⚠ No OSC target configured")
+                            .font(.caption2)
+                            .foregroundStyle(VSColor.warning)
+                    }
+                }
             }
         }
     }
@@ -1002,135 +1133,15 @@ struct TrackColorSheet: View {
     }
 }
 
-// MARK: - Transition Pads
-
-/// Panneau DJ de sélection d'effet de transition. Présenté en `.sheet`.
-/// 3 pads : FADE, FILTER, SLOW FADE.
-/// Navigation clavier : ←/→ cyclent les pads, ↩ confirme, ⎋ annule.
-struct TransitionPadPanel: View {
-    @Bindable var appState: AppState
-    let incomingTitle: String
-    let currentTitle: String
-    let onConfirm: (TransitionEffect) -> Void
-    let onCancel: () -> Void
-
-    @State private var selected: TransitionEffect = .fade
-    @Environment(\.dismiss) private var dismiss
-
-    private let available: [TransitionEffect] = TransitionEffect.allCases.filter { $0.isAvailable }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            // ── Contexte ─────────────────────────────────────────────────────
-            VStack(spacing: 3) {
-                Text("Current: \"\(currentTitle)\"")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text("Next: \"\(incomingTitle)\"")
-                    .font(.subheadline.bold())
-            }
-            .multilineTextAlignment(.center)
-            .padding(.top, 24)
-            .padding(.bottom, 20)
-
-            // ── Pads ─────────────────────────────────────────────────────────
-            HStack(spacing: 10) {
-                ForEach(TransitionEffect.allCases.filter { $0.isAvailable }, id: \.self) { effect in
-                    TransitionPad(effect: effect, isSelected: selected == effect) {
-                        selected = effect
-                    }
-                }
-            }
-            .padding(.horizontal, 20)
-
-            // ── Boutons bas ──────────────────────────────────────────────────
-            HStack {
-                Button("Cancel") { onCancel(); dismiss() }
-                    .keyboardShortcut(.escape, modifiers: [])
-                Spacer()
-                Button("Start") {
-                    appState.lastTransitionEffect = selected
-                    onConfirm(selected)
-                    dismiss()
-                }
-                .buttonStyle(.borderedProminent)
-                .keyboardShortcut(.defaultAction)
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 22)
-        }
-        .frame(width: 460)
-        .onAppear { selected = appState.lastTransitionEffect.isAvailable ? appState.lastTransitionEffect : .fade }
-        .onKeyPress(.leftArrow)  { cycleEffect(by: -1); return .handled }
-        .onKeyPress(.rightArrow) { cycleEffect(by:  1); return .handled }
-    }
-
-    private func cycleEffect(by delta: Int) {
-        guard !available.isEmpty else { return }
-        let idx = available.firstIndex(of: selected) ?? 0
-        selected = available[(idx + delta + available.count) % available.count]
-    }
-}
-
-/// Un pad individuel du panneau Transition Pads.
-struct TransitionPad: View {
-    let effect: TransitionEffect
-    let isSelected: Bool
-    let onTap: () -> Void
-
-    private var accentColor: Color { VelvetPalette.nowPlayingYellow }
-
-    var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 7) {
-                Image(systemName: effect.icon)
-                    .font(.title2)
-                    .symbolRenderingMode(.hierarchical)
-                Text(effect.rawValue)
-                    .font(.caption.bold())
-                    .tracking(0.8)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-            }
-            .frame(width: 76, height: 76)
-            .background(padFill, in: RoundedRectangle(cornerRadius: 10))
-            .overlay {
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(padStroke, lineWidth: isSelected ? 2 : 1)
-            }
-            .foregroundStyle(padForeground)
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var padFill: Color {
-        isSelected ? accentColor.opacity(0.15) : Color.white.opacity(0.05)
-    }
-
-    private var padStroke: Color {
-        isSelected ? accentColor : Color.white.opacity(0.18)
-    }
-
-    private var padForeground: Color {
-        isSelected ? accentColor : .primary
-    }
-}
-
-struct PendingQueuePlaybackRequest: Identifiable {
-    let id = UUID()
-    let item: ConcertQueueItem
-    let track: AudioFile
-    let element: SetElement?
-    let currentTitle: String
-}
+// Panneau de sélection d'effet retiré — un seul mode (FONDU DJ) désormais,
+// plus rien à choisir. Le double-clic (déjà la confirmation Show Safety)
+// déclenche directement le remplacement, voir requestPlay() ci-dessous.
 
 struct QueueStagePanel: View {
     @Bindable var appState: AppState
     let set: ShowSet
     let maxVisibleRows: Int?
     var showsCurrentTrack: Bool = true
-    @State private var pendingReplacement: PendingQueuePlaybackRequest?
     @State private var isManuallyExpanded = false
     @State private var isManuallyCollapsed = false
 
@@ -1192,19 +1203,6 @@ struct QueueStagePanel: View {
             if newCount == 0 {
                 isManuallyExpanded = false
                 isManuallyCollapsed = false
-            }
-        }
-        .sheet(item: $pendingReplacement) { pending in
-            TransitionPadPanel(
-                appState: appState,
-                incomingTitle: pending.track.name ?? "Untitled",
-                currentTitle: pending.currentTitle
-            ) { effect in
-                appState.removeQueueItem(pending.item, from: set)
-                appState.startReplacement(track: pending.track, set: set, element: pending.element, effect: effect)
-                pendingReplacement = nil
-            } onCancel: {
-                pendingReplacement = nil
             }
         }
     }
@@ -1361,13 +1359,11 @@ struct QueueStagePanel: View {
             return
         }
         if appState.shouldConfirmReplacement(for: context.track) {
-            let currentTitle = appState.currentlyLoadedTrack?.name ?? "current song"
-            pendingReplacement = PendingQueuePlaybackRequest(
-                item: item,
-                track: context.track,
-                element: context.element,
-                currentTitle: currentTitle
-            )
+            // Le double-clic (requis par Show Safety pour arriver jusqu'ici)
+            // est déjà la confirmation — un seul mode de transition
+            // (FONDU DJ), plus besoin d'un panneau de choix intermédiaire.
+            appState.removeQueueItem(item, from: set)
+            appState.startReplacement(track: context.track, set: set, element: context.element, effect: .filter)
             return
         }
         appState.playQueueItem(item, in: set)
@@ -1734,14 +1730,6 @@ struct ConcertStatsPanel: View {
     }()
 }
 
-/// Une demande de remplacement en attente de confirmation. Stocke la `Song`
-/// cible et le titre du song en cours for afficher un message clair.
-struct PendingReplacementRequest: Identifiable {
-    let id = UUID()
-    let song: Song
-    let currentTitle: String
-}
-
 struct SetSongsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Bindable var appState: AppState
@@ -1752,7 +1740,6 @@ struct SetSongsView: View {
     var isFocusMode: Bool = false
     var toggleFocusMode: (() -> Void)? = nil
     @State private var selectedSongID: Song.ID?
-    @State private var pendingReplacement: PendingReplacementRequest?
     @State private var draggingShowSongID: Song.ID?
     @State private var dragPreviewLocation: CGPoint?
     @State private var proposedDropIndex: Int?
@@ -1847,8 +1834,14 @@ struct SetSongsView: View {
                 Text(set.name ?? "Untitled Show")
                     .font(.system(size: 17, weight: .black))
                     .lineLimit(1)
+                    .truncationMode(.tail)
+                    .layoutPriority(0)
 
                 // Compteur toujours visible — clic for permuter Played ↔ Restants.
+                // lineLimit(1) + fixedSize : empêche le texte de wrapper sur
+                // plusieurs lignes quand l'espace horizontal est étroit
+                // (sidebar gauche ouverte), ce qui rendait toute la barre
+                // top-bar verticalement trop grande.
                 let remainingCount = songs.count - playedCount
                 Button {
                     showRemainingCount.toggle()
@@ -1857,36 +1850,28 @@ struct SetSongsView: View {
                          ? "Remaining \(remainingCount)/\(songs.count)"
                          : "Played \(playedCount)/\(songs.count)")
                         .font(.caption.bold().monospacedDigit())
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
                         .foregroundStyle(playedCount > 0 ? .primary : .secondary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(Color.white.opacity(0.065), in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .layoutPriority(1)
                 .help(showRemainingCount ? "Show played songs" : "Show remaining songs")
                 Text(Self.compactDuration(remainingDuration))
                     .font(.caption.bold().monospacedDigit())
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .layoutPriority(1)
 
                 // Recherche intégrée dans la barre — visible hors mode édition.
+                // (Bouton Tracks library déplacé dans la toolbar principale
+                // de l'app pour rester toujours visible.)
                 if !appState.isShowEditMode {
                     HStack(spacing: 5) {
-                        Button {
-                            appState.isQuickLibraryVisible.toggle()
-                        } label: {
-                            Image(systemName: appState.isQuickLibraryVisible
-                                  ? "books.vertical.fill"
-                                  : "books.vertical")
-                                .font(.system(size: 13))
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                        .tint(appState.isQuickLibraryVisible ? VSColor.interactive : nil)
-                        .keyboardShortcut("b", modifiers: .command)
-                        .help(appState.isQuickLibraryVisible
-                              ? "Close Quick Songs (⌘B)"
-                              : "Open Songs to add a song (⌘B)")
-
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(searchText.isEmpty ? Color.secondary : VelvetPalette.nowPlayingYellow)
                             .font(.system(size: 13))
@@ -2096,27 +2081,6 @@ struct SetSongsView: View {
                 }
             }
         }
-        // Transition Pads : déclenchés par le double-clic sur une tuile setlist
-        // quand un autre song est déjà en lecture (mode sécurisé activé).
-        .sheet(item: $pendingReplacement) { pending in
-            TransitionPadPanel(
-                appState: appState,
-                incomingTitle: pending.song.title,
-                currentTitle: pending.currentTitle
-            ) { effect in
-                if let audio = pending.song.audio {
-                    appState.startReplacement(
-                        track: audio,
-                        set: set,
-                        element: pending.song.element,
-                        effect: effect
-                    )
-                }
-                pendingReplacement = nil
-            } onCancel: {
-                pendingReplacement = nil
-            }
-        }
     }
 
     /// Déclenché par un double-clic sur une tuile setlist : sélection
@@ -2137,8 +2101,10 @@ struct SetSongsView: View {
         }
 
         if appState.shouldConfirmReplacement(for: song) {
-            let currentTitle = appState.currentlyLoadedTrack?.name ?? "current song"
-            pendingReplacement = PendingReplacementRequest(song: song, currentTitle: currentTitle)
+            // Le double-clic (requis par Show Safety pour arriver jusqu'ici)
+            // est déjà la confirmation — un seul mode de transition
+            // (FONDU DJ), plus besoin d'un panneau de choix intermédiaire.
+            appState.startReplacement(track: audio, set: set, element: song.element, effect: .filter)
             return
         }
 
@@ -2302,7 +2268,7 @@ struct SetSongsView: View {
             Spacer(minLength: 0)
 
             Button(role: .destructive) {
-                appState.removeFromShow(songID: song.element.setElementID, in: set)
+                confirmRemoveFromConcert = song
             } label: {
                 Image(systemName: "trash")
                     .font(.system(size: 11))
@@ -2421,8 +2387,24 @@ struct SetSongsView: View {
         .overlay(alignment: .topLeading) {
             setlistDragPreview
         }
-        .onPreferenceChange(SetlistTileFramePreferenceKey.self) { frames in
-            setlistTileFrames = frames
+        // Frames calculés mathématiquement (phase 2 perfs) : la grille est
+        // entièrement déterministe (colonnes, tailles, espacements connus) —
+        // plus de GeometryReader + PreferenceKey par tuile, donc plus de
+        // passe de préférences à chaque layout. task(id:) ne recalcule que
+        // si la clé (taille, ordre, recherche) change réellement.
+        .task(id: SetlistWallLayoutKey(
+            width: size.width,
+            height: size.height,
+            headerHeight: remainingHeaderHeight,
+            songIDs: searchActiveSongs.map(\.id)
+        )) {
+            setlistTileFrames = Self.computeTileFrames(
+                size: size,
+                headerHeight: remainingHeaderHeight,
+                songs: searchActiveSongs,
+                columns: columns,
+                tileHeight: tileHeight
+            )
         }
     }
 
@@ -2450,6 +2432,38 @@ struct SetSongsView: View {
         return stride(from: 0, to: songs.count, by: columns).map { index in
             Array(songs[index..<min(index + columns, songs.count)])
         }
+    }
+
+    /// Frames des tuiles dans le coordinateSpace du mur, calculés depuis la
+    /// géométrie déterministe de la grille (mêmes constantes que
+    /// `setlistWall` : VStack externe spacing 5, rangées spacing 4,
+    /// colonnes spacing 5). Remplace la collecte par GeometryReader +
+    /// PreferenceKey par tuile — mêmes valeurs, zéro passe de layout.
+    private static func computeTileFrames(
+        size: CGSize,
+        headerHeight: CGFloat,
+        songs: [Song],
+        columns: Int,
+        tileHeight: CGFloat
+    ) -> [Song.ID: CGRect] {
+        guard columns > 0 else { return [:] }
+        let horizontalSpacing: CGFloat = 5
+        let verticalSpacing: CGFloat = 4
+        let yOffset: CGFloat = headerHeight > 0 ? headerHeight + 5 : 0
+        let tileWidth = max(1, (size.width - CGFloat(columns - 1) * horizontalSpacing) / CGFloat(columns))
+        var frames: [Song.ID: CGRect] = [:]
+        frames.reserveCapacity(songs.count)
+        for (index, song) in songs.enumerated() {
+            let row = index / columns
+            let col = index % columns
+            frames[song.id] = CGRect(
+                x: CGFloat(col) * (tileWidth + horizontalSpacing),
+                y: yOffset + CGFloat(row) * (tileHeight + verticalSpacing),
+                width: tileWidth,
+                height: tileHeight
+            )
+        }
+        return frames
     }
 
     @ViewBuilder
@@ -2594,14 +2608,6 @@ struct SetSongsView: View {
             y: isCurrent ? 7 : 3
         )
         .contentShape(Rectangle())
-        .background(
-            GeometryReader { proxy in
-                Color.clear.preference(
-                    key: SetlistTileFramePreferenceKey.self,
-                    value: [song.id: proxy.frame(in: .named(Self.setlistCoordinateSpace))]
-                )
-            }
-        )
         .opacity(draggingShowSongID == song.id ? 0.45 : (song.audio == nil ? 0.52 : 1))
         .highPriorityGesture(
             DragGesture(minimumDistance: 8, coordinateSpace: .named(Self.setlistCoordinateSpace))
@@ -2695,7 +2701,11 @@ struct SetSongsView: View {
                 confirmRemoveFromConcert = nil
             }
         } message: {
-            Text("The song will be removed from this show only. Library, memos, trims and audio settings remain intact.")
+            if appState.isVelvetShow(set) {
+                Text("The song will be removed from this Velvet show only. Library, memos, trims and audio settings remain intact.")
+            } else {
+                Text("This show comes from ShowBuddy. Velvet Show will hide this song from this show inside Velvet only. ShowBuddy.db and the original ShowBuddy setlist are not modified; resetting Velvet edits or re-importing may show it again.")
+            }
         }
         }
     }
@@ -2734,14 +2744,6 @@ struct SetSongsView: View {
                     .transition(.opacity)
             }
         }
-        .background(
-            GeometryReader { proxy in
-                Color.clear.preference(
-                    key: SetlistTileFramePreferenceKey.self,
-                    value: [song.id: proxy.frame(in: .named(Self.setlistCoordinateSpace))]
-                )
-            }
-        )
         .contentShape(Rectangle())
         .onTapGesture(count: 2) {
             requestPlay(song)
@@ -3243,12 +3245,14 @@ struct SetSongsView: View {
 
 }
 
-struct SetlistTileFramePreferenceKey: PreferenceKey {
-    static var defaultValue: [Song.ID: CGRect] = [:]
-
-    static func reduce(value: inout [Song.ID: CGRect], nextValue: () -> [Song.ID: CGRect]) {
-        value.merge(nextValue(), uniquingKeysWith: { _, newValue in newValue })
-    }
+/// Clé d'invalidation du calcul des frames de tuiles : le layout n'est
+/// recalculé que si la taille du mur, la hauteur d'en-tête ou la liste
+/// ordonnée des songs change.
+struct SetlistWallLayoutKey: Equatable {
+    let width: CGFloat
+    let height: CGFloat
+    let headerHeight: CGFloat
+    let songIDs: [Song.ID]
 }
 
 struct SetlistInsertionDropDelegate: DropDelegate {

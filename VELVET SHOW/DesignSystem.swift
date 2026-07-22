@@ -235,6 +235,48 @@ struct VSSectionHeader: View {
     }
 }
 
+/// Séparateur vertical draggable pour ajuster la largeur d'une colonne.
+/// La largeur est persistée par l'appelant via `@AppStorage`.
+struct ResizableColumnDivider: View {
+    @Binding var width: Double
+    let range: ClosedRange<Double>
+    @State private var dragStartWidth: Double?
+    @State private var isHovering = false
+
+    var body: some View {
+        Rectangle()
+            .fill(Color.primary.opacity(isHovering ? 0.28 : 0.16))
+            .frame(width: isHovering ? 3 : 1)
+            .frame(maxHeight: .infinity)
+            .frame(width: 9)
+            .contentShape(Rectangle())
+            .onHover { hovering in
+                isHovering = hovering
+                #if os(macOS)
+                if hovering {
+                    NSCursor.resizeLeftRight.push()
+                } else {
+                    NSCursor.pop()
+                }
+                #endif
+            }
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        if dragStartWidth == nil {
+                            dragStartWidth = width
+                        }
+                        let proposed = (dragStartWidth ?? width) + value.translation.width
+                        width = min(max(proposed, range.lowerBound), range.upperBound)
+                    }
+                    .onEnded { _ in
+                        dragStartWidth = nil
+                    }
+            )
+            .help("Drag to resize column")
+    }
+}
+
 // MARK: - TilePalettePicker
 
 /// Sélecteur de couleur contraint at la palette fixe `VSColor.Tile`.

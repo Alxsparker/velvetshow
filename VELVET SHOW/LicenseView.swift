@@ -2,22 +2,43 @@
 //  LicenseView.swift
 //  VELVET SHOW
 //
-//  Shown when the 30-day trial expires. Lets the user enter a license key
-//  or visit velvetshow.app to purchase.
+//  Shown in two contexts:
+//   • Trial-expired full-screen (mode = .expired) — the historical UX.
+//   • Trial-active sheet (mode = .trial(daysRemaining:)) — lets the user buy
+//     or activate immediately, without waiting for the 30-day timer to expire.
+//
+//  The activation flow (Buy button + key entry + LemonSqueezy validation) is
+//  shared verbatim between the two modes — only the header copy and the
+//  bottom-bar buttons change.
 //
 
 import SwiftUI
 
 struct LicenseView: View {
 
+    enum Mode: Equatable {
+        case expired
+        case trial(daysRemaining: Int)
+    }
+
+    let mode: Mode
+    let onDismiss: (() -> Void)?
+
     @Environment(LicenseManager.self) private var license
+
+    /// Default initializer keeps backward compatibility for any caller that
+    /// constructed `LicenseView()` without arguments (none today, but safe).
+    init(mode: Mode = .expired, onDismiss: (() -> Void)? = nil) {
+        self.mode = mode
+        self.onDismiss = onDismiss
+    }
 
     var body: some View {
         @Bindable var license = license
 
         VStack(spacing: 0) {
 
-            // Header
+            // Header — copy adapts to mode, layout identical.
             VStack(spacing: 16) {
                 Image(systemName: "music.note.house")
                     .font(.system(size: 64))
@@ -27,15 +48,28 @@ struct LicenseView: View {
                 Text("Velvet Show")
                     .font(.system(size: 32, weight: .bold, design: .default))
 
-                Text("Your 30-day trial has ended.")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
+                switch mode {
+                case .expired:
+                    Text("Your 30-day trial has ended.")
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                case .trial(let days):
+                    let unit = days == 1 ? "day" : "days"
+                    Text("Trial · \(days) \(unit) remaining")
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                    Text("Continue evaluating Velvet Show or unlock it now.")
+                        .font(.callout)
+                        .foregroundStyle(.tertiary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 380)
+                }
             }
             .padding(.bottom, 32)
 
             Divider()
 
-            // License input
+            // License input — identical in both modes.
             VStack(alignment: .leading, spacing: 16) {
 
                 Text("Enter your license key")
@@ -79,24 +113,34 @@ struct LicenseView: View {
 
             Divider()
 
-            // Purchase CTA
+            // Bottom bar — purchase + secondary action.
             VStack(spacing: 12) {
                 Text("Don't have a license yet?")
                     .foregroundStyle(.secondary)
 
                 HStack(spacing: 12) {
                     Button("Buy on velvetshow.app — $79") {
-                        NSWorkspace.shared.open(URL(string: "https://velvetshow.lemonsqueezy.com/checkout/buy/9d35d3c7-eaaf-463d-9d60-d191452e75b1")!)
+                        NSWorkspace.shared.open(LicenseManager.checkoutURL)
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
 
-                    Button("Quit") {
-                        NSApplication.shared.terminate(nil)
+                    switch mode {
+                    case .expired:
+                        Button("Quit") {
+                            NSApplication.shared.terminate(nil)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                        .keyboardShortcut("q", modifiers: .command)
+                    case .trial:
+                        Button("Continue Trial") {
+                            onDismiss?()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                        .keyboardShortcut(.cancelAction)
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-                    .keyboardShortcut("q", modifiers: .command)
                 }
             }
             .padding(32)

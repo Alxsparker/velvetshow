@@ -11,23 +11,33 @@ import SwiftUI
 
 struct ShowLibraryRoot: View {
     @Bindable var appState: AppState
+    @AppStorage("showLibrarySidebarWidth") private var showsSidebarWidth: Double = 320
 
     private var isFocusMode: Bool {
         appState.showsSidebarVisibility == .detailOnly
     }
 
+    private var isShowsSidebarVisible: Bool {
+        appState.showsSidebarVisibility != .detailOnly
+    }
+
     var body: some View {
-        NavigationSplitView(columnVisibility: $appState.showsSidebarVisibility) {
-            SetsSidebar(appState: appState)
-                .navigationSplitViewColumnWidth(min: 220, ideal: 280)
-        } detail: {
+        HStack(spacing: 0) {
+            if isShowsSidebarVisible {
+                SetsSidebar(appState: appState)
+                    .frame(width: showsSidebarWidth)
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+                ResizableColumnDivider(width: $showsSidebarWidth, range: 240...460)
+            }
+
             ShowDetailColumn(
                 appState: appState,
                 isFocusMode: isFocusMode,
                 toggleFocusMode: toggleFocusMode
             )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .toolbar(removing: .sidebarToggle)
+        .animation(.easeInOut(duration: 0.22), value: isShowsSidebarVisible)
     }
 
     /// Le triangle "focus concert" collapse simultanément les deux
@@ -49,10 +59,18 @@ struct ShowLibraryRoot: View {
 
 struct SetsSidebar: View {
     @Bindable var appState: AppState
+    @Environment(\.openWindow) private var openWindow
     @State private var isCreatingVelvetShow = false
     @State private var editingSet: ShowSet?
     @State private var deletingSet: ShowSet?
     @State private var isConfirmingResetAll = false
+    // Settings menu state (déplacé de ContentView pour être adjacent à
+    // la pilule Shows : Reset · + · Shows · Books).
+    @State private var isShowingStylesPanel = false
+    @State private var isShowingMigrationSheet = false
+    @State private var migrationResult: AppState.MigrationResult?
+    @State private var isShowingVelvetTrash = false
+    @State private var isShowingMediaLibraryRemap = false
 
     private var showBuddySets: [ShowSet] { appState.showBuddySets }
 
@@ -116,18 +134,44 @@ struct SetsSidebar: View {
         }
     }
 
-    var body: some View {
-        List(selection: $appState.selectedSetID) {
-            // Shows ShowBuddy — ordre alphabétique, pas de drag-and-drop.
-            if !showBuddySets.isEmpty {
-                Section("Imported") {
-                    ForEach(showBuddySets) { set in
-                        showRow(set)
-                    }
-                }
+    private var sidebarHeader: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "rectangle.stack")
+                .font(.caption.bold())
+                .foregroundStyle(.secondary)
+            Text("Shows")
+                .font(.caption.bold())
+                .foregroundStyle(.secondary)
+            Spacer(minLength: 0)
+            Button {
+                isCreatingVelvetShow = true
+            } label: {
+                Image(systemName: "plus")
+                    .font(.system(size: 13, weight: .bold))
+                    .frame(width: 26, height: 24)
+                    .contentShape(Rectangle())
             }
-            // Shows Velvet — ordre manuel, drag-and-drop activé.
-            Section(showBuddySets.isEmpty ? "" : "My Shows") {
+            .buttonStyle(.plain)
+            .foregroundStyle(VSColor.interactive)
+            .help("New Show")
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color.primary.opacity(0.055))
+        .overlay(alignment: .bottom) {
+            Divider().opacity(0.45)
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            sidebarHeader
+
+            List(selection: $appState.selectedSetID) {
+                ForEach(showBuddySets) { set in
+                    showRow(set)
+                }
+
                 ForEach(velvetSets) { set in
                     showRow(set)
                         .anchorPreference(key: TourAnchorsKey.self, value: .bounds) { anchor in
@@ -138,26 +182,12 @@ struct SetsSidebar: View {
                     appState.moveVelvetShows(fromOffsets: from, toOffset: to)
                 }
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .contentMargins(.vertical, 0, for: .scrollContent)
         }
-        .scrollContentBackground(.hidden)
         .background(.ultraThinMaterial)
-        .navigationTitle("Shows")
-        .toolbar {
-            // Réinitialiser tous les concerts (bouton destructif discret)
-            Button {
-                isConfirmingResetAll = true
-            } label: {
-                Image(systemName: "arrow.counterclockwise.circle")
-            }
-            .disabled(appState.sets.isEmpty)
-            .help("Reset all shows")
-
-            Button {
-                isCreatingVelvetShow = true
-            } label: {
-                Label("New Show", systemImage: "plus")
-            }
-        }
+        .toolbar(removing: .sidebarToggle)
         .confirmationDialog(
             "Reset all shows?",
             isPresented: $isConfirmingResetAll,
@@ -176,6 +206,14 @@ struct SetsSidebar: View {
         .sheet(item: $editingSet) { set in
             VelvetShowEditorSheet(mode: .edit(set), appState: appState)
         }
+        .modifier(SettingsMenuSheetsModifier(
+            appState: appState,
+            isShowingStylesPanel: $isShowingStylesPanel,
+            isShowingMediaLibraryRemap: $isShowingMediaLibraryRemap,
+            isShowingMigrationSheet: $isShowingMigrationSheet,
+            migrationResult: $migrationResult,
+            isShowingVelvetTrash: $isShowingVelvetTrash
+        ))
         .confirmationDialog(
             "Delete this show?",
             isPresented: Binding(
@@ -304,6 +342,7 @@ struct ShowDetailColumn: View {
     let appState: AppState
     var isFocusMode: Bool = false
     var toggleFocusMode: (() -> Void)? = nil
+    @AppStorage("showLibraryQuickSongsWidth") private var quickSongsWidth: Double = 300
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -312,9 +351,9 @@ struct ShowDetailColumn: View {
                 HStack(spacing: 0) {
                     if appState.isQuickLibraryVisible {
                         QuickLibraryColumn(appState: appState, set: set)
-                            .frame(minWidth: 240, idealWidth: 300, maxWidth: 360)
+                            .frame(width: quickSongsWidth)
                             .transition(.move(edge: .leading).combined(with: .opacity))
-                        Divider()
+                        ResizableColumnDivider(width: $quickSongsWidth, range: 240...420)
                     }
                     SetSongsView(
                         appState: appState,
@@ -939,6 +978,40 @@ struct DiagnosticBar: View {
         .padding(.vertical, 4)
         .padding(.horizontal, 6)
         .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
+    }
+}
+
+/// ViewModifier regroupant les sheets du menu Settings ⚙️ pour éviter
+/// que le compilateur SwiftUI ne sature sur SetsSidebar.body.
+struct SettingsMenuSheetsModifier: ViewModifier {
+    let appState: AppState
+    @Binding var isShowingStylesPanel: Bool
+    @Binding var isShowingMediaLibraryRemap: Bool
+    @Binding var isShowingMigrationSheet: Bool
+    @Binding var migrationResult: AppState.MigrationResult?
+    @Binding var isShowingVelvetTrash: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .sheet(isPresented: $isShowingStylesPanel) {
+                StylesColorsPanel(appState: appState)
+            }
+            .sheet(isPresented: $isShowingMediaLibraryRemap) {
+                MediaLibraryRemapView {
+                    isShowingMediaLibraryRemap = false
+                }
+                .environment(appState)
+            }
+            .sheet(isPresented: $isShowingMigrationSheet) {
+                MigrationSheet(appState: appState, result: $migrationResult)
+            }
+            .sheet(item: $migrationResult) { result in
+                MigrationResultSheet(result: result)
+            }
+            .sheet(isPresented: $isShowingVelvetTrash) {
+                VelvetTrashSheet { isShowingVelvetTrash = false }
+                    .environment(appState)
+            }
     }
 }
 

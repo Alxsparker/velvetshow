@@ -1,0 +1,158 @@
+{
+  "found_paths": [
+    {
+      "path": "/Applications/Show Buddy Active.app",
+      "provenance": "✅ ShowBuddy Active",
+      "notes": "Application macOS bundle, version 2.3.1, bundle id com.dbaudioware.platinum."
+    },
+    {
+      "path": "/Library/Application Support/db audioware/Show Buddy Active",
+      "provenance": "✅ ShowBuddy Active",
+      "notes": "Support global contenant Documentation, DmxLibrary, Macros, Presets, Shows, Help, Media."
+    },
+    {
+      "path": "/Users/alexandrechalon/Library/Preferences/com.dbaudioware.showbuddy.plist",
+      "provenance": "❓ Indéterminé",
+      "notes": "Préférence utilisateur nommée showbuddy; contenu très générique, pas clairement Active."
+    },
+    {
+      "path": "/Users/alexandrechalon/Library/Preferences/Show Buddy.settings",
+      "provenance": "❓ Indéterminé",
+      "notes": "Fichier XML de préférences, provenance produit non confirmée."
+    },
+    {
+      "path": "/Applications/Show Buddy Setlist.app",
+      "provenance": "⚠️ ShowBuddy Setlist",
+      "notes": "Présent localement mais hors périmètre; non analysé sauf contexte."
+    },
+    {
+      "path": "/Library/Application Support/db audioware/Show Buddy",
+      "provenance": "⚠️ ShowBuddy (legacy)",
+      "notes": "Contient bases ShowBuddy.db/.dbb et médias legacy; inspecté uniquement comme contexte possible."
+    }
+  ],
+  "important_files": [
+    {
+      "path": "/Library/Application Support/db audioware/Show Buddy Active/Documentation/Show Buddy Active.pdf",
+      "provenance": "✅ ShowBuddy Active",
+      "type": "PDF documentation"
+    },
+    {
+      "path": "/Library/Application Support/db audioware/Show Buddy Active/Shows/*",
+      "provenance": "✅ ShowBuddy Active",
+      "type": "Shows XML avec DmxConfig.xml, bank.xml et presets .prt"
+    },
+    {
+      "path": "/Library/Application Support/db audioware/Show Buddy Active/Presets/General/Reset All.prt",
+      "provenance": "✅ ShowBuddy Active",
+      "type": "Preset XML"
+    },
+    {
+      "path": "/Library/Application Support/db audioware/Show Buddy Active/DmxLibrary/**/*.dmx",
+      "provenance": "✅ ShowBuddy Active",
+      "type": "403 fixture definitions, ASCII text"
+    },
+    {
+      "path": "/Library/Application Support/db audioware/Show Buddy Active/Macros",
+      "provenance": "✅ ShowBuddy Active",
+      "type": "Macros et runtime Python embarqué"
+    },
+    {
+      "path": "/Library/Application Support/db audioware/Show Buddy/ShowBuddy.db",
+      "provenance": "⚠️ ShowBuddy (legacy)",
+      "type": "SQLite database avec tables MIDI/DMXIS/sets"
+    }
+  ],
+  "osc_findings": [
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": "Chaînes embarquées dans l'app: Enable OSC, OSC Remote Control, oscInPort, oscOutPort, oscOutAdd, oscMaxBanks, oscMaxPresets, OSC output error."
+    },
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": "Les presets .prt contiennent de nombreux attributs *-osctype, *-osclevel, *-oscphase, *-oscspeed, *-oscshape; cela décrit des oscillateurs/paramètres internes, pas forcément des adresses OSC réseau."
+    },
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": "Aucune liste d'adresses OSC publiques n'a été trouvée dans les fichiers texte inspectés."
+    }
+  ],
+  "midi_findings": [
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": "Chaînes embarquées: MIDI Learn, MIDI Controller, MIDI Notes, MIDI Export, Audio/MIDI Settings, Listen on MIDI channel, Sync to incoming MIDI clock, Control banks with MIDI notes, Control presets with MIDI notes, MIDI Output."
+    },
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": "Les presets .prt exposent des affectations cc/nrpn/ch sur Bank, Preset, PresetUp/Down, BankUp/Down et des paramètres numérotés."
+    },
+    {
+      "provenance": "⚠️ ShowBuddy (legacy)",
+      "finding": "La base ShowBuddy.db contient MidiEvents et MidiMessages; utile pour comprendre un ancien scheduler MIDI, mais pas une preuve de capacité Active."
+    }
+  ],
+  "python_macro_findings": [
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": "Dossier Macros présent avec 2164 fichiers .py copiés; beaucoup relèvent de la librairie Python standard embarquée."
+    },
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": "Sous-dossiers macros visibles: Shapes, Colours, Global Edits, Chases, System, Fan, Select, Channel Masks, Utility."
+    }
+  ],
+  "file_format_findings": [
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": ".prt, bank.xml et DmxConfig.xml sont des XML lisibles; .prt commence par DbAudiowarePreset product=\"DMXIS Platinum\"."
+    },
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": "DmxConfig.xml mappe fixtures, noms, adresses DMX from/to, positions et paramètres de faisceau."
+    },
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "finding": ".dmx fixture definitions sont du texte ASCII simple avec noms de canaux et plages de valeurs."
+    },
+    {
+      "provenance": "⚠️ ShowBuddy (legacy)",
+      "finding": ".dmxis est binaire; un échantillon commence par la signature visible 'jatm'."
+    },
+    {
+      "provenance": "❓ Indéterminé",
+      "finding": "Aucun fichier .sab trouvé dans les emplacements inspectés."
+    }
+  ],
+  "integration_opportunities": [
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "opportunity": "Piloter Active en runtime via MIDI: notes/CC pour banques, presets, MIDI clock et MIDI Learn semblent exposés."
+    },
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "opportunity": "Piloter Active via OSC si l'interface OSC Remote Control est documentée/configurable; ports et adresse de sortie semblent exister."
+    },
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "opportunity": "Générer ou inspecter des shows/presets offline en XML pour préconfigurer banques, presets, fixtures, vidéo et DMX."
+    },
+    {
+      "provenance": "✅ ShowBuddy Active",
+      "opportunity": "Art-Net semble supporté comme sortie DMX; Velvet Show pourrait plutôt synchroniser Active que remplacer son rendu DMX."
+    }
+  ],
+  "risks": [
+    "Pas de documentation locale extraite confirmant les adresses OSC exactes.",
+    "Les chaînes binaires indiquent des capacités mais ne constituent pas un contrat API stable.",
+    "Les formats XML sont lisibles mais non officiellement documentés dans l'audit.",
+    "Les données legacy ShowBuddy ne doivent pas être confondues avec Active.",
+    "Aucun test runtime n'a été effectué; l'application n'a pas été lancée ni configurée."
+  ],
+  "next_steps": [
+    "Ouvrir ShowBuddy Active et relever manuellement la page de configuration OSC/MIDI/Art-Net.",
+    "Créer un petit show Active de test, puis diff des fichiers Shows/Presets générés.",
+    "Tester l'envoi MIDI CC/notes depuis Velvet Show vers Active avec un port MIDI virtuel IAC.",
+    "Tester OSC avec un client UDP local après identification des ports et adresses dans l'UI.",
+    "Demander ou consulter la documentation officielle ShowBuddy Active sur OSC Remote Control."
+  ]
+}

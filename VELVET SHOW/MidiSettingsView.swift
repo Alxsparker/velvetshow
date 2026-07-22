@@ -16,7 +16,7 @@ import AudioToolbox
 ///
 /// Contenu :
 ///   1) statut du moteur CoreMIDI (prêt ou en erreur),
-///   2) picker de la destination MaestroDMX (parmi celles vues par CoreMIDI),
+///   2) picker de la destination MIDI / lighting (parmi celles vues par CoreMIDI),
 ///   3) liste complète des destinations détectées, marquant celle qui
 ///      est actuellement sélectionnée,
 ///   4) bouton "Rafraîchir" — utile si tu branches une interface MIDI
@@ -30,6 +30,17 @@ struct MidiSettingsView: View {
     @State private var isShowingTailCleanup = false
     @State private var isAdvancedExpanded   = false
     @State private var isRestCueExpanded    = false
+
+    private var lightingVerificationColor: Color {
+        switch appState.lightingControlProfile.verificationState {
+        case .verifiedLive:
+            return .green
+        case .experimental:
+            return .orange
+        case .unverifiedMapping, .researchOnly:
+            return VSColor.warning
+        }
+    }
 
     // MARK: Résumé Rest cue (label fermé du DisclosureGroup)
 
@@ -117,7 +128,7 @@ struct MidiSettingsView: View {
 
             Divider()
 
-            // ── Sortie MIDI (ex Destination MaestroDMX) ─────────────
+            // ── Sortie MIDI / lighting ──────────────────────────────
             Text("Sortie MIDI")
                 .font(.subheadline.bold())
 
@@ -147,6 +158,99 @@ struct MidiSettingsView: View {
                 )
                 .font(.caption)
                 .foregroundStyle(VSColor.warning)
+            }
+
+            Divider()
+
+            // ── MIDI Input (footswitch transport) ────────────────────
+            MidiInputBindingsSection(appState: appState)
+
+            Divider()
+
+            // ── Lighting Profile / Transport ─────────────────────────
+            // Phase 1 : sépare le moteur lumière choisi du protocole de
+            // transport utilisé par les panneaux live MaestroDMX existants.
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Lighting Profile")
+                    .font(.subheadline.bold())
+                Text("Choose the light engine profile Velvet Show should describe in the live controls. Timeline MIDI/OSC cues and Rest Cue settings are unaffected.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Picker("Profile", selection: $appState.lightingControlProfile) {
+                    ForEach(AppState.LightingControlProfile.allCases) { profile in
+                        Text(profile.label).tag(profile)
+                    }
+                }
+                .pickerStyle(.menu)
+
+                Text(appState.lightingControlProfile.detail)
+                    .font(.caption2)
+                    .foregroundStyle(appState.lightingLiveControlsAvailable ? .secondary : VSColor.warning)
+
+                HStack(spacing: 6) {
+                    Text(appState.lightingControlProfile.verificationState.label)
+                        .font(.caption.bold())
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule()
+                                .fill(lightingVerificationColor.opacity(0.16))
+                        )
+                        .foregroundStyle(lightingVerificationColor)
+
+                    Text(appState.lightingControlProfile.verificationState.detail)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                if !appState.lightingLiveControlsAvailable {
+                    Label(appState.lightingLiveControlsUnavailableMessage,
+                          systemImage: "lock.fill")
+                        .font(.caption)
+                        .foregroundStyle(VSColor.warning)
+                }
+
+                Divider()
+
+                Text("Manual Control Transport")
+                    .font(.subheadline.bold())
+                Text("Transport applies only to the existing live brightness panel and manual cue picker. It does not change the scheduler or timeline cues.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Picker("Protocol", selection: $appState.maestroControlProtocol) {
+                    ForEach(AppState.MaestroControlProtocol.allCases) { p in
+                        Text(p.label).tag(p)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .disabled(!appState.lightingLiveControlsAvailable)
+
+                if appState.lightingLiveControlsAvailable && appState.maestroControlProtocol.usesOsc {
+                    HStack(spacing: 6) {
+                        Text("OSC Host").font(.caption.bold()).foregroundStyle(.secondary)
+                            .frame(width: 72, alignment: .leading)
+                        TextField("192.168.37.1", text: $appState.maestroOscHost)
+                            .textFieldStyle(.roundedBorder)
+                            .font(.system(.body, design: .monospaced))
+                        Text("Port").font(.caption.bold()).foregroundStyle(.secondary)
+                        TextField("7672", value: $appState.maestroOscPort, format: .number.grouping(.never))
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 70)
+                    }
+                    Text("OSC sends `/show/cue/index Int(n)` for manual cues and `/show/brightness Int(0…127)` for the brightness panel. Defaults match MaestroDMX out of the box; adjust host/port for other OSC receivers.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    if !appState.maestroOscTargetIsConfigured {
+                        Label("OSC target is empty or port is out of range.",
+                              systemImage: "exclamationmark.bubble")
+                            .font(.caption)
+                            .foregroundStyle(VSColor.warning)
+                    }
+                }
             }
 
             Divider()
@@ -202,6 +306,57 @@ struct MidiSettingsView: View {
                     }
                 }
                 .tint(VSColor.warning)
+            }
+
+            Divider()
+
+            // ── DJ / Intermission handoff ─────────────────────────────
+            VStack(alignment: .leading, spacing: 8) {
+                Text("DJ / Intermission Handoff")
+                    .font(.subheadline.bold())
+
+                Text("Vinyl button target. Opens the selected app and sends Play when possible; otherwise it can fall back to the Space key.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Picker("Target", selection: $appState.djHandoffTarget) {
+                    ForEach(AppState.DJHandoffTarget.allCases) { target in
+                        Text(target.label).tag(target)
+                    }
+                }
+                .pickerStyle(.menu)
+
+                if appState.djHandoffTarget == .custom {
+                    TextField("Bundle ID, e.g. com.company.Player", text: $appState.djHandoffCustomBundleID)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(.body, design: .monospaced))
+                    TextField("App name fallback, e.g. My Player", text: $appState.djHandoffCustomAppName)
+                        .textFieldStyle(.roundedBorder)
+                    Text("Bundle ID is preferred. App name is used as a fallback scan in /Applications and ~/Applications.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack(spacing: 8) {
+                    Text("Cold launch delay")
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+                    Slider(
+                        value: Binding(
+                            get: { Double(appState.djHandoffColdLaunchDelayMillis) },
+                            set: { appState.djHandoffColdLaunchDelayMillis = Int($0.rounded()) }
+                        ),
+                        in: 0...2_000,
+                        step: 50
+                    )
+                    Text("\(max(0, min(2_000, appState.djHandoffColdLaunchDelayMillis))) ms")
+                        .font(.caption.monospacedDigit())
+                        .frame(width: 58, alignment: .trailing)
+                }
+
+                Toggle("Use Space key fallback when native Play is unavailable", isOn: $appState.djHandoffUsesKeyboardFallback)
+                    .font(.caption)
+                    .tint(VSColor.interactive)
             }
 
             Divider()
@@ -360,6 +515,11 @@ struct MidiSettingsView: View {
 
             // ── Demo / First Steps ──────────────────────────────────
             DemoContentSection(appState: appState)
+
+            Divider()
+
+            // ── License & Trial ──────────────────────────────────────
+            LicenseSection()
 
             Divider()
 
@@ -642,29 +802,32 @@ private struct VelvetMidiLibrarySection: View {
             HStack {
                 Spacer()
                 Menu {
-                    Button {
-                        showingImport = true
+                    Menu {
+                        Button {
+                            showingImport = true
+                        } label: {
+                            Label("MaestroDMX Show...", systemImage: "square.and.arrow.down")
+                        }
+                        Button { } label: {
+                            Label("Wolfmix... (soon)", systemImage: "sparkles")
+                        }
+                        .disabled(true)
+                        Button { } label: {
+                            Label("QLab... (soon)", systemImage: "sparkles")
+                        }
+                        .disabled(true)
+                        Button { } label: {
+                            Label("Lightkey... (soon)", systemImage: "sparkles")
+                        }
+                        .disabled(true)
                     } label: {
-                        Label("MaestroDMX Show...", systemImage: "square.and.arrow.down")
+                        Label("Third-party app...", systemImage: "app.connected.to.app.below.fill")
                     }
                     Button {
                         showingMidiImport = true
                     } label: {
                         Label("Fichier MIDI (.mid)...", systemImage: "doc.badge.arrow.up")
                     }
-                    Divider()
-                    Button { } label: {
-                        Label("Wolfmix... (soon)", systemImage: "sparkles")
-                    }
-                    .disabled(true)
-                    Button { } label: {
-                        Label("QLab... (soon)", systemImage: "sparkles")
-                    }
-                    .disabled(true)
-                    Button { } label: {
-                        Label("Lightkey... (soon)", systemImage: "sparkles")
-                    }
-                    .disabled(true)
                 } label: {
                     Label("Import", systemImage: "square.and.arrow.down.on.square")
                         .font(.caption)
@@ -2828,6 +2991,8 @@ private struct MediaLibrarySummarySection: View {
                     .font(.callout)
                 Label(librarySize, systemImage: "internaldrive")
                     .font(.callout)
+                Label("\(appState.tracksMissingBPM.count) missing BPM", systemImage: "metronome")
+                    .font(.callout)
             }
             .foregroundStyle(.secondary)
 
@@ -2876,6 +3041,45 @@ private struct MediaLibrarySummarySection: View {
                             .help("Oublier l'autorisation actuelle")
                         }
                     }
+
+                    Divider()
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 8) {
+                            Button {
+                                appState.analyzeMissingBPMs()
+                            } label: {
+                                Label("Analyze Missing BPMs", systemImage: "metronome")
+                            }
+                            .controlSize(.small)
+                            .disabled(appState.isAnalyzingMissingBPMs || appState.tracksMissingBPM.isEmpty)
+
+                            if appState.tracksMissingBPM.isEmpty && !appState.isAnalyzingMissingBPMs {
+                                Label("All known", systemImage: "checkmark.circle.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.green)
+                            }
+                        }
+
+                        if appState.isAnalyzingMissingBPMs {
+                            ProgressView(
+                                value: Double(appState.bpmAnalysisCompletedCount),
+                                total: Double(max(1, appState.bpmAnalysisTotalCount))
+                            )
+                            Text(appState.bpmAnalysisProgressText)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        } else if appState.bpmAnalysisTotalCount > 0 {
+                            Text("Last scan: \(appState.bpmAnalysisDetectedCount) BPM value\(appState.bpmAnalysisDetectedCount == 1 ? "" : "s") detected.")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Text("Runs in the background and only fills songs with no existing BPM. Manual BPM values are never overwritten.")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 .padding(.top, 6)
             } label: {
@@ -2902,6 +3106,170 @@ private struct MediaLibrarySummarySection: View {
             await MainActor.run { librarySize = formatted }
         }
     }
+}
+
+// MARK: - License & Trial Section
+
+/// Section Settings dédiée à la licence et au trial. Affiche l'état courant
+/// (licence active / trial en cours / trial expiré sans licence), permet
+/// d'ouvrir la sheet d'activation et — quand la licence est active — propose
+/// une désactivation explicite (rare, mais utile en cas de transfert de Mac).
+///
+/// Source de vérité : `LicenseManager` + `BetaManager` injectés via Environment.
+private struct LicenseSection: View {
+    @Environment(LicenseManager.self) private var licenseManager
+    @Environment(BetaManager.self) private var betaManager
+
+    @State private var isExpanded   = false
+    @State private var showSheet    = false
+    @State private var showDeactivateConfirm = false
+
+    private var statusTitle: String {
+        if licenseManager.isActivated { return "Licensed" }
+        if !betaManager.isExpired     { return "Trial Active" }
+        return "Trial Expired"
+    }
+
+    private var statusDetail: String {
+        if licenseManager.isActivated { return "Full version unlocked" }
+        if !betaManager.isExpired {
+            let d = betaManager.daysRemaining
+            return "\(d) day\(d == 1 ? "" : "s") remaining"
+        }
+        return "Enter a license key to keep using Velvet Show"
+    }
+
+    private var statusColor: Color {
+        if licenseManager.isActivated { return .green }
+        if !betaManager.isExpired {
+            let d = betaManager.daysRemaining
+            if d <= 3 { return .red }
+            if d <= 7 { return .orange }
+            return .secondary
+        }
+        return .red
+    }
+
+    private var statusIcon: String {
+        if licenseManager.isActivated { return "checkmark.seal.fill" }
+        if !betaManager.isExpired     { return "hourglass" }
+        return "lock.fill"
+    }
+
+    var body: some View {
+        DisclosureGroup(isExpanded: $isExpanded) {
+            VStack(alignment: .leading, spacing: 12) {
+
+                // ── État détaillé ──────────────────────────────────────
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 6) {
+                        Image(systemName: statusIcon)
+                            .foregroundStyle(statusColor)
+                        Text(statusTitle)
+                            .font(.subheadline.bold())
+                            .foregroundStyle(statusColor)
+                    }
+                    Text(statusDetail)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    if !licenseManager.isExpired_meta, !licenseManager.isActivated, !betaManager.isExpired {
+                        Text("Trial ends on \(betaManager.expiresAt.formatted(date: .abbreviated, time: .omitted)).")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+
+                    if licenseManager.isActivated,
+                       case .activated(let key) = licenseManager.state {
+                        Text("Key: \(maskedKey(key))")
+                            .font(.caption2.monospacedDigit())
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+
+                // ── Actions ────────────────────────────────────────────
+                if !licenseManager.isActivated {
+                    HStack(spacing: 8) {
+                        Button {
+                            showSheet = true
+                        } label: {
+                            Label("Unlock / Activate License…", systemImage: "key.fill")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+
+                        Button {
+                            NSWorkspace.shared.open(LicenseManager.checkoutURL)
+                        } label: {
+                            Label("Buy on velvetshow.app", systemImage: "cart")
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                } else {
+                    HStack(spacing: 8) {
+                        Button(role: .destructive) {
+                            showDeactivateConfirm = true
+                        } label: {
+                            Label("Deactivate License on This Mac…", systemImage: "key.slash")
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                    Text("Deactivating removes the license from this Mac only. Use this when transferring Velvet Show to a new machine.")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+            .padding(.top, 6)
+        } label: {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("License & Trial")
+                    .font(.subheadline.bold())
+                if !isExpanded {
+                    HStack(spacing: 6) {
+                        Image(systemName: statusIcon).font(.caption2)
+                        Text("\(statusTitle) · \(statusDetail)")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(statusColor)
+                }
+            }
+        }
+        .sheet(isPresented: $showSheet) {
+            LicenseSheet(
+                licenseManager: licenseManager,
+                betaManager: betaManager,
+                onDismiss: { showSheet = false }
+            )
+        }
+        .confirmationDialog(
+            "Deactivate license on this Mac?",
+            isPresented: $showDeactivateConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Deactivate", role: .destructive) {
+                Task { await licenseManager.deactivate() }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Velvet Show will fall back to the remaining trial period (or lock immediately if the trial is already expired). You can re-activate any time with the same key.")
+        }
+    }
+
+    private func maskedKey(_ key: String) -> String {
+        let trimmed = key.trimmingCharacters(in: .whitespaces)
+        guard trimmed.count > 8 else { return String(repeating: "•", count: max(0, trimmed.count)) }
+        let head = trimmed.prefix(4)
+        let tail = trimmed.suffix(4)
+        return "\(head)••••\(tail)"
+    }
+}
+
+private extension LicenseManager {
+    /// Placeholder pour usages futurs (renouvellement, etc.). Aujourd'hui
+    /// toujours `false` — la couche serveur ne renvoie pas d'état d'expiration.
+    var isExpired_meta: Bool { false }
 }
 
 // MARK: - Credits & Licenses
@@ -2973,3 +3341,131 @@ private struct CreditsSection: View {
     }
 }
 
+// MARK: ───────────────────────────────────────────────────────────
+// MARK: MIDI Input (footswitch transport)
+// MARK: ───────────────────────────────────────────────────────────
+
+/// Section "MIDI Input" — un binding par action transport. Le mode Learn
+/// capture le prochain message MIDI input pour le lier à l'action.
+struct MidiInputBindingsSection: View {
+    @Bindable var appState: AppState
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Text("MIDI Input · Footswitch transport")
+                    .font(.subheadline.bold())
+                Spacer()
+                if appState.midiLearningAction != nil {
+                    Button("Cancel learn") {
+                        appState.cancelLearningMidiInput()
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.orange)
+                    .font(.caption)
+                }
+            }
+
+            Text("Pair your USB or Bluetooth MIDI footswitch via Audio MIDI Setup. Click Learn next to an action, then press the footswitch — the message is captured.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if appState.midiEngine.sources.isEmpty {
+                Label("No MIDI input source detected. Pair your device (Audio MIDI Setup → Bluetooth Configuration), then click Refresh.",
+                      systemImage: "antenna.radiowaves.left.and.right.slash")
+                    .font(.caption)
+                    .foregroundStyle(VSColor.warning)
+            } else {
+                Text("Detected: \(appState.midiEngine.sources.map(\.displayName).joined(separator: ", "))")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(spacing: 4) {
+                ForEach(MidiInputAction.allCases) { action in
+                    MidiInputBindingRow(appState: appState, action: action)
+                }
+            }
+            .padding(.top, 4)
+        }
+    }
+}
+
+/// Une ligne par action : nom · binding actuel · Learn / Clear.
+struct MidiInputBindingRow: View {
+    @Bindable var appState: AppState
+    let action: MidiInputAction
+
+    private var binding: MidiInputBinding? {
+        appState.midiInputBinding(for: action)
+    }
+    private var isLearning: Bool {
+        appState.midiLearningAction == action
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(action.displayName)
+                .font(.caption.bold())
+                .frame(width: 130, alignment: .leading)
+
+            if isLearning {
+                Label("Press your footswitch…", systemImage: "ear.badge.waveform")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else if let b = binding {
+                Text(describeBinding(b))
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                Text("Not bound")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            Button(isLearning ? "Cancel" : "Learn") {
+                if isLearning {
+                    appState.cancelLearningMidiInput()
+                } else {
+                    appState.startLearningMidiInput(for: action)
+                }
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+
+            Button {
+                appState.clearMidiInputBinding(for: action)
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+            }
+            .buttonStyle(.borderless)
+            .foregroundStyle(binding == nil ? .tertiary : .secondary)
+            .disabled(binding == nil)
+            .help("Remove this binding")
+        }
+        .padding(.vertical, 2)
+    }
+
+    /// Affichage humain : "Note On C4 ch1", "CC 64 ch1", "PC 5 ch10".
+    private func describeBinding(_ b: MidiInputBinding) -> String {
+        let chan = Int(b.channel) + 1
+        switch b.status {
+        case 0x90: return "Note On \(noteName(Int(b.data1))) · ch\(chan)"
+        case 0xB0: return "CC \(Int(b.data1)) · ch\(chan)"
+        case 0xC0: return "PC \(Int(b.data1)) · ch\(chan)"
+        case 0xD0: return "Aftertouch \(Int(b.data1)) · ch\(chan)"
+        case 0xE0: return "Pitch Bend · ch\(chan)"
+        default:   return String(format: "0x%02X d1=%d · ch%d", b.status, b.data1, chan)
+        }
+    }
+
+    private func noteName(_ midi: Int) -> String {
+        let names = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+        let octave = midi / 12 - 1
+        let name = names[midi % 12]
+        return "\(name)\(octave)"
+    }
+}

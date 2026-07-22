@@ -264,7 +264,7 @@ private struct CueMidiBanner: View {
                 Text(text)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(.primary)
-                Text("Works with MaestroDMX, myDMX, Zero 88, Wolfmix and other MIDI-compatible systems.")
+                Text("Works with MIDI/OSC-compatible lighting systems; app-specific bridges may add latency.")
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

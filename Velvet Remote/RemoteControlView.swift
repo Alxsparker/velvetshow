@@ -4,7 +4,7 @@
 //
 //  Télécommande de spectacle compacte :
 //  - haut fixe  : morceau courant, timer, next, +2
-//  - centre      : setlist scrollable — toucher = prochain morceau (pas de lancement)
+//  - centre      : queue "UP NEXT" + setlist scrollable
 //  - bas fixe    : Play/Pause + Next
 //
 
@@ -28,6 +28,10 @@ struct RemoteControlView: View {
                 VStack(spacing: 0) {
                     headerPanel(state: state)
                     Divider().overlay(palette.secondaryText.opacity(0.2))
+                    if !state.queue.isEmpty {
+                        queuePanel(state: state)
+                        Divider().overlay(palette.secondaryText.opacity(0.2))
+                    }
                     setlistPanel(state: state)
                     Divider().overlay(palette.secondaryText.opacity(0.2))
                     commandBar(state: state)
@@ -90,7 +94,19 @@ struct RemoteControlView: View {
         .background(Color.black.opacity(0.30))
     }
 
-    // MARK: - Setlist scrollable
+    // MARK: - Queue fixe (UP NEXT)
+
+    private func queuePanel(state: RemoteStateUpdate) -> some View {
+        VStack(spacing: 0) {
+            sectionHeader("UP NEXT")
+            ForEach(Array(state.queue.enumerated()), id: \.element.id) { index, item in
+                queueRow(item: item, position: index + 1)
+            }
+        }
+        .background(Color.black.opacity(0.20))
+    }
+
+    // MARK: - Setlist scrollable (UPCOMING SONGS uniquement)
 
     private func setlistPanel(state: RemoteStateUpdate) -> some View {
         Group {
@@ -106,10 +122,11 @@ struct RemoteControlView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 0) {
+                    VStack(spacing: 0) {
                         sectionHeader("UPCOMING SONGS")
                         ForEach(Array(state.upcomingSetlist.enumerated()), id: \.element.id) { index, song in
-                            setlistRow(song: song, index: index, nextTitle: state.nextSongTitle)
+                            let queuePos = state.queue.firstIndex(where: { $0.id == song.id }).map { $0 + 1 }
+                            setlistRow(song: song, index: index, nextTitle: state.nextSongTitle, queuePosition: queuePos)
                         }
                     }
                 }
@@ -129,13 +146,49 @@ struct RemoteControlView: View {
             .padding(.bottom, 6)
     }
 
-    private func setlistRow(song: RemoteSetlistSong, index: Int, nextTitle: String?) -> some View {
+    // Ligne dans la section UP NEXT
+    private func queueRow(item: RemoteSetlistSong, position: Int) -> some View {
+        HStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(palette.accent.opacity(0.20))
+                    .frame(width: 24, height: 24)
+                Text("\(position)")
+                    .font(.system(size: 12, weight: .bold).monospacedDigit())
+                    .foregroundStyle(palette.accent)
+            }
+
+            Text(item.title)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(palette.primaryText)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button {
+                client.sendCommand("removeFromQueue:\(item.id)")
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 22))
+                    .foregroundStyle(palette.secondaryText.opacity(0.45))
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.leading, 20)
+        .padding(.trailing, 8)
+        .padding(.vertical, 10)
+    }
+
+    // Ligne dans la section UPCOMING SONGS
+    private func setlistRow(song: RemoteSetlistSong, index: Int, nextTitle: String?, queuePosition: Int?) -> some View {
         let isNext = song.title == nextTitle
+        let isQueued = queuePosition != nil
         return Button {
-            client.sendCommand("prioritizeNext:\(song.id)")
+            guard !isQueued else { return }
+            client.sendCommand("enqueueAtEnd:\(song.id)")
         } label: {
             HStack(spacing: 14) {
-                // Indicateur position
                 Text("\(index + 1)")
                     .font(.system(size: 12, weight: .medium).monospacedDigit())
                     .foregroundStyle(palette.secondaryText.opacity(0.35))
@@ -143,11 +196,24 @@ struct RemoteControlView: View {
 
                 Text(song.title)
                     .font(.system(size: 15, weight: isNext ? .semibold : .regular))
-                    .foregroundStyle(isNext ? palette.accent : palette.primaryText.opacity(0.85))
+                    .foregroundStyle(
+                        isQueued ? palette.secondaryText.opacity(0.40) :
+                        isNext   ? palette.accent :
+                                   palette.primaryText.opacity(0.85)
+                    )
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                if isNext {
+                if let pos = queuePosition {
+                    ZStack {
+                        Circle()
+                            .fill(palette.accent.opacity(0.18))
+                            .frame(width: 22, height: 22)
+                        Text("\(pos)")
+                            .font(.system(size: 11, weight: .bold).monospacedDigit())
+                            .foregroundStyle(palette.accent)
+                    }
+                } else if isNext {
                     Image(systemName: "arrow.right.circle.fill")
                         .font(.system(size: 14))
                         .foregroundStyle(palette.accent)
@@ -159,7 +225,7 @@ struct RemoteControlView: View {
         }
         .buttonStyle(.plain)
         .background(
-            isNext ? palette.accent.opacity(0.08) : Color.clear
+            isNext && !isQueued ? palette.accent.opacity(0.08) : Color.clear
         )
     }
 

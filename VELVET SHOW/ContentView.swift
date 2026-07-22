@@ -28,13 +28,14 @@ struct ContentView: View {
     // L'AppState est désormais injecté via l'environnement (cf.
     // `VELVET_SHOWApp`). Il est partagé avec la fenêtre Prompter.
     @Environment(AppState.self) private var appState
+    @Environment(LicenseManager.self) private var licenseManager
+    @Environment(BetaManager.self) private var betaManager
+    @Environment(UpdateChecker.self) private var updateChecker
     @Environment(\.openWindow) private var openWindow
 
-    @State private var isShowingStylesPanel = false
-    @State private var isShowingMigrationSheet = false
-    @State private var migrationResult: AppState.MigrationResult?
-    @State private var isShowingVelvetTrash = false
-    @State private var isShowingMediaLibraryRemap = false
+    // (Le Menu Settings ⚙️ + ses @State + sheets ont été déplacés dans
+    //  SetsSidebar (ShowLibraryViews.swift) pour rejoindre la pilule
+    //  Reset · + · Shows · Books.)
 
     var body: some View {
         // Pour binder dans la Picker, on a besoin d'une enveloppe Bindable
@@ -42,174 +43,23 @@ struct ContentView: View {
         // depuis Swift 5.9 (`@Bindable var x = x` dans le body).
         @Bindable var appState = appState
 
-        Group {
-            switch appState.mode {
-            case .trackLibrary:
-                TrackLibraryRoot(appState: appState)
-            case .showLibrary:
-                ShowLibraryRoot(appState: appState)
+        VStack(spacing: 0) {
+            FixedAppToolbar(
+                appState: appState,
+                betaManager: betaManager,
+                licenseManager: licenseManager,
+                updateChecker: updateChecker
+            ) {
+                openWindow(id: PrompterView.windowID)
             }
-        }
-        .toolbar {
-
-            // ── Centre : sélecteur de mode ────────────────────────────────
-            // Ancré au centre de la title bar — toujours visible quel que
-            // soit le remplissage des deux côtés.
-            ToolbarItem(placement: .principal) {
-                ModeSelector(selection: $appState.mode)
-                .fixedSize(horizontal: true, vertical: false)
-                .help("Switch between Songs and Shows")
-                .anchorPreference(key: TourAnchorsKey.self, value: .bounds) {
-                    [TourAnchor.sidebarModeSwitcher: $0]
+            Group {
+                switch appState.mode {
+                case .trackLibrary:
+                    TrackLibraryRoot(appState: appState)
+                case .showLibrary:
+                    ShowLibraryRoot(appState: appState)
                 }
             }
-
-
-            // ── Navigation : focus colonnes Track Library ────────────────
-            // Visible uniquement en Track Library. Masque/restaure les deux
-            // colonnes gauches for que l'éditeur occupe toute la largeur.
-            // Raccourci T (même touche que Quick Library en Show Library).
-            if appState.mode == .trackLibrary {
-                ToolbarItem(placement: .navigation) {
-                    Button {
-                        appState.toggleTrackLibraryColumns()
-                    } label: {
-                        Image(systemName: appState.trackLibraryVisibility == .detailOnly
-                              ? "sidebar.left"           // colonnes masquées → cliquer = les afficher
-                              : "rectangle.split.3x1")  // colonnes visibles → cliquer = focus éditeur
-                    }
-                    .help(appState.trackLibraryVisibility == .detailOnly
-                          ? "Show columns (T)"
-                          : "Editor focus: hide columns (T)")
-                }
-            }
-
-            // ── Secondaire (gauche du principal) : admin uniquement ──────
-            ToolbarItemGroup(placement: .secondaryAction) {
-
-                // Alerte dossier audio (conditionnelle, lecture seule)
-                MediaFolderWarningPill(appState: appState)
-
-                // ── 4. Administration — relégué at gauche, hors zone fonctionnelle ─
-                // Actions rarement utilisées pendant une prestation.
-                Menu {
-                    // — Apparence ——————————————————————————————————————————
-                    Picker("App theme", selection: $appState.appTheme) {
-                        ForEach(AppTheme.allCases) { theme in
-                            Text(theme.label).tag(theme)
-                        }
-                    }
-                    Picker("Prompter theme", selection: $appState.prompterTheme) {
-                        ForEach(PrompterTheme.allCases) { theme in
-                            Text(theme.label).tag(theme)
-                        }
-                    }
-                    Button("Styles & Colors...") {
-                        isShowingStylesPanel = true
-                    }
-
-                    Divider()
-
-                    // — Audio Library ————————————————————————————————
-                    Button {
-                        openWindow(id: "midiSettings")
-                    } label: {
-                        Label("Settings...", systemImage: "gearshape")
-                    }
-                    Button {
-                        isShowingMediaLibraryRemap = true
-                    } label: {
-                        Label("Change audio library...", systemImage: "folder.badge.gearshape")
-                    }
-
-                    Divider()
-
-                    // — Gestion ———————————————————————————————————————————
-                    Button {
-                        isShowingVelvetTrash = true
-                    } label: {
-                        let count = appState.trashedTracks.count
-                        Label(
-                            count > 0 ? "Trash (\(count))..." : "Trash...",
-                            systemImage: count > 0 ? "trash.fill" : "trash"
-                        )
-                    }
-
-                    if !appState.store.state.hasMigratedFromShowBuddy {
-                        Divider()
-                        if appState.database != nil {
-                            Button {
-                                isShowingMigrationSheet = true
-                            } label: {
-                                Label("Migrate to Velvet...", systemImage: "arrow.up.forward.app")
-                            }
-                        } else {
-                            Button {
-                                presentDatabaseOpenPanel(appState: appState)
-                            } label: {
-                                Label("Import ShowBuddy.db...", systemImage: "tray.and.arrow.down")
-                            }
-                        }
-                    }
-
-                } label: {
-                    Label("Settings", systemImage: "gearshape")
-                }
-                .help("Themes, MIDI, audio library, trash, and migration")
-                .anchorPreference(key: TourAnchorsKey.self, value: .bounds) {
-                    [TourAnchor.settingsButton: $0]
-                }
-                // Sheets rattachées au menu — s'ouvrent via les @State ci-dessus.
-                .sheet(isPresented: $isShowingStylesPanel) {
-                    StylesColorsPanel(appState: appState)
-                }
-                .sheet(isPresented: $isShowingMediaLibraryRemap) {
-                    MediaLibraryRemapView {
-                        isShowingMediaLibraryRemap = false
-                    }
-                    .environment(appState)
-                }
-
-            }
-
-            // ── Droite : bloc système + PANIC ────────────────────────────
-            // Tout en .primaryAction for que ces éléments apparaissent
-            // at droite du principal (mode picker), adjacents at PANIC.
-            // Déclaré avant PANIC → affiché at sa gauche immédiate.
-            ToolbarItem(placement: .primaryAction) {
-                HStack(spacing: 6) {
-                    // Prompter (gestion des fenêtres / écrans)
-                    Button {
-                        openWindow(id: PrompterView.windowID)
-                    } label: {
-                        Label("Prompter", systemImage: "rectangle.on.rectangle")
-                    }
-                    .help("Open the Prompter window on a second display or iPad (Sidecar / AirPlay)")
-
-                    // Mac seul / état diffusion
-                    DiffusionStatusPill(
-                        isPanic: appState.isPanicPrompterVisible,
-                        isPrompterActive: appState.isPrompterActive,
-                        isSecondDisplayConnected: appState.isSecondDisplayConnected
-                    )
-
-                    // Sauvegarde
-                    SaveStatusPill(status: appState.saveStatus)
-                }
-            }
-
-            // ── Extrême droite : 🚨 PANIC ─────────────────────────────────
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    appState.triggerPrompterPanic()
-                } label: {
-                    Text(appState.isPanicPrompterVisible ? "🚨 PANIC ON" : "🚨 PANIC")
-                        .font(.callout.weight(.black))
-                }
-                .keyboardShortcut("p", modifiers: [.command, .shift])
-                .help("Show or hide the backup Prompter built into the main window (⌘⇧P)")
-            }
-
         }
         .alert(
             "Error",
@@ -226,73 +76,526 @@ struct ContentView: View {
             appState.refreshPrompterEnvironment()
             appState.checkAudioFileAccessibility()
         }
-        .sheet(isPresented: $isShowingMigrationSheet) {
-            MigrationSheet(appState: appState, result: $migrationResult)
-        }
-        .sheet(item: $migrationResult) { result in
-            MigrationResultSheet(result: result)
-        }
-        .sheet(isPresented: $isShowingVelvetTrash) {
-            VelvetTrashSheet { isShowingVelvetTrash = false }
-                .environment(appState)
-        }
+        // (Migration / Trash sheets déplacées dans SetsSidebar avec le menu Settings)
     }
 
 }
 
-private struct ModeSelector: View {
-    @Binding var selection: LibraryMode
-    @Namespace private var highlightNamespace
+private struct FixedAppToolbar: View {
+    @Bindable var appState: AppState
+    @Environment(\.openWindow) private var openWindow
+    let betaManager: BetaManager
+    let licenseManager: LicenseManager
+    let updateChecker: UpdateChecker
+    let openPrompter: () -> Void
+    @State private var importSourceURL: IdentifiableURL?
+    @State private var isConfirmingResetAll = false
+    @State private var isShowingStylesPanel = false
+    @State private var isShowingMigrationSheet = false
+    @State private var migrationResult: AppState.MigrationResult?
+    @State private var isShowingVelvetTrash = false
+    @State private var isShowingMediaLibraryRemap = false
 
     var body: some View {
-        HStack(spacing: 8) {
-            modeButton(.trackLibrary)
-            modeButton(.showLibrary)
+        ZStack {
+            HStack(spacing: 0) {
+                leftControls
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .clipped()
+
+                Color.clear
+                    .frame(width: 190)
+
+                rightControls
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .clipped()
+            }
+            .padding(.leading, 8)
+            .padding(.trailing, 16)
+
+            ModeSelector(selection: $appState.mode)
+                .fixedSize(horizontal: true, vertical: false)
+                .help("Switch between Songs and Shows")
+                .anchorPreference(key: TourAnchorsKey.self, value: .bounds) {
+                    [TourAnchor.sidebarModeSwitcher: $0]
+                }
+
+            HStack {
+                Spacer()
+                ToolbarClock()
+            }
+            .padding(.trailing, 340)
+            .allowsHitTesting(false)
         }
-        .padding(.horizontal, 2)
-        .padding(.vertical, 1)
+        .padding(.top, 6)
+        .padding(.bottom, 2)
+        .frame(height: 44)
+        .background {
+            Rectangle()
+                .fill(.bar)
+                .glassEffect(.regular, in: Rectangle())
+                .overlay(alignment: .bottom) {
+                    Divider().opacity(0.45)
+                }
+        }
+        .sheet(item: $importSourceURL) { item in
+            AudioImportSheet(appState: appState, sourceURL: item.url)
+        }
+        .confirmationDialog(
+            "Reset all shows?",
+            isPresented: $isConfirmingResetAll,
+            titleVisibility: .visible
+        ) {
+            Button("Reset", role: .destructive) {
+                appState.resetAllShows()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Played songs will be moved back to remaining songs.")
+        }
+        .modifier(SettingsMenuSheetsModifier(
+            appState: appState,
+            isShowingStylesPanel: $isShowingStylesPanel,
+            isShowingMediaLibraryRemap: $isShowingMediaLibraryRemap,
+            isShowingMigrationSheet: $isShowingMigrationSheet,
+            migrationResult: $migrationResult,
+            isShowingVelvetTrash: $isShowingVelvetTrash
+        ))
     }
 
-    private func modeButton(_ mode: LibraryMode) -> some View {
-        let isSelected = selection == mode
-        let title = modeSelectorTitle(for: mode)
+    private var leftControls: some View {
+        HStack(spacing: 8) {
+            settingsMenu
 
-        return Button {
-            withAnimation(.snappy(duration: 0.20)) {
-                selection = mode
+            if appState.mode == .trackLibrary {
+                focusButton
+                    .frame(width: 104, alignment: .leading)
+            }
+
+            modeSpecificControls
+        }
+    }
+
+    private var rightControls: some View {
+        HStack(spacing: 10) {
+            MediaFolderWarningPill(appState: appState)
+
+            DjayVinylButton(
+                isArmed: appState.isDjayArmed,
+                isPlaying: appState.audioEngine.state == .playing
+            ) {
+                if appState.isDjayArmed {
+                    appState.isDjayArmed = false
+                    return
+                }
+                if appState.audioEngine.state == .playing {
+                    appState.isDjayArmed = true
+                } else {
+                    Task {
+                        do { try await appState.performDJHandoff() }
+                        catch { appState.lastError = error.localizedDescription }
+                    }
+                }
+            }
+            .help(appState.isDjayArmed
+                  ? "\(appState.djHandoffDisplayName) armed — launches at end of current song. Click again to disarm."
+                  : (appState.audioEngine.state == .playing
+                     ? "Arm \(appState.djHandoffDisplayName) to launch automatically at end of this song"
+                     : "Launch \(appState.djHandoffDisplayName) now"))
+
+            if case .error = appState.saveStatus {
+                SaveStatusPill(status: appState.saveStatus)
+            }
+
+            TrialStatusBadge(betaManager: betaManager, licenseManager: licenseManager)
+            UpdateAvailableBadge(updateChecker: updateChecker)
+
+            Button {
+                openPrompter()
+            } label: {
+                Label("Prompter", systemImage: "rectangle.on.rectangle")
+                    .frame(minWidth: 48, minHeight: 28)
+                    .contentShape(Rectangle())
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.plain)
+            .toolbarGlassControl(tint: prompterTint, minWidth: 36)
+            .help(prompterHelp)
+
+            Button {
+                appState.triggerPrompterPanic()
+            } label: {
+                Text(appState.isPanicPrompterVisible ? "🚨 PANIC ON" : "🚨 PANIC")
+                    .font(.callout.weight(.black))
+            }
+            .buttonStyle(.plain)
+            .toolbarGlassControl(tint: VSColor.danger, isProminent: appState.isPanicPrompterVisible, minWidth: 92)
+            .keyboardShortcut("p", modifiers: [.command, .shift])
+            .help("Show or hide the backup Prompter built into the main window (⌘⇧P)")
+        }
+    }
+
+    @ViewBuilder
+    private var modeSpecificControls: some View {
+        switch appState.mode {
+        case .trackLibrary:
+            Button {
+                importSong()
+            } label: {
+                Label("Import a Song", systemImage: "square.and.arrow.down")
+                    .frame(minWidth: 48, minHeight: 28)
+                    .contentShape(Rectangle())
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.plain)
+            .toolbarGlassControl(minWidth: 36)
+            .help("Import a Song")
+
+        case .showLibrary:
+            HStack(spacing: 6) {
+                Button {
+                    appState.toggleShowsSidebar()
+                } label: {
+                    Image(systemName: appState.showsSidebarVisibility == .detailOnly
+                          ? "sidebar.left"
+                          : "sidebar.leading")
+                        .frame(minWidth: 48, minHeight: 28)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .toolbarGlassControl(minWidth: 36)
+                .help(appState.showsSidebarVisibility == .detailOnly
+                      ? "Show Shows sidebar"
+                      : "Hide Shows sidebar")
+
+                Button {
+                    appState.isQuickLibraryVisible.toggle()
+                } label: {
+                    Image(systemName: appState.isQuickLibraryVisible
+                          ? "books.vertical.fill"
+                          : "books.vertical")
+                        .frame(minWidth: 48, minHeight: 28)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .toolbarGlassControl(tint: appState.isQuickLibraryVisible ? VSColor.interactive : nil, minWidth: 36)
+                .keyboardShortcut("b", modifiers: .command)
+                .help(appState.isQuickLibraryVisible
+                      ? "Hide Tracks library (⌘B)"
+                      : "Show Tracks library (⌘B)")
+            }
+        }
+    }
+
+    private var settingsMenu: some View {
+        Menu {
+            Picker("App theme", selection: $appState.appTheme) {
+                ForEach(AppTheme.allCases) { theme in
+                    Text(theme.label).tag(theme)
+                }
+            }
+            Picker("Prompter theme", selection: $appState.prompterTheme) {
+                ForEach(PrompterTheme.allCases) { theme in
+                    Text(theme.label).tag(theme)
+                }
+            }
+            Button("Styles & Colors...") {
+                isShowingStylesPanel = true
+            }
+            Button {
+                isConfirmingResetAll = true
+            } label: {
+                Label("Reset all shows", systemImage: "arrow.counterclockwise.circle")
+            }
+            .disabled(appState.sets.isEmpty)
+            Divider()
+            Button {
+                openWindow(id: "midiSettings")
+            } label: {
+                Label("Settings...", systemImage: "gearshape")
+            }
+            Button {
+                isShowingMediaLibraryRemap = true
+            } label: {
+                Label("Change audio library...", systemImage: "folder.badge.gearshape")
+            }
+            Divider()
+            Button {
+                isShowingVelvetTrash = true
+            } label: {
+                let count = appState.trashedTracks.count
+                Label(
+                    count > 0 ? "Trash (\(count))..." : "Trash...",
+                    systemImage: count > 0 ? "trash.fill" : "trash"
+                )
+            }
+            if !appState.store.state.hasMigratedFromShowBuddy {
+                Divider()
+                if appState.database != nil {
+                    Button {
+                        isShowingMigrationSheet = true
+                    } label: {
+                        Label("Migrate to Velvet...", systemImage: "arrow.up.forward.app")
+                    }
+                } else {
+                    Button {
+                        presentDatabaseOpenPanel(appState: appState)
+                    } label: {
+                        Label("Import ShowBuddy.db...", systemImage: "tray.and.arrow.down")
+                    }
+                }
             }
         } label: {
-            Text(title)
-                .font(.system(size: 13, weight: isSelected ? .semibold : .medium))
-                .foregroundStyle(isSelected ? Color.primary : Color.secondary)
+            HStack(spacing: 8) {
+                Image(systemName: "gearshape")
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(.secondary)
+            }
+            .frame(minWidth: 52, minHeight: 28)
+            .padding(.horizontal, 6)
+        }
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .toolbarGlassSurface()
+        .foregroundStyle(Color.secondary)
+        .help("Themes, MIDI, audio library, trash, and migration")
+    }
+
+    private func importSong() {
+        if appState.mediaRootURL != nil {
+            if let url = pickAudioFile(
+                title: "Import a Song into MediaFiles",
+                prompt: "Import"
+            ) {
+                importSourceURL = IdentifiableURL(url: url)
+            }
+        } else {
+            presentVelvetTrackImportPanel(appState: appState)
+        }
+    }
+
+    private var focusButton: some View {
+        let isTrackMode = appState.mode == .trackLibrary
+        let isFocused = appState.trackLibraryVisibility == .detailOnly
+
+        return Button {
+            appState.toggleTrackLibraryColumns()
+        } label: {
+            Label("Focus", systemImage: "arrow.up.left.and.arrow.down.right")
+                .labelStyle(.titleAndIcon)
+        }
+        .buttonStyle(.plain)
+        .toolbarGlassControl(tint: isFocused ? VSColor.interactive : nil, minWidth: 92)
+        .help(isFocused
+              ? "Editor focus is on — click to show columns (T)"
+              : "Editor focus: hide columns and use full width (T)")
+        .disabled(!isTrackMode)
+        .opacity(isTrackMode ? 1 : 0)
+        .accessibilityHidden(!isTrackMode)
+    }
+
+    private var prompterTint: Color? {
+        guard appState.isPrompterActive else { return nil }
+        return appState.isSecondDisplayConnected ? .green : .orange
+    }
+
+    private var prompterHelp: String {
+        if !appState.isPrompterActive { return "Open Prompter window" }
+        return appState.isSecondDisplayConnected
+            ? "Prompter open on second display (Sidecar / AirPlay / external)"
+            : "Prompter open on Mac only (no second display detected)"
+    }
+}
+
+// MARK: - DJ Handoff Vinyl Button
+
+/// Toolbar button au look "vinyle jaune". Pastille jaune au centre, anneau
+/// noir autour, trou central. Quand armé : halo orange pulsant pour signaler
+/// que l'app externe attend la fin du morceau.
+private struct DjayVinylButton: View {
+    let isArmed: Bool
+    let isPlaying: Bool
+    let action: () -> Void
+    @State private var pulse = false
+
+    var body: some View {
+        Button(action: action) {
+            ZStack {
+                // Halo armé pulsant
+                if isArmed {
+                    Circle()
+                        .stroke(Color.orange.opacity(pulse ? 0.25 : 0.75), lineWidth: 3)
+                        .frame(width: 38, height: 38)
+                        .animation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true), value: pulse)
+                }
+                // Disque vinyle
+                Circle().fill(Color.black).frame(width: 30, height: 30)
+                Circle().stroke(Color.white.opacity(0.22), lineWidth: 0.6).frame(width: 30, height: 30)
+                Circle().stroke(Color.white.opacity(0.14), lineWidth: 0.5).frame(width: 24, height: 24)
+                Circle().stroke(Color.white.opacity(0.10), lineWidth: 0.5).frame(width: 18, height: 18)
+                // Pastille jaune (label vinyle)
+                Circle().fill(Color.yellow).frame(width: 14, height: 14)
+                // Trou central
+                Circle().fill(Color.black).frame(width: 3, height: 3)
+            }
+            .frame(width: 40, height: 40)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.borderless)
+        .accessibilityLabel("DJ handoff")
+        .onAppear { pulse = true }
+    }
+}
+
+private struct ToolbarClock: View {
+    var body: some View {
+        TimelineView(.periodic(from: Date(), by: 30)) { context in
+            Text(context.date, format: .dateTime.hour().minute())
+                .font(.system(size: 14, weight: .semibold).monospacedDigit())
+                .foregroundStyle(.secondary.opacity(0.9))
                 .lineLimit(1)
-                .padding(.horizontal, 11)
-                .padding(.vertical, 5)
+                .frame(width: 52, height: 26)
+        }
+        .accessibilityLabel("Current time")
+    }
+}
+
+private struct ModeSelector: View {
+    @Binding var selection: LibraryMode
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        HStack(spacing: 4) {
+            modeButton("Songs", mode: .trackLibrary, color: .red)
+            modeButton("Shows", mode: .showLibrary, color: .green)
+        }
+        .padding(2)
+        .background {
+            Capsule()
+                .fill(toolbarNeutralFill(for: colorScheme))
+                .glassEffect(.regular.tint(toolbarNeutralGlassTint(for: colorScheme)), in: Capsule())
+                .overlay {
+                    Capsule()
+                        .stroke(toolbarNeutralStroke(for: colorScheme), lineWidth: 1)
+                }
+        }
+        .fixedSize()
+    }
+
+    private func modeButton(_ title: String, mode: LibraryMode, color: Color) -> some View {
+        let isSelected = selection == mode
+
+        return Button {
+            selection = mode
+        } label: {
+            Text(title)
+                .font(.system(size: 13, weight: isSelected ? .bold : .semibold))
+                .foregroundStyle(isSelected ? .white : .secondary)
+                .frame(width: 58, height: 26)
                 .background {
                     if isSelected {
                         Capsule()
-                            .fill(.ultraThinMaterial)
-                            .overlay {
-                                Capsule()
-                                    .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
-                            }
-                            .shadow(color: .black.opacity(0.10), radius: 5, x: 0, y: 2)
-                            .matchedGeometryEffect(id: "mode-selector-highlight", in: highlightNamespace)
+                            .fill(color.gradient.opacity(0.92))
+                            .glassEffect(.regular.tint(color.opacity(0.28)).interactive(), in: Capsule())
+                            .shadow(color: color.opacity(0.22), radius: 4, x: 0, y: 1)
+                    } else {
+                        Capsule()
+                            .fill(.clear)
                     }
                 }
-                .contentShape(Capsule())
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(Text(title))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
+}
 
-    private func modeSelectorTitle(for mode: LibraryMode) -> String {
-        switch mode {
-        case .trackLibrary: return "Songs"
-        case .showLibrary: return "Shows"
+private struct ToolbarGlassControlModifier: ViewModifier {
+    var tint: Color?
+    var isProminent: Bool
+    var minWidth: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        let hasTint = tint != nil || isProminent
+        let resolvedTint = tint ?? VSColor.interactive
+
+        content
+            .font(.system(size: 13, weight: isProminent ? .black : .semibold))
+            .foregroundStyle(isProminent ? Color.white : (hasTint ? resolvedTint : Color.secondary))
+            .frame(minWidth: minWidth + 12, minHeight: 28)
+            .contentShape(Rectangle())
+            .background {
+                toolbarControlBackground(hasTint: hasTint, resolvedTint: resolvedTint)
+            }
+    }
+
+    @ViewBuilder
+    private func toolbarControlBackground(hasTint: Bool, resolvedTint: Color) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 9, style: .continuous)
+        let fill = hasTint ? resolvedTint.opacity(isProminent ? 0.18 : 0.08) : toolbarNeutralFill(for: colorScheme)
+        let stroke = hasTint ? resolvedTint.opacity(0.22) : toolbarNeutralStroke(for: colorScheme)
+
+        if colorScheme == .dark || hasTint {
+            shape
+                .fill(fill)
+                .glassEffect(.regular.tint(hasTint ? resolvedTint.opacity(isProminent ? 0.24 : 0.10) : toolbarNeutralGlassTint(for: colorScheme)).interactive(),
+                             in: shape)
+                .overlay { shape.stroke(stroke, lineWidth: 1) }
+        } else {
+            shape
+                .fill(fill)
+                .overlay { shape.stroke(stroke, lineWidth: 1) }
         }
     }
+}
+
+private struct ToolbarGlassSurfaceModifier: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        content
+            .background {
+                let shape = RoundedRectangle(cornerRadius: 9, style: .continuous)
+                if colorScheme == .dark {
+                    shape
+                        .fill(toolbarNeutralFill(for: colorScheme))
+                        .glassEffect(.regular.tint(toolbarNeutralGlassTint(for: colorScheme)), in: shape)
+                        .overlay { shape.stroke(toolbarNeutralStroke(for: colorScheme), lineWidth: 1) }
+                } else {
+                    shape
+                        .fill(toolbarNeutralFill(for: colorScheme))
+                        .overlay { shape.stroke(toolbarNeutralStroke(for: colorScheme), lineWidth: 1) }
+                }
+            }
+    }
+}
+
+private extension View {
+    func toolbarGlassControl(
+        tint: Color? = nil,
+        isProminent: Bool = false,
+        minWidth: CGFloat = 36
+    ) -> some View {
+        modifier(ToolbarGlassControlModifier(tint: tint, isProminent: isProminent, minWidth: minWidth))
+    }
+
+    func toolbarGlassSurface() -> some View {
+        modifier(ToolbarGlassSurfaceModifier())
+    }
+}
+
+private func toolbarNeutralFill(for colorScheme: ColorScheme) -> Color {
+    colorScheme == .dark ? Color.white.opacity(0.04) : Color.black.opacity(0.06)
+}
+
+private func toolbarNeutralGlassTint(for colorScheme: ColorScheme) -> Color {
+    colorScheme == .dark ? Color.white.opacity(0.04) : Color.black.opacity(0.035)
+}
+
+private func toolbarNeutralStroke(for colorScheme: ColorScheme) -> Color {
+    colorScheme == .dark ? Color.white.opacity(0.09) : Color.black.opacity(0.14)
 }
 
 /// Capsule unifiée for toutes les pastilles d'état de la toolbar :
@@ -497,7 +800,7 @@ private struct MediaFolderWarningPill: View {
 /// accepte n'importe quel fichier ; `ShowBuddyDatabase` reste la validation
 /// réelle et ouvre toujours SQLite en lecture seule.
 @MainActor
-private func presentDatabaseOpenPanel(appState: AppState) {
+func presentDatabaseOpenPanel(appState: AppState) {
     let panel = NSOpenPanel()
     panel.title = "Import ShowBuddy.db"
     panel.message = "Select the ShowBuddy.db file to explore."
@@ -626,7 +929,7 @@ func presentMediaFilesOpenPanel(appState: AppState) {
 
 // MARK: - Migration ShowBuddy → Velvet natif
 
-private struct MigrationSheet: View {
+struct MigrationSheet: View {
     let appState: AppState
     @Binding var result: AppState.MigrationResult?
     @Environment(\.dismiss) private var dismiss
@@ -713,7 +1016,7 @@ private struct MigrationSheet: View {
     }
 }
 
-private struct MigrationResultSheet: View {
+struct MigrationResultSheet: View {
     let result: AppState.MigrationResult
     @Environment(\.dismiss) private var dismiss
 
@@ -809,32 +1112,33 @@ private struct EmptyLibraryView: View {
 
 private struct TrackLibraryRoot: View {
     @Bindable var appState: AppState
+    @AppStorage("trackLibraryCategoriesWidth") private var categoriesWidth: Double = 270
+    @AppStorage("trackLibrarySongsWidth") private var songsWidth: Double = 340
+
+    private var isColumnsVisible: Bool {
+        appState.trackLibraryVisibility != .detailOnly
+    }
 
     var body: some View {
-        // Mode focus (bouton ↙ Columns) : fiche seule, pleine largeur.
-        // NavigationSplitView ne répond pas de façon fiable aux changements
-        // programmatiques de columnVisibility sur macOS — on gère le switch
-        // manuellement for garantir un comportement prévisible.
-        if appState.trackLibraryVisibility == .detailOnly {
+        HStack(spacing: 0) {
+            if isColumnsVisible {
+                CategoriesSidebar(appState: appState)
+                    .frame(width: categoriesWidth)
+                    .transition(.move(edge: .leading))
+                ResizableColumnDivider(width: $categoriesWidth, range: 180...360)
+                    .transition(.move(edge: .leading))
+
+                CategoryTracksColumn(appState: appState)
+                    .frame(width: songsWidth)
+                    .transition(.move(edge: .leading))
+                ResizableColumnDivider(width: $songsWidth, range: 240...460)
+                    .transition(.move(edge: .leading))
+            }
+
             TrackDetailColumn(appState: appState)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-            // Mode normal : 3 colonnes via NavigationSplitView.
-            // `.prominentDetail` = la fiche domine, les colonnes gauches
-            // démarrent compactes. `navigationSplitViewColumnWidth` est
-            // l'API native — respectée et persistée correctement par macOS.
-            NavigationSplitView(columnVisibility: $appState.trackLibraryVisibility) {
-                CategoriesSidebar(appState: appState)
-                    .navigationSplitViewColumnWidth(min: 160, ideal: 200, max: 280)
-            } content: {
-                CategoryTracksColumn(appState: appState)
-                    .navigationSplitViewColumnWidth(min: 220, ideal: 260, max: 360)
-            } detail: {
-                TrackDetailColumn(appState: appState)
-            }
-            .navigationSplitViewStyle(.prominentDetail)
-            .toolbar(removing: .sidebarToggle)
         }
+        .animation(.easeInOut(duration: 0.28), value: isColumnsVisible)
     }
 }
 
@@ -856,26 +1160,7 @@ private struct CategoriesSidebar: View {
             }
         }
         .listStyle(.inset)
-        .navigationTitle("Categories")
-        .toolbar {
-            Button {
-                // Si MediaFiles est configuré, utilise le nouveau flux d'import
-                // avec sélection de catégorie. Sinon, fallback to l'ancien
-                // import dans AppSupport/Media.
-                if appState.mediaRootURL != nil {
-                    if let url = pickAudioFile(
-                        title: "Import a Song into MediaFiles",
-                        prompt: "Import"
-                    ) {
-                        importSourceURL = IdentifiableURL(url: url)
-                    }
-                } else {
-                    presentVelvetTrackImportPanel(appState: appState)
-                }
-            } label: {
-                Label("Import a Song", systemImage: "square.and.arrow.down")
-            }
-        }
+        .contentMargins(.vertical, 0, for: .scrollContent)
         .sheet(item: $importSourceURL) { item in
             AudioImportSheet(appState: appState, sourceURL: item.url)
         }
@@ -987,7 +1272,8 @@ private struct CategoryTracksColumn: View {
                         onChangeColor: { editingColorTrack = track },
                         onTrashTrack: track.audioFileID < 0 ? {
                             trashingVelvetTrack = appState.velvetTrack(for: track)
-                        } : nil
+                        } : nil,
+                        hasVideo: appState.video(for: track) != nil
                     ) {
                         appState.selectedAudioFileID = track.audioFileID
                         appState.selectedCategoryID = appState.categoryID(for: track)
@@ -996,6 +1282,7 @@ private struct CategoryTracksColumn: View {
                 }
             }
             .listStyle(.inset)
+            .contentMargins(.vertical, 0, for: .scrollContent)
             .overlay {
                 if appState.selectedCategoryID == nil && trackSearchText.isEmpty {
                     ContentUnavailableView(
@@ -1012,24 +1299,6 @@ private struct CategoryTracksColumn: View {
                                           : "No song matches \"\(trackSearchText)\".")
                     )
                 }
-            }
-        }
-        .navigationTitle(trackSearchText.isEmpty ? (appState.selectedCategoryID ?? "Songs") : "Results")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    appState.toggleTrackLibraryColumns()
-                } label: {
-                    Label(
-                        appState.trackLibraryVisibility == .detailOnly ? "Columns" : "Full Screen",
-                        systemImage: appState.trackLibraryVisibility == .detailOnly
-                            ? "sidebar.left"
-                            : "arrow.up.left.and.arrow.down.right"
-                    )
-                }
-                .help(appState.trackLibraryVisibility == .detailOnly
-                      ? "Show columns (T)"
-                      : "Editor focus: hide columns (T)")
             }
         }
         .sheet(item: $editingColorTrack) { track in
@@ -1053,30 +1322,60 @@ private struct ClassicTrackRow: View {
     let addToSelectedVelvetShow: (() -> Void)?
     var onChangeColor: (() -> Void)? = nil
     var onTrashTrack: (() -> Void)? = nil
+    /// True quand un fichier vidéo est associé à ce morceau — affiche une
+    /// petite icône 🎥 à droite du nom. Calculé par l'appelant via
+    /// `appState.video(for:)` pour éviter une dépendance environnement ici.
+    var hasVideo: Bool = false
     let select: () -> Void
+    @State private var isHovering = false
 
     var body: some View {
-        Button(action: select) {
-            HStack(spacing: 10) {
-                // Barre verticale de couleur de style — porteur d'info
-                // sans aspect décoratif. La note de musique a été
-                // retirée : c'est une liste de songs, pas besoin de
-                // le redire ligne par ligne.
-                RoundedRectangle(cornerRadius: 1.5)
-                    .fill(tint)
-                    .frame(width: 3, height: 16)
-                    .onDrag {
-                        NSItemProvider(object: String(track.audioFileID) as NSString)
+        HStack(spacing: 6) {
+            Button(action: select) {
+                HStack(spacing: 10) {
+                    // Barre verticale de couleur de style — porteur d'info
+                    // sans aspect décoratif. La note de musique a été
+                    // retirée : c'est une liste de songs, pas besoin de
+                    // le redire ligne par ligne.
+                    RoundedRectangle(cornerRadius: 1.5)
+                        .fill(tint)
+                        .frame(width: 3, height: 16)
+                        .onDrag {
+                            NSItemProvider(object: String(track.audioFileID) as NSString)
+                        }
+                    Text(track.name ?? "Untitled")
+                        .font(.system(size: 15))
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if hasVideo {
+                        Image(systemName: "video.fill")
+                            .font(.system(size: 10))
+                            .foregroundStyle(.secondary)
+                            .help("This song has a Prompter video attached")
                     }
-                Text(track.name ?? "Untitled")
-                    .font(.system(size: 15))
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .contentShape(Rectangle())
+                .padding(.vertical, 1)
             }
-            .contentShape(Rectangle())
-            .padding(.vertical, 1)
+            .buttonStyle(.plain)
+
+            if let onTrashTrack {
+                Button(role: .destructive) {
+                    onTrashTrack()
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 11, weight: .semibold))
+                        .frame(width: 22, height: 22)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
+                .foregroundStyle(.red)
+                .opacity(isHovering || isSelected ? 0.85 : 0)
+                .help("Move to Velvet Trash")
+                .accessibilityLabel("Move song to Velvet Trash")
+            }
         }
-        .buttonStyle(.plain)
+        .onHover { isHovering = $0 }
         .contextMenu {
             if let selectedVelvetShowName, let addToSelectedVelvetShow {
                 Button("Add to \(selectedVelvetShowName)") {
@@ -1252,13 +1551,12 @@ private struct TrackEditView: View {
     @State private var isShowingTimelineEditor = false
     @State private var isShowingLyricsImport = false
     @State private var isEditingVelvetTrack = false
-    @State private var isConfirmingVelvetTrackDeletion = false
+    @State private var trashingVelvetTrack: VelvetTrack?
     @State private var replaceSourceURL: IdentifiableURL?
 
     var body: some View {
         TimelineEditorView(track: track, appState: appState, isEmbedded: true)
             .id(track.audioFileID)
-        .navigationTitle(track.name ?? "Untitled")
         .sheet(isPresented: $isShowingTimelineEditor) {
             TimelineEditorView(track: track, appState: appState)
                 .id(track.audioFileID)
@@ -1277,20 +1575,14 @@ private struct TrackEditView: View {
         .sheet(isPresented: $isEditingVelvetTrack) {
             VelvetTrackEditorSheet(track: track, appState: appState)
         }
+        .sheet(item: $trashingVelvetTrack) { velvetTrack in
+            TrackDeleteSheet(track: velvetTrack) {
+                trashingVelvetTrack = nil
+            }
+            .environment(appState)
+        }
         .sheet(item: $replaceSourceURL) { item in
             AudioReplaceSheet(appState: appState, track: track, newURL: item.url)
-        }
-        .confirmationDialog(
-            "Delete this Velvet song?",
-            isPresented: $isConfirmingVelvetTrackDeletion,
-            titleVisibility: .visible
-        ) {
-            Button("Delete", role: .destructive) {
-                appState.deleteVelvetTrack(track)
-            }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("The Velvet entry and the copy in VELVET SHOW/Media will be deleted. The original file and ShowBuddy.db will never be touched.")
         }
     }
 
@@ -1371,12 +1663,13 @@ private struct TrackEditView: View {
                         Label("Edit", systemImage: "slider.horizontal.3")
                     }
                     .controlSize(.small)
-                    Button(role: .destructive) {
-                        isConfirmingVelvetTrackDeletion = true
+                    Button {
+                        trashingVelvetTrack = velvetTrack
                     } label: {
-                        Label("Delete this song from the library", systemImage: "trash")
+                        Label("Move to Trash", systemImage: "trash")
                     }
                     .controlSize(.small)
+                    .tint(.red)
                 }
             }
             LabeledContent("Duration", value: durationString)

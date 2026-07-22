@@ -20,8 +20,9 @@ import CoreMIDI
 import AppKit
 import AVFoundation
 
-/// Les 5 effets de transition DJ disponibles au remplacement de song.
-/// `isAvailable = false` → pad visible mais désactivé ("Bientôt") en Phase 1.
+/// Effets de transition DJ disponibles au remplacement de song.
+/// Les anciens modes restent décodables pour compatibilité, mais l'UX live
+/// n'expose plus qu'un seul mode : le fondu filtré fiable (FONDU DJ).
 enum TransitionEffect: String, CaseIterable, Codable {
     case fade     = "FADE"
     case slowFade = "SLOW FADE"
@@ -39,15 +40,28 @@ enum TransitionEffect: String, CaseIterable, Codable {
         }
     }
 
+    var displayTitle: String {
+        switch self {
+        case .filter:  return "FONDU DJ"
+        default:       return rawValue
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .filter:  return "Filtre"
+        default:       return ""
+        }
+    }
+
     var isAvailable: Bool {
         switch self {
-        case .fade, .slowFade, .filter: return true
-        case .echo, .backspin:          return false
+        case .filter:   return true
+        case .fade, .slowFade, .echo, .backspin: return false
         }
     }
 
     /// Duration du fade-out for `audioEngine.stop(fadeOutDuration:)`.
-    /// ECHO déclenche `stopWithEchoFade(beatDuration:)` — cette valeur n'est pas utilisée.
     var fadeOutDuration: TimeInterval {
         switch self {
         case .fade:     return 1.2
@@ -60,14 +74,13 @@ enum TransitionEffect: String, CaseIterable, Codable {
     /// Delay statique en ms avant de charger le song suivant.
     /// Pour ECHO, le délai est calculé dynamiquement dans `startReplacement`
     /// at partir du BPM du song en cours.
-    /// Pour FADE / SLOW FADE / FILTER, cette valeur sert de fallback si
-    /// startCrossfade échoue (fichier illisible).
+    /// Pour les crossfades, cette valeur sert de fallback si startCrossfade échoue.
     var loadDelayMillis: Int {
         switch self {
-        case .fade:     return Int(1.2 * 1000) + 40   // 1 240 ms
-        case .slowFade: return Int(3.0 * 1000) + 40   // 3 040 ms
-        case .filter:   return Int(2.0 * 1000) + 40   // 2 040 ms (fallback)
-        case .echo:     return Int(2.5 * 1000) + 40   // fallback sans BPM (2 540 ms)
+        case .fade:     return Int(1.2 * 1000) + 40
+        case .slowFade: return Int(3.0 * 1000) + 40
+        case .filter:   return Int(2.0 * 1000) + 40
+        case .echo:     return Int(2.5 * 1000) + 40
         default:        return Int(1.2 * 1000) + 40
         }
     }
@@ -122,22 +135,31 @@ final class AppState {
     @ObservationIgnored private var pendingCrossfadeTrack: AudioFile? = nil
 
     // MARK: - Scheduler MIDI timeline
+    //
+    // Depuis la phase 2 perfs, le scheduler tourne sur une queue série
+    // dédiée (`schedulerQueue`) et ne dépend plus du MainActor : la
+    // détection ET l'envoi MIDI/OSC partent de la queue (précision tenue
+    // même quand SwiftUI sature le main thread), seul le bookkeeping
+    // (midiLog, lastDispatched*, miroir firedMidiTriggers) revient sur le
+    // MainActor de façon asynchrone.
+    //
+    // `firedMidiTriggers` reste le miroir MainActor de l'ensemble tenu par
+    // la session — lu par hasRecentMidiTrigger (Stop Cue) et remis à zéro
+    // par les chemins de transport comme avant.
     @ObservationIgnored private var firedMidiTriggers: Set<String> = []
-    @ObservationIgnored private var midiSchedulerTask: Task<Void, Never>? = nil
-    /// Incrémenté at chaque `startMidiScheduler()`. Chaque task capture sa
-    /// valeur at la création et sort immédiatement si elle diverge — élimine
-    /// les ticks orphelins des tasks en cours d'annulation coopérative.
-    @ObservationIgnored private var midiSchedulerGeneration: Int = 0
-
-    /// Dernière position vue par le scheduler. Permet de détecter un seek
-    /// (saut > seekDetectionThreshold) et de réaligner `firedMidiTriggers`
-    /// sur la nouvelle position. nil avant le premier tick d'une session.
-    @ObservationIgnored private var lastSchedulerPos: TimeInterval? = nil
+    @ObservationIgnored private var midiSchedulerSession: MidiSchedulerSession? = nil
+    private static let schedulerQueue = DispatchQueue(
+        label: "fr.loveandlive.velvetshow.midi-scheduler",
+        qos: .userInteractive
+    )
+    /// Offset MIDI global lisible depuis la queue du scheduler (mis à jour
+    /// par le didSet de midiGlobalOffsetMillis).
+    @ObservationIgnored fileprivate let midiLeadBox = SchedulerAtomicDouble()
 
     /// Au-delà de ce delta entre deux ticks, on considère qu'un seek a eu
     /// lieu (les ticks normaux progressent de ~50 ms — même sous charge le
     /// delta reste < 0.3 s).
-    private static let seekDetectionThreshold: TimeInterval = 0.3
+    fileprivate static let seekDetectionThreshold: TimeInterval = 0.3
 
     /// Vrai pendant qu'un éditeur de timeline est ouvert en mode plein écran
     /// (non-embedded). Empêche `handlePlaybackEndished()` de marquer le
@@ -229,6 +251,8 @@ final class AppState {
         self.archivedMidiEventIDs     = Set(snapshot.archivedMidiEventIDs)
         self.oscCuesByAudioFileID     = snapshot.oscCuesByAudioFileID.keyedByInt64()
         self.oscEventsByID            = Dictionary(uniqueKeysWithValues: snapshot.velvetOscEvents.map { ($0.oscEventID, $0) })
+        self.videosByAudioFileID      = snapshot.videosByAudioFileID.keyedByInt64()
+        self.midiInputBindings        = snapshot.midiInputBindings
         self.songColorsByShowID = snapshot.songColorsByShowID.keyedByInt64()
             .mapValues { $0.keyedByInt64() }
         self.endBehaviorBySetElementID = snapshot.endBehaviorBySetElementID.keyedByInt64()
@@ -287,6 +311,18 @@ final class AppState {
            let b = SeekBehavior(rawValue: raw) {
             self.seekBehavior = b
         }
+        if let raw = UserDefaults.standard.string(forKey: Self.djHandoffTargetKey),
+           let t = DJHandoffTarget(rawValue: raw) {
+            self.djHandoffTarget = t
+        }
+        self.djHandoffCustomBundleID = UserDefaults.standard.string(forKey: Self.djHandoffCustomBundleIDKey) ?? ""
+        self.djHandoffCustomAppName = UserDefaults.standard.string(forKey: Self.djHandoffCustomAppNameKey) ?? ""
+        if let storedDelay = UserDefaults.standard.object(forKey: Self.djHandoffColdLaunchDelayMillisKey) as? Int {
+            self.djHandoffColdLaunchDelayMillis = max(0, min(2_000, storedDelay))
+        }
+        if let storedFallback = UserDefaults.standard.object(forKey: Self.djHandoffUsesKeyboardFallbackKey) as? Bool {
+            self.djHandoffUsesKeyboardFallback = storedFallback
+        }
 
 
 
@@ -298,6 +334,9 @@ final class AppState {
            Self.midiGlobalOffsetChoices.contains(storedOffset) {
             self.midiGlobalOffsetMillis = storedOffset
         }
+        // didSet ne se déclenche pas dans init — seed manuel de la box
+        // lue par la queue du scheduler.
+        midiLeadBox.store(Double(-midiGlobalOffsetMillis) / 1000.0)
 
         startDisplayMonitoring()
         // Flush synchrone at la fermeture : sans ça, les debounces (0,4 s
@@ -370,6 +409,15 @@ final class AppState {
         broadcastState()
         startRemotePositionTimer()
 
+        // MIDI input → transport. Le moteur appelle ce callback sur main actor
+        // pour chaque message valable (Note Off / Note On vel=0 filtrés).
+        midiEngine.onInput = { [weak self] _, status, channel, data1, _ in
+            self?.handleMidiInput(status: status, channel: channel, data1: data1)
+        }
+
+        remoteServer.onClientConnected = { [weak self] in
+            self?.broadcastState()
+        }
         remoteServer.onCommand = { [weak self] type in
             guard let self else { return }
             switch type {
@@ -421,6 +469,32 @@ final class AppState {
                    let song = songs(in: set).first(where: { $0.element.setElementID == elementID }) {
                     prioritizeSongNext(song, in: set)
                     updateUpcomingTrack()
+                    broadcastState()
+                } else if type.hasPrefix("enqueueAtEnd:"),
+                   let idStr = type.split(separator: ":").last,
+                   let elementID = Int64(idStr),
+                   let setID = currentlyLoadedSetID,
+                   let set = sets.first(where: { $0.setID == setID }),
+                   let song = songs(in: set).first(where: { $0.element.setElementID == elementID }),
+                   let track = song.audio {
+                    var queue = concertQueueBySetID[set.setID] ?? []
+                    queue.removeAll { $0.setElementID == song.element.setElementID || $0.audioFileID == track.audioFileID }
+                    queue.append(ConcertQueueItem(
+                        setID: set.setID,
+                        setElementID: song.element.setElementID,
+                        audioFileID: track.audioFileID,
+                        playbackMode: .automatic
+                    ))
+                    concertQueueBySetID[set.setID] = queue
+                    updateUpcomingTrack()
+                    broadcastState()
+                } else if type.hasPrefix("removeFromQueue:"),
+                   let idStr = type.split(separator: ":").last,
+                   let elementID = Int64(idStr),
+                   let setID = currentlyLoadedSetID {
+                    concertQueueBySetID[setID]?.removeAll { $0.setElementID == elementID }
+                    updateUpcomingTrack()
+                    broadcastState()
                 } else {
                     print("[VelvetRemote] Unknown command: \(type)")
                 }
@@ -476,6 +550,16 @@ final class AppState {
             }
         }()
 
+        let queueSongs: [RemoteSetlistSong] = {
+            guard let setID = currentlyLoadedSetID else { return [] }
+            return (concertQueueBySetID[setID] ?? []).compactMap { item in
+                guard let elementID = item.setElementID,
+                      let track = audioFilesByID[item.audioFileID],
+                      let name = track.name else { return nil }
+                return RemoteSetlistSong(id: String(elementID), title: name)
+            }
+        }()
+
         return RemoteStateUpdate(
             songTitle:          currentlyLoadedTrack?.name,
             nextSongTitle:      upcomingTrack?.name,
@@ -485,22 +569,31 @@ final class AppState {
             durationSeconds:    audioEngine.effectiveDuration,
             timelineMemos:      memos,
             afterNextSongTitle: afterNext,
-            upcomingSetlist:    upcoming
+            upcomingSetlist:    upcoming,
+            queue:              queueSongs
         )
     }
 
     func broadcastState() {
+        // Sans client connecté, on ne construit même pas l'état (2× la
+        // setlist + mémos + encode) — le connect d'un client redéclenche
+        // un broadcast frais via onClientConnected.
+        guard remoteServer.hasClients else { return }
         remoteServer.broadcast(buildRemoteState())
     }
 
     private func startRemotePositionTimer() {
-        remotePositionTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+        let t = Timer(timeInterval: 0.5, repeats: true) { [weak self] _ in
             guard let self else { return }
             // Diffuse la position uniquement si quelqu'un est connecté et qu'on joue.
             if self.audioEngine.state == .playing {
                 self.broadcastState()
             }
         }
+        // .common : le timer continue de se déclencher pendant les menus,
+        // drags et modales — contrairement au mode .default qui gèle.
+        RunLoop.main.add(t, forMode: .common)
+        remotePositionTimer = t
     }
 
     // MARK: - Seek behavior
@@ -525,6 +618,76 @@ final class AppState {
         didSet {
             UserDefaults.standard.set(seekBehavior.rawValue, forKey: Self.seekBehaviorKey)
         }
+    }
+
+    // MARK: - DJ / Intermission handoff
+
+    enum DJHandoffTarget: String, CaseIterable, Identifiable, Hashable {
+        case djay
+        case spotify
+        case appleMusic
+        case traktor
+        case custom
+
+        var id: String { rawValue }
+
+        var label: String {
+            switch self {
+            case .djay:       return "djay Pro"
+            case .spotify:    return "Spotify"
+            case .appleMusic: return "Apple Music"
+            case .traktor:    return "Traktor"
+            case .custom:     return "Custom App"
+            }
+        }
+    }
+
+    private static let djHandoffTargetKey = "djHandoffTarget"
+    private static let djHandoffCustomBundleIDKey = "djHandoffCustomBundleID"
+    private static let djHandoffCustomAppNameKey = "djHandoffCustomAppName"
+    private static let djHandoffColdLaunchDelayMillisKey = "djHandoffColdLaunchDelayMillis"
+    private static let djHandoffUsesKeyboardFallbackKey = "djHandoffUsesKeyboardFallback"
+
+    var djHandoffTarget: DJHandoffTarget = .djay {
+        didSet { UserDefaults.standard.set(djHandoffTarget.rawValue, forKey: Self.djHandoffTargetKey) }
+    }
+    var djHandoffCustomBundleID: String = "" {
+        didSet { UserDefaults.standard.set(djHandoffCustomBundleID, forKey: Self.djHandoffCustomBundleIDKey) }
+    }
+    var djHandoffCustomAppName: String = "" {
+        didSet { UserDefaults.standard.set(djHandoffCustomAppName, forKey: Self.djHandoffCustomAppNameKey) }
+    }
+    var djHandoffColdLaunchDelayMillis: Int = 600 {
+        didSet {
+            UserDefaults.standard.set(djHandoffColdLaunchDelayMillis, forKey: Self.djHandoffColdLaunchDelayMillisKey)
+        }
+    }
+    var djHandoffUsesKeyboardFallback: Bool = true {
+        didSet { UserDefaults.standard.set(djHandoffUsesKeyboardFallback, forKey: Self.djHandoffUsesKeyboardFallbackKey) }
+    }
+
+    var djHandoffDisplayName: String {
+        if djHandoffTarget == .custom {
+            let name = djHandoffCustomAppName.trimmingCharacters(in: .whitespacesAndNewlines)
+            let bundleID = djHandoffCustomBundleID.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !name.isEmpty { return name }
+            if !bundleID.isEmpty { return bundleID }
+        }
+        return djHandoffTarget.label
+    }
+
+    func djHandoffConfiguration() -> DJHandoffService.Configuration {
+        DJHandoffService.Configuration(
+            target: djHandoffTarget,
+            customBundleID: djHandoffCustomBundleID,
+            customAppName: djHandoffCustomAppName,
+            coldLaunchDelayMillis: max(0, min(2_000, djHandoffColdLaunchDelayMillis)),
+            usesKeyboardFallback: djHandoffUsesKeyboardFallback
+        )
+    }
+
+    func performDJHandoff() async throws {
+        try await DJHandoffService.openAndPlay(config: djHandoffConfiguration())
     }
 
     // MARK: - Cue de repos
@@ -715,8 +878,12 @@ final class AppState {
 
     // MARK: - Caches FK directs (lookup O(1) par ID)
 
-    private(set) var audioFilesByID: [Int64: AudioFile] = [:]
-    private(set) var lightShowsByID: [Int64: LightShow] = [:]
+    private(set) var audioFilesByID: [Int64: AudioFile] = [:] {
+        didSet { invalidateSongsSnapshot() }
+    }
+    private(set) var lightShowsByID: [Int64: LightShow] = [:] {
+        didSet { invalidateSongsSnapshot() }
+    }
     private(set) var midiEventsByID: [Int64: MidiEvent] = [:]
 
     // MARK: - Caches relationnels inversés
@@ -774,7 +941,14 @@ final class AppState {
     /// Persisté dans UserDefaults for survivre aux relances.
     /// Résolu en `Destination` at la volée via `midiEngine.destination(withID:)`.
     var maestroDestinationID: MIDIUniqueID? {
-        didSet { persistMaestroDestination() }
+        didSet {
+            persistMaestroDestination()
+            // La destination est résolue au build du script scheduler :
+            // si une session tourne, on la reconstruit pour que le
+            // changement soit pris en compte immédiatement (le realign
+            // first-tick re-marque les cues passées, rien ne re-part).
+            if midiSchedulerSession != nil { startMidiScheduler() }
+        }
     }
 
     private static let maestroDestinationKey = "maestroDestinationID"
@@ -796,6 +970,9 @@ final class AppState {
     var midiGlobalOffsetMillis: Int = 0 {
         didSet {
             UserDefaults.standard.set(midiGlobalOffsetMillis, forKey: Self.midiGlobalOffsetKey)
+            // Le scheduler (queue dédiée) lit l'offset via cette box —
+            // prise en compte immédiate, comme avant.
+            midiLeadBox.store(Double(-midiGlobalOffsetMillis) / 1000.0)
         }
     }
 
@@ -827,7 +1004,7 @@ final class AppState {
     var lastTransitionEffect: TransitionEffect = {
         if let raw = UserDefaults.standard.string(forKey: "lastTransitionEffect"),
            let effect = TransitionEffect(rawValue: raw) { return effect }
-        return .fade
+        return .filter
     }() {
         didSet { UserDefaults.standard.set(lastTransitionEffect.rawValue, forKey: "lastTransitionEffect") }
     }
@@ -840,10 +1017,243 @@ final class AppState {
         didSet { UserDefaults.standard.set(maestroBrightnessValue, forKey: "maestroBrightnessValue") }
     }
 
-    /// Envoie CC14 sur Channel 16 at la destination MaestroDMX sélectionnée.
-    /// Persiste la valeur même si aucune destination n'est connectée.
-    func sendMaestroBrightness(_ value: Int) {
-        maestroBrightnessValue = max(0, min(127, value))
+    // MARK: - Lighting control profile
+
+    /// État de confiance d'un profil lumière. C'est la seule source utilisée
+    /// par l'UI Phase 1 pour autoriser ou verrouiller les contrôles live.
+    enum VerificationState: String, CaseIterable, Identifiable {
+        case verifiedLive
+        case experimental
+        case unverifiedMapping
+        case researchOnly
+
+        var id: String { rawValue }
+
+        var label: String {
+            switch self {
+            case .verifiedLive:      return "Verified Live"
+            case .experimental:      return "Experimental"
+            case .unverifiedMapping: return "Mapping Unverified"
+            case .researchOnly:      return "Research Only"
+            }
+        }
+
+        var detail: String {
+            switch self {
+            case .verifiedLive:
+                return "Tested in real concert conditions. Live controls are available."
+            case .experimental:
+                return "Available for timeline cues and test workflows only. Live controls stay locked."
+            case .unverifiedMapping:
+                return "Documented on paper, but not confirmed by a real runtime capture. Nothing is sent live."
+            case .researchOnly:
+                return "Not audited enough to define a reliable mapping. No sending is available from live controls."
+            }
+        }
+
+        var allowsLiveControls: Bool { self == .verifiedLive }
+    }
+
+    /// Profil de contrôle lumière sélectionné par l'utilisateur.
+    /// MaestroDMX reste le défaut pour préserver le comportement historique.
+    enum LightingControlProfile: String, CaseIterable, Identifiable {
+        case maestroDMX       = "maestroDMX"
+        case showBuddyActive  = "showBuddyActive"
+        case dmxis            = "dmxis"
+        case qlcPlus          = "qlcPlus"
+        case lightkey         = "lightkey"
+        case genericMIDI      = "customMIDI"
+        case genericOSC       = "customOSC"
+
+        var id: String { rawValue }
+
+        var label: String {
+            switch self {
+            case .maestroDMX:      return "MaestroDMX"
+            case .showBuddyActive: return "ShowBuddy Active"
+            case .dmxis:           return "DMXIS"
+            case .qlcPlus:         return "QLC+"
+            case .lightkey:        return "Lightkey"
+            case .genericMIDI:     return "Generic MIDI"
+            case .genericOSC:      return "Generic OSC"
+            }
+        }
+
+        var verificationState: VerificationState {
+            switch self {
+            case .maestroDMX:
+                return .verifiedLive
+            case .genericMIDI, .genericOSC:
+                return .experimental
+            case .showBuddyActive, .dmxis:
+                return .unverifiedMapping
+            case .qlcPlus, .lightkey:
+                return .researchOnly
+            }
+        }
+
+        var detail: String {
+            switch self {
+            case .maestroDMX:
+                return "Full support for the current live cue picker and master brightness controls."
+            case .genericMIDI:
+                return "Generic MIDI remains available for timeline and test workflows, but live controls are locked until a verified mapping exists."
+            case .genericOSC:
+                return "Generic OSC remains available for timeline and test workflows, but live controls are locked until a verified mapping exists."
+            case .showBuddyActive:
+                return "MIDI/OSC/Art-Net capabilities were found in research, but the runtime mapping has not been captured yet."
+            case .dmxis:
+                return "DMXIS must be treated as a distinct MIDI profile. Its mapping is not verified for live use."
+            case .qlcPlus:
+                return "QLC+ is a candidate profile, but no dedicated audit has been completed yet."
+            case .lightkey:
+                return "Lightkey is a candidate profile, but no dedicated audit has been completed yet."
+            }
+        }
+
+        var supportsMaestroStyleLiveControls: Bool {
+            verificationState.allowsLiveControls
+        }
+
+        static func persistedProfile(for raw: String?) -> LightingControlProfile {
+            guard let raw else { return .maestroDMX }
+            if let profile = LightingControlProfile(rawValue: raw) { return profile }
+            switch raw {
+            case "qlab":
+                return .qlcPlus
+            case "wolfmix":
+                return .showBuddyActive
+            default:
+                return .showBuddyActive
+            }
+        }
+    }
+
+    var lightingControlProfile: LightingControlProfile = {
+        LightingControlProfile.persistedProfile(
+            for: UserDefaults.standard.string(forKey: "lightingControlProfile")
+        )
+    }() {
+        didSet {
+            UserDefaults.standard.set(lightingControlProfile.rawValue, forKey: "lightingControlProfile")
+        }
+    }
+
+    var lightingLiveControlsAvailable: Bool {
+        lightingControlProfile.verificationState.allowsLiveControls
+    }
+
+    var lightingLiveControlsUnavailableMessage: String {
+        "\(lightingControlProfile.label) is \(lightingControlProfile.verificationState.label). Timeline MIDI/OSC cues are unaffected, but live controls require a Verified Live profile."
+    }
+
+    // MARK: - Protocole de contrôle manuel lighting (MIDI / OSC / Both)
+
+    /// Protocole(s) utilisé(s) par les panneaux MaestroDMX *manuels* — la
+    /// luminosité globale (CC14) et le picker de cues. Indépendant du
+    /// protocole choisi pour les cues OSC sur la timeline ou pour le Rest Cue.
+    /// Default `.midi` : pas de changement de comportement pour les projets
+    /// existants tant que l'utilisateur n'a pas activé OSC.
+    enum MaestroControlProtocol: String, CaseIterable, Identifiable {
+        case midi
+        case osc
+        case both
+        var id: String { rawValue }
+        var label: String {
+            switch self {
+            case .midi: return "MIDI"
+            case .osc:  return "OSC"
+            case .both: return "Both"
+            }
+        }
+        var usesMidi: Bool { self == .midi || self == .both }
+        var usesOsc:  Bool { self == .osc  || self == .both }
+    }
+
+    var maestroControlProtocol: MaestroControlProtocol = {
+        if let raw = UserDefaults.standard.string(forKey: "maestroControlProtocol"),
+           let p = MaestroControlProtocol(rawValue: raw) { return p }
+        return .midi
+    }() {
+        didSet { UserDefaults.standard.set(maestroControlProtocol.rawValue, forKey: "maestroControlProtocol") }
+    }
+
+    /// Host MaestroDMX pour les commandes OSC manuelles (/show/cue/index,
+    /// /show/brightness). Default 192.168.37.1 (config Maestro out-of-the-box).
+    var maestroOscHost: String = (UserDefaults.standard.string(forKey: "maestroOscHost") ?? "192.168.37.1") {
+        didSet { UserDefaults.standard.set(maestroOscHost, forKey: "maestroOscHost") }
+    }
+
+    var maestroOscPort: Int = {
+        let stored = UserDefaults.standard.integer(forKey: "maestroOscPort")
+        return stored > 0 ? stored : 7672
+    }() {
+        didSet { UserDefaults.standard.set(maestroOscPort, forKey: "maestroOscPort") }
+    }
+
+    /// Vrai si la cible OSC MaestroDMX est utilisable (host non vide, port 1…65535).
+    var maestroOscTargetIsConfigured: Bool {
+        !maestroOscHost.trimmingCharacters(in: .whitespaces).isEmpty
+            && (1...65535).contains(maestroOscPort)
+    }
+
+    /// Extrait l'index de cue MaestroDMX (1…98) à partir d'un MidiEvent.
+    /// Convention Maestro : Note On (n'importe quel canal) avec note ∈ 29…127
+    /// correspond à « Select Cue n » où n = note − 28. C'est la même règle
+    /// que `MidiMessage.maestroNoteDescription`.
+    func maestroCueIndex(from event: MidiEvent) -> Int? {
+        for m in midiMessages(for: event) {
+            // Garde uniquement les Note On (0x90). Les autres messages
+            // Maestro (CC, PC…) ne portent pas d'index de cue.
+            guard let status = m.message, (status & 0xF0) == 0x90 else { continue }
+            guard let note = m.data1, (29...127).contains(note) else { continue }
+            return Int(note - 28)
+        }
+        return nil
+    }
+
+    /// Envoi OSC unique : /show/cue/index Int(index). No-op si la cible OSC
+    /// n'est pas configurée. Logue dans midiLog pour cohérence avec MIDI.
+    func sendMaestroOscCueIndex(_ index: Int) {
+        guard maestroOscTargetIsConfigured else {
+            midiLog.append(MidiLogEntry(timestamp: Date(),
+                text: "Maestro Manual OSC · skipped (no OSC target)"))
+            return
+        }
+        let host = maestroOscHost
+        let port = maestroOscPort
+        do {
+            try oscEngine.send(address: "/show/cue/index", value: .int(index), host: host, port: port)
+            midiLog.append(MidiLogEntry(timestamp: Date(),
+                text: "ENVOI     : Maestro Manual OSC · /show/cue/index Int(\(index)) → \(host):\(port)"))
+            print("[OSC] Maestro Manual /show/cue/index \(index) → \(host):\(port)")
+        } catch {
+            midiLog.append(MidiLogEntry(timestamp: Date(),
+                text: "SEND FAILED (\(error.localizedDescription)) : Maestro Manual OSC /show/cue/index Int(\(index))"))
+            print("[OSC] Maestro Manual /show/cue/index FAILED — \(error.localizedDescription)")
+        }
+    }
+
+    /// Envoi OSC unique : /show/brightness Int(value). No-op si la cible OSC
+    /// n'est pas configurée. Logue dans midiLog.
+    func sendMaestroOscBrightness(_ value: Int) {
+        guard maestroOscTargetIsConfigured else { return }
+        let host = maestroOscHost
+        let port = maestroOscPort
+        let clamped = max(0, min(127, value))
+        do {
+            try oscEngine.send(address: "/show/brightness", value: .int(clamped), host: host, port: port)
+            print("[OSC] Maestro Master Brightness \(clamped) → \(host):\(port)")
+        } catch {
+            print("[OSC] Maestro Master Brightness FAILED — \(error.localizedDescription)")
+        }
+    }
+
+    /// Envoie CC14 (Channel 16) à la destination MIDI MaestroDMX, en ne tirant
+    /// que la branche MIDI. Sépare la responsabilité MIDI pour que
+    /// `sendMaestroBrightness` ci-dessous puisse composer MIDI + OSC selon
+    /// le protocole sélectionné.
+    private func sendMaestroBrightnessOnMIDI() {
         guard let dest = maestroDestination else { return }
         let msg = MidiMessage(
             midiMessageID: -1,
@@ -856,6 +1266,55 @@ final class AppState {
             data2:         Int64(maestroBrightnessValue)
         )
         try? midiEngine.send(message: msg, to: dest)
+    }
+
+    /// Met à jour la valeur partagée et envoie la luminosité Maestro via le ou
+    /// les protocoles sélectionnés (`maestroControlProtocol`). MIDI = CC14 ch16,
+    /// OSC = /show/brightness Int(value). La valeur est persistée dans tous les
+    /// cas, même si aucun protocole n'est configuré.
+    func sendMaestroBrightness(_ value: Int) {
+        maestroBrightnessValue = max(0, min(127, value))
+        guard lightingLiveControlsAvailable else {
+            midiLog.append(MidiLogEntry(timestamp: Date(),
+                text: "Lighting live control skipped · \(lightingLiveControlsUnavailableMessage)"))
+            return
+        }
+        if maestroControlProtocol.usesMidi {
+            sendMaestroBrightnessOnMIDI()
+        }
+        if maestroControlProtocol.usesOsc {
+            sendMaestroOscBrightness(maestroBrightnessValue)
+        }
+    }
+
+    /// Déclenche manuellement une cue MaestroDMX depuis le panneau de contrôle
+    /// manuel. Envoie selon `maestroControlProtocol` :
+    ///   • MIDI → `dispatch(event:)` (envoie tous les messages MIDI de l'event,
+    ///     met à jour `lastDispatchedMaestroEventID` et le log MIDI).
+    ///   • OSC  → `/show/cue/index Int(maestroCueIndex(from: event))`.
+    /// En mode OSC seul, on conserve la mise à jour `lastDispatchedMaestroEventID`
+    /// pour que le highlight « Current » de l'UI continue de fonctionner.
+    func sendMaestroManualCue(_ event: MidiEvent) {
+        guard lightingLiveControlsAvailable else {
+            midiLog.append(MidiLogEntry(timestamp: Date(),
+                text: "Lighting live cue skipped · \(lightingLiveControlsUnavailableMessage)"))
+            return
+        }
+        if maestroControlProtocol.usesMidi {
+            dispatch(event: event)
+        } else if midiMessages(for: event).contains(where: { $0.maestroDescription != nil }) {
+            // OSC seul : on n'envoie pas de MIDI mais on garde le suivi de scène.
+            lastDispatchedMaestroEventID = event.midiEventID
+            lastDispatchedEventName = event.name
+        }
+        if maestroControlProtocol.usesOsc {
+            if let index = maestroCueIndex(from: event) {
+                sendMaestroOscCueIndex(index)
+            } else {
+                midiLog.append(MidiLogEntry(timestamp: Date(),
+                    text: "Maestro Manual OSC · \"\(event.name ?? "?")\" has no MaestroDMX Note On — nothing sent"))
+            }
+        }
     }
 
     // MARK: - Phase Audio 0 : moteur audio + dossier des médias
@@ -895,6 +1354,11 @@ final class AppState {
     var isAutoShowEnabled: Bool = false
     var selectedShowSetElementIDBySetID: [ShowSet.ID: SetElement.ID] = [:]
 
+    /// Handoff DJ armé : à la fin naturelle du morceau en cours, on lance
+    /// l'app externe configurée au lieu d'enchaîner sur le suivant.
+    /// Reset auto après tir. Non persisté.
+    var isDjayArmed: Bool = false
+
     // MARK: - Concert UX : avancement persistant des shows
 
     private(set) var playedSetElementIDsBySetID: [ShowSet.ID: Set<SetElement.ID>] = [:] {
@@ -931,7 +1395,7 @@ final class AppState {
     /// Les ajouts live ultérieurs sont automatiquement appended par
     /// `songs(in:)` at la fin for ne jamais être perdus.
     var customOrderBySetID: [ShowSet.ID: [SetElement.ID]] = [:] {
-        didSet { persistCustomOrder() }
+        didSet { persistCustomOrder(); invalidateSongsSnapshot() }
     }
 
     /// Overrides utilisateur sur les couleurs de styles. Source de
@@ -958,7 +1422,7 @@ final class AppState {
     }
 
     var velvetShows: [VelvetShow] = [] {
-        didSet { persistVelvetShows() }
+        didSet { persistVelvetShows(); invalidateSongsSnapshot() }
     }
 
     /// Ordre d'affichage manuel des Shows Velvet — tableau d'IDs (Int64 négatifs).
@@ -992,7 +1456,7 @@ final class AppState {
     }
 
     var liveAdditionsBySetID: [ShowSet.ID: [LiveShowAddition]] = [:] {
-        didSet { persistLiveAdditions() }
+        didSet { persistLiveAdditions(); invalidateSongsSnapshot() }
     }
     var recentlyAddedLiveElementID: SetElement.ID?
     var concertQueueBySetID: [ShowSet.ID: [ConcertQueueItem]] = [:] {
@@ -1051,6 +1515,26 @@ final class AppState {
     var oscCuesByAudioFileID: [Int64: [TimelineOscCue]] = [:] {
         didSet { persistOscCues() }
     }
+
+    /// Vidéo locale associée à un morceau (mp4/mov/m4v). Affichée par le
+    /// Prompter à la place des paroles quand présente. N'altère pas le backtrack.
+    var videosByAudioFileID: [Int64: VelvetTrackVideo] = [:] {
+        didSet { persistVideos() }
+    }
+
+    /// Contrôleur AVPlayer dédié à la vidéo Prompter. Indépendant de
+    /// `audioEngine` — synchronisé au niveau commande (play/pause/stop/seek).
+    let videoController = VideoPlayerController()
+
+    /// Bindings MIDI input → action transport (Play/Pause, Stop, Next, etc.)
+    /// Footswitch USB / BT MIDI. Persisté via VelvetShowStore.
+    var midiInputBindings: [MidiInputBinding] = [] {
+        didSet { persistMidiInputBindings() }
+    }
+
+    /// Action en cours d'apprentissage (Learn). nil = pas de capture en cours.
+    /// Le prochain message MIDI input matchera cette action.
+    var midiLearningAction: MidiInputAction? = nil
 
     /// IDs d'events MIDI masqués des pickers (visibilité uniquement, pas de suppression).
     var archivedMidiEventIDs: Set<Int64> = [] {
@@ -1303,6 +1787,18 @@ final class AppState {
         store.update { $0.oscCuesByAudioFileID = serialised }
     }
 
+    private func persistVideos() {
+        guard !isLoadingFromStore else { return }
+        let serialised = videosByAudioFileID.stringKeyed()
+        store.update { $0.videosByAudioFileID = serialised }
+    }
+
+    private func persistMidiInputBindings() {
+        guard !isLoadingFromStore else { return }
+        let bindings = midiInputBindings
+        store.update { $0.midiInputBindings = bindings }
+    }
+
     private func persistEndBehaviors() {
         guard !isLoadingFromStore else { return }
         store.update { $0.endBehaviorBySetElementID = self.endBehaviorBySetElementID.stringKeyed() }
@@ -1382,6 +1878,96 @@ final class AppState {
 
     func deleteOscCue(_ cue: TimelineOscCue, for track: AudioFile) {
         oscCuesByAudioFileID[track.audioFileID]?.removeAll { $0.id == cue.id }
+    }
+
+    // MARK: - Vidéo locale par morceau
+
+    func video(for track: AudioFile) -> VelvetTrackVideo? {
+        videosByAudioFileID[track.audioFileID]
+    }
+
+    func hasVideo(for track: AudioFile) -> Bool {
+        if let v = videosByAudioFileID[track.audioFileID],
+           store.videoURL(forFileName: v.fileName) != nil {
+            return true
+        }
+        // Cas karaoké : le fichier audio lui-même est un container vidéo
+        // (.mp4/.mov/.m4v). On en extrait audio + vidéo simultanément.
+        return audioFileIsVideoContainer(track)
+    }
+
+    /// URL absolue du fichier vidéo associé au morceau, ou nil si aucun
+    /// fichier valide. Tient compte d'une suppression manuelle sur disque.
+    /// Pour les morceaux importés comme vidéo karaoké (.mp4/.mov/.m4v),
+    /// renvoie l'URL du fichier audio lui-même — pas de double stockage.
+    func videoURL(for track: AudioFile) -> URL? {
+        if let v = videosByAudioFileID[track.audioFileID],
+           let url = store.videoURL(forFileName: v.fileName) {
+            return url
+        }
+        if audioFileIsVideoContainer(track) {
+            return resolvedAudioURL(for: track)
+        }
+        return nil
+    }
+
+    /// True si le fichier audio du morceau est en réalité un container vidéo
+    /// (extension .mp4/.mov/.m4v). Utilisé pour les imports karaoké où une
+    /// seule entrée Library représente à la fois la backtrack et le visuel.
+    private func audioFileIsVideoContainer(_ track: AudioFile) -> Bool {
+        guard let url = resolvedAudioURL(for: track) else { return false }
+        return VelvetTrackVideo.supportedExtensions.contains(url.pathExtension.lowercased())
+    }
+
+    /// Importe une nouvelle vidéo (mp4/mov/m4v) et la lie au morceau.
+    /// Remplace la vidéo précédente s'il y en avait une (ancien fichier
+    /// supprimé du dossier Media). Renvoie l'URL absolue après import.
+    @discardableResult
+    func setVideo(for track: AudioFile, from sourceURL: URL) throws -> URL {
+        // Vérifier l'extension côté AppState — défense en profondeur si la
+        // sélection passe à côté du filtre fileImporter.
+        let ext = sourceURL.pathExtension.lowercased()
+        guard VelvetTrackVideo.supportedExtensions.contains(ext) else {
+            // Le fileImporter accepte volontairement `.item` pour contourner
+            // les MP4 sans `kMDItemContentType` (HandBrake & co). C'est ici
+            // qu'on rejette les extensions non vidéo, avec un message précis
+            // qui mentionne l'extension réellement rencontrée.
+            let detail = ext.isEmpty ? "(no extension)" : ".\(ext)"
+            throw NSError(
+                domain: "VelvetShow.Video",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey:
+                    "Unsupported video format \(detail). Use .mp4, .mov or .m4v."]
+            )
+        }
+        // Nettoyer l'ancienne vidéo si présente.
+        if let old = videosByAudioFileID[track.audioFileID] {
+            store.discardVideoFile(named: old.fileName)
+        }
+        let fileName = try store.importVideoFile(from: sourceURL)
+        let entry = VelvetTrackVideo(audioFileID: track.audioFileID, fileName: fileName)
+        videosByAudioFileID[track.audioFileID] = entry
+        // Si le morceau est actuellement chargé, recharger le contrôleur vidéo
+        // immédiatement pour que le Prompter affiche la nouvelle vidéo.
+        if currentlyLoadedTrack?.audioFileID == track.audioFileID {
+            videoController.load(url: store.videoURL(forFileName: fileName))
+        }
+        guard let url = store.videoURL(forFileName: fileName) else {
+            throw NSError(domain: "VelvetShow.Video", code: 2,
+                userInfo: [NSLocalizedDescriptionKey: "Video copy failed."])
+        }
+        return url
+    }
+
+    /// Détache et supprime la vidéo du morceau (fichier + entrée). No-op
+    /// si aucune vidéo n'était associée.
+    func removeVideo(for track: AudioFile) {
+        guard let entry = videosByAudioFileID[track.audioFileID] else { return }
+        store.discardVideoFile(named: entry.fileName)
+        videosByAudioFileID.removeValue(forKey: track.audioFileID)
+        if currentlyLoadedTrack?.audioFileID == track.audioFileID {
+            videoController.load(url: nil)
+        }
     }
 
     // MARK: - Velvet OSC Library (CRUD + persistance)
@@ -1824,18 +2410,21 @@ final class AppState {
         let trackEnd   = audioEngine.effectiveEnd          // position absolue de fin (trimEnd ou durée totale)
         let threshold  = max(0, trackEnd - seconds)
         let memos      = editableMemos(for: track)
+        // Source de vérité : l'ensemble tenu par la session (queue dédiée),
+        // lu sous verrou — le miroir MainActor peut avoir un hop de retard.
+        let fired = midiSchedulerSession?.firedSnapshot() ?? firedMidiTriggers
 
         for memo in memos {
             // Trigger END : déclenché at memoTime + memoLength
             if memo.endMidiEventID != nil {
                 let endTime = memo.memoTime + memo.memoLength
-                if endTime >= threshold && firedMidiTriggers.contains("\(memo.id)-end") {
+                if endTime >= threshold && fired.contains("\(memo.id)-end") {
                     return true
                 }
             }
             // Trigger START : déclenché at memoTime
             if memo.startMidiEventID != nil {
-                if memo.memoTime >= threshold && firedMidiTriggers.contains("\(memo.id)-start") {
+                if memo.memoTime >= threshold && fired.contains("\(memo.id)-start") {
                     return true
                 }
             }
@@ -1927,8 +2516,7 @@ final class AppState {
     }
 
     private func handlePlaybackEndished() {
-        midiSchedulerTask?.cancel()
-        midiSchedulerTask = nil
+        stopMidiScheduler()
         guard !isStartingQueuedPlayback else { return }
         // Éditeur ouvert : ne pas marquer le song joué, ne pas lancer
         // le suivant depuis la queue. L'arrêt vient de l'édition, pas de
@@ -1938,6 +2526,20 @@ final class AppState {
         // naturellement pendant le fade-out. On ne doit pas déclencher
         // la Queue Auto — `startReplacement` gère la suite lui-même.
         guard !isReplacingTrack else { return }
+
+        // Handoff DJ ARMÉ : on lance l'app externe maintenant au lieu
+        // d'enchaîner. Le morceau vient déjà de se terminer, plus besoin de
+        // fade Velvet. Court-circuit total — pas de queue, pas d'auto-show,
+        // pas de cue de repos.
+        if isDjayArmed {
+            print("[DJ] armed trigger fired at natural end")
+            isDjayArmed = false
+            Task { @MainActor in
+                do { try await self.performDJHandoff() }
+                catch { self.lastError = error.localizedDescription }
+            }
+            return
+        }
 
         let finishedSetID = currentlyLoadedSetID
         let finishedElementID = currentlyLoadedSetElementID
@@ -2559,11 +3161,16 @@ final class AppState {
                 trimStart: trim.start,
                 trimEnd: trim.end,
                 volumeOffsetDB: volumeOffsetDB,
+                diagnosticTrackID: String(track.audioFileID),
+                diagnosticTrackName: track.name,
                 accessFolder: folder
             )
             self.currentlyLoadedTrack = track
             self.currentlyLoadedShow = show
             self.firedMidiTriggers = []
+            // Charger la vidéo associée (ou la décharger s'il n'y en a pas)
+            // pour que le Prompter bascule visuel ↔ paroles au même instant.
+            self.videoController.load(url: self.videoURL(for: track))
             self.broadcastState()
             self.preloadedPlaybackContext = nil
         } catch {
@@ -2865,6 +3472,7 @@ final class AppState {
             // Stop manuel : NE PAS marquer le song comme joué.
             // Seule la fin naturelle (handlePlaybackEndished) doit le faire.
             audioEngine.stop()
+            videoController.stop()
             return
         }
 
@@ -2880,6 +3488,7 @@ final class AppState {
         }
         if !isResume { firedMidiTriggers = [] }
         audioEngine.play()
+        videoController.play()
         broadcastState()
         startMidiScheduler()
         // Indicateur "prochain song" dès le premier lancement manuel —
@@ -2944,8 +3553,7 @@ final class AppState {
         // Sans ça, le scheduler zombie continue de ticker pendant tout le
         // délai du fade et reprend avec le nouveau currentlyLoadedTrack,
         // pouvant déclencher les mémos de l'ancien song au mauvais moment.
-        midiSchedulerTask?.cancel()
-        midiSchedulerTask = nil
+        stopMidiScheduler()
 
         // Marque le song courant joué avant le fade — il a été quitté
         // volontairement, doit sortir des "restants".
@@ -2974,6 +3582,7 @@ final class AppState {
                 self.currentlyLoadedSetElementID = element?.setElementID
                 self.recordHistory(track: track, in: set)
                 self.audioEngine.play()
+                self.videoController.play()
                 self.startMidiScheduler()
                 self.updateNextNaturalIndicator()
                 self.isReplacingTrack = false
@@ -2981,10 +3590,10 @@ final class AppState {
             }
 
         } else if effect == .fade || effect == .slowFade || effect == .filter {
-            // ── CROSSFADE (FADE / SLOW FADE / FILTER) ──────────────────────
+            // ── CROSSFADE (FONDU DJ) ─────────────────────────────────────────
             // Les deux fades (out sur l'ancien nœud, in sur le nouveau)
             // courent en parallèle — aucun silence entre les songs.
-            // FILTER ajoute un sweep low-pass 20 kHz → 300 Hz sur playerNode.
+            // FONDU DJ ajoute un sweep low-pass sur le song sortant.
             // Pas de replacementTask : le timing est piloté par les completions
             // de fade audio, pas par Task.sleep.
             audioEngine.cancelCrossfade()
@@ -2998,6 +3607,8 @@ final class AppState {
             let trim         = effectiveTrim(for: track)
             let newVolDB     = volumeOffsetDB(for: track)
             let newNormDB    = effectiveNormGainDB(for: track)
+            let mixDuration  = effect.fadeOutDuration
+            let useFilter    = effect == .filter
             pendingCrossfadeTrack = track
 
             do {
@@ -3008,8 +3619,8 @@ final class AppState {
                     volumeOffsetDB: newVolDB,
                     normGainDB: newNormDB,
                     accessFolder: mediaRootURL,
-                    duration: effect.fadeOutDuration,
-                    withFilter: effect == .filter
+                    duration: mixDuration,
+                    withFilter: useFilter
                 ) { [weak self] in
                     guard let self else { return }
                     // finishCrossfade() a déjà été appelé par AudioEngine.
@@ -3036,16 +3647,23 @@ final class AppState {
                 // at l'heure les mémos placés au tout début du song.
                 firedMidiTriggers = []
                 startMidiScheduler()
+                // Vidéo Prompter : bascule sur celle du nouveau song dès le
+                // début du crossfade. Pas de fondu vidéo en V1 — coupe nette,
+                // puis lecture parallèle au fade audio.
+                videoController.load(url: videoURL(for: track))
+                videoController.play()
                 // Le "suivant" affiché bascule immédiatement sur celui du
                 // song entrant — pas d'info périmée pendant le fade.
                 pendingCrossfadeSetElementID = element?.setElementID
                 updateUpcomingTrack()
-            } catch {
-                // Fichier illisible : fallback sur fade-out + délai classique.
-                lastError = error.localizedDescription
+            } catch AudioEngine.AudioError.noCleanNodeAvailable {
+                // Release peut libérer les nœuds de crossfade plus tard que
+                // Debug. Le double-clic doit quand même remplacer le song :
+                // fallback sûr sans second nœud, avec fade-out puis chargement.
+                print("[XFADE] No clean node available — fallback to fade-out replacement")
                 pendingCrossfadeTrack = nil
-                audioEngine.stop(fadeOutDuration: effect.fadeOutDuration)
-                let delayMillis = effect.loadDelayMillis
+                audioEngine.stop(fadeOutDuration: mixDuration)
+                let delayMillis = Int(mixDuration * 1000) + 40
                 replacementTask = Task { @MainActor [weak self] in
                     do { try await Task.sleep(for: .milliseconds(delayMillis)) } catch { return }
                     guard let self else { return }
@@ -3054,6 +3672,27 @@ final class AppState {
                     self.currentlyLoadedSetElementID = element?.setElementID
                     self.recordHistory(track: track, in: set)
                     self.audioEngine.play()
+                    self.videoController.play()
+                    self.startMidiScheduler()
+                    self.updateNextNaturalIndicator()
+                    self.isReplacingTrack = false
+                    self.replacementTask = nil
+                }
+            } catch {
+                // Fichier illisible : fallback sur fade-out + délai classique.
+                lastError = error.localizedDescription
+                pendingCrossfadeTrack = nil
+                audioEngine.stop(fadeOutDuration: mixDuration)
+                let delayMillis = Int(mixDuration * 1000) + 40
+                replacementTask = Task { @MainActor [weak self] in
+                    do { try await Task.sleep(for: .milliseconds(delayMillis)) } catch { return }
+                    guard let self else { return }
+                    self.load(track: track)
+                    self.currentlyLoadedSetID = set.setID
+                    self.currentlyLoadedSetElementID = element?.setElementID
+                    self.recordHistory(track: track, in: set)
+                    self.audioEngine.play()
+                    self.videoController.play()
                     self.startMidiScheduler()
                     self.updateNextNaturalIndicator()
                     self.isReplacingTrack = false
@@ -3073,6 +3712,7 @@ final class AppState {
                 self.currentlyLoadedSetElementID = element?.setElementID
                 self.recordHistory(track: track, in: set)
                 self.audioEngine.play()
+                self.videoController.play()
                 self.startMidiScheduler()
                 self.updateNextNaturalIndicator()
                 self.isReplacingTrack = false
@@ -3096,7 +3736,26 @@ final class AppState {
     static let resumeFadeInSeconds: TimeInterval = 0.4
 
     func requestPause() {
+        // Un crossfade en cours (FONDU DJ) anime le song sortant
+        // et le song entrant sur deux fades indépendants. `audioEngine.pause`
+        // n'agit que sur le nœud actif (sortant) via le même timer que le
+        // fade-out du crossfade : l'appeler pendant une transition annule
+        // silencieusement la completion du crossfade (finishCrossfade ne
+        // s'exécute jamais) alors que le song entrant continuerait de son
+        // côté à monter en volume — Pause n'aurait alors plus d'effet
+        // audible. On annule donc proprement la transition avant de mettre
+        // en pause, exactement comme requestStop() et onCrossfadeAborted
+        // le font déjà pour un Stop utilisateur ou une interruption système.
+        if audioEngine.isCrossfading {
+            audioEngine.cancelCrossfade()
+            isReplacingTrack = false
+            pendingCrossfadeTrack = nil
+            pendingCrossfadeSetElementID = nil
+            updateUpcomingTrack()
+            print("[XFADE] Aborted (user pause): replacement cancelled, previous song paused")
+        }
         audioEngine.pause(fadeOutDuration: Self.pauseFadeOutSeconds)
+        videoController.pause()
         broadcastState()
     }
 
@@ -3106,8 +3765,12 @@ final class AppState {
         // firedMidiTriggers n'ont pas été vidés par requestStop(). On les
         // remet at zéro ici for que les cues repassent depuis le début.
         // Pause → Resume : .paused, on ne touche pas firedMidiTriggers. ✅
+        let isResumingPausedTrack = audioEngine.state == .paused
         if audioEngine.state == .stopped { firedMidiTriggers = [] }
-        audioEngine.play(fadeInDuration: Self.resumeFadeInSeconds)
+        audioEngine.play(
+            fadeInDuration: isResumingPausedTrack ? Self.resumeFadeInSeconds : 0
+        )
+        videoController.play()
         // Le scheduler MIDI doit être (re)lancé dans tous les cas :
         // - Pause → Resume : le scheduler était toujours vivant mais en veille
         //   (guard state == .playing), startMidiScheduler() annule la tâche
@@ -3127,9 +3790,10 @@ final class AppState {
     func returnToBeginning() {
         // seek(to: 0) est relatif at effectiveStart — 0 = trimStart.
         audioEngine.seek(to: 0)
+        videoController.seek(toSeconds: 0)
     }
 
-    func requestStop() {
+    func requestStop(fadeOutDuration: TimeInterval = 0.8) {
         // Si un remplacement automatique est en vol (fade + délai), on
         // l'annule : l'utilisateur a décidé de tout stopper, le nouveau
         // song ne doit pas démarrer après le délai.
@@ -3144,15 +3808,15 @@ final class AppState {
 
         // Cue de repos — stop explicite utilisateur.
         sendRestCueIfNeeded(trigger: .stop)
-        midiSchedulerTask?.cancel()
-        midiSchedulerTask = nil
+        stopMidiScheduler()
         // Réinitialiser les triggers MIDI après STOP explicite, for que les
         // mémos du song puissent repartir normalement au prochain Play.
         // Le Stop Cue a déjà été envoyé ci-dessus — ce reset ne l'affecte pas.
         firedMidiTriggers = []
         print("[MIDI] firedMidiTriggers reset after STOP")
         audioEngine.cancelCrossfade()
-        audioEngine.stop(fadeOutDuration: 0.8)
+        audioEngine.stop(fadeOutDuration: fadeOutDuration)
+        videoController.stop()
         broadcastState()
     }
 
@@ -3198,6 +3862,69 @@ final class AppState {
         }
     }
 
+    var isAnalyzingMissingBPMs = false
+    var bpmAnalysisCompletedCount = 0
+    var bpmAnalysisTotalCount = 0
+    var bpmAnalysisDetectedCount = 0
+    var bpmAnalysisCurrentTitle: String? = nil
+
+    var tracksMissingBPM: [AudioFile] {
+        audioFiles.filter { effectiveTempo(for: $0) == nil && resolvedAudioURL(for: $0) != nil }
+    }
+
+    var bpmAnalysisProgressText: String {
+        guard isAnalyzingMissingBPMs else { return "" }
+        let current = bpmAnalysisCurrentTitle ?? "Preparing..."
+        return "\(bpmAnalysisCompletedCount)/\(bpmAnalysisTotalCount) · \(current)"
+    }
+
+    func analyzeMissingBPMs() {
+        guard !isAnalyzingMissingBPMs else { return }
+        let candidates = tracksMissingBPM
+        guard !candidates.isEmpty else {
+            bpmAnalysisCompletedCount = 0
+            bpmAnalysisTotalCount = 0
+            bpmAnalysisDetectedCount = 0
+            bpmAnalysisCurrentTitle = nil
+            return
+        }
+
+        isAnalyzingMissingBPMs = true
+        bpmAnalysisCompletedCount = 0
+        bpmAnalysisTotalCount = candidates.count
+        bpmAnalysisDetectedCount = 0
+        bpmAnalysisCurrentTitle = nil
+
+        Task { @MainActor in
+            for track in candidates {
+                guard isAnalyzingMissingBPMs else { break }
+                bpmAnalysisCurrentTitle = track.name ?? "Untitled"
+                defer { bpmAnalysisCompletedCount += 1 }
+
+                guard effectiveTempo(for: track) == nil,
+                      let url = resolvedAudioURL(for: track),
+                      let bpm = await BPMDetector.detect(url: url)
+                else { continue }
+
+                applyDetectedBPM(bpm.rounded(), to: track)
+                bpmAnalysisDetectedCount += 1
+            }
+            isAnalyzingMissingBPMs = false
+            bpmAnalysisCurrentTitle = nil
+        }
+    }
+
+    private func applyDetectedBPM(_ bpm: Double, to track: AudioFile) {
+        guard bpm > 0, effectiveTempo(for: track) == nil else { return }
+        if let index = velvetTracks.firstIndex(where: { $0.id == track.audioFileID }),
+           velvetTracks[index].tempo == nil {
+            velvetTracks[index].tempo = bpm
+        } else {
+            setTempoOverride(bpm, for: track)
+        }
+        print("[BPM] Detected \(Int(bpm)) BPM for \(track.name ?? "Untitled")")
+    }
+
     /// Snapper la position au beat le plus proche si BPM connu.
     private func snapToBeat(position: TimeInterval, track: AudioFile) -> TimeInterval {
         guard let bpm = effectiveTempo(for: track), bpm > 0 else { return position }
@@ -3210,6 +3937,17 @@ final class AppState {
     }
 
     func seek(track: AudioFile, to position: TimeInterval) {
+        // Un crossfade en cours anime le nœud sortant via son propre fade
+        // (voir requestPause() ci-dessus pour le même risque) — un seek
+        // pendant ce fade ré-armerait le buffer de ce nœud et casserait la
+        // transition. La position affichée pendant un crossfade suit déjà
+        // le song entrant (crossfadeIncomingLivePosition), pas le song
+        // sortant que ce seek manipulerait : on ignore donc la demande le
+        // temps que la transition se termine (quelques secondes maximum).
+        guard !audioEngine.isCrossfading else {
+            print("[XFADE] seek ignored — crossfade in progress")
+            return
+        }
         if currentlyLoadedTrack?.audioFileID != track.audioFileID {
             load(track: track)
         }
@@ -3230,6 +3968,9 @@ final class AppState {
             let snapped = snapToBeat(position: position + audioEngine.effectiveStart, track: track)
             audioEngine.seekWithFade(to: snapped - audioEngine.effectiveStart)
         }
+        // Vidéo : suit la position effective relative au trim (best effort —
+        // pas de frame-sync, juste un repositionnement commandé).
+        videoController.seek(toSeconds: position)
     }
 
     // MARK: - Raccourcis clavier globaux
@@ -3280,6 +4021,66 @@ final class AppState {
         moveInCurrentShow(direction: -1)
     }
 
+    // MARK: - MIDI Input dispatcher (footswitch)
+
+    /// Reçoit un message MIDI input nettoyé (Note Off filtré) et soit :
+    /// - capture le binding si on est en mode Learn,
+    /// - sinon match contre les bindings existants et fire l'action.
+    func handleMidiInput(status: UInt8, channel: UInt8, data1: UInt8) {
+        // Mode Learn : on capture le premier message reçu et on stocke le binding.
+        if let action = midiLearningAction {
+            let sourceName = midiEngine.sources.first?.displayName ?? "MIDI Input"
+            let binding = MidiInputBinding(
+                action: action,
+                sourceUniqueID: 0,
+                sourceName: sourceName,
+                status: status,
+                channel: channel,
+                data1: data1
+            )
+            // Remplace tout binding existant pour cette action.
+            midiInputBindings.removeAll { $0.action == action }
+            midiInputBindings.append(binding)
+            midiLearningAction = nil
+            print("[MIDI IN] learned \(action.rawValue): status=0x\(String(status, radix: 16)) ch=\(channel) d1=\(data1)")
+            return
+        }
+        // Mode normal : match contre les bindings.
+        guard let match = midiInputBindings.first(where: {
+            $0.status == status && $0.channel == channel && $0.data1 == data1
+        }) else { return }
+        print("[MIDI IN] fired \(match.action.rawValue)")
+        switch match.action {
+        case .playPause:     handlePlayPauseShortcut()
+        case .stop:          handleStopShortcut()
+        case .nextSong:      handleNextSongShortcut()
+        case .previousSong:  handlePreviousSongShortcut()
+        case .returnToStart: returnToBeginning()
+        case .prompterPanic: triggerPrompterPanic()
+        }
+    }
+
+    /// Commence l'apprentissage pour une action. Le prochain message MIDI input
+    /// (Note On / CC / PC) sera lié à cette action.
+    func startLearningMidiInput(for action: MidiInputAction) {
+        midiLearningAction = action
+    }
+
+    /// Annule un Learn en cours (clic ailleurs ou bouton "Annuler").
+    func cancelLearningMidiInput() {
+        midiLearningAction = nil
+    }
+
+    /// Supprime le binding d'une action.
+    func clearMidiInputBinding(for action: MidiInputAction) {
+        midiInputBindings.removeAll { $0.action == action }
+    }
+
+    /// Retourne le binding actif d'une action (s'il y en a un).
+    func midiInputBinding(for action: MidiInputAction) -> MidiInputBinding? {
+        midiInputBindings.first { $0.action == action }
+    }
+
     private func startPlayback(track: AudioFile, set: ShowSet? = nil, element: SetElement? = nil) {
         let isResume = currentlyLoadedTrack?.audioFileID == track.audioFileID
             && audioEngine.state == .paused
@@ -3294,6 +4095,7 @@ final class AppState {
         }
         if !isResume { firedMidiTriggers = [] }
         audioEngine.play()
+        videoController.play()
         startMidiScheduler()
         updateNextNaturalIndicator()
     }
@@ -3357,15 +4159,16 @@ final class AppState {
     func currentMemo() -> EditableMemo? {
         guard let track = currentlyLoadedTrack else { return nil }
         let pos = audioEngine.currentPosition
-        let candidates = prompterMemos(for: track).filter { memo in
-            let start = memo.memoTime
-            let end = start + memo.memoLength
-            return start <= pos && pos <= end
+        // Balayage sans allocation (appelé à 30 Hz par le Prompter) :
+        // les mémos sont triés par memoTime, on s'arrête au premier futur.
+        // Le dernier qui contient pos = le plus récemment démarré — même
+        // résultat que l'ancien filter().last.
+        var result: EditableMemo?
+        for memo in prompterMemos(for: track) {
+            if memo.memoTime > pos { break }
+            if pos <= memo.memoTime + memo.memoLength { result = memo }
         }
-        // Le `.sorted` aurait été plus lisible mais on est déjà triés par
-        // memoTime (cf. `memos(for:)`), donc le dernier qui matche est
-        // forcément le plus récemment démarré.
-        return candidates.last
+        return result
     }
 
     /// Premier mémo non encore atteint, ou nil si on est en fin de song.
@@ -3457,6 +4260,7 @@ final class AppState {
             velvetTracks.append(track)
             selectedCategoryID = Self.category(for: copiedURL.path)
             selectedAudioFileID = track.id
+            scheduleBPMDetection(forVelvetTrackID: track.id, url: copiedURL)
         } catch {
             lastError = "Import song Velvet impossible : \(error.localizedDescription)"
         }
@@ -3598,6 +4402,21 @@ final class AppState {
         rebuildAudioFileCaches()
         selectedCategoryID = category
         selectedAudioFileID = track.id
+        scheduleBPMDetection(forVelvetTrackID: track.id, url: destURL)
+    }
+
+    /// Analyse le BPM après import sans bloquer l'UI. Le résultat remplit
+    /// `VelvetTrack.tempo` seulement si aucune valeur n'a été saisie depuis.
+    private func scheduleBPMDetection(forVelvetTrackID id: VelvetTrack.ID, url: URL) {
+        Task { [weak self] in
+            guard let bpm = await BPMDetector.detect(url: url) else { return }
+            await MainActor.run {
+                guard let self,
+                      let index = self.velvetTracks.firstIndex(where: { $0.id == id }),
+                      self.velvetTracks[index].tempo == nil else { return }
+                self.applyDetectedBPM(bpm.rounded(), to: Self.audioFile(from: self.velvetTracks[index]))
+            }
+        }
     }
 
     // MARK: - Remplacement sécurisé d'un fichier audio
@@ -4527,8 +5346,14 @@ final class AppState {
               let elementID = currentlyLoadedSetElementID,
               let set = sets.first(where: { $0.setID == setID }) else { return }
 
-        // La queue est prioritaire sur l'Auto Next.
-        if let q = concertQueueBySetID[setID], !q.isEmpty { return }
+        // La queue est prioritaire sur l'Auto Next. Une tête .automatic
+        // devient la DESTINATION du fondu (mêmes conditions endBehavior /
+        // fenêtre que le chemin naturel) au lieu de le désactiver — sinon
+        // un "Play Next" manuel démarrait sec via handlePlaybackEndished.
+        // Une tête .manual conserve le comportement historique :
+        // préchargement + attente à la fin du song.
+        let queueHead = concertQueueBySetID[setID]?.first
+        if let head = queueHead, head.playbackMode != .automatic { return }
 
         let allSongs = songs(in: set)
         guard let currentSong = allSongs.first(where: { $0.element.setElementID == elementID }) else { return }
@@ -4544,238 +5369,246 @@ final class AppState {
 
         guard audioEngine.effectiveRemaining <= triggerEffect.fadeOutDuration + 0.1 else { return }
 
+        if let head = queueHead {
+            guard let ctx = queuePlaybackContext(for: head, in: set) else { return }
+            // Retirer l'item AVANT startReplacement : la branche queue de
+            // handlePlaybackEndished ne doit pas le consommer une 2e fois
+            // (elle est de toute façon coupée par isReplacingTrack).
+            removeQueueItem(head, from: set)
+            startReplacement(track: ctx.track, set: set, element: ctx.element, effect: triggerEffect)
+            return
+        }
+
         guard let next = nextSong(after: elementID, in: set),
               let nextTrack = next.audio else { return }
 
         startReplacement(track: nextTrack, set: set, element: next.element, effect: triggerEffect)
     }
 
-    // MARK: - Scheduler MIDI Timeline
+    // MARK: - Scheduler MIDI Timeline (queue dédiée — phase 2 perfs)
+    //
+    // Historique : boucle Task @MainActor 50 ms — sous charge SwiftUI le
+    // main thread l'affamait (ticks mesurés à 400-1600 ms en Release,
+    // mémos MIDI jusqu'à ~1,6 s en retard). Le scheduler vit désormais sur
+    // `schedulerQueue` : un DispatchSourceTimer 50 ms lit la position via
+    // `AudioEngine.schedulerClockNow()` (miroir verrouillé, même sémantique
+    // que livePosition / crossfadeIncomingLivePosition), détecte les cues
+    // franchies et ENVOIE immédiatement (MIDISend / UDP) depuis la queue.
+    // Le bookkeeping (midiLog, lastDispatched*, miroir firedMidiTriggers)
+    // revient sur MainActor de façon asynchrone — son éventuel retard n'a
+    // aucun effet sur l'heure de départ des messages.
+    //
+    // Le script (triggers résolus : bytes MIDI, datagrammes OSC, textes de
+    // log identiques aux historiques) est précompilé sur MainActor au
+    // démarrage de session — la queue ne touche jamais l'état AppState.
+    // `tickAutoNext` reste sur MainActor : la queue demande un hop
+    // uniquement à l'approche de la fin du song (fenêtre 4,6 s > plus
+    // longue durée de fondu), ses guards internes restent la vérité.
 
-    /// Démarre la boucle de polling du scheduler MIDI (50 ms).
-    /// Appelé at chaque `startPlayback`. La boucle se relance aussi si déjà
-    /// active (annule la précédente), ce qui couvre les changements de song.
+    /// (Re)démarre une session scheduler. Appelé aux mêmes endroits
+    /// qu'avant (startPlayback, crossfade, resume, changements de song).
+    /// Pendant un crossfade, le scheduler suit le song ENTRANT — même
+    /// règle que le tick historique.
     private func startMidiScheduler() {
-        midiSchedulerTask?.cancel()
-        midiSchedulerTask = nil
-        lastSchedulerPos = nil
-        midiSchedulerGeneration &+= 1
-        let gen = midiSchedulerGeneration
-        midiSchedulerTask = Task { @MainActor [weak self] in
-            var firstTick = true
-            while !Task.isCancelled {
-                // Génération divergente = cette task est orpheline (une autre
-                // session MIDI a démarré). On sort sans envoyer de MIDI.
-                guard let self, self.midiSchedulerGeneration == gen else { return }
-                self.tickMidiScheduler(logFirstTick: firstTick)
-                self.tickAutoNext()
-                firstTick = false
-                try? await Task.sleep(for: .milliseconds(50))
-            }
-        }
+        midiSchedulerSession?.stop()
+        midiSchedulerSession = nil
+        guard let track = pendingCrossfadeTrack ?? currentlyLoadedTrack else { return }
+        let session = buildSchedulerSession(for: track)
+        midiSchedulerSession = session
+        session.start(on: Self.schedulerQueue)
     }
 
-    /// Un tick du scheduler : vérifie la position courante et déclenche
-    /// les MIDI events associés aux mémos franchis.
-    ///
-    /// Position : `livePosition` (CACurrentMediaTime en ligne) plutôt que
-    /// `currentPosition` (cache UI at 30 Hz). Staleness 0 ms, fiable sous
-    /// HALC overload.
-    ///
-    /// Pre-arm (première tick uniquement) : déclenche immédiatement tous
-    /// les triggers dont `memoTime <= livePosition + 0.25s`. Élimine le
-    /// retard structurel for les mémos placés en début de song (0–250 ms).
-    private func tickMidiScheduler(logFirstTick: Bool = false) {
-        guard audioEngine.state == .playing else { return }
-        // Pendant un crossfade, le scheduler suit le song ENTRANT
-        // (pendingCrossfadeTrack) sur sa propre position — sinon les mémos
-        // du début du nouveau song partiraient 1 at 3 s trop tard, en
-        // rafale at la fin du fade. Après finishCrossfade, currentlyLoadedTrack
-        // devient ce même song et livePosition continue at la même
-        // position absolue : la bascule est transparente, firedMidiTriggers
-        // reste valide.
-        let track: AudioFile
-        let pos: TimeInterval
-        if let pending = pendingCrossfadeTrack,
-           let xfadePos = audioEngine.crossfadeIncomingLivePosition {
-            track = pending
-            pos = xfadePos
-        } else if let loaded = currentlyLoadedTrack {
-            track = loaded
-            pos = audioEngine.livePosition
-        } else {
-            return
-        }
-        let memos = editableMemos(for: track)
+    private func stopMidiScheduler() {
+        midiSchedulerSession?.stop()
+        midiSchedulerSession = nil
+    }
 
-        // Réalignement de `firedMidiTriggers` sur la position courante.
-        //
-        // Deux déclencheurs :
-        //   A) Première tick d'une nouvelle instance de scheduler
-        //      (`lastSchedulerPos == nil`) : on n'a aucun historique et
-        //      `firedMidiTriggers` peut contenir des entrées périmées
-        //      (ex. Pause → seek arrière pendant la pause → Resume — le
-        //      Resume relance le scheduler sans toucher au set).
-        //   B) Saut significatif détecté pendant la lecture
-        //      (delta > seuil) : seek avant/arrière live, return to
-        //      beginning, etc.
-        //
-        // Dans les deux cas, on reconstruit le set depuis zéro :
-        //   • cues at time ≤ pos → marquées comme déjà tirées (pas de
-        //     déclenchement rétroactif après un seek avant) ;
-        //   • cues at time >  pos → réarmées (re-déclenchables au
-        //     prochain franchissement, ex. après retour au début).
-        let isFirstTickRealign = (lastSchedulerPos == nil)
-        var didRealign = isFirstTickRealign
-        var seekKind = isFirstTickRealign ? "first-tick" : "none"
-        if let lastPos = lastSchedulerPos {
-            let delta = pos - lastPos
-            if delta < -Self.seekDetectionThreshold {
-                didRealign = true
-                seekKind   = "backward"
-            } else if delta > Self.seekDetectionThreshold {
-                didRealign = true
-                seekKind   = "forward"
+    /// Compile le script de la session : chaque trigger embarque ses bytes
+    /// MIDI / datagramme OSC prêts à partir et ses textes de log, résolus
+    /// une seule fois sur MainActor.
+    private func buildSchedulerSession(for track: AudioFile) -> MidiSchedulerSession {
+        let trackName = track.name ?? "?"
+        let dest = maestroDestination
+        let destName = dest?.displayName ?? "AUCUNE"
+        let endpoint = dest?.endpoint
+        let midiReady = midiEngine.isReady
+
+        func sendItems(for event: MidiEvent) -> ([SchedulerMidiSendItem], Bool) {
+            let messages = midiMessages(for: event)
+            var hasMaestro = false
+            let items: [SchedulerMidiSendItem] = messages.map { message in
+                let base = message.humanDescription
+                let humanFull = message.maestroDescription
+                    .map { "\(base) — MaestroDMX : \($0)" } ?? base
+                if message.maestroDescription != nil { hasMaestro = true }
+                let bytes = MIDIEngine.rawBytes(for: message)
+                let sendPrint = "[MIDI] SEND  status=\(message.message ?? 0)  ch=\(message.channel.map { $0 + 1 } ?? 0)  d1=\(message.data1 ?? 0)  d2=\(message.data2?.description ?? "-")  → \(destName)"
+                let skippedPrint = bytes == nil
+                    ? "[MIDI] DISPATCH ⚠ SKIPPED: status byte nil  ch=\(message.channel?.description ?? "?") d1=\(message.data1?.description ?? "?") d2=\(message.data2?.description ?? "?")"
+                    : nil
+                return SchedulerMidiSendItem(
+                    bytes: bytes,
+                    sendPrint: sendPrint,
+                    skippedPrint: skippedPrint,
+                    humanFull: humanFull
+                )
             }
-        }
-        if didRealign {
-            print("[SCHED] tick pos=\(String(format: "%.3f", pos))s  lastPos=\(lastSchedulerPos.map { String(format: "%.3f", $0) } ?? "nil")  seek=\(seekKind)  fired-before=\(firedMidiTriggers.count)")
-            realignFiredTriggers(for: track, at: pos, memos: memos)
-            print("[SCHED] tick pos=\(String(format: "%.3f", pos))s  realign done  fired-after=\(firedMidiTriggers.count)")
-        }
-        lastSchedulerPos = pos
-
-        // Offset MIDI global : −200 ms stocké → tir 200 ms en avance.
-        // S'applique uniquement at la comparaison, jamais aux données.
-        let midiLead = Double(-midiGlobalOffsetMillis) / 1000.0
-        let firePos = pos + midiLead
-
-        // Window de pre-arm : 0.25 s at partir de la position de tir,
-        // uniquement sur la première tick de la session.
-        let preArmHorizon: TimeInterval = logFirstTick ? firePos + 0.25 : firePos
-
-        if logFirstTick {
-            let midiMemos = memos.filter { $0.startMidiEventID != nil || $0.endMidiEventID != nil }
-            let next = midiMemos.first(where: { $0.memoTime > preArmHorizon })
-            print("""
-            [MIDI] scheduler démarré — \(track.name ?? "?")
-              • pos=\(String(format: "%.2f", pos))s  preArm≤\(String(format: "%.2f", preArmHorizon))s  firedTriggers=\(firedMidiTriggers.count)
-              • MIDI memos: \(midiMemos.count)  next after pre-arm: \(next.map { "\($0.shortName) @ \(String(format: "%.2f", $0.memoTime))s" } ?? "none")
-            """)
+            return (items, hasMaestro && !messages.isEmpty)
         }
 
-        for memo in memos {
-            // ── Start trigger ────────────────────────────────────────
+        func midiTrigger(
+            key: String,
+            time: TimeInterval,
+            eventID: Int64,
+            autoPrefix: String,
+            preArmPrefix: String,
+            fireTail: (MidiEvent) -> String
+        ) -> SchedulerTrigger {
+            guard let event = midiEventsByID[eventID] else {
+                // Event manquant : le tick historique marquait la clé comme
+                // tirée sans rien imprimer ni envoyer — trigger silencieux.
+                return SchedulerTrigger(key: key, time: time, kind: .silent)
+            }
+            let (items, hasMaestro) = sendItems(for: event)
+            let header = "Event \"\(event.name ?? "?")\""
+                + (event.category.map { " [\($0)]" } ?? "")
+            var t = SchedulerTrigger(key: key, time: time, kind: .midi)
+            t.autoPrefix = autoPrefix
+            t.preArmPrefix = preArmPrefix
+            t.fireTail = fireTail(event)
+            t.dispatchPrint = "[MIDI] DISPATCH event \(event.midiEventID) \"\(event.name ?? "?")\" — \(items.count) message(s)"
+            t.noMessagePrint = "[MIDI] DISPATCH ⚠ no message in midiMessagesByEventID[\(event.midiEventID)]"
+            t.midiLogHeader = header
+            t.midiSends = items
+            t.midiEventID = event.midiEventID
+            t.midiEventName = event.name
+            t.hasMaestro = hasMaestro
+            t.destinationEndpoint = endpoint
+            t.midiReady = midiReady
+            return t
+        }
+
+        var triggers: [SchedulerTrigger] = []
+        var memoInfos: [SchedulerMemoInfo] = []
+
+        for memo in editableMemos(for: track) {
+            if memo.startMidiEventID != nil || memo.endMidiEventID != nil {
+                memoInfos.append(SchedulerMemoInfo(name: memo.shortName, time: memo.memoTime))
+            }
             if let eventID = memo.startMidiEventID {
-                let key = "\(memo.id)-start"
-                // Sur la première tick, on utilise preArmHorizon (pos+0.25s)
-                // for déclencher immédiatement les mémos proches du début.
-                if !firedMidiTriggers.contains(key) && preArmHorizon >= memo.memoTime {
-                    firedMidiTriggers.insert(key)
-                    if let event = midiEventsByID[eventID] {
-                        let prefix = logFirstTick && memo.memoTime > pos ? "[MIDI] PRE-ARM START" : "[MIDI] AUTO START MEMO"
-                        print("\(prefix) · \(track.name ?? "?") · \(memo.shortName) · event \(eventID) · \(event.name ?? "?")")
-                        dispatch(event: event)
-                    }
-                }
+                triggers.append(midiTrigger(
+                    key: "\(memo.id)-start",
+                    time: memo.memoTime,
+                    eventID: eventID,
+                    autoPrefix: "[MIDI] AUTO START MEMO",
+                    preArmPrefix: "[MIDI] PRE-ARM START"
+                ) { event in
+                    " · \(trackName) · \(memo.shortName) · event \(eventID) · \(event.name ?? "?")"
+                })
             }
-            // ── End trigger ──────────────────────────────────────────
             if let eventID = memo.endMidiEventID {
-                let key = "\(memo.id)-end"
-                let endTime = memo.memoTime + memo.memoLength
-                if !firedMidiTriggers.contains(key) && preArmHorizon >= endTime {
-                    firedMidiTriggers.insert(key)
-                    if let event = midiEventsByID[eventID] {
-                        let prefix = logFirstTick && endTime > pos ? "[MIDI] PRE-ARM END" : "[MIDI] AUTO END MEMO"
-                        print("\(prefix) · \(track.name ?? "?") · \(memo.shortName) · event \(eventID) · \(event.name ?? "?")")
-                        dispatch(event: event)
-                    }
-                }
+                triggers.append(midiTrigger(
+                    key: "\(memo.id)-end",
+                    time: memo.memoTime + memo.memoLength,
+                    eventID: eventID,
+                    autoPrefix: "[MIDI] AUTO END MEMO",
+                    preArmPrefix: "[MIDI] PRE-ARM END"
+                ) { event in
+                    " · \(trackName) · \(memo.shortName) · event \(eventID) · \(event.name ?? "?")"
+                })
             }
         }
 
-        // ── Boucle 2 : TimelineMidiCue ────────────────────────────────────────
-        // Même firePos et même firedMidiTriggers que la boucle mémos.
-        // Clé de déduplication : "\(cue.id)-midicue" (distinct des clés mémos).
         for cue in midiCues(for: track) {
-            let key = "\(cue.id)-midicue"
-            if !firedMidiTriggers.contains(key) && preArmHorizon >= cue.time {
-                firedMidiTriggers.insert(key)
-                if let event = midiEventsByID[cue.midiEventID] {
-                    let prefix = logFirstTick && cue.time > pos ? "[MIDI] PRE-ARM MIDICUE" : "[MIDI] AUTO MIDICUE"
-                    let displayLabel = cue.label.isEmpty ? event.name ?? "?" : cue.label
-                    print("\(prefix) · \(track.name ?? "?") · \(displayLabel) @ \(String(format: "%.2f", cue.time))s · event \(cue.midiEventID)")
-                    dispatch(event: event)
-                }
-            }
+            triggers.append(midiTrigger(
+                key: "\(cue.id)-midicue",
+                time: cue.time,
+                eventID: cue.midiEventID,
+                autoPrefix: "[MIDI] AUTO MIDICUE",
+                preArmPrefix: "[MIDI] PRE-ARM MIDICUE"
+            ) { event in
+                let displayLabel = cue.label.isEmpty ? event.name ?? "?" : cue.label
+                return " · \(trackName) · \(displayLabel) @ \(String(format: "%.2f", cue.time))s · event \(cue.midiEventID)"
+            })
         }
 
-        // ── Boucle 3 : TimelineOscCue ─────────────────────────────────────────
-        // Même mécanique, clé de déduplication "\(cue.id)-osccue".
         for cue in oscCues(for: track) {
-            let key = "\(cue.id)-osccue"
-            let already = firedMidiTriggers.contains(key)
-            let due     = preArmHorizon >= cue.time
+            var t = SchedulerTrigger(key: "\(cue.id)-osccue", time: cue.time, kind: .osc)
+            t.autoPrefix = "[OSC] FIRE OSCCUE"
+            t.preArmPrefix = "[OSC] PRE-ARM OSCCUE"
+            let event = cue.oscEventID.flatMap { oscEventsByID[$0] }
             let resolvedName: String = {
                 if !cue.label.isEmpty { return cue.label }
-                if let eid = cue.oscEventID, let e = oscEventsByID[eid] { return e.name }
+                if let event { return event.name }
                 return "(no event)"
             }()
-            if !already && due {
-                firedMidiTriggers.insert(key)
-                let prefix = logFirstTick && cue.time > pos ? "[OSC] PRE-ARM OSCCUE" : "[OSC] FIRE OSCCUE"
-                let routing: String = {
-                    if let eid = cue.oscEventID, let e = oscEventsByID[eid] {
-                        return "→ \(e.host):\(e.port) \(e.address)"
-                    } else {
-                        return "(no event linked — will be skipped at dispatch)"
-                    }
-                }()
-                print("\(prefix) · \(track.name ?? "?") · \(resolvedName) @ \(String(format: "%.2f", cue.time))s  pos=\(String(format: "%.3f", pos))s  preArm=\(String(format: "%.3f", preArmHorizon))s  \(routing)")
-                dispatch(oscCue: cue)
-            } else if already && due && didRealign {
-                print("[OSC] SKIP OSCCUE (already past) · \(resolvedName) @ \(String(format: "%.2f", cue.time))s  pos=\(String(format: "%.3f", pos))s")
-            } else if !already && !due && didRealign {
-                print("[OSC] ARM  OSCCUE (future)      · \(resolvedName) @ \(String(format: "%.2f", cue.time))s  pos=\(String(format: "%.3f", pos))s")
+            t.oscName = resolvedName
+            t.fireTail = " · \(trackName) · \(resolvedName) @ \(String(format: "%.2f", cue.time))s"
+            if let event {
+                t.oscRouting = "→ \(event.host):\(event.port) \(event.address)"
+                let header = "OSC \"\(event.name)\" → \(event.host):\(event.port) \(event.address) \(event.value?.displayValue ?? "(no value)")"
+                t.oscHeader = header
+                // Validation identique à OSCEngine.send — faite au build,
+                // le tir ne fait plus que pousser le datagramme.
+                let cleanAddress = event.address.trimmingCharacters(in: .whitespaces)
+                let cleanHost = event.host.trimmingCharacters(in: .whitespaces)
+                if cleanAddress.isEmpty || !cleanAddress.hasPrefix("/") {
+                    t.oscInvalidReason = OSCEngine.OSCError.invalidAddress.errorDescription
+                } else if cleanHost.isEmpty {
+                    t.oscInvalidReason = OSCEngine.OSCError.invalidHost.errorDescription
+                } else if !(1...65535).contains(event.port) {
+                    t.oscInvalidReason = OSCEngine.OSCError.invalidPort.errorDescription
+                } else {
+                    t.oscData = OSCEngine.encodePacket(address: cleanAddress, value: event.value)
+                    t.oscHost = cleanHost
+                    t.oscPort = UInt16(event.port)
+                }
+            } else {
+                t.oscRouting = "(no event linked — will be skipped at dispatch)"
+                let info = cue.label.isEmpty ? "(unnamed cue)" : cue.label
+                t.oscNoEventPrint = "[OSC] DISPATCH ⚠ no OscEvent linked to cue \(cue.id) — \(info)"
+                t.oscNoEventLog = "OSC SKIPPED (no event linked) — \(info)"
             }
+            triggers.append(t)
         }
+
+        let oscEngineRef = oscEngine
+        return MidiSchedulerSession(
+            trackName: trackName,
+            triggers: triggers,
+            memoInfos: memoInfos,
+            midiPort: midiEngine.schedulerOutputPort,
+            leadBox: midiLeadBox,
+            clock: { [audioEngine] in audioEngine.schedulerClockNow() },
+            oscSend: { data, host, port in
+                oscEngineRef.sendDatagram(data, host: host, port: port)
+            },
+            bookkeeping: { [weak self] update in
+                Task { @MainActor [weak self] in
+                    self?.applySchedulerBookkeeping(update)
+                }
+            },
+            requestAutoNext: { [weak self] in
+                Task { @MainActor [weak self] in
+                    self?.tickAutoNext()
+                }
+            }
+        )
     }
 
-    /// Recalcule `firedMidiTriggers` après un seek détecté ou au démarrage
-    /// d'une nouvelle instance de scheduler. Pour chaque cue du morceau, on
-    /// insère sa clé si `cue.time ≤ pos` (déjà franchie → ne doit pas se
-    /// redéclencher tant qu'on n'est pas revenu en arrière), et on l'omet
-    /// sinon (réarmée). Couvre mémos start/end, MIDI cues et OSC cues —
-    /// un seul ensemble partagé, un seul passage.
-    private func realignFiredTriggers(
-        for track: AudioFile,
-        at pos: TimeInterval,
-        memos: [EditableMemo]
-    ) {
-        var aligned: Set<String> = []
-        for memo in memos {
-            if memo.startMidiEventID != nil, memo.memoTime <= pos {
-                aligned.insert("\(memo.id)-start")
+    /// Applique sur MainActor le bookkeeping d'un tir ou d'un realign —
+    /// mêmes effets observables que l'ancien dispatch(event:)/realign.
+    private func applySchedulerBookkeeping(_ update: SchedulerBookkeeping) {
+        switch update {
+        case .fired(let key, let eventName, let maestroEventID, let logTexts, let timestamp):
+            firedMidiTriggers.insert(key)
+            if let eventName { lastDispatchedEventName = eventName }
+            if let maestroEventID { lastDispatchedMaestroEventID = maestroEventID }
+            for text in logTexts {
+                midiLog.append(MidiLogEntry(timestamp: timestamp, text: text))
             }
-            if memo.endMidiEventID != nil,
-               memo.memoTime + memo.memoLength <= pos {
-                aligned.insert("\(memo.id)-end")
-            }
-        }
-        for cue in midiCues(for: track) where cue.time <= pos {
-            aligned.insert("\(cue.id)-midicue")
-        }
-        for cue in oscCues(for: track) where cue.time <= pos {
-            aligned.insert("\(cue.id)-osccue")
-        }
-        let removed = firedMidiTriggers.subtracting(aligned)
-        let added   = aligned.subtracting(firedMidiTriggers)
-        firedMidiTriggers = aligned
-        if !removed.isEmpty {
-            print("[SCHED] realign removed (= re-armed) \(removed.count) trigger(s): \(removed.sorted().joined(separator: ", "))")
-        }
-        if !added.isEmpty {
-            print("[SCHED] realign added (= marked past) \(added.count) trigger(s): \(added.sorted().joined(separator: ", "))")
+        case .realigned(let set):
+            firedMidiTriggers = set
         }
     }
 
@@ -5804,7 +6637,28 @@ final class AppState {
 
     /// Retourne les songs d'un set sous forme de `Song` (élément +
     /// show + audio résolus en une seule passe).
+    // MARK: - Snapshot setlist (phase 2 perfs)
+    //
+    // `songs(in:)` était appelé par les timers (tickAutoNext 20 Hz,
+    // buildRemoteState 2 Hz) et par l'UI — pour les sets ShowBuddy chaque
+    // appel refaisait une requête SQLite + la reconstruction complète du
+    // tableau. Le résultat est désormais cache-é par set et invalidé
+    // uniquement quand une source change (ordre custom, ajouts live,
+    // shows Velvet, rechargement DB). Zéro requête pendant la lecture.
+    @ObservationIgnored private var songsSnapshotBySetID: [ShowSet.ID: [Song]] = [:]
+
+    private func invalidateSongsSnapshot() {
+        songsSnapshotBySetID.removeAll()
+    }
+
     func songs(in set: ShowSet) -> [Song] {
+        if let cached = songsSnapshotBySetID[set.setID] { return cached }
+        let computed = computeSongs(in: set)
+        songsSnapshotBySetID[set.setID] = computed
+        return computed
+    }
+
+    private func computeSongs(in set: ShowSet) -> [Song] {
         if let show = velvetShow(for: set) {
             return show.tracks.enumerated().compactMap { index, item in
                 guard let audio = audioFilesByID[item.audioFileID] else { return nil }
@@ -5965,5 +6819,357 @@ final class AppState {
     /// Vider toute la Velvet Trash (suppression définitive de tous les éléments).
     func emptyVelvetTrash() {
         trashedTracks.removeAll()
+    }
+}
+
+// MARK: - Scheduler MIDI/OSC — types de support (hors MainActor)
+//
+// Déclarés à la portée fichier (et non imbriqués dans AppState) pour ne pas
+// hériter de l'isolation @MainActor : la session tourne intégralement sur
+// la queue série dédiée du scheduler.
+
+/// Double partagé entre MainActor (écriture) et la queue du scheduler
+/// (lecture) — offset MIDI global.
+final class SchedulerAtomicDouble: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value: Double = 0
+    func store(_ v: Double) { lock.lock(); value = v; lock.unlock() }
+    func load() -> Double { lock.lock(); defer { lock.unlock() }; return value }
+}
+
+fileprivate struct SchedulerMemoInfo: Sendable {
+    let name: String
+    let time: TimeInterval
+}
+
+fileprivate struct SchedulerMidiSendItem: Sendable {
+    let bytes: [UInt8]?        // nil = status byte manquant → SKIPPED
+    let sendPrint: String
+    let skippedPrint: String?
+    let humanFull: String
+}
+
+/// Un trigger précompilé. Tous les textes de log sont résolus au build —
+/// identiques à ceux de l'ancien tickMidiScheduler/dispatch.
+fileprivate struct SchedulerTrigger: Sendable {
+    enum Kind: Sendable { case midi, osc, silent }
+
+    let key: String
+    let time: TimeInterval
+    let kind: Kind
+
+    var autoPrefix = ""
+    var preArmPrefix = ""
+    var fireTail = ""
+
+    // MIDI
+    var dispatchPrint: String? = nil
+    var noMessagePrint: String? = nil
+    var midiLogHeader: String? = nil
+    var midiSends: [SchedulerMidiSendItem] = []
+    var midiEventID: Int64? = nil
+    var midiEventName: String? = nil
+    var hasMaestro = false
+    var destinationEndpoint: UInt32? = nil   // MIDIEndpointRef
+    var midiReady = false
+
+    // OSC
+    var oscName = ""
+    var oscRouting = ""
+    var oscHeader: String? = nil
+    var oscData: Data? = nil
+    var oscHost: String? = nil
+    var oscPort: UInt16? = nil
+    var oscInvalidReason: String? = nil
+    var oscNoEventPrint: String? = nil
+    var oscNoEventLog: String? = nil
+
+    init(key: String, time: TimeInterval, kind: Kind) {
+        self.key = key
+        self.time = time
+        self.kind = kind
+    }
+}
+
+/// Bookkeeping renvoyé vers MainActor après un tir ou un realign.
+enum SchedulerBookkeeping: Sendable {
+    case fired(key: String, eventName: String?, maestroEventID: Int64?, logTexts: [String], timestamp: Date)
+    case realigned(Set<String>)
+}
+
+/// Session de scheduler : vit sur la queue série dédiée. Détection ET envoi
+/// MIDI/OSC sur la queue ; bookkeeping renvoyé sur MainActor. Une session
+/// par (re)démarrage — l'annulation passe par timer.cancel(), sans état
+/// partagé avec la session suivante.
+final class MidiSchedulerSession: @unchecked Sendable {
+
+    // Verrou : protège `fired` (lu aussi depuis MainActor via firedSnapshot
+    // pour la décision de Stop Cue).
+    private let lock = NSLock()
+    private var fired: Set<String> = []
+
+    // État confiné à la queue série (jamais touché ailleurs).
+    private var lastPos: TimeInterval? = nil
+    private var firstTick = true
+    private var timer: DispatchSourceTimer? = nil
+    private var lastAutoNextHop: Double = 0
+
+    // Métriques [SCHED METRICS] — confinées à la queue, imprimées au stop.
+    private var lastTickHost: Double? = nil
+    private var tickCount = 0
+    private var gapSumMs = 0.0
+    private var gapSqSumMs = 0.0
+    private var gapMaxMs = 0.0
+    private var latenessSumMs = 0.0
+    private var latenessMaxMs = 0.0
+    private var latenessCount = 0
+
+    fileprivate let triggersList: [SchedulerTrigger]
+    private let memoInfosList: [SchedulerMemoInfo]
+    private let trackName: String
+    private let midiPort: UInt32
+    private let leadBox: SchedulerAtomicDouble
+    private let clock: @Sendable () -> (position: TimeInterval, isPlaying: Bool, effectiveEnd: TimeInterval, isCrossfading: Bool)
+    private let oscSend: @Sendable (Data, String, UInt16) -> Void
+    private let bookkeeping: @Sendable (SchedulerBookkeeping) -> Void
+    private let requestAutoNext: @Sendable () -> Void
+
+    fileprivate init(
+        trackName: String,
+        triggers: [SchedulerTrigger],
+        memoInfos: [SchedulerMemoInfo],
+        midiPort: UInt32,
+        leadBox: SchedulerAtomicDouble,
+        clock: @escaping @Sendable () -> (position: TimeInterval, isPlaying: Bool, effectiveEnd: TimeInterval, isCrossfading: Bool),
+        oscSend: @escaping @Sendable (Data, String, UInt16) -> Void,
+        bookkeeping: @escaping @Sendable (SchedulerBookkeeping) -> Void,
+        requestAutoNext: @escaping @Sendable () -> Void
+    ) {
+        self.trackName = trackName
+        self.triggersList = triggers
+        self.memoInfosList = memoInfos
+        self.midiPort = midiPort
+        self.leadBox = leadBox
+        self.clock = clock
+        self.oscSend = oscSend
+        self.bookkeeping = bookkeeping
+        self.requestAutoNext = requestAutoNext
+    }
+
+    func start(on queue: DispatchQueue) {
+        let source = DispatchSource.makeTimerSource(queue: queue)
+        source.schedule(deadline: .now() + 0.05, repeating: 0.05, leeway: .milliseconds(5))
+        source.setEventHandler { [weak self] in self?.tick() }
+        timer = source
+        source.activate()
+    }
+
+    /// Arrêt : appelable depuis MainActor. Le bump du timer est thread-safe ;
+    /// une tick en cours se termine puis plus rien ne s'exécute.
+    func stop() {
+        timer?.cancel()
+        timer = nil
+        printMetrics()
+    }
+
+    /// Ensemble des triggers déjà tirés — lu par hasRecentMidiTrigger
+    /// (décision Stop Cue) de façon synchrone depuis MainActor.
+    func firedSnapshot() -> Set<String> {
+        lock.lock(); defer { lock.unlock() }
+        return fired
+    }
+
+    // MARK: Tick (queue série)
+
+    private func tick() {
+        let nowHost = CACurrentMediaTime()
+        if let last = lastTickHost {
+            let gap = (nowHost - last) * 1000
+            tickCount += 1
+            gapSumMs += gap
+            gapSqSumMs += gap * gap
+            gapMaxMs = max(gapMaxMs, gap)
+        }
+        lastTickHost = nowHost
+
+        let (pos, playing, end, isCrossfading) = clock()
+        guard playing else { return }
+
+        // Réalignement — même logique et mêmes logs que l'historique.
+        let isFirstTickRealign = (lastPos == nil)
+        var didRealign = isFirstTickRealign
+        var seekKind = isFirstTickRealign ? "first-tick" : "none"
+        if let last = lastPos {
+            let delta = pos - last
+            if delta < -AppState.seekDetectionThreshold {
+                didRealign = true; seekKind = "backward"
+            } else if delta > AppState.seekDetectionThreshold {
+                didRealign = true; seekKind = "forward"
+            }
+        }
+        if didRealign {
+            lock.lock(); let before = fired.count; lock.unlock()
+            print("[SCHED] tick pos=\(String(format: "%.3f", pos))s  lastPos=\(lastPos.map { String(format: "%.3f", $0) } ?? "nil")  seek=\(seekKind)  fired-before=\(before)")
+            realign(at: pos)
+            lock.lock(); let after = fired.count; lock.unlock()
+            print("[SCHED] tick pos=\(String(format: "%.3f", pos))s  realign done  fired-after=\(after)")
+        }
+        lastPos = pos
+
+        let firePos = pos + leadBox.load()
+        let logFirstTick = firstTick
+        let preArmHorizon: TimeInterval = logFirstTick ? firePos + 0.25 : firePos
+
+        if logFirstTick {
+            firstTick = false
+            lock.lock(); let firedCount = fired.count; lock.unlock()
+            let next = memoInfosList.first(where: { $0.time > preArmHorizon })
+            print("""
+            [MIDI] scheduler démarré — \(trackName)
+              • pos=\(String(format: "%.2f", pos))s  preArm≤\(String(format: "%.2f", preArmHorizon))s  firedTriggers=\(firedCount)
+              • MIDI memos: \(memoInfosList.count)  next after pre-arm: \(next.map { "\($0.name) @ \(String(format: "%.2f", $0.time))s" } ?? "none")
+            """)
+        }
+
+        for trigger in triggersList {
+            lock.lock(); let already = fired.contains(trigger.key); lock.unlock()
+            let due = preArmHorizon >= trigger.time
+            if !already && due {
+                lock.lock(); fired.insert(trigger.key); lock.unlock()
+                fire(trigger, pos: pos, firePos: firePos, preArmHorizon: preArmHorizon, logFirstTick: logFirstTick)
+            } else if trigger.kind == .osc && didRealign {
+                if already && due {
+                    print("[OSC] SKIP OSCCUE (already past) · \(trigger.oscName) @ \(String(format: "%.2f", trigger.time))s  pos=\(String(format: "%.3f", pos))s")
+                } else if !already && !due {
+                    print("[OSC] ARM  OSCCUE (future)      · \(trigger.oscName) @ \(String(format: "%.2f", trigger.time))s  pos=\(String(format: "%.3f", pos))s")
+                }
+            }
+        }
+
+        // Auto-next : la queue ne fait que demander le hop à l'approche de
+        // la fin ; les guards précis restent dans AppState.tickAutoNext.
+        if !isCrossfading, end.isFinite, end - pos <= 4.6, nowHost - lastAutoNextHop > 0.15 {
+            lastAutoNextHop = nowHost
+            requestAutoNext()
+        }
+    }
+
+    private func realign(at pos: TimeInterval) {
+        var aligned: Set<String> = []
+        for trigger in triggersList where trigger.time <= pos {
+            aligned.insert(trigger.key)
+        }
+        lock.lock()
+        let removed = fired.subtracting(aligned)
+        let added = aligned.subtracting(fired)
+        fired = aligned
+        lock.unlock()
+        if !removed.isEmpty {
+            print("[SCHED] realign removed (= re-armed) \(removed.count) trigger(s): \(removed.sorted().joined(separator: ", "))")
+        }
+        if !added.isEmpty {
+            print("[SCHED] realign added (= marked past) \(added.count) trigger(s): \(added.sorted().joined(separator: ", "))")
+        }
+        bookkeeping(.realigned(aligned))
+    }
+
+    private func fire(
+        _ trigger: SchedulerTrigger,
+        pos: TimeInterval,
+        firePos: TimeInterval,
+        preArmHorizon: TimeInterval,
+        logFirstTick: Bool
+    ) {
+        let isPreArm = logFirstTick && trigger.time > pos
+        let prefix = isPreArm ? trigger.preArmPrefix : trigger.autoPrefix
+
+        // Métrique de retard : uniquement les franchissements frais.
+        if !isPreArm {
+            let late = max(0, (firePos - trigger.time)) * 1000
+            latenessSumMs += late
+            latenessMaxMs = max(latenessMaxMs, late)
+            latenessCount += 1
+        }
+
+        switch trigger.kind {
+        case .silent:
+            // Event MIDI introuvable : clé marquée tirée, rien d'autre
+            // (comportement historique).
+            bookkeeping(.fired(key: trigger.key, eventName: nil, maestroEventID: nil, logTexts: [], timestamp: Date()))
+
+        case .midi:
+            print("\(prefix)\(trigger.fireTail)")
+            if let dispatchPrint = trigger.dispatchPrint { print(dispatchPrint) }
+            var logTexts: [String] = []
+            if trigger.midiSends.isEmpty {
+                if let noMsg = trigger.noMessagePrint { print(noMsg) }
+                logTexts.append("\(trigger.midiLogHeader ?? "") — no MIDI message to send")
+                bookkeeping(.fired(key: trigger.key, eventName: trigger.midiEventName, maestroEventID: nil, logTexts: logTexts, timestamp: Date()))
+                return
+            }
+            for item in trigger.midiSends {
+                guard let bytes = item.bytes else {
+                    if let skipped = item.skippedPrint { print(skipped) }
+                    logTexts.append("SKIPPED (no status byte): \(item.humanFull)")
+                    continue
+                }
+                print(item.sendPrint)
+                if let endpoint = trigger.destinationEndpoint {
+                    if !trigger.midiReady {
+                        let err = "CoreMIDI engine is not initialized"
+                        print("[MIDI] SEND FAILED — \(err)")
+                        logTexts.append("SEND FAILED (\(err)) : \(item.humanFull)")
+                    } else {
+                        let status = MIDIEngine.sendRaw(bytes, port: midiPort, endpoint: endpoint)
+                        if status == noErr {
+                            print("[MIDI] SEND OK")
+                            logTexts.append("ENVOI     : \(item.humanFull)")
+                        } else {
+                            let err = "MIDISend failed (OSStatus \(status))"
+                            print("[MIDI] SEND FAILED — \(err)")
+                            logTexts.append("SEND FAILED (\(err)) : \(item.humanFull)")
+                        }
+                    }
+                } else {
+                    print("[MIDI] SEND ⚠ SANS DESTINATION — message non transmis")
+                    logTexts.append("SANS DESTINATION : \(item.humanFull)")
+                }
+            }
+            bookkeeping(.fired(
+                key: trigger.key,
+                eventName: trigger.midiEventName,
+                maestroEventID: trigger.hasMaestro ? trigger.midiEventID : nil,
+                logTexts: logTexts,
+                timestamp: Date()
+            ))
+
+        case .osc:
+            print("\(prefix)\(trigger.fireTail)  pos=\(String(format: "%.3f", pos))s  preArm=\(String(format: "%.3f", preArmHorizon))s  \(trigger.oscRouting)")
+            var logTexts: [String] = []
+            if let noEventPrint = trigger.oscNoEventPrint {
+                print(noEventPrint)
+                if let log = trigger.oscNoEventLog { logTexts.append(log) }
+            } else if let reason = trigger.oscInvalidReason, let header = trigger.oscHeader {
+                print("[OSC] SEND FAILED — \(reason) — \(header)")
+                logTexts.append("SEND FAILED (\(reason)) : \(header)")
+            } else if let data = trigger.oscData, let host = trigger.oscHost, let port = trigger.oscPort, let header = trigger.oscHeader {
+                oscSend(data, host, port)
+                print("[OSC] SEND OK — \(header)")
+                logTexts.append("ENVOI     : \(header)")
+            }
+            bookkeeping(.fired(key: trigger.key, eventName: nil, maestroEventID: nil, logTexts: logTexts, timestamp: Date()))
+        }
+    }
+
+    private func printMetrics() {
+        guard tickCount > 0 else { return }
+        let mean = gapSumMs / Double(tickCount)
+        let variance = max(0, gapSqSumMs / Double(tickCount) - mean * mean)
+        let jitter = variance.squareRoot()
+        let meanLate = latenessCount > 0 ? latenessSumMs / Double(latenessCount) : 0
+        print(String(
+            format: "[SCHED METRICS] %@ — ticks=%d  intervalle moyen=%.1fms  max=%.1fms  jitter σ=%.1fms  fires=%d  retard moyen=%.1fms  retard max=%.1fms",
+            trackName, tickCount, mean, gapMaxMs, jitter, latenessCount, meanLate, latenessMaxMs
+        ))
     }
 }

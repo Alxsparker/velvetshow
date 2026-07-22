@@ -101,6 +101,7 @@ struct TimelineEditorView: View {
     @State private var trimDragEndOrigin: TimeInterval?
     @State private var initialTrimStart: TimeInterval = 0
     @State private var initialTrimEnd: TimeInterval = 0
+
     private static let iPadPreviewLogicalSize = CGSize(width: 1024, height: 768)
     private static let iPadPreviewScale: CGFloat = 0.42
     private static var iPadPreviewDisplayWidth: CGFloat {
@@ -154,14 +155,20 @@ struct TimelineEditorView: View {
         return editableMemos.firstIndex { $0.id == primarySelectedMemoID }
     }
 
+    private var editorOuterPadding: CGFloat { isEmbedded ? 14 : 22 }
+    private var editorRootSpacing: CGFloat { isEmbedded ? 10 : 16 }
+    private var editorContentSpacing: CGFloat { isEmbedded ? 12 : 18 }
+    private var editorPreviewScale: CGFloat { isEmbedded ? 0.61 : 0.65 }
+    private var editorWaveformHeight: CGFloat { isEmbedded ? 136 : 150 }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: editorRootSpacing) {
             toolbar
             ScrollView(.vertical) {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: editorContentSpacing) {
 
                     // 1. Prompteur + panneau mémo sélectionné
-                    HStack(alignment: .top, spacing: 18) {
+                    HStack(alignment: .top, spacing: editorContentSpacing) {
                         editorPrompterPreview
                         selectedMemoPanel
                     }
@@ -172,10 +179,10 @@ struct TimelineEditorView: View {
                     // 4. Transport Bar
                     transportBar
                 }
-                .padding(.bottom, 12)
+                .padding(.bottom, isEmbedded ? 4 : 12)
             }
         }
-        .padding(22)
+        .padding(editorOuterPadding)
         .frame(minWidth: isEmbedded ? 620 : 760, minHeight: isEmbedded ? 0 : 560)
         .frame(
             minWidth: isEmbedded ? 0 : 1120,
@@ -831,7 +838,7 @@ struct TimelineEditorView: View {
     }
 
     private var editorPrompterPreview: some View {
-        let scale: CGFloat = 0.65
+        let scale = editorPreviewScale
         let logicalW = Self.iPadPreviewLogicalSize.width
         let logicalH = Self.iPadPreviewLogicalSize.height
         let displayW = logicalW * scale
@@ -863,7 +870,7 @@ struct TimelineEditorView: View {
 
     @ViewBuilder
     private var selectedMemoPanel: some View {
-        let displayH = Self.iPadPreviewLogicalSize.height * 0.65
+        let displayH = Self.iPadPreviewLogicalSize.height * editorPreviewScale
 
         Group {
             if editableMemos.isEmpty {
@@ -930,7 +937,7 @@ struct TimelineEditorView: View {
         }
         .menuStyle(.borderlessButton)
         .fixedSize()
-        .help(hasMidi ? "MaestroDMX assigned: click to change" : "Assign a MaestroDMX Event")
+        .help(hasMidi ? "Lighting cue assigned: click to change" : "Assign a lighting cue")
     }
 
     /// Petit bouton "+" entre deux cartes : insère un mémo at mi-chemin
@@ -1155,7 +1162,8 @@ struct TimelineEditorView: View {
         // horizontal — sinon il s'effondre at 0 de large (la ScrollView
         // accorde toute la largeur demandée au contenu, le GR n'a donc
         // pas de référence).
-        VStack(alignment: .leading, spacing: 10) {
+        let waveformHeight = editorWaveformHeight
+        return VStack(alignment: .leading, spacing: isEmbedded ? 7 : 10) {
             GeometryReader { outer in
                 let baseWidth = max(outer.size.width, 1)
                 let contentWidth = baseWidth * CGFloat(zoom)
@@ -1167,7 +1175,7 @@ struct TimelineEditorView: View {
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                                     .strokeBorder(Color.white.opacity(0.07), lineWidth: 1)
                             }
-                            .frame(width: contentWidth, height: 150)
+                            .frame(width: contentWidth, height: waveformHeight)
                             .padding(.top, Self.trimBadgeHeight)
 
                         WaveformTimelineView(
@@ -1179,13 +1187,13 @@ struct TimelineEditorView: View {
                             showsModePicker: false,
                             palette: .standard
                         )
-                        .frame(width: contentWidth, height: 150)
+                        .frame(width: contentWidth, height: waveformHeight)
                         .padding(.top, Self.trimBadgeHeight)
 
                         Rectangle()
                             .fill(.clear)
                             .contentShape(Rectangle())
-                            .frame(width: contentWidth, height: 150)
+                            .frame(width: contentWidth, height: waveformHeight)
                             .padding(.top, Self.trimBadgeHeight)
                             .gesture(timelineSeekGesture(width: contentWidth))
                             // Clic dans une zone vide → désélectionne tous les mémos.
@@ -1232,13 +1240,13 @@ struct TimelineEditorView: View {
                     }
                     .frame(
                         width: contentWidth,
-                        height: 150 + Self.trimBadgeHeight,
+                        height: waveformHeight + Self.trimBadgeHeight,
                         alignment: .topLeading
                     )
                 }
             }
-            .frame(height: 150 + Self.trimBadgeHeight + 10)
-            .padding(12)
+            .frame(height: waveformHeight + Self.trimBadgeHeight + (isEmbedded ? 6 : 10))
+            .padding(isEmbedded ? 10 : 12)
             .editorPanelChrome(radius: 16)
             trimZoomControls
         }
@@ -1473,6 +1481,7 @@ struct TimelineEditorView: View {
     ) -> some View {
         let x = CGFloat(min(1, max(0, time / duration))) * contentWidth
         let kind: TrimHandleKind = (color == .green) ? .start : .end
+        let waveformHeight = editorWaveformHeight
         VStack(spacing: 0) {
             Text("\(label) \(Self.timecodeSeconds(time))")
                 .font(.caption2.monospacedDigit().bold())
@@ -1484,9 +1493,9 @@ struct TimelineEditorView: View {
                 .frame(height: Self.trimBadgeHeight)
             Rectangle()
                 .fill(color)
-                .frame(width: 2, height: 150)
+                .frame(width: 2, height: waveformHeight)
         }
-        .frame(width: 24, height: 150 + Self.trimBadgeHeight, alignment: .top)
+        .frame(width: 24, height: waveformHeight + Self.trimBadgeHeight, alignment: .top)
         .contentShape(Rectangle())
         .offset(x: x - 12, y: 0)
         .gesture(
@@ -1547,7 +1556,7 @@ struct TimelineEditorView: View {
         let isSelected = cue.id == selectedCuePointID
         let isDragging = cuePointDragOrigins[cue.id] != nil
         let lineWidth: CGFloat = isSelected ? 2.5 : 1.5
-        let totalHeight: CGFloat = 150 + Self.trimBadgeHeight
+        let totalHeight: CGFloat = editorWaveformHeight + Self.trimBadgeHeight
 
         // Hitbox de 24 pt centré sur la ligne, avec badge au-dessus via overlay.
         // Cette architecture garantit que DragGesture capture correctement les
@@ -1643,7 +1652,7 @@ struct TimelineEditorView: View {
         let eventName = appState.midiEventsByID[cue.midiEventID]?.name ?? "?"
         let displayLabel = cue.label.isEmpty ? eventName : cue.label
         let color = Self.midiCueColor(cue.colorName)
-        let totalHeight: CGFloat = 150 + Self.trimBadgeHeight
+        let totalHeight: CGFloat = editorWaveformHeight + Self.trimBadgeHeight
 
         ZStack(alignment: .top) {
             // Badge
@@ -1697,7 +1706,7 @@ struct TimelineEditorView: View {
         }()
         let displayLabel = cue.label.isEmpty ? eventName : cue.label
         let color = Self.oscCueColor(cue.colorName)
-        let totalHeight: CGFloat = 150 + Self.trimBadgeHeight
+        let totalHeight: CGFloat = editorWaveformHeight + Self.trimBadgeHeight
 
         ZStack(alignment: .top) {
             HStack(spacing: 3) {
@@ -2096,11 +2105,11 @@ struct MemoInspectorView: View {
                 .lineLimit(8...18)
 
             VStack(alignment: .leading, spacing: 10) {
-                Label("MaestroDMX", systemImage: "light.cylindrical.ceiling.fill")
+                Label("Lighting Cue", systemImage: "light.cylindrical.ceiling.fill")
                     .font(.headline)
 
                 if appState.maestroMidiEvents().isEmpty {
-                    Text("No MaestroDMX event found in the database.")
+                    Text("No compatible lighting event found in the database.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 } else {
@@ -3006,102 +3015,6 @@ struct LyricsImportSheet: View {
         let m = Int(clamped) / 60
         let s = Int(clamped) % 60
         return String(format: "%02d:%02d", m, s)
-    }
-}
-
-// MARK: - Détection automatique de BPM
-
-/// Détecteur de tempo léger : enveloppe d'énergie (hop 512 samples) →
-/// flux d'onsets (différences positives) → autocorrélation sur la plage
-/// 60–190 BPM, avec correction d'octave to la plage usuelle 90–180.
-/// Lecture par blocs de 64k frames — pas de chargement du fichier entier.
-enum BPMDetector {
-    static func detect(url: URL) async -> Double? {
-        await Task.detached(priority: .userInitiated) { () -> Double? in
-            guard let file = try? AVAudioFile(forReading: url) else { return nil }
-            let format = file.processingFormat
-            let sampleRate = format.sampleRate
-            guard sampleRate > 0, file.length > 0 else { return nil }
-
-            let hop = 512
-            let envRate = sampleRate / Double(hop)
-            var envelope: [Float] = []
-            envelope.reserveCapacity(Int(file.length) / hop + 1)
-
-            let chunkFrames: AVAudioFrameCount = 65536
-            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: chunkFrames) else { return nil }
-
-            var carry: [Float] = []
-            while file.framePosition < file.length {
-                buffer.frameLength = 0
-                guard (try? file.read(into: buffer, frameCount: chunkFrames)) != nil,
-                      buffer.frameLength > 0,
-                      let channels = buffer.floatChannelData else { break }
-                let frames = Int(buffer.frameLength)
-                let channelCount = Int(format.channelCount)
-                // Mono mix du bloc, en continuant le reliquat du bloc précédent.
-                var mono = carry
-                mono.reserveCapacity(carry.count + frames)
-                for i in 0..<frames {
-                    var s: Float = 0
-                    for c in 0..<channelCount { s += channels[c][i] }
-                    mono.append(s / Float(channelCount))
-                }
-                // RMS par hop complet ; le reste part dans carry.
-                var idx = 0
-                while idx + hop <= mono.count {
-                    var sum: Float = 0
-                    for j in idx..<(idx + hop) { sum += mono[j] * mono[j] }
-                    envelope.append(sqrt(sum / Float(hop)))
-                    idx += hop
-                }
-                carry = Array(mono[idx...])
-            }
-
-            guard envelope.count > Int(envRate * 10) else { return nil }  // < 10 s : trop court
-
-            // Flux d'onsets : différences positives, légèrement lissées.
-            var flux = [Float](repeating: 0, count: envelope.count)
-            for i in 1..<envelope.count {
-                flux[i] = max(0, envelope[i] - envelope[i - 1])
-            }
-
-            // Autocorrélation sur la plage de BPM.
-            func score(forBPM bpm: Double) -> Double {
-                let lag = Int((60.0 / bpm) * envRate)
-                guard lag > 1, lag < flux.count / 2 else { return 0 }
-                var s: Double = 0
-                for i in 0..<(flux.count - lag) {
-                    s += Double(flux[i] * flux[i + lag])
-                }
-                return s / Double(flux.count - lag)
-            }
-
-            var bestBPM: Double = 0
-            var bestScore: Double = 0
-            var bpm = 60.0
-            while bpm <= 190.0 {
-                let s = score(forBPM: bpm)
-                if s > bestScore { bestScore = s; bestBPM = bpm }
-                bpm += 0.5
-            }
-            guard bestBPM > 0 else { return nil }
-
-            // Correction d'octave : préférer 90–180 si le double/la moitié
-            // obtient un score comparable.
-            if bestBPM < 90 {
-                let doubled = bestBPM * 2
-                if doubled <= 190, score(forBPM: doubled) >= bestScore * 0.7 {
-                    bestBPM = doubled
-                }
-            } else if bestBPM > 180 {
-                let halved = bestBPM / 2
-                if score(forBPM: halved) >= bestScore * 0.7 {
-                    bestBPM = halved
-                }
-            }
-            return bestBPM
-        }.value
     }
 }
 

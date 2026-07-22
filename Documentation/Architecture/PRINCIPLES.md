@@ -1,0 +1,16 @@
+# Principles — Velvet Show
+
+Grands principes destinés à guider Velvet Show sur plusieurs années, au-delà de toute décision technique ponctuelle. En cas de doute non tranché par un [ADR](ADR/) ou par [ARCHITECTURE_DECISIONS.md](ARCHITECTURE_DECISIONS.md), ce sont ces principes qui doivent orienter la décision (voir le chapitre "Comment prendre une décision" dans [MASTER_ARCHITECTURE.md](MASTER_ARCHITECTURE.md)).
+
+- **Priorité absolue à la fiabilité en concert.** Rien ne prime sur le fait qu'un dispositif branché et déclaré actif fonctionne à chaque fois, sans exception. Toute autre considération (élégance de code, exhaustivité fonctionnelle, rapidité de livraison) passe après.
+- **Simplicité.** Un musicien sur scène n'a pas le temps de réfléchir à une interface complexe. Chaque ajout doit rester invisible pour l'utilisateur qui n'en a pas besoin.
+- **Stabilité.** Ce qui fonctionne aujourd'hui doit continuer à fonctionner demain. La stabilité du chemin MaestroDMX en particulier n'est jamais négociable (voir [ADR-0002](ADR/ADR-0002-MaestroDMX-is-the-reference.md)).
+- **Une responsabilité par composant.** Le scheduler décide quand, les profils décident comment, les transports décident par quel protocole, les moteurs exécutent. Chaque composant ignore ce qui ne le concerne pas directement (voir [ARCHITECTURE_DECISIONS.md](ARCHITECTURE_DECISIONS.md), section "Principe de responsabilité").
+- **Évolution additive.** On ajoute, on n'écrase pas. Toute nouvelle capacité s'intègre sans modifier le comportement de l'existant (voir [ADR-0003](ADR/ADR-0003-Evolution-must-be-additive.md)).
+- **Architecture orientée Extensions.** Toute intégration externe — lumière aujourd'hui, mixers/vidéo/Stream Deck/caméras PTZ demain — suit le même modèle Extension / Profile / Transport / Capability, jamais un système parallèle (voir [ADR-0004](ADR/ADR-0004-Extensions-architecture.md)).
+- **Transports indépendants.** MIDI, OSC, et le futur Art-Net restent des couches génériques, réutilisables par n'importe quel profil présent ou futur, jamais spécialisées pour un moteur particulier (voir [ADR-0007](ADR/ADR-0007-Transport-layer-separation.md)).
+- **UX avant technologie.** L'utilisateur pense "je pilote mon spectacle", jamais "je pilote tel protocole vers tel moteur". La technologie sous-jacente (MIDI, OSC, Art-Net, tel ou tel moteur) doit rester un détail de configuration, pas le sujet de l'expérience (voir [PRODUCT_VISION.md](PRODUCT_VISION.md), section Philosophie UX).
+- **Aucune surprise en concert.** Jamais de comportement inattendu, jamais un mapping qui change tout seul, jamais un moteur qui répond différemment de ce qui a été testé. Un profil non vérifié ne doit jamais pouvoir se comporter, même par accident, comme un profil vérifié (voir [ADR-0005](ADR/ADR-0005-VerificationState.md)).
+- **La documentation précède le code.** Une décision d'architecture structurante se documente avant d'être implémentée, jamais après (voir [ADR-0008](ADR/ADR-0008-Documentation-before-code.md)).
+
+Ces principes ne se contredisent pas entre eux dans l'usage normal : en cas de tension apparente entre deux principes sur un cas précis, la fiabilité en concert et la stabilité de MaestroDMX priment toujours sur les autres.

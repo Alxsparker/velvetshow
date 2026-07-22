@@ -19,6 +19,7 @@ struct VELVET_SHOWApp: App {
     @State private var showOnboarding = false
     @State private var betaManager    = BetaManager()
     @State private var licenseManager = LicenseManager()
+    @State private var updateChecker  = UpdateChecker()
 
     var body: some Scene {
 
@@ -26,13 +27,17 @@ struct VELVET_SHOWApp: App {
         // WindowGroup (multi-instance autorisé par macOS) : on garde ce
         // comportement standard for que le Dock + ⌘N fonctionnent.
         WindowGroup {
-            if betaManager.isExpired && !licenseManager.isActivated {
-                BetaExpiredView()
-                    .environment(licenseManager)
-            } else {
+            // Priorité explicite : licence > trial > locked.
+            // 1. Licence active → app complète, peu importe l'état du trial.
+            // 2. Trial encore actif → app complète.
+            // 3. Trial expiré et pas de licence → écran verrouillé.
+            if licenseManager.isActivated || !betaManager.isExpired {
             ContentView()
                 .environment(appState)
                 .environment(tourState)
+                .environment(licenseManager)
+                .environment(betaManager)
+                .environment(updateChecker)
                 .overlayPreferenceValue(TourAnchorsKey.self) { anchors in
                     GuideTourOverlay(tourState: tourState, appState: appState, anchors: anchors)
                 }
@@ -47,6 +52,10 @@ struct VELVET_SHOWApp: App {
                             showOnboarding = true
                         }
                     }
+                    // Vérifie GitHub Releases sans bloquer le lancement —
+                    // checkIfNeeded respecte un cache de 6 h et avale les
+                    // erreurs réseau silencieusement.
+                    Task { await updateChecker.checkIfNeeded() }
                 }
                 .sheet(isPresented: $showOnboarding) {
                     FirstLaunchOnboardingSheet(
@@ -55,7 +64,10 @@ struct VELVET_SHOWApp: App {
                         isPresented:    $showOnboarding
                     )
                 }
-            } // end beta check
+            } else {
+                BetaExpiredView()
+                    .environment(licenseManager)
+            }
         }
         .defaultSize(width: 1400, height: 860)
         .windowResizability(.contentMinSize)
@@ -64,6 +76,8 @@ struct VELVET_SHOWApp: App {
         // ── Settings (instance unique, déplaçable, scrollable) ──────────────
         Window("Settings", id: "midiSettings") {
             MidiSettingsView(appState: appState)
+                .environment(licenseManager)
+                .environment(betaManager)
                 .preferredColorScheme(appState.appTheme.colorScheme)
                 .tint(VSColor.interactive)
         }
@@ -182,6 +196,7 @@ private struct FirstLaunchOnboardingSheet: View {
         "PANIC Safety Screen",
         "Stage Display Support",
         "Smooth Song Transitions",
+        "DJ handoff to third-party apps",
     ]
 
     var body: some View {
@@ -218,6 +233,10 @@ private struct FirstLaunchOnboardingSheet: View {
                         .foregroundStyle(Color.accentColor, .primary)
                         .font(.callout)
                 }
+                Label("Third-party music apps can add their own launch or playback latency.", systemImage: "clock.badge.exclamationmark")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 4)
             }
             .padding(.vertical, 14)
             .padding(.horizontal, 14)
