@@ -34,6 +34,7 @@ struct RemoteStateUpdate: Codable {
     var timelineMemos: [RemoteTimelineMemo] = []
     var afterNextSongTitle: String? = nil
     var upcomingSetlist: [RemoteSetlistSong] = []
+    var queue: [RemoteSetlistSong] = []     // queue courante, dans l'ordre
 }
 
 struct RemotePing: Codable {

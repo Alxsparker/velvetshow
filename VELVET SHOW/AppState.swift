@@ -469,6 +469,32 @@ final class AppState {
                    let song = songs(in: set).first(where: { $0.element.setElementID == elementID }) {
                     prioritizeSongNext(song, in: set)
                     updateUpcomingTrack()
+                    broadcastState()
+                } else if type.hasPrefix("enqueueAtEnd:"),
+                   let idStr = type.split(separator: ":").last,
+                   let elementID = Int64(idStr),
+                   let setID = currentlyLoadedSetID,
+                   let set = sets.first(where: { $0.setID == setID }),
+                   let song = songs(in: set).first(where: { $0.element.setElementID == elementID }),
+                   let track = song.audio {
+                    var queue = concertQueueBySetID[set.setID] ?? []
+                    queue.removeAll { $0.setElementID == song.element.setElementID || $0.audioFileID == track.audioFileID }
+                    queue.append(ConcertQueueItem(
+                        setID: set.setID,
+                        setElementID: song.element.setElementID,
+                        audioFileID: track.audioFileID,
+                        playbackMode: .automatic
+                    ))
+                    concertQueueBySetID[set.setID] = queue
+                    updateUpcomingTrack()
+                    broadcastState()
+                } else if type.hasPrefix("removeFromQueue:"),
+                   let idStr = type.split(separator: ":").last,
+                   let elementID = Int64(idStr),
+                   let setID = currentlyLoadedSetID {
+                    concertQueueBySetID[setID]?.removeAll { $0.setElementID == elementID }
+                    updateUpcomingTrack()
+                    broadcastState()
                 } else {
                     print("[VelvetRemote] Unknown command: \(type)")
                 }
@@ -524,6 +550,16 @@ final class AppState {
             }
         }()
 
+        let queueSongs: [RemoteSetlistSong] = {
+            guard let setID = currentlyLoadedSetID else { return [] }
+            return (concertQueueBySetID[setID] ?? []).compactMap { item in
+                guard let elementID = item.setElementID,
+                      let track = audioFilesByID[item.audioFileID],
+                      let name = track.name else { return nil }
+                return RemoteSetlistSong(id: String(elementID), title: name)
+            }
+        }()
+
         return RemoteStateUpdate(
             songTitle:          currentlyLoadedTrack?.name,
             nextSongTitle:      upcomingTrack?.name,
@@ -533,7 +569,8 @@ final class AppState {
             durationSeconds:    audioEngine.effectiveDuration,
             timelineMemos:      memos,
             afterNextSongTitle: afterNext,
-            upcomingSetlist:    upcoming
+            upcomingSetlist:    upcoming,
+            queue:              queueSongs
         )
     }
 
