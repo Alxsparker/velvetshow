@@ -214,6 +214,8 @@ private struct FixedAppToolbar: View {
                 openPrompter()
             } label: {
                 Label("Prompter", systemImage: "rectangle.on.rectangle")
+                    .frame(minWidth: 48, minHeight: 28)
+                    .contentShape(Rectangle())
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.plain)
@@ -241,6 +243,8 @@ private struct FixedAppToolbar: View {
                 importSong()
             } label: {
                 Label("Import a Song", systemImage: "square.and.arrow.down")
+                    .frame(minWidth: 48, minHeight: 28)
+                    .contentShape(Rectangle())
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.plain)
@@ -255,6 +259,8 @@ private struct FixedAppToolbar: View {
                     Image(systemName: appState.showsSidebarVisibility == .detailOnly
                           ? "sidebar.left"
                           : "sidebar.leading")
+                        .frame(minWidth: 48, minHeight: 28)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .toolbarGlassControl(minWidth: 36)
@@ -268,6 +274,8 @@ private struct FixedAppToolbar: View {
                     Image(systemName: appState.isQuickLibraryVisible
                           ? "books.vertical.fill"
                           : "books.vertical")
+                        .frame(minWidth: 48, minHeight: 28)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .toolbarGlassControl(tint: appState.isQuickLibraryVisible ? VSColor.interactive : nil, minWidth: 36)
@@ -516,8 +524,8 @@ private struct ToolbarGlassControlModifier: ViewModifier {
         content
             .font(.system(size: 13, weight: isProminent ? .black : .semibold))
             .foregroundStyle(isProminent ? Color.white : (hasTint ? resolvedTint : Color.secondary))
-            .frame(minWidth: minWidth, minHeight: 28)
-            .padding(.horizontal, 6)
+            .frame(minWidth: minWidth + 12, minHeight: 28)
+            .contentShape(Rectangle())
             .background {
                 toolbarControlBackground(hasTint: hasTint, resolvedTint: resolvedTint)
             }
@@ -1112,23 +1120,25 @@ private struct TrackLibraryRoot: View {
     }
 
     var body: some View {
-        if isColumnsVisible {
-            HStack(spacing: 0) {
+        HStack(spacing: 0) {
+            if isColumnsVisible {
                 CategoriesSidebar(appState: appState)
                     .frame(width: categoriesWidth)
+                    .transition(.move(edge: .leading))
                 ResizableColumnDivider(width: $categoriesWidth, range: 180...360)
+                    .transition(.move(edge: .leading))
 
                 CategoryTracksColumn(appState: appState)
                     .frame(width: songsWidth)
+                    .transition(.move(edge: .leading))
                 ResizableColumnDivider(width: $songsWidth, range: 240...460)
-
-                TrackDetailColumn(appState: appState)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .transition(.move(edge: .leading))
             }
-        } else {
+
             TrackDetailColumn(appState: appState)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .animation(.easeInOut(duration: 0.28), value: isColumnsVisible)
     }
 }
 
