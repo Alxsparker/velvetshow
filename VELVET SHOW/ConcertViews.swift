@@ -206,7 +206,10 @@ struct VUMeterView: View {
                     .mask(alignment: .leading) {
                         Rectangle()
                             .frame(width: geo.size.width * normalized)
-                            .animation(.linear(duration: 0.05), value: normalized)
+                            // Durée calée sur l'intervalle de publication du
+                            // niveau (15 Hz ≈ 66 ms) : l'interpolation couvre
+                            // tout l'intervalle, aucun gel entre deux valeurs.
+                            .animation(.linear(duration: 0.07), value: normalized)
                     }
             }
         }
@@ -242,6 +245,13 @@ struct MiniTransportBar: View {
             // qu'aucun song n'est chargé, for une barre stable at l'écran.
             let hasTrack = appState.currentlyLoadedTrack != nil
             let engineState = appState.audioEngine.state
+
+            if let diagnostic = appState.audioEngine.latestContinuityDiagnostic {
+                Image(systemName: "waveform.badge.exclamationmark")
+                    .foregroundStyle(VSColor.danger)
+                    .accessibilityLabel("Audio continuity warning")
+                    .help(continuityDiagnosticHelp(diagnostic))
+            }
 
             Button {
                 appState.returnToBeginning()
@@ -318,6 +328,12 @@ struct MiniTransportBar: View {
                 .stroke(PerformanceChrome.panelStroke, lineWidth: 1)
         }
         .shadow(color: .black.opacity(0.24), radius: 10, x: 0, y: 5)
+    }
+
+    private func continuityDiagnosticHelp(_ diagnostic: AudioEngine.ContinuityDiagnostic) -> String {
+        let reasons = diagnostic.reasons.map(\.rawValue).joined(separator: ", ")
+        let rendered = diagnostic.renderedPosition.map { String(format: "%.3f s", $0) } ?? "unavailable"
+        return "Audio continuity warning: \(reasons)\nTransport: \(String(format: "%.3f s", diagnostic.transportPosition))\nRendered: \(rendered)\nStagnation: \(Int(diagnostic.stagnationDuration * 1000)) ms"
     }
 }
 
@@ -494,9 +510,11 @@ struct NowPlayingBanner: View {
         return String(format: "%02d:%02d", m, s)
     }
 
+    @ViewBuilder
     var body: some View {
-        guard let track else { return AnyView(EmptyView()) }
-        return AnyView(content(track: track))
+        if let track {
+            content(track: track)
+        }
     }
 
     @ViewBuilder
@@ -2369,8 +2387,24 @@ struct SetSongsView: View {
         .overlay(alignment: .topLeading) {
             setlistDragPreview
         }
-        .onPreferenceChange(SetlistTileFramePreferenceKey.self) { frames in
-            setlistTileFrames = frames
+        // Frames calculés mathématiquement (phase 2 perfs) : la grille est
+        // entièrement déterministe (colonnes, tailles, espacements connus) —
+        // plus de GeometryReader + PreferenceKey par tuile, donc plus de
+        // passe de préférences à chaque layout. task(id:) ne recalcule que
+        // si la clé (taille, ordre, recherche) change réellement.
+        .task(id: SetlistWallLayoutKey(
+            width: size.width,
+            height: size.height,
+            headerHeight: remainingHeaderHeight,
+            songIDs: searchActiveSongs.map(\.id)
+        )) {
+            setlistTileFrames = Self.computeTileFrames(
+                size: size,
+                headerHeight: remainingHeaderHeight,
+                songs: searchActiveSongs,
+                columns: columns,
+                tileHeight: tileHeight
+            )
         }
     }
 
@@ -2398,6 +2432,38 @@ struct SetSongsView: View {
         return stride(from: 0, to: songs.count, by: columns).map { index in
             Array(songs[index..<min(index + columns, songs.count)])
         }
+    }
+
+    /// Frames des tuiles dans le coordinateSpace du mur, calculés depuis la
+    /// géométrie déterministe de la grille (mêmes constantes que
+    /// `setlistWall` : VStack externe spacing 5, rangées spacing 4,
+    /// colonnes spacing 5). Remplace la collecte par GeometryReader +
+    /// PreferenceKey par tuile — mêmes valeurs, zéro passe de layout.
+    private static func computeTileFrames(
+        size: CGSize,
+        headerHeight: CGFloat,
+        songs: [Song],
+        columns: Int,
+        tileHeight: CGFloat
+    ) -> [Song.ID: CGRect] {
+        guard columns > 0 else { return [:] }
+        let horizontalSpacing: CGFloat = 5
+        let verticalSpacing: CGFloat = 4
+        let yOffset: CGFloat = headerHeight > 0 ? headerHeight + 5 : 0
+        let tileWidth = max(1, (size.width - CGFloat(columns - 1) * horizontalSpacing) / CGFloat(columns))
+        var frames: [Song.ID: CGRect] = [:]
+        frames.reserveCapacity(songs.count)
+        for (index, song) in songs.enumerated() {
+            let row = index / columns
+            let col = index % columns
+            frames[song.id] = CGRect(
+                x: CGFloat(col) * (tileWidth + horizontalSpacing),
+                y: yOffset + CGFloat(row) * (tileHeight + verticalSpacing),
+                width: tileWidth,
+                height: tileHeight
+            )
+        }
+        return frames
     }
 
     @ViewBuilder
@@ -2542,14 +2608,6 @@ struct SetSongsView: View {
             y: isCurrent ? 7 : 3
         )
         .contentShape(Rectangle())
-        .background(
-            GeometryReader { proxy in
-                Color.clear.preference(
-                    key: SetlistTileFramePreferenceKey.self,
-                    value: [song.id: proxy.frame(in: .named(Self.setlistCoordinateSpace))]
-                )
-            }
-        )
         .opacity(draggingShowSongID == song.id ? 0.45 : (song.audio == nil ? 0.52 : 1))
         .highPriorityGesture(
             DragGesture(minimumDistance: 8, coordinateSpace: .named(Self.setlistCoordinateSpace))
@@ -2686,14 +2744,6 @@ struct SetSongsView: View {
                     .transition(.opacity)
             }
         }
-        .background(
-            GeometryReader { proxy in
-                Color.clear.preference(
-                    key: SetlistTileFramePreferenceKey.self,
-                    value: [song.id: proxy.frame(in: .named(Self.setlistCoordinateSpace))]
-                )
-            }
-        )
         .contentShape(Rectangle())
         .onTapGesture(count: 2) {
             requestPlay(song)
@@ -3195,12 +3245,14 @@ struct SetSongsView: View {
 
 }
 
-struct SetlistTileFramePreferenceKey: PreferenceKey {
-    static var defaultValue: [Song.ID: CGRect] = [:]
-
-    static func reduce(value: inout [Song.ID: CGRect], nextValue: () -> [Song.ID: CGRect]) {
-        value.merge(nextValue(), uniquingKeysWith: { _, newValue in newValue })
-    }
+/// Clé d'invalidation du calcul des frames de tuiles : le layout n'est
+/// recalculé que si la taille du mur, la hauteur d'en-tête ou la liste
+/// ordonnée des songs change.
+struct SetlistWallLayoutKey: Equatable {
+    let width: CGFloat
+    let height: CGFloat
+    let headerHeight: CGFloat
+    let songIDs: [Song.ID]
 }
 
 struct SetlistInsertionDropDelegate: DropDelegate {

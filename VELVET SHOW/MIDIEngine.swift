@@ -291,25 +291,7 @@ final class MIDIEngine {
     /// viendra avec la Phase Audio + Timeline.
     func send(message: MidiMessage, to destination: Destination) throws {
         guard isReady else { throw MIDIError.engineNotReady }
-        guard let statusHigh = message.message else { throw MIDIError.noStatusByte }
-
-        // Status byte : haut = type de message, bas = canal (0-15).
-        let channel = UInt8((message.channel ?? 0) & 0x0F)
-        let status  = UInt8(statusHigh & 0xF0) | channel
-
-        // 1 data byte (PC, CP) ou 2 (le reste) ?
-        let twoData: Bool
-        switch statusHigh & 0xF0 {
-        case 0xC0, 0xD0: twoData = false
-        default:         twoData = true
-        }
-
-        var bytes: [UInt8] = [status]
-        bytes.append(UInt8((message.data1 ?? 0) & 0x7F))
-        if twoData {
-            bytes.append(UInt8((message.data2 ?? 0) & 0x7F))
-        }
-
+        guard let bytes = Self.rawBytes(for: message) else { throw MIDIError.noStatusByte }
         try sendBytes(bytes, to: destination.endpoint)
     }
 
@@ -317,6 +299,26 @@ final class MIDIEngine {
     /// l'envoie. Pour des messages courts (≤ 3 octets, cas standard
     /// Note On / Off / CC / PC), un seul packet inline suffit.
     private func sendBytes(_ bytes: [UInt8], to endpoint: MIDIEndpointRef) throws {
+        let status = Self.sendRaw(bytes, port: outputPort, endpoint: endpoint)
+        if status != noErr {
+            throw MIDIError.sendFailed(status)
+        }
+    }
+
+    // MARK: - Envoi hors MainActor (scheduler temps réel)
+
+    /// Port de sortie, lisible depuis la queue du scheduler. CoreMIDI refs
+    /// sont des handles opaques thread-safe ; `MIDISend` est appelable
+    /// depuis n'importe quel thread.
+    nonisolated var schedulerOutputPort: MIDIPortRef { outputPort }
+
+    /// Envoi brut, sans isolation — utilisé par le scheduler MIDI/OSC sur
+    /// sa queue dédiée. Même empaquetage que `sendBytes`.
+    nonisolated static func sendRaw(
+        _ bytes: [UInt8],
+        port: MIDIPortRef,
+        endpoint: MIDIEndpointRef
+    ) -> OSStatus {
         var packet = MIDIPacket()
         packet.timeStamp = 0
         packet.length    = UInt16(bytes.count)
@@ -329,10 +331,26 @@ final class MIDIEngine {
             }
         }
 
-        var list   = MIDIPacketList(numPackets: 1, packet: packet)
-        let status = MIDISend(outputPort, endpoint, &list)
-        if status != noErr {
-            throw MIDIError.sendFailed(status)
+        var list = MIDIPacketList(numPackets: 1, packet: packet)
+        return MIDISend(port, endpoint, &list)
+    }
+
+    /// Bytes d'un `MidiMessage` — même construction que `send(message:to:)`.
+    /// nil si le message n'a pas de status byte.
+    nonisolated static func rawBytes(for message: MidiMessage) -> [UInt8]? {
+        guard let statusHigh = message.message else { return nil }
+        let channel = UInt8((message.channel ?? 0) & 0x0F)
+        let status  = UInt8(statusHigh & 0xF0) | channel
+        let twoData: Bool
+        switch statusHigh & 0xF0 {
+        case 0xC0, 0xD0: twoData = false
+        default:         twoData = true
         }
+        var bytes: [UInt8] = [status]
+        bytes.append(UInt8((message.data1 ?? 0) & 0x7F))
+        if twoData {
+            bytes.append(UInt8((message.data2 ?? 0) & 0x7F))
+        }
+        return bytes
     }
 }

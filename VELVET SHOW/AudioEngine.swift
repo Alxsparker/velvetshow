@@ -292,6 +292,62 @@ final class AudioEngine {
         label: "fr.loveandlive.velvetshow.audio-ramps",
         qos: .userInteractive
     )
+
+    // ── Horloge scheduler (lecture hors main thread) ─────────────────────
+    // Miroir verrouillé des ancres de position, publié à chaque transport.
+    // Purement additif : aucun changement de comportement audio. Permet au
+    // scheduler MIDI/OSC (queue dédiée) de calculer la même position que
+    // `livePosition` / `crossfadeIncomingLivePosition` sans toucher au
+    // MainActor. Sémantique identique au tick historique :
+    //   - crossfade en cours → position du song ENTRANT ;
+    //   - sinon → livePosition du song courant ;
+    //   - isPlaying == (state == .playing), comme le guard du scheduler.
+    private struct SchedulerClockSnapshot {
+        var isPlaying = false
+        var isCrossfading = false
+        var anchorPosition: TimeInterval = 0     // positionAtPlayStart
+        var anchorHostTime: TimeInterval = 0     // playStartHostTime
+        var effectiveEnd: TimeInterval = .infinity
+        var crossfadeAnchorPosition: TimeInterval = 0
+        var crossfadeAnchorHostTime: TimeInterval = 0
+        var crossfadeEnd: TimeInterval = .infinity
+    }
+    nonisolated(unsafe) private var clockSnapshot = SchedulerClockSnapshot()
+    nonisolated(unsafe) private let clockLock = NSLock()
+
+    /// Publie l'état courant vers le miroir. À appeler après toute mutation
+    /// de state / ancres / trims / crossfade (MainActor).
+    private func publishSchedulerClock() {
+        let snap = SchedulerClockSnapshot(
+            isPlaying: state == .playing,
+            isCrossfading: isCrossfading,
+            anchorPosition: positionAtPlayStart,
+            anchorHostTime: playStartHostTime,
+            effectiveEnd: effectiveEnd,
+            crossfadeAnchorPosition: crossfadeTrimStart,
+            crossfadeAnchorHostTime: crossfadeStartHostTime,
+            crossfadeEnd: crossfadeEffectiveEnd
+        )
+        clockLock.lock()
+        clockSnapshot = snap
+        clockLock.unlock()
+    }
+
+    /// Position lisible depuis n'importe quel thread — même valeur que
+    /// `crossfadeIncomingLivePosition ?? livePosition` du tick historique.
+    nonisolated func schedulerClockNow() -> (position: TimeInterval, isPlaying: Bool, effectiveEnd: TimeInterval, isCrossfading: Bool) {
+        clockLock.lock()
+        let snap = clockSnapshot
+        clockLock.unlock()
+        let now = CACurrentMediaTime()
+        if snap.isCrossfading {
+            let pos = min(snap.crossfadeEnd, snap.crossfadeAnchorPosition + (now - snap.crossfadeAnchorHostTime))
+            return (pos, snap.isPlaying || snap.isCrossfading, snap.crossfadeEnd, true)
+        }
+        guard snap.isPlaying else { return (snap.anchorPosition, false, snap.effectiveEnd, false) }
+        let pos = min(snap.effectiveEnd, snap.anchorPosition + (now - snap.anchorHostTime))
+        return (pos, true, snap.effectiveEnd, false)
+    }
     private var meterTapInstalled = false
     private var playStartHostTime: TimeInterval = 0
     private var positionAtPlayStart: TimeInterval = 0
@@ -561,6 +617,7 @@ final class AudioEngine {
             self.activeNode.volume = playbackGain
             self.currentPosition = 0
             self.lastError = nil
+            publishSchedulerClock()
 
         } catch {
             // Échec → on relâche aussi l'accès sandbox qu'on vient
@@ -587,6 +644,7 @@ final class AudioEngine {
         let safeStart = max(0, min(start, dur))
         trimStart = safeStart
         trimEnd = (end > safeStart && end <= dur) ? end : 0
+        publishSchedulerClock()
     }
 
     /// Met at jour le gain du song chargé sans recharger le fichier.
@@ -683,6 +741,7 @@ final class AudioEngine {
         playStartHostTime = CACurrentMediaTime()
         positionAtPlayStart = currentPosition
         startTimer()
+        publishSchedulerClock()
         if fadeInDuration > 0 {
             fadeVolume(to: targetVolume, duration: fadeInDuration) {
                 print("[AUDIO] fade-in end — vol=\(String(format:"%.3f",targetVolume))")
@@ -698,6 +757,7 @@ final class AudioEngine {
         activeNode.pause()
         state = .paused
         stopTimer()
+        publishSchedulerClock()
     }
 
     func seek(to position: TimeInterval) {
@@ -717,6 +777,7 @@ final class AudioEngine {
         positionAtPlayStart = target
         resetContinuityMonitor(clearPublishedWarning: false)
         startTimer()
+        publishSchedulerClock()
     }
 
     /// Seek musical avec mini fade-out / fade-in for éviter tout clic.
@@ -752,6 +813,7 @@ final class AudioEngine {
             self.positionAtPlayStart = absTarget
             self.resetContinuityMonitor(clearPublishedWarning: false)
             self.startTimer()
+            self.publishSchedulerClock()
             // Fade-in puis on lève le verrou.
             // Cas limite : si la fin naturelle du segment a eu lieu pendant
             // le seek (isSeeking bloquait handleEndOfSegment), la déclencher
@@ -785,6 +847,7 @@ final class AudioEngine {
         currentPosition = min(effectiveEnd, positionAtPlayStart + elapsed)
         state = .paused
         stopTimer()
+        publishSchedulerClock()
 
         fadeVolume(to: 0, duration: fadeOutDuration) { [weak self] in
             guard let self else { return }
@@ -815,6 +878,7 @@ final class AudioEngine {
         state = .stopping
         print("[AUDIO] engine state → .stopping")
         stopTimer()
+        publishSchedulerClock()
         fadeVolume(to: 0, duration: fadeOutDuration) { [weak self] in
             print("[AUDIO] fade-out end — calling stopImmediately()")
             self?.stopImmediately()
@@ -843,6 +907,7 @@ final class AudioEngine {
         print("[AUDIO] engine state → .stopped")
         currentPosition = 0
         stopTimer()
+        publishSchedulerClock()
     }
 
     // MARK: - Internals
@@ -937,6 +1002,7 @@ final class AudioEngine {
         activeReverbNode.wetDryMix    = 20
         state = .stopping
         stopTimer()
+        publishSchedulerClock()
 
         let beatMs = Int(beatDuration * 1000)
         let tailMs = Int(beatDuration * 4 * 1000) + 40  // 4 répétitions + marge
@@ -1056,6 +1122,7 @@ final class AudioEngine {
         isCrossfading = true
         crossfadeStartHostTime = CACurrentMediaTime()
         crossfadeMixDuration = duration
+        publishSchedulerClock()
         metricsResetForFade()  // [XFADE METRICS]
 
         let oldName = currentURL?.lastPathComponent ?? "?"
@@ -1100,6 +1167,7 @@ final class AudioEngine {
         }
         resetFilter()
         isCrossfading = false
+        publishSchedulerClock()
         print("[XFADE] Cancelled")
     }
 
@@ -1154,6 +1222,7 @@ final class AudioEngine {
         playStartHostTime   = CACurrentMediaTime()
         positionAtPlayStart = pos
         startTimer()
+        publishSchedulerClock()
 
         // Sentinelle sur le nœud sortant : fire quand sa queue est vide → stop() safe.
         // Aucun stop() ici — outgoing est au volume 0 mais sa queue n'est pas encore vide.
@@ -1579,6 +1648,7 @@ final class AudioEngine {
             playStartHostTime = CACurrentMediaTime()
             positionAtPlayStart = recoveryResumePosition
             resetContinuityMonitor(clearPublishedWarning: false)
+            publishSchedulerClock()
             recoveryValidationSampleTime = sampleRenderedPosition()?.sampleTime
             recoveryValidationDeadline = CACurrentMediaTime() + Self.recoveryValidationTimeout
             audioRecoveryState = .validating
