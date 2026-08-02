@@ -145,6 +145,7 @@ struct WaveformTimelineView: View {
             .frame(width: 3, height: height)
             .shadow(color: palette.playhead.opacity(0.4), radius: 4)
             .offset(x: xPosition(currentPosition, width: width) - 1.5)
+            .animation(.linear(duration: 1.0 / 30.0), value: currentPosition)
     }
 
     private var currentMemoID: String? {

@@ -38,7 +38,9 @@
 import Foundation
 import AVFoundation
 import QuartzCore  // CACurrentMediaTime
+#if DEBUG
 import CoreAudio   // [XFADE METRICS] instrumentation temporaire (device + overloads HAL)
+#endif
 
 @MainActor
 @Observable
@@ -411,13 +413,7 @@ final class AudioEngine {
     private var crossfadeMixDuration: TimeInterval = 0
 
     // ── [XFADE METRICS] Instrumentation temporaire ──────────────────────
-    // Diagnostic des paliers perçus en archive Release : compte chaque
-    // écriture de volume des deux fades d'un FONDU DJ et photographie
-    // l'environnement de rendu. Aucun effet sur la courbe, la durée ou le
-    // comportement audio — uniquement des compteurs et un print de synthèse
-    // dans finishCrossfade. À RETIRER une fois le diagnostic tranché.
-    // Compteurs de ticks : écrits depuis rampQueue, lus depuis MainActor —
-    // toujours sous rampLock.
+    #if DEBUG
     nonisolated(unsafe) private var metricsOutgoingTicks = 0
     nonisolated(unsafe) private var metricsIncomingTicks = 0
     nonisolated(unsafe) private var metricsMaxGapMs = 0.0
@@ -426,6 +422,8 @@ final class AudioEngine {
     private var metricsHALOverloads = 0
     private var metricsOverloadsAtFadeStart = 0
     private var halOverloadListenerInstalled = false
+    nonisolated(unsafe) private var halOverloadBlock: AudioObjectPropertyListenerBlock?
+    #endif
 
     /// Nœud actuellement en lecture (lecteur actif).
     private var activeNode: AVAudioPlayerNode!
@@ -558,6 +556,21 @@ final class AudioEngine {
         if let url = crossfadeScopedFolderURL {
             url.stopAccessingSecurityScopedResource()
         }
+        #if DEBUG
+        // AudioEngine est @MainActor — deinit est toujours déclenché depuis
+        // MainActor. assumeIsolated permet d'accéder aux propriétés isolées.
+        MainActor.assumeIsolated {
+            if halOverloadListenerInstalled, let block = halOverloadBlock,
+               let deviceID = Self.defaultOutputDeviceID() {
+                var overloadAddr = AudioObjectPropertyAddress(
+                    mSelector: kAudioDeviceProcessorOverload,
+                    mScope: kAudioObjectPropertyScopeGlobal,
+                    mElement: kAudioObjectPropertyElementMain
+                )
+                AudioObjectRemovePropertyListenerBlock(deviceID, &overloadAddr, .main, block)
+            }
+        }
+        #endif
     }
 
     // MARK: - Chargement
@@ -1123,7 +1136,9 @@ final class AudioEngine {
         crossfadeStartHostTime = CACurrentMediaTime()
         crossfadeMixDuration = duration
         publishSchedulerClock()
-        metricsResetForFade()  // [XFADE METRICS]
+        #if DEBUG
+        metricsResetForFade()
+        #endif
 
         let oldName = currentURL?.lastPathComponent ?? "?"
         let newName = url.lastPathComponent
@@ -1186,7 +1201,9 @@ final class AudioEngine {
     private func finishCrossfade() async {
         let elapsed = CACurrentMediaTime() - crossfadeStartHostTime
         let pos = min(crossfadeEffectiveEnd, crossfadeTrimStart + elapsed)
-        metricsPrintSummary(actualDuration: elapsed)  // [XFADE METRICS]
+        #if DEBUG
+        metricsPrintSummary(actualDuration: elapsed)
+        #endif
 
         // Swap sandbox.
         scopedFolderURL?.stopAccessingSecurityScopedResource()
@@ -1234,9 +1251,7 @@ final class AudioEngine {
 
     // MARK: - [XFADE METRICS] Instrumentation temporaire
 
-    /// Remet les compteurs at zéro au démarrage d'un crossfade et installe
-    /// (une seule fois) le listener d'overloads HAL sur le périphérique de
-    /// sortie par défaut.
+    #if DEBUG
     private func metricsResetForFade() {
         rampLock.lock()
         metricsOutgoingTicks = 0
@@ -1249,9 +1264,6 @@ final class AudioEngine {
         metricsOverloadsAtFadeStart = metricsHALOverloads
     }
 
-    /// Enregistre une écriture de volume et le trou depuis la précédente
-    /// (par nœud — les deux fades ont chacun leur source).
-    /// PRÉCONDITION : appelé sous `rampLock` (depuis les ticks de rampQueue).
     nonisolated private func metricsRecordFadeTickLocked(outgoing: Bool) {
         let now = CACurrentMediaTime()
         if outgoing {
@@ -1269,7 +1281,6 @@ final class AudioEngine {
         }
     }
 
-    /// Une seule ligne de synthèse par fondu, imprimée depuis finishCrossfade.
     private func metricsPrintSummary(actualDuration: TimeInterval) {
         let (outTicks, inTicks, maxGap): (Int, Int, Double) = rampLock.withLock {
             (metricsOutgoingTicks, metricsIncomingTicks, metricsMaxGapMs)
@@ -1281,33 +1292,6 @@ final class AudioEngine {
         print("[XFADE METRICS] outgoingTicks=\(outTicks) incomingTicks=\(inTicks) maxGapMs=\(Int(maxGap.rounded())) durationS=\(String(format: "%.2f", actualDuration)) maxFrames=\(maxFrames) latencyMs=\(String(format: "%.1f", latencyMs)) device=\"\(device)\" halOverloads=\(overloads)")
     }
 
-    // MARK: - Annulation des rampes (fade / crossfade / filtre)
-
-    /// Annule la rampe de volume du nœud actif. Le bump d'epoch sous le
-    /// lock garantit qu'aucune tick ni completion en vol ne s'exécutera
-    /// après le retour de cette fonction (une tick en cours d'écriture
-    /// termine d'abord — le lock sérialise).
-    private func cancelFadeRamp() {
-        rampLock.lock(); fadeEpoch &+= 1; rampLock.unlock()
-        fadeTimer?.cancel()
-        fadeTimer = nil
-    }
-
-    private func cancelCrossfadeRamp() {
-        rampLock.lock(); crossfadeEpoch &+= 1; rampLock.unlock()
-        crossfadeTimer?.cancel()
-        crossfadeTimer = nil
-    }
-
-    private func cancelFilterRamp() {
-        rampLock.lock(); filterEpoch &+= 1; rampLock.unlock()
-        filterTimer?.cancel()
-        filterTimer = nil
-    }
-
-    /// Compte les kAudioDeviceProcessorOverload du périphérique de sortie
-    /// par défaut (cycles de rendu HAL sautés). Lecture seule, aucun effet
-    /// sur le rendu.
     private func installHALOverloadListenerIfNeeded() {
         guard !halOverloadListenerInstalled else { return }
         guard let deviceID = Self.defaultOutputDeviceID() else { return }
@@ -1316,14 +1300,18 @@ final class AudioEngine {
             mScope: kAudioObjectPropertyScopeGlobal,
             mElement: kAudioObjectPropertyElementMain
         )
-        let status = AudioObjectAddPropertyListenerBlock(deviceID, &address, .main) { [weak self] _, _ in
+        let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
             MainActor.assumeIsolated {
                 guard let self else { return }
                 self.metricsHALOverloads += 1
                 print("[XFADE METRICS] HAL overload #\(self.metricsHALOverloads)")
             }
         }
-        halOverloadListenerInstalled = (status == noErr)
+        let status = AudioObjectAddPropertyListenerBlock(deviceID, &address, .main, block)
+        if status == noErr {
+            halOverloadListenerInstalled = true
+            halOverloadBlock = block
+        }
     }
 
     private static func defaultOutputDeviceID() -> AudioDeviceID? {
@@ -1355,6 +1343,31 @@ final class AudioEngine {
         }
         guard status == noErr, let name else { return nil }
         return name as String
+    }
+    #endif
+
+    // MARK: - Annulation des rampes (fade / crossfade / filtre)
+
+    /// Annule la rampe de volume du nœud actif. Le bump d'epoch sous le
+    /// lock garantit qu'aucune tick ni completion en vol ne s'exécutera
+    /// après le retour de cette fonction (une tick en cours d'écriture
+    /// termine d'abord — le lock sérialise).
+    private func cancelFadeRamp() {
+        rampLock.lock(); fadeEpoch &+= 1; rampLock.unlock()
+        fadeTimer?.cancel()
+        fadeTimer = nil
+    }
+
+    private func cancelCrossfadeRamp() {
+        rampLock.lock(); crossfadeEpoch &+= 1; rampLock.unlock()
+        crossfadeTimer?.cancel()
+        crossfadeTimer = nil
+    }
+
+    private func cancelFilterRamp() {
+        rampLock.lock(); filterEpoch &+= 1; rampLock.unlock()
+        filterTimer?.cancel()
+        filterTimer = nil
     }
 
     // MARK: - 3-node helpers
@@ -1458,7 +1471,9 @@ final class AudioEngine {
 
         let startVolume = node.volume
         let startedAt   = CACurrentMediaTime()
-        let recordMetrics = isCrossfading  // [XFADE METRICS]
+        #if DEBUG
+        let recordMetrics = isCrossfading
+        #endif
         let epoch = rampLock.withLock { crossfadeEpoch }
 
         let source = DispatchSource.makeTimerSource(queue: Self.rampQueue)
@@ -1477,7 +1492,9 @@ final class AudioEngine {
             self.rampLock.lock()
             guard self.crossfadeEpoch == epoch else { self.rampLock.unlock(); return }
             node.volume = progress >= 1.0 ? target : volume
-            if recordMetrics { self.metricsRecordFadeTickLocked(outgoing: false) }  // [XFADE METRICS]
+            #if DEBUG
+            if recordMetrics { self.metricsRecordFadeTickLocked(outgoing: false) }
+            #endif
             if progress >= 1.0 {
                 // Claim la fin sous le lock : plus aucune tick, une seule completion.
                 self.crossfadeEpoch &+= 1
@@ -1948,7 +1965,9 @@ final class AudioEngine {
         let node = activeNode!
         let startVolume = node.volume
         let startedAt = CACurrentMediaTime()
-        let recordMetrics = isCrossfading  // [XFADE METRICS]
+        #if DEBUG
+        let recordMetrics = isCrossfading
+        #endif
         let epoch = rampLock.withLock { fadeEpoch }
 
         let source = DispatchSource.makeTimerSource(queue: Self.rampQueue)
@@ -1972,7 +1991,9 @@ final class AudioEngine {
             self.rampLock.lock()
             guard self.fadeEpoch == epoch else { self.rampLock.unlock(); return }
             node.volume = progress >= 1.0 ? target : volume  // valeur exacte garantie en fin
-            if recordMetrics { self.metricsRecordFadeTickLocked(outgoing: true) }  // [XFADE METRICS]
+            #if DEBUG
+            if recordMetrics { self.metricsRecordFadeTickLocked(outgoing: true) }
+            #endif
             if progress >= 1.0 {
                 // Claim la fin sous le lock AVANT la completion : plus aucune
                 // tick, et une seule completion possible (l'équivalent du bump

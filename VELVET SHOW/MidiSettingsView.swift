@@ -310,57 +310,6 @@ struct MidiSettingsView: View {
 
             Divider()
 
-            // ── DJ / Intermission handoff ─────────────────────────────
-            VStack(alignment: .leading, spacing: 8) {
-                Text("DJ / Intermission Handoff")
-                    .font(.subheadline.bold())
-
-                Text("Vinyl button target. Opens the selected app and sends Play when possible; otherwise it can fall back to the Space key.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                Picker("Target", selection: $appState.djHandoffTarget) {
-                    ForEach(AppState.DJHandoffTarget.allCases) { target in
-                        Text(target.label).tag(target)
-                    }
-                }
-                .pickerStyle(.menu)
-
-                if appState.djHandoffTarget == .custom {
-                    TextField("Bundle ID, e.g. com.company.Player", text: $appState.djHandoffCustomBundleID)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.system(.body, design: .monospaced))
-                    TextField("App name fallback, e.g. My Player", text: $appState.djHandoffCustomAppName)
-                        .textFieldStyle(.roundedBorder)
-                    Text("Bundle ID is preferred. App name is used as a fallback scan in /Applications and ~/Applications.")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-
-                HStack(spacing: 8) {
-                    Text("Cold launch delay")
-                        .font(.caption.bold())
-                        .foregroundStyle(.secondary)
-                    Slider(
-                        value: Binding(
-                            get: { Double(appState.djHandoffColdLaunchDelayMillis) },
-                            set: { appState.djHandoffColdLaunchDelayMillis = Int($0.rounded()) }
-                        ),
-                        in: 0...2_000,
-                        step: 50
-                    )
-                    Text("\(max(0, min(2_000, appState.djHandoffColdLaunchDelayMillis))) ms")
-                        .font(.caption.monospacedDigit())
-                        .frame(width: 58, alignment: .trailing)
-                }
-
-                Toggle("Use Space key fallback when native Play is unavailable", isOn: $appState.djHandoffUsesKeyboardFallback)
-                    .font(.caption)
-                    .tint(VSColor.interactive)
-            }
-
-            Divider()
-
             // ── Rest cue (DisclosureGroup) ───────────────────────
             DisclosureGroup(isExpanded: $isRestCueExpanded) {
                 VStack(alignment: .leading, spacing: 10) {

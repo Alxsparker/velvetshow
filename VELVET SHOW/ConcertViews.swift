@@ -428,68 +428,30 @@ struct AutoBlinkBorder: View {
     }
 }
 
-/// Pulse blanc très discret sur la tuile du song en cours.
-/// Rappel visuel que la lecture est active — animation lente (1,4 s)
-/// for ne pas distraire en plein concert.
-struct NowPlayingPulseBorder: View {
-    let cornerRadius: CGFloat
-    @State private var glowing = false
 
-    var body: some View {
-        RoundedRectangle(cornerRadius: cornerRadius)
-            .stroke(Color.white.opacity(glowing ? 0.35 : 0.0), lineWidth: 3)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
-                    glowing = true
-                }
-            }
-    }
-}
-
-/// Halo pulsant Live Stage : indique le prochain song naturel dès que la lecture démarre.
-/// Trois couches (bordure nette + halo flou + lueur diffuse) for une lisibilité at distance.
-/// Actif tout au long du song en cours, effacé sur stop explicite.
+/// Bordure pulsante : indique le prochain song naturel dès que la lecture démarre.
 struct NextNaturalBorder: View {
     let cornerRadius: CGFloat
     @State private var phase: Double = 0
 
     var body: some View {
-        ZStack {
-            // Lueur extérieure diffuse
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .stroke(VelvetPalette.velvetBlue.opacity(phase * 0.7), lineWidth: 14)
-                .blur(radius: 10)
-            // Halo intermédiaire
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .stroke(VelvetPalette.velvetBlue.opacity(phase * 0.9), lineWidth: 6)
-                .blur(radius: 3)
-            // Bordure nette
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .stroke(VelvetPalette.velvetBlue.opacity(0.4 + phase * 0.6), lineWidth: 3)
-        }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true)) {
-                phase = 1.0
+        RoundedRectangle(cornerRadius: cornerRadius)
+            .stroke(VelvetPalette.velvetBlue.opacity(0.4 + phase * 0.6), lineWidth: 3)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true)) {
+                    phase = 1.0
+                }
             }
-        }
     }
 }
 
-/// Bordure jaune animée sur les tuiles correspondant at la recherche en cours.
-/// S'affiche en surbrillance tant que le champ de recherche est non vide.
+/// Bordure jaune statique sur les tuiles correspondant à la recherche en cours.
 struct SearchMatchBorder: View {
     let cornerRadius: CGFloat
-    @State private var pulsing = false
 
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius)
-            .stroke(VelvetPalette.nowPlayingYellow, lineWidth: 3)
-            .opacity(pulsing ? 1.0 : 0.45)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 0.55).repeatForever(autoreverses: true)) {
-                    pulsing = true
-                }
-            }
+            .stroke(VelvetPalette.nowPlayingYellow.opacity(0.85), lineWidth: 3)
     }
 }
 
@@ -2494,13 +2456,7 @@ struct SetSongsView: View {
         let titleSize = min(19, max(12, height * 0.44))
         let reservesNextUpControl = canPrioritizeNext
 
-        HStack(spacing: isCurrent ? 7 : 0) {
-            if isCurrent {
-                // Icône ▶︎ bien visible at 2 m — taille proportionnelle au titre
-                Image(systemName: "play.fill")
-                    .font(.system(size: titleSize * 0.75, weight: .black))
-                    .foregroundStyle(.black)
-            }
+        HStack(spacing: 0) {
             Text(song.title.uppercased())
                 .font(.system(size: titleSize, weight: isCurrent ? .black : .bold))
                 .lineLimit(height < 38 ? 1 : 2)
@@ -2570,12 +2526,6 @@ struct SetSongsView: View {
             }
         }
         .overlay {
-            // Halo blanc très discret — indique visuellement que la lecture est active
-            if isCurrent {
-                NowPlayingPulseBorder(cornerRadius: PerformanceChrome.tileRadius)
-            }
-        }
-        .overlay {
             if isNextNatural {
                 NextNaturalBorder(cornerRadius: PerformanceChrome.tileRadius)
                     .transition(.opacity)
@@ -2598,14 +2548,11 @@ struct SetSongsView: View {
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: PerformanceChrome.tileRadius, style: .continuous))
-        // Ombre portée sur la tuile en cours : la fait ressortir de la liste
         .shadow(
-            color: isCurrent
-            ? VelvetPalette.nowPlayingYellow.opacity(0.34)
-            : (isSelected || isPriorityNext ? .black.opacity(0.34) : .black.opacity(0.12)),
-            radius: isCurrent ? 15 : (isSelected || isPriorityNext ? 9 : 3),
+            color: isSelected || isPriorityNext ? .black.opacity(0.34) : .black.opacity(0.12),
+            radius: isSelected || isPriorityNext ? 9 : 3,
             x: 0,
-            y: isCurrent ? 7 : 3
+            y: 3
         )
         .contentShape(Rectangle())
         .opacity(draggingShowSongID == song.id ? 0.45 : (song.audio == nil ? 0.52 : 1))
@@ -2768,12 +2715,7 @@ struct SetSongsView: View {
         let isPriorityNext = priorityNextSongID == song.id
         let titleSize = min(19, max(12, frame.height * 0.44))
 
-        return HStack(spacing: isCurrent ? 7 : 0) {
-            if isCurrent {
-                Image(systemName: "play.fill")
-                    .font(.system(size: titleSize * 0.75, weight: .black))
-                    .foregroundStyle(.black)
-            }
+        return HStack(spacing: 0) {
             Text(song.title.uppercased())
                 .font(.system(size: titleSize, weight: isCurrent ? .black : .bold))
                 .lineLimit(frame.height < 38 ? 1 : 2)

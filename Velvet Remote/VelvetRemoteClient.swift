@@ -51,6 +51,7 @@ final class VelvetRemoteClient {
     var status: ConnectionStatus = .idle
     var transport: RemoteTransport = .disconnected
     var latestState: RemoteStateUpdate?
+    var libraryTracks: [RemoteTrackInfo] = []
     var discoveredServices: [NWBrowser.Result] = []
 
     // MARK: - Private
@@ -77,6 +78,21 @@ final class VelvetRemoteClient {
 
     // Auto-reconnect : persistant entre tentatives, effacé par disconnect() explicite uniquement.
     private var lastConnectedServiceName: String?
+
+    // MARK: - Logging
+
+    private static let logDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm:ss.SSS"
+        return f
+    }()
+
+    private static func ts() -> String {
+        logDateFormatter.string(from: Date())
+    }
+
+    // Décodage partiel pour identifier le type de message sans décoder le struct entier.
+    private struct MessageTypeProbe: Codable { var type: String }
 
     // MARK: - Discovery
 
@@ -113,7 +129,8 @@ final class VelvetRemoteClient {
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 self.discoveredServices = Array(results)
-                print("[VelvetRemote] Services found: \(results.count)")
+                let names = results.compactMap { Self.serviceName(from: $0) }.joined(separator: ", ")
+                print("[\(Self.ts())] [VelvetRemote·iOS] ① SERVICE DÉCOUVERT — \(results.count) service(s): [\(names)]")
                 self.attemptAutoReconnect(from: results)
             }
         }
@@ -214,7 +231,7 @@ final class VelvetRemoteClient {
         let conn = NWConnection(to: result.endpoint, using: .tcp)
         connection = conn
 
-        print("[VelvetRemote] Connecting to \(Self.endpointDescription(result.endpoint))…")
+        print("[\(Self.ts())] [VelvetRemote·iOS] ② NWConnection créée #\(ObjectIdentifier(self).hashValue) → \(Self.endpointDescription(result.endpoint))")
 
         conn.stateUpdateHandler = { [weak self] state in
             Task { @MainActor [weak self] in
@@ -223,20 +240,20 @@ final class VelvetRemoteClient {
                 case .ready:
                     let t = Self.detectTransport(from: conn.currentPath)
                     let pathDesc = Self.pathDescription(conn.currentPath)
-                    print("[VelvetRemote] Connected — transport: \(t.label) | path: \(pathDesc)")
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ③ SOCKET OUVERTE — transport: \(t.label) | \(pathDesc)")
                     self.applyTransport(t)
                     self.status = .connected
                     self.lastDataReceived = Date()
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ⑦ CONSUMER DÉMARRÉ — receiveNextMessage() lancé")
                     self.startWatchdog()
                     self.receiveNextMessage()
                 case .failed(let error):
-                    print("[VelvetRemote] Connection failed: \(error)")
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ⑬ CONNEXION ÉCHOUÉE: \(error)")
                     self.handleConnectionLost()
                 case .cancelled:
-                    // Annulé via disconnectInternal() — pas de reconnexion ici.
-                    print("[VelvetRemote] Connection cancelled")
+                    print("[\(Self.ts())] [VelvetRemote·iOS] Connexion annulée (disconnectInternal)")
                 case .waiting(let error):
-                    print("[VelvetRemote] Connection waiting: \(error)")
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ⑬ Connexion en attente: \(error)")
                 default: break
                 }
             }
@@ -287,7 +304,7 @@ final class VelvetRemoteClient {
 
     private func handleConnectionLost() {
         let target = lastConnectedServiceName
-        print("[VelvetRemote] Connection lost — will auto-reconnect: \(target != nil)")
+        print("[\(Self.ts())] [VelvetRemote·iOS] ⑬ CONNEXION PERDUE — auto-reconnect: \(target != nil)")
         disconnectInternal()
         if target != nil {
             status = .browsing
@@ -316,8 +333,11 @@ final class VelvetRemoteClient {
 
     private func checkWatchdog() {
         let age = Date().timeIntervalSince(lastDataReceived)
-        guard age > Self.staleThreshold else { return }
-        print("[VelvetRemote] Watchdog: stale — lastDataAge=\(Int(age))s — reconnecting…")
+        guard age > Self.staleThreshold else {
+            print("[\(Self.ts())] [VelvetRemote·iOS] Watchdog OK — dernier paquet il y a \(String(format: "%.1f", age))s")
+            return
+        }
+        print("[\(Self.ts())] [VelvetRemote·iOS] ⑬ WATCHDOG — aucune donnée depuis \(Int(age))s (seuil=\(Int(Self.staleThreshold))s) — reconnexion")
         handleConnectionLost()
     }
 
@@ -359,11 +379,12 @@ final class VelvetRemoteClient {
                 if let data, !data.isEmpty {
                     self.lastDataReceived = Date()
                     self.receiveBuffer.append(data)
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ⑧ DONNÉES REÇUES — \(data.count) octets (buffer total: \(self.receiveBuffer.count) octets)")
                     self.processBuffer()
                 }
 
                 if isComplete || error != nil {
-                    print("[VelvetRemote] Receive ended — isComplete=\(isComplete) error=\(String(describing: error))")
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ⑬ Réception terminée — isComplete=\(isComplete) error=\(String(describing: error))")
                     self.handleConnectionLost()
                 } else {
                     self.receiveNextMessage()
@@ -373,13 +394,48 @@ final class VelvetRemoteClient {
     }
 
     private func processBuffer() {
+        var linesProcessed = 0
         while let newline = receiveBuffer.firstIndex(of: UInt8(ascii: "\n")) {
             let lineData = receiveBuffer[receiveBuffer.startIndex...newline]
             receiveBuffer = receiveBuffer[receiveBuffer.index(after: newline)...]
-            if let json = try? JSONDecoder().decode(RemoteStateUpdate.self, from: lineData) {
-                latestState = json
+            linesProcessed += 1
+
+            // Identifier le type du message avant de tenter un décodage complet.
+            let probe = try? JSONDecoder().decode(MessageTypeProbe.self, from: lineData)
+            let msgType = probe?.type ?? "inconnu"
+
+            switch msgType {
+            case "ping":
+                print("[\(Self.ts())] [VelvetRemote·iOS] · ping reçu (\(lineData.count) octets)")
+
+            case "stateUpdate":
+                // C'est un état : le décodage DOIT réussir. Toute erreur est un bug.
+                do {
+                    let json = try JSONDecoder().decode(RemoteStateUpdate.self, from: lineData)
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ⑪ DÉCODAGE RÉUSSI — playback=\(json.playbackState.rawValue) titre=\(json.songTitle ?? "nil") nextTitre=\(json.nextSongTitle ?? "nil") queue=\(json.queue.count) items upcomingSetlist=\(json.upcomingSetlist.count) items")
+                    latestState = json
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ⑫ latestState mis à jour → interface rafraîchie")
+                } catch {
+                    let raw = String(data: lineData, encoding: .utf8) ?? "<non-UTF8>"
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ⚠️ ÉCHEC DÉCODAGE stateUpdate — ERREUR: \(error) — JSON brut: \(raw.prefix(500))")
+                }
+
+            case "libraryUpdate":
+                if let json = try? JSONDecoder().decode(RemoteLibraryUpdate.self, from: lineData) {
+                    print("[\(Self.ts())] [VelvetRemote·iOS] bibliothèque reçue — \(json.tracks.count) morceaux")
+                    libraryTracks = json.tracks
+                } else {
+                    let raw = String(data: lineData, encoding: .utf8) ?? "<non-UTF8>"
+                    print("[\(Self.ts())] [VelvetRemote·iOS] ⚠️ ÉCHEC DÉCODAGE libraryUpdate — JSON brut: \(raw.prefix(500))")
+                }
+
+            default:
+                let raw = String(data: lineData, encoding: .utf8) ?? "<non-UTF8>"
+                print("[\(Self.ts())] [VelvetRemote·iOS] ⚠️ Type de message inconnu '\(msgType)' — JSON brut: \(raw.prefix(200))")
             }
-            // ping : déjà compté via lastDataReceived
+        }
+        if linesProcessed == 0 && !receiveBuffer.isEmpty {
+            print("[\(Self.ts())] [VelvetRemote·iOS] ⑧ Buffer partiel — en attente de \\n (\(receiveBuffer.count) octets accumulés)")
         }
     }
 }

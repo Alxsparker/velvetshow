@@ -12,6 +12,7 @@ import SwiftUI
 
 struct RemoteControlView: View {
     @Environment(VelvetRemoteClient.self) private var client
+    @State private var showingSearch = false
 
     private let palette = PrompterPalette(
         background: Color(hex: 0x14101A),
@@ -41,6 +42,10 @@ struct RemoteControlView: View {
             }
         }
         .navigationBarHidden(true)
+        .sheet(isPresented: $showingSearch) {
+            RemoteSearchView()
+                .environment(client)
+        }
     }
 
     // MARK: - Header fixe
@@ -57,6 +62,15 @@ struct RemoteControlView: View {
                     .lineLimit(1)
 
                 Spacer()
+
+                Button {
+                    showingSearch = true
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(palette.secondaryText)
+                }
+                .buttonStyle(.plain)
 
                 Text(formatRemaining(position: state.positionSeconds, duration: state.durationSeconds))
                     .font(.system(size: 28, weight: .black).monospacedDigit())

@@ -180,28 +180,6 @@ private struct FixedAppToolbar: View {
         HStack(spacing: 10) {
             MediaFolderWarningPill(appState: appState)
 
-            DjayVinylButton(
-                isArmed: appState.isDjayArmed,
-                isPlaying: appState.audioEngine.state == .playing
-            ) {
-                if appState.isDjayArmed {
-                    appState.isDjayArmed = false
-                    return
-                }
-                if appState.audioEngine.state == .playing {
-                    appState.isDjayArmed = true
-                } else {
-                    Task {
-                        do { try await appState.performDJHandoff() }
-                        catch { appState.lastError = error.localizedDescription }
-                    }
-                }
-            }
-            .help(appState.isDjayArmed
-                  ? "\(appState.djHandoffDisplayName) armed — launches at end of current song. Click again to disarm."
-                  : (appState.audioEngine.state == .playing
-                     ? "Arm \(appState.djHandoffDisplayName) to launch automatically at end of this song"
-                     : "Launch \(appState.djHandoffDisplayName) now"))
 
             if case .error = appState.saveStatus {
                 SaveStatusPill(status: appState.saveStatus)
@@ -408,45 +386,6 @@ private struct FixedAppToolbar: View {
     }
 }
 
-// MARK: - DJ Handoff Vinyl Button
-
-/// Toolbar button au look "vinyle jaune". Pastille jaune au centre, anneau
-/// noir autour, trou central. Quand armé : halo orange pulsant pour signaler
-/// que l'app externe attend la fin du morceau.
-private struct DjayVinylButton: View {
-    let isArmed: Bool
-    let isPlaying: Bool
-    let action: () -> Void
-    @State private var pulse = false
-
-    var body: some View {
-        Button(action: action) {
-            ZStack {
-                // Halo armé pulsant
-                if isArmed {
-                    Circle()
-                        .stroke(Color.orange.opacity(pulse ? 0.25 : 0.75), lineWidth: 3)
-                        .frame(width: 38, height: 38)
-                        .animation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true), value: pulse)
-                }
-                // Disque vinyle
-                Circle().fill(Color.black).frame(width: 30, height: 30)
-                Circle().stroke(Color.white.opacity(0.22), lineWidth: 0.6).frame(width: 30, height: 30)
-                Circle().stroke(Color.white.opacity(0.14), lineWidth: 0.5).frame(width: 24, height: 24)
-                Circle().stroke(Color.white.opacity(0.10), lineWidth: 0.5).frame(width: 18, height: 18)
-                // Pastille jaune (label vinyle)
-                Circle().fill(Color.yellow).frame(width: 14, height: 14)
-                // Trou central
-                Circle().fill(Color.black).frame(width: 3, height: 3)
-            }
-            .frame(width: 40, height: 40)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.borderless)
-        .accessibilityLabel("DJ handoff")
-        .onAppear { pulse = true }
-    }
-}
 
 private struct ToolbarClock: View {
     var body: some View {

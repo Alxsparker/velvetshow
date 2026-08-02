@@ -23,6 +23,7 @@ final class VelvetRemoteServer {
     private var connections: [UUID: NWConnection] = [:]
     private var pingTimers: [UUID: DispatchSourceTimer] = [:]
     private(set) var lastState: RemoteStateUpdate?
+    private(set) var lastLibrary: RemoteLibraryUpdate?
 
     private let queue = DispatchQueue(label: "velvet.remote.server", qos: .userInitiated)
     private let encoder = JSONEncoder()
@@ -171,26 +172,50 @@ final class VelvetRemoteServer {
         queue.asyncAfter(deadline: .now() + delay, execute: item)
     }
 
+    // MARK: - Logging
+
+    private static let logDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm:ss.SSS"
+        return f
+    }()
+
+    private static func ts() -> String {
+        logDateFormatter.string(from: Date())
+    }
+
     // MARK: - Connection handling
 
     private func accept(_ connection: NWConnection) {
         let id = UUID()
+        let shortID = id.uuidString.prefix(8)
         connections[id] = connection
+        print("[\(Self.ts())] [VelvetRemote·MAC] ③ SOCKET acceptée — client \(shortID) | endpoint: \(connection.endpoint) | clients actifs: \(connections.count)")
 
         connection.stateUpdateHandler = { state in
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 switch state {
                 case .ready:
-                    print("[VelvetRemote] Client connected — \(connection.endpoint) (\(id.uuidString.prefix(8)))")
+                    print("[\(Self.ts())] [VelvetRemote·MAC] ③ SOCKET OUVERTE — client \(shortID) connecté")
+                    print("[\(Self.ts())] [VelvetRemote·MAC] ⑥ Démarrage ping timer pour \(shortID)")
                     self.startPing(for: id, connection: connection)
-                    if let state = self.lastState { self.send(state, to: connection) }
+                    if let cached = self.lastState {
+                        print("[\(Self.ts())] [VelvetRemote·MAC] ④ HANDSHAKE ENVOYÉ — lastState présent (titre: \(cached.songTitle ?? "nil"), playback: \(cached.playbackState.rawValue)) → envoi direct à \(shortID)")
+                        self.send(cached, to: connection)
+                    } else {
+                        print("[\(Self.ts())] [VelvetRemote·MAC] ④ HANDSHAKE — lastState nil, aucun envoi direct → onClientConnected déclenchera broadcastState")
+                    }
+                    if let lib = self.lastLibrary {
+                        self.sendLibrary(lib, to: connection)
+                    }
+                    print("[\(Self.ts())] [VelvetRemote·MAC] ④ Appel onClientConnected → broadcastState")
                     self.onClientConnected?()
                 case .failed(let error):
-                    print("[VelvetRemote] Client \(id.uuidString.prefix(8)) failed: \(error)")
+                    print("[\(Self.ts())] [VelvetRemote·MAC] ⑬ ERREUR client \(shortID): \(error)")
                     self.remove(id)
                 case .cancelled:
-                    print("[VelvetRemote] Client \(id.uuidString.prefix(8)) disconnected.")
+                    print("[\(Self.ts())] [VelvetRemote·MAC] Client \(shortID) déconnecté.")
                     self.remove(id)
                 default:
                     break
@@ -252,21 +277,24 @@ final class VelvetRemoteServer {
         else { return }
 
         let payload = (line + "\n").data(using: .utf8)!
+        let shortID = id.uuidString.prefix(8)
         connection.send(content: payload, completion: .contentProcessed { error in
             if let error {
-                print("[VelvetRemote] Ping failed for \(id.uuidString.prefix(8)): \(error)")
+                print("[\(VelvetRemoteServer.ts())] [VelvetRemote·MAC] ⑬ Ping ÉCHOUÉ pour \(shortID): \(error)")
+            } else {
+                print("[\(VelvetRemoteServer.ts())] [VelvetRemote·MAC] ⑧ Ping envoyé → \(shortID) (\(payload.count) octets)")
             }
         })
     }
 
     // MARK: - Broadcast
 
-    func broadcast(_ update: RemoteStateUpdate) {
-        lastState = update
+    /// Stocke le snapshot de bibliothèque et le diffuse à tous les clients connectés.
+    /// Appelé par AppState.libraryDidChange() — encode hors MainActor.
+    func broadcastLibrary(_ update: RemoteLibraryUpdate) {
+        lastLibrary = update
         guard !connections.isEmpty else { return }
         let targets = Array(connections.values)
-        // Encodage JSON sur la queue série du serveur (plus sur le main
-        // thread). L'encoder n'est utilisé QUE sur cette queue.
         queue.async { [encoder] in
             guard let data = try? encoder.encode(update),
                   let line = String(data: data, encoding: .utf8) else { return }
@@ -277,11 +305,44 @@ final class VelvetRemoteServer {
         }
     }
 
-    private func send(_ update: RemoteStateUpdate, to connection: NWConnection) {
+    private func sendLibrary(_ update: RemoteLibraryUpdate, to connection: NWConnection) {
         queue.async { [encoder] in
             guard let data = try? encoder.encode(update),
                   let line = String(data: data, encoding: .utf8) else { return }
-            connection.send(content: (line + "\n").data(using: .utf8)!, completion: .idempotent)
+            let payload = (line + "\n").data(using: .utf8)!
+            connection.send(content: payload, completion: .idempotent)
+        }
+    }
+
+    func broadcast(_ update: RemoteStateUpdate) {
+        lastState = update
+        guard !connections.isEmpty else { return }
+        let targets = Array(connections.values)
+        let clientCount = targets.count
+        queue.async { [encoder] in
+            guard let data = try? encoder.encode(update),
+                  let line = String(data: data, encoding: .utf8) else {
+                print("[\(VelvetRemoteServer.ts())] [VelvetRemote·MAC] ⑬ ERREUR ENCODAGE JSON broadcast")
+                return
+            }
+            let payload = (line + "\n").data(using: .utf8)!
+            print("[\(VelvetRemoteServer.ts())] [VelvetRemote·MAC] ⑧ Broadcast état → \(clientCount) client(s) | \(payload.count) octets | playback=\(update.playbackState.rawValue) titre=\(update.songTitle ?? "nil")")
+            for connection in targets {
+                connection.send(content: payload, completion: .idempotent)
+            }
+        }
+    }
+
+    private func send(_ update: RemoteStateUpdate, to connection: NWConnection) {
+        queue.async { [encoder] in
+            guard let data = try? encoder.encode(update),
+                  let line = String(data: data, encoding: .utf8) else {
+                print("[\(VelvetRemoteServer.ts())] [VelvetRemote·MAC] ⑬ ERREUR ENCODAGE JSON envoi direct")
+                return
+            }
+            let payload = (line + "\n").data(using: .utf8)!
+            print("[\(VelvetRemoteServer.ts())] [VelvetRemote·MAC] ④ Envoi direct état → \(payload.count) octets | playback=\(update.playbackState.rawValue) titre=\(update.songTitle ?? "nil")")
+            connection.send(content: payload, completion: .idempotent)
         }
     }
 }

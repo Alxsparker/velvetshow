@@ -274,6 +274,7 @@ final class AppState {
                 }
                 .sorted { ($0.name ?? "") < ($1.name ?? "") }
             self.rebuildAudioFileCaches()
+            self.libraryDidChange()
         }
 
         // Après migration : reconstituer les caches MIDI depuis les données Velvet
@@ -289,6 +290,7 @@ final class AppState {
             }
             self.midiMessagesByEventID = byEvent
             self.rebuildAudioFileCaches()
+            self.libraryDidChange()
         }
 
         self.audioEngine.onPlaybackEndished = { [weak self] in
@@ -304,24 +306,13 @@ final class AppState {
             self.pendingCrossfadeTrack = nil
             self.pendingCrossfadeSetElementID = nil
             self.updateUpcomingTrack()
+            self.broadcastState()
             print("[XFADE] Aborted (audio reconfiguration): replacement cancelled, previous song resumed")
         }
 
         if let raw = UserDefaults.standard.string(forKey: Self.seekBehaviorKey),
            let b = SeekBehavior(rawValue: raw) {
             self.seekBehavior = b
-        }
-        if let raw = UserDefaults.standard.string(forKey: Self.djHandoffTargetKey),
-           let t = DJHandoffTarget(rawValue: raw) {
-            self.djHandoffTarget = t
-        }
-        self.djHandoffCustomBundleID = UserDefaults.standard.string(forKey: Self.djHandoffCustomBundleIDKey) ?? ""
-        self.djHandoffCustomAppName = UserDefaults.standard.string(forKey: Self.djHandoffCustomAppNameKey) ?? ""
-        if let storedDelay = UserDefaults.standard.object(forKey: Self.djHandoffColdLaunchDelayMillisKey) as? Int {
-            self.djHandoffColdLaunchDelayMillis = max(0, min(2_000, storedDelay))
-        }
-        if let storedFallback = UserDefaults.standard.object(forKey: Self.djHandoffUsesKeyboardFallbackKey) as? Bool {
-            self.djHandoffUsesKeyboardFallback = storedFallback
         }
 
 
@@ -422,8 +413,11 @@ final class AppState {
             guard let self else { return }
             switch type {
             case "playPause":
-                handlePlayPauseShortcut()
+                handlePlayPauseShortcut(source: "Remote")
             case "nextTrack":
+                #if DEBUG
+                print("\(diagCmd()) onCommand nextTrack | state=\(audioEngine.state) | replacing=\(isReplacingTrack) | loaded=\(currentlyLoadedTrack?.name ?? "nil")")
+                #endif
                 guard let setID = currentlyLoadedSetID ?? selectedSetID,
                       let set = sets.first(where: { $0.setID == setID }) else {
                     handleNextSongShortcut()
@@ -439,7 +433,11 @@ final class AppState {
                         selectedShowSetElementIDBySetID[setID] = eid
                     }
                     removeQueueItem(queueItem, from: set)
-                    startReplacement(track: track, set: set, element: element, effect: .filter)
+                    if audioEngine.state == .playing || audioEngine.state == .stopping {
+                        startReplacement(track: track, set: set, element: element, effect: .filter)
+                    } else {
+                        startPlayback(track: track, set: set, element: element)
+                    }
                     break
                 }
                 // Priorité 2 : prochain dans la setlist.
@@ -454,7 +452,11 @@ final class AppState {
                 while setSongs.indices.contains(idx) {
                     if let audio = setSongs[idx].audio {
                         selectedShowSetElementIDBySetID[setID] = setSongs[idx].element.setElementID
-                        startReplacement(track: audio, set: set, element: setSongs[idx].element, effect: .filter)
+                        if audioEngine.state == .playing || audioEngine.state == .stopping {
+                            startReplacement(track: audio, set: set, element: setSongs[idx].element, effect: .filter)
+                        } else {
+                            startPlayback(track: audio, set: set, element: setSongs[idx].element)
+                        }
                         break
                     }
                     idx += 1
@@ -468,8 +470,6 @@ final class AppState {
                    let set = sets.first(where: { $0.setID == setID }),
                    let song = songs(in: set).first(where: { $0.element.setElementID == elementID }) {
                     prioritizeSongNext(song, in: set)
-                    updateUpcomingTrack()
-                    broadcastState()
                 } else if type.hasPrefix("enqueueAtEnd:"),
                    let idStr = type.split(separator: ":").last,
                    let elementID = Int64(idStr),
@@ -486,14 +486,28 @@ final class AppState {
                         playbackMode: .automatic
                     ))
                     concertQueueBySetID[set.setID] = queue
-                    updateUpcomingTrack()
-                    broadcastState()
                 } else if type.hasPrefix("removeFromQueue:"),
                    let idStr = type.split(separator: ":").last,
-                   let elementID = Int64(idStr),
                    let setID = currentlyLoadedSetID {
-                    concertQueueBySetID[setID]?.removeAll { $0.setElementID == elementID }
-                    updateUpcomingTrack()
+                    let idString = String(idStr)
+                    if let uuid = UUID(uuidString: idString) {
+                        // Item ajouté via library search (pas de setElementID) — suppression par UUID
+                        concertQueueBySetID[setID]?.removeAll { $0.id == uuid }
+                    } else if let elementID = Int64(idString) {
+                        // Item setlist classique — comportement existant
+                        concertQueueBySetID[setID]?.removeAll { $0.setElementID == elementID }
+                    }
+                } else if type.hasPrefix("enqueueTrack:"),
+                   let idStr = type.split(separator: ":").last,
+                   let audioFileID = Int64(idStr),
+                   audioFilesByID[audioFileID] != nil,
+                   let setID = currentlyLoadedSetID ?? selectedSetID {
+                    concertQueueBySetID[setID, default: []].append(ConcertQueueItem(
+                        setID: setID,
+                        setElementID: nil,
+                        audioFileID: audioFileID,
+                        playbackMode: .automatic
+                    ))
                     broadcastState()
                 } else {
                     print("[VelvetRemote] Unknown command: \(type)")
@@ -553,11 +567,17 @@ final class AppState {
         let queueSongs: [RemoteSetlistSong] = {
             guard let setID = currentlyLoadedSetID else { return [] }
             return (concertQueueBySetID[setID] ?? []).compactMap { item in
-                guard let elementID = item.setElementID,
-                      let track = audioFilesByID[item.audioFileID],
+                guard let track = audioFilesByID[item.audioFileID],
                       let name = track.name else { return nil }
-                return RemoteSetlistSong(id: String(elementID), title: name)
+                // setElementID si disponible (compat. removeFromQueue existant), UUID sinon (items library search)
+                let remoteID = item.setElementID.map(String.init) ?? item.id.uuidString
+                return RemoteSetlistSong(id: remoteID, title: name)
             }
+        }()
+
+        let queuedAudioFileIDs: [Int64] = {
+            guard let setID = currentlyLoadedSetID else { return [] }
+            return (concertQueueBySetID[setID] ?? []).map(\.audioFileID)
         }()
 
         return RemoteStateUpdate(
@@ -570,7 +590,8 @@ final class AppState {
             timelineMemos:      memos,
             afterNextSongTitle: afterNext,
             upcomingSetlist:    upcoming,
-            queue:              queueSongs
+            queue:              queueSongs,
+            queuedAudioFileIDs: queuedAudioFileIDs
         )
     }
 
@@ -580,6 +601,17 @@ final class AppState {
         // un broadcast frais via onClientConnected.
         guard remoteServer.hasClients else { return }
         remoteServer.broadcast(buildRemoteState())
+    }
+
+    /// Appelé uniquement lors de changements réels de la bibliothèque :
+    /// import, suppression, renommage, chargement d'une nouvelle base.
+    /// Reconstruit et stocke le snapshot ; le broadcast n'a lieu que si un client est connecté.
+    func libraryDidChange() {
+        let tracks = audioFiles.compactMap { f -> RemoteTrackInfo? in
+            guard let name = f.name else { return nil }
+            return RemoteTrackInfo(id: f.audioFileID, title: name)
+        }
+        remoteServer.broadcastLibrary(RemoteLibraryUpdate(tracks: tracks))
     }
 
     private func startRemotePositionTimer() {
@@ -620,75 +652,6 @@ final class AppState {
         }
     }
 
-    // MARK: - DJ / Intermission handoff
-
-    enum DJHandoffTarget: String, CaseIterable, Identifiable, Hashable {
-        case djay
-        case spotify
-        case appleMusic
-        case traktor
-        case custom
-
-        var id: String { rawValue }
-
-        var label: String {
-            switch self {
-            case .djay:       return "djay Pro"
-            case .spotify:    return "Spotify"
-            case .appleMusic: return "Apple Music"
-            case .traktor:    return "Traktor"
-            case .custom:     return "Custom App"
-            }
-        }
-    }
-
-    private static let djHandoffTargetKey = "djHandoffTarget"
-    private static let djHandoffCustomBundleIDKey = "djHandoffCustomBundleID"
-    private static let djHandoffCustomAppNameKey = "djHandoffCustomAppName"
-    private static let djHandoffColdLaunchDelayMillisKey = "djHandoffColdLaunchDelayMillis"
-    private static let djHandoffUsesKeyboardFallbackKey = "djHandoffUsesKeyboardFallback"
-
-    var djHandoffTarget: DJHandoffTarget = .djay {
-        didSet { UserDefaults.standard.set(djHandoffTarget.rawValue, forKey: Self.djHandoffTargetKey) }
-    }
-    var djHandoffCustomBundleID: String = "" {
-        didSet { UserDefaults.standard.set(djHandoffCustomBundleID, forKey: Self.djHandoffCustomBundleIDKey) }
-    }
-    var djHandoffCustomAppName: String = "" {
-        didSet { UserDefaults.standard.set(djHandoffCustomAppName, forKey: Self.djHandoffCustomAppNameKey) }
-    }
-    var djHandoffColdLaunchDelayMillis: Int = 600 {
-        didSet {
-            UserDefaults.standard.set(djHandoffColdLaunchDelayMillis, forKey: Self.djHandoffColdLaunchDelayMillisKey)
-        }
-    }
-    var djHandoffUsesKeyboardFallback: Bool = true {
-        didSet { UserDefaults.standard.set(djHandoffUsesKeyboardFallback, forKey: Self.djHandoffUsesKeyboardFallbackKey) }
-    }
-
-    var djHandoffDisplayName: String {
-        if djHandoffTarget == .custom {
-            let name = djHandoffCustomAppName.trimmingCharacters(in: .whitespacesAndNewlines)
-            let bundleID = djHandoffCustomBundleID.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !name.isEmpty { return name }
-            if !bundleID.isEmpty { return bundleID }
-        }
-        return djHandoffTarget.label
-    }
-
-    func djHandoffConfiguration() -> DJHandoffService.Configuration {
-        DJHandoffService.Configuration(
-            target: djHandoffTarget,
-            customBundleID: djHandoffCustomBundleID,
-            customAppName: djHandoffCustomAppName,
-            coldLaunchDelayMillis: max(0, min(2_000, djHandoffColdLaunchDelayMillis)),
-            usesKeyboardFallback: djHandoffUsesKeyboardFallback
-        )
-    }
-
-    func performDJHandoff() async throws {
-        try await DJHandoffService.openAndPlay(config: djHandoffConfiguration())
-    }
 
     // MARK: - Cue de repos
 
@@ -1354,10 +1317,6 @@ final class AppState {
     var isAutoShowEnabled: Bool = false
     var selectedShowSetElementIDBySetID: [ShowSet.ID: SetElement.ID] = [:]
 
-    /// Handoff DJ armé : à la fin naturelle du morceau en cours, on lance
-    /// l'app externe configurée au lieu d'enchaîner sur le suivant.
-    /// Reset auto après tir. Non persisté.
-    var isDjayArmed: Bool = false
 
     // MARK: - Concert UX : avancement persistant des shows
 
@@ -1463,6 +1422,7 @@ final class AppState {
         didSet {
             persistConcertQueue()
             updateUpcomingTrack()
+            broadcastState()
         }
     }
     var concertHistory: [ConcertHistoryEntry] = [] {
@@ -2527,19 +2487,6 @@ final class AppState {
         // la Queue Auto — `startReplacement` gère la suite lui-même.
         guard !isReplacingTrack else { return }
 
-        // Handoff DJ ARMÉ : on lance l'app externe maintenant au lieu
-        // d'enchaîner. Le morceau vient déjà de se terminer, plus besoin de
-        // fade Velvet. Court-circuit total — pas de queue, pas d'auto-show,
-        // pas de cue de repos.
-        if isDjayArmed {
-            print("[DJ] armed trigger fired at natural end")
-            isDjayArmed = false
-            Task { @MainActor in
-                do { try await self.performDJHandoff() }
-                catch { self.lastError = error.localizedDescription }
-            }
-            return
-        }
 
         let finishedSetID = currentlyLoadedSetID
         let finishedElementID = currentlyLoadedSetElementID
@@ -2691,7 +2638,6 @@ final class AppState {
 
     private func updateUpcomingTrack() {
         upcomingTrack = computeUpcomingTrack()
-        broadcastState()
     }
 
     private func computeUpcomingTrack() -> AudioFile? {
@@ -3489,12 +3435,12 @@ final class AppState {
         if !isResume { firedMidiTriggers = [] }
         audioEngine.play()
         videoController.play()
-        broadcastState()
         startMidiScheduler()
         // Indicateur "prochain song" dès le premier lancement manuel —
         // startPlayback le faisait déjà, ce chemin (double-clic setlist)
         // l'omettait : rien ne clignotait avant le premier enchaînement.
         updateNextNaturalIndicator()
+        broadcastState()
     }
 
     func isCurrentTrack(_ track: AudioFile?) -> Bool {
@@ -3547,6 +3493,9 @@ final class AppState {
         replacementTask?.cancel()
         replacementTask = nil
         isReplacingTrack = true
+        #if DEBUG
+        print("\(diagCmd()) startReplacement BEGIN | track=\"\(track.name ?? "?")\" | effect=\(effect) | state=\(audioEngine.state)")
+        #endif
         lastTransitionEffect = effect
 
         // Arrête immédiatement le scheduler MIDI de l'ancien song.
@@ -3585,6 +3534,7 @@ final class AppState {
                 self.videoController.play()
                 self.startMidiScheduler()
                 self.updateNextNaturalIndicator()
+                self.broadcastState()
                 self.isReplacingTrack = false
                 self.replacementTask = nil
             }
@@ -3636,6 +3586,7 @@ final class AppState {
                     // déjà déclenchés pendant le fade repartiraient.
                     self.pendingCrossfadeSetElementID = nil
                     self.updateNextNaturalIndicator()
+                    self.broadcastState()
                     self.isReplacingTrack = false
                     self.pendingCrossfadeTrack = nil
                     print("[XFADE] Crossfade complete: scheduler continues on \(track.name ?? "?")")
@@ -3656,6 +3607,7 @@ final class AppState {
                 // song entrant — pas d'info périmée pendant le fade.
                 pendingCrossfadeSetElementID = element?.setElementID
                 updateUpcomingTrack()
+                broadcastState()
             } catch AudioEngine.AudioError.noCleanNodeAvailable {
                 // Release peut libérer les nœuds de crossfade plus tard que
                 // Debug. Le double-clic doit quand même remplacer le song :
@@ -3675,6 +3627,7 @@ final class AppState {
                     self.videoController.play()
                     self.startMidiScheduler()
                     self.updateNextNaturalIndicator()
+                    self.broadcastState()
                     self.isReplacingTrack = false
                     self.replacementTask = nil
                 }
@@ -3695,6 +3648,7 @@ final class AppState {
                     self.videoController.play()
                     self.startMidiScheduler()
                     self.updateNextNaturalIndicator()
+                    self.broadcastState()
                     self.isReplacingTrack = false
                     self.replacementTask = nil
                 }
@@ -3715,6 +3669,7 @@ final class AppState {
                 self.videoController.play()
                 self.startMidiScheduler()
                 self.updateNextNaturalIndicator()
+                self.broadcastState()
                 self.isReplacingTrack = false
                 self.replacementTask = nil
             }
@@ -3975,7 +3930,21 @@ final class AppState {
 
     // MARK: - Raccourcis clavier globaux
 
-    func handlePlayPauseShortcut() {
+    #if DEBUG
+    @ObservationIgnored private var _diagCounter: Int = 0
+    @ObservationIgnored private let _diagFmt: DateFormatter = {
+        let f = DateFormatter(); f.dateFormat = "HH:mm:ss.SSS"; return f
+    }()
+    private func diagCmd() -> String {
+        _diagCounter += 1
+        return "\(_diagFmt.string(from: Date())) [\(_diagCounter)]"
+    }
+    #endif
+
+    func handlePlayPauseShortcut(source: String = "Spacebar") {
+        #if DEBUG
+        print("\(diagCmd()) handlePlayPauseShortcut | source=\(source) | state=\(audioEngine.state) | replacing=\(isReplacingTrack) | track=\(currentlyLoadedTrack?.name ?? "nil")")
+        #endif
         switch audioEngine.state {
         case .playing:
             requestPause()
@@ -3984,6 +3953,7 @@ final class AppState {
         case .stopping:
             break
         case .stopped:
+            guard !isReplacingTrack else { return }
             // En Track Library, si l'utilisateur a sélectionné une track différente
             // du dernier song chargé (ex. venant du mode Show), on joue la sélection.
             if mode == .trackLibrary,
@@ -4051,7 +4021,7 @@ final class AppState {
         }) else { return }
         print("[MIDI IN] fired \(match.action.rawValue)")
         switch match.action {
-        case .playPause:     handlePlayPauseShortcut()
+        case .playPause:     handlePlayPauseShortcut(source: "MIDI")
         case .stop:          handleStopShortcut()
         case .nextSong:      handleNextSongShortcut()
         case .previousSong:  handlePreviousSongShortcut()
@@ -4082,6 +4052,9 @@ final class AppState {
     }
 
     private func startPlayback(track: AudioFile, set: ShowSet? = nil, element: SetElement? = nil) {
+        #if DEBUG
+        print("\(diagCmd()) startPlayback | track=\"\(track.name ?? "?")\" | state=\(audioEngine.state) | replacing=\(isReplacingTrack)")
+        #endif
         let isResume = currentlyLoadedTrack?.audioFileID == track.audioFileID
             && audioEngine.state == .paused
         if currentlyLoadedTrack?.audioFileID != track.audioFileID {
@@ -4098,6 +4071,7 @@ final class AppState {
         videoController.play()
         startMidiScheduler()
         updateNextNaturalIndicator()
+        broadcastState()
     }
 
     private func preferredShowSongContext() -> (set: ShowSet, song: Song)? {
@@ -4258,6 +4232,7 @@ final class AppState {
                 duration: duration.isFinite && duration > 0 ? duration : nil
             )
             velvetTracks.append(track)
+            libraryDidChange()
             selectedCategoryID = Self.category(for: copiedURL.path)
             selectedAudioFileID = track.id
             scheduleBPMDetection(forVelvetTrackID: track.id, url: copiedURL)
@@ -4281,6 +4256,7 @@ final class AppState {
         velvetTracks[index].note = note.trimmingCharacters(in: .whitespacesAndNewlines)
         velvetTracks[index].colorHex = color?.hexComponents
         velvetTracks[index].tempo = tempo
+        libraryDidChange()
     }
 
     func deleteVelvetTrack(_ track: AudioFile) {
@@ -4294,6 +4270,7 @@ final class AppState {
         if selectedAudioFileID == velvetTrack.id {
             selectedAudioFileID = audioFiles.first?.id
         }
+        libraryDidChange()
     }
 
     private func nextVelvetTrackAudioID() -> Int64 {
@@ -4344,49 +4321,64 @@ final class AppState {
         from sourceURL: URL,
         category: String,
         conflict: AudioImportConflict
-    ) throws {
+    ) async throws {
         guard let root = mediaRootURL else {
             throw AudioFileError.noMediaFolder
         }
 
+        // Accès sécurisé démarré sur MainActor — process-level, disponible
+        // dans le Task.detached qui suit.
         let scoped = root.startAccessingSecurityScopedResource()
-        defer { if scoped { root.stopAccessingSecurityScopedResource() } }
-        // Scope refusé = bookmark dégradé (remontage volume, changement
-        // d'entitlement...). Sans cette garde, copyItem échoue avec un
-        // message "permission" trompeur sur le dossier catégorie.
         guard scoped else {
             print("[IMPORT] startAccessingSecurityScopedResource failed for \(root.path)")
             throw AudioFileError.mediaFolderAccessExpired
         }
+        let sourcedScoped = sourceURL.startAccessingSecurityScopedResource()
 
-        let fm = FileManager.default
-
-        // Crée le sous-dossier si besoin
         let categoryDir = root.appendingPathComponent(category, isDirectory: true)
-        try fm.createDirectory(at: categoryDir, withIntermediateDirectories: true)
+        let baseDestURL = categoryDir.appendingPathComponent(sourceURL.lastPathComponent)
 
-        let filename = sourceURL.lastPathComponent
-        var destURL = categoryDir.appendingPathComponent(filename)
-
-        if fm.fileExists(atPath: destURL.path) {
-            switch conflict {
-            case .cancel:
-                return
-            case .replace:
-                try fm.removeItem(at: destURL)
-            case .keepBoth:
-                destURL = uniqueDestinationURL(base: destURL, in: categoryDir)
-            }
+        // Toute l'I/O (création dossier, copie, lecture métadonnées) hors MainActor.
+        let importResult: (URL, Double?, String)?
+        do {
+            importResult = try await Task.detached(priority: .userInitiated) {
+                let fm = FileManager.default
+                try fm.createDirectory(at: categoryDir, withIntermediateDirectories: true)
+                var destURL = baseDestURL
+                if fm.fileExists(atPath: destURL.path) {
+                    switch conflict {
+                    case .cancel:
+                        return nil
+                    case .replace:
+                        try fm.removeItem(at: destURL)
+                    case .keepBoth:
+                        let ext  = destURL.pathExtension
+                        let name = destURL.deletingPathExtension().lastPathComponent
+                        var n = 2
+                        while fm.fileExists(atPath: destURL.path) {
+                            let newName = ext.isEmpty ? "\(name) (\(n))" : "\(name) (\(n)).\(ext)"
+                            destURL = categoryDir.appendingPathComponent(newName)
+                            n += 1
+                        }
+                    }
+                }
+                try fm.copyItem(at: sourceURL, to: destURL)
+                let audioFile = try? AVAudioFile(forReading: destURL)
+                let duration: Double? = audioFile.map { Double($0.length) / $0.fileFormat.sampleRate }
+                let title = destURL.deletingPathExtension().lastPathComponent
+                return (destURL, duration, title)
+            }.value
+        } catch {
+            root.stopAccessingSecurityScopedResource()
+            if sourcedScoped { sourceURL.stopAccessingSecurityScopedResource() }
+            throw error
         }
 
-        let sourcedScoped = sourceURL.startAccessingSecurityScopedResource()
-        defer { if sourcedScoped { sourceURL.stopAccessingSecurityScopedResource() } }
-        try fm.copyItem(at: sourceURL, to: destURL)
+        // Retour sur MainActor — arrêt de l'accès sandbox et mutations AppState.
+        root.stopAccessingSecurityScopedResource()
+        if sourcedScoped { sourceURL.stopAccessingSecurityScopedResource() }
 
-        // Duration via AVAudioFile
-        let audioFile = try? AVAudioFile(forReading: destURL)
-        let duration: Double? = audioFile.map { Double($0.length) / $0.fileFormat.sampleRate }
-        let title = destURL.deletingPathExtension().lastPathComponent
+        guard let (destURL, duration, title) = importResult else { return }
 
         let track = VelvetTrack(
             id: nextVelvetTrackAudioID(),
@@ -4396,10 +4388,10 @@ final class AppState {
             duration: duration.map { $0.isFinite && $0 > 0 ? $0 : nil } ?? nil
         )
         velvetTracks.append(track)
-        // Invalide les caches for forcer la re-résolution
         audioURLCache.removeAll()
         unresolvedAudioIDs.removeAll()
         rebuildAudioFileCaches()
+        libraryDidChange()
         selectedCategoryID = category
         selectedAudioFileID = track.id
         scheduleBPMDetection(forVelvetTrackID: track.id, url: destURL)
@@ -4842,6 +4834,7 @@ final class AppState {
             self.showBuddySets = loadedSets
             self.showBuddyAudioFiles = loadedAudioFiles
             self.rebuildAudioFileCaches()
+            self.libraryDidChange()
             self.lightShowsByID = loadedLightShowsByID
             // Préserver les events natifs Velvet (IDs négatifs) lors du chargement DB.
             var mergedEvents = loadedMidiEventsByID

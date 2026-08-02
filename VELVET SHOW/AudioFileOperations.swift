@@ -298,7 +298,7 @@ struct AudioImportSheet: View {
         importError = nil
         Task { @MainActor in
             do {
-                try appState.importAudioToMediaFiles(
+                try await appState.importAudioToMediaFiles(
                     from: sourceURL,
                     category: cat,
                     conflict: conflictResolution
