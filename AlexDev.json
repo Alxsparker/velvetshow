@@ -2,7 +2,7 @@
   "category" : "",
   "confidence" : 0,
   "createdAt" : 807187840.882141,
-  "description" : "",
+  "description" : "Velvet Show est une application macOS\/iOS de contrôle et de diffusion pour le spectacle, qui combine une interface native (AppKit\/SwiftUI\/UIKit) avec des moteurs audio (AVFoundation\/Audio Engine) et des protocoles temps réel (MIDI, OSC, réseau). Le projet existe pour centraliser le pilotage de la musique et des événements scéniques, assurer l’interopérabilité avec du matériel\/logiciels externes via MIDI\/OSC, et fournir une expérience cohérente (Theme Manager) avec une gestion de licence intégrée (License Manager).",
   "favorite" : false,
   "goal" : "",
   "notes" : "",
@@ -14,52 +14,59 @@
     {
       "category" : "Apple",
       "detectedAutomatically" : true,
-      "id" : "2ED1BE5B-829A-4FDC-B0D6-E38CF9E75D8A",
-      "name" : "AppKit",
-      "notes" : ""
-    },
-    {
-      "category" : "Apple",
-      "detectedAutomatically" : true,
+      "fileCount" : 29,
       "id" : "097FC7B9-BF35-481E-BEC6-A1D9440EDA56",
       "name" : "SwiftUI",
       "notes" : ""
     },
     {
-      "category" : "Apple",
-      "detectedAutomatically" : true,
-      "id" : "D32699F0-6FEF-441F-B232-8E832813EF51",
-      "name" : "UIKit",
-      "notes" : ""
-    },
-    {
-      "category" : "Audio",
-      "detectedAutomatically" : true,
-      "id" : "44D6657C-A861-4CB3-B6EB-168962B1D418",
-      "name" : "AVFoundation",
-      "notes" : ""
-    },
-    {
-      "category" : "Audio",
-      "detectedAutomatically" : true,
-      "id" : "FD9B7011-2BEC-49AF-93B9-3C1C695525A9",
-      "name" : "MIDI",
-      "notes" : ""
-    },
-    {
       "category" : "Communication",
       "detectedAutomatically" : true,
+      "fileCount" : 10,
       "id" : "4E72E9A7-EDEB-4123-BCBB-D3D6562D7B15",
       "name" : "OSC",
       "notes" : ""
     },
     {
+      "category" : "Audio",
+      "detectedAutomatically" : true,
+      "fileCount" : 9,
+      "id" : "44D6657C-A861-4CB3-B6EB-168962B1D418",
+      "name" : "AVFoundation",
+      "notes" : ""
+    },
+    {
+      "category" : "Apple",
+      "detectedAutomatically" : true,
+      "fileCount" : 8,
+      "id" : "2ED1BE5B-829A-4FDC-B0D6-E38CF9E75D8A",
+      "name" : "AppKit",
+      "notes" : ""
+    },
+    {
+      "category" : "Audio",
+      "detectedAutomatically" : true,
+      "fileCount" : 5,
+      "id" : "FD9B7011-2BEC-49AF-93B9-3C1C695525A9",
+      "name" : "MIDI",
+      "notes" : ""
+    },
+    {
       "category" : "Networking",
       "detectedAutomatically" : true,
+      "fileCount" : 4,
       "id" : "157CF576-645E-423D-BB24-DFFB8168277B",
       "name" : "Network",
       "notes" : ""
+    },
+    {
+      "category" : "Apple",
+      "detectedAutomatically" : true,
+      "fileCount" : 1,
+      "id" : "D32699F0-6FEF-441F-B232-8E832813EF51",
+      "name" : "UIKit",
+      "notes" : ""
     }
   ],
-  "updatedAt" : 807187840.882141
+  "updatedAt" : 807449039.662352
 }
