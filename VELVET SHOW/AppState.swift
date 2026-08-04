@@ -3215,6 +3215,8 @@ final class AppState {
 
     /// Gain de normalisation effectif at appliquer for un song (dB).
     /// Formule : min(gainLUFS, gainSafe), clampé dans [−4, +4].
+    /// `gainSafe` tient compte du volume manuel, puisque les deux gains
+    /// s'additionnent dans `AudioEngine.playbackGain`.
     /// Retourne 0 si la normalisation est désactivée ou si le song n'a
     /// pas encore été analysé.
     func effectiveNormGainDB(for track: AudioFile) -> Double {
@@ -3224,8 +3226,9 @@ final class AppState {
               let tp   = info.measuredTruePeakDB else { return 0 }
         let target    = store.state.normTargetLUFS
         let gainLUFS  = target - lufs
-        // Plafond True Peak : ne jamais dépasser −1 dBTP après gain
-        let gainSafe  = -1.0 - tp
+        let manualDB  = info.volumeOffsetDB
+        // Plafond True Peak : ne jamais dépasser −1 dBTP après gain total.
+        let gainSafe  = -1.0 - tp - manualDB
         let gainEndal = min(gainLUFS, gainSafe)
         return max(-4.0, min(4.0, gainEndal))
     }
@@ -3255,6 +3258,15 @@ final class AppState {
             normGainDB:         result.normGainDB,
             normTarget:         target,
             normAnalysedAt:     Date()
+        )
+    }
+
+    private func invalidateLoudnessAnalysis(for track: AudioFile) {
+        guard let existing = volumeByAudioFileID[track.audioFileID] else { return }
+        volumeByAudioFileID[track.audioFileID] = VelvetTrackVolume(
+            audioFileID: track.audioFileID,
+            volumeOffsetDB: existing.volumeOffsetDB,
+            updatedAt: Date()
         )
     }
 
@@ -4463,9 +4475,10 @@ final class AppState {
         }
         try fm.copyItem(at: newURL, to: destURL)
 
-        // 3. Cache invalide
+        // 3. Caches invalides
         audioURLCache[track.audioFileID] = nil
         unresolvedAudioIDs.remove(track.audioFileID)
+        invalidateLoudnessAnalysis(for: track)
 
         // 4. Duration
         let newAudioFile = try? AVAudioFile(forReading: destURL)
