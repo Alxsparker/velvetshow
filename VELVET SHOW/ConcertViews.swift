@@ -2337,6 +2337,14 @@ struct SetSongsView: View {
             } else {
                 let orderedIDs = searchActiveSongs.map(\.id)
                 let tileWidth = max(1, (size.width - CGFloat(columns - 1) * 5) / CGFloat(columns))
+                let engineState = appState.audioEngine.state
+                let loadedAudioFileID = appState.currentlyLoadedTrack?.audioFileID
+                let currentAudibleAudioFileID = (engineState == .playing || engineState == .stopping) ? loadedAudioFileID : nil
+                let isEngineStopped = engineState == .stopped
+                let hasActivePlayback = loadedAudioFileID != nil && !isEngineStopped
+                let preloadedStopElementID = appState.preloadedStopElementID
+                let priorityNextSongID = priorityNextItem?.setElementID
+                let priorityNextPlaybackMode = priorityNextItem?.playbackMode
                 VStack(spacing: verticalSpacing) {
                     ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
                         HStack(spacing: 5) {
@@ -2352,7 +2360,13 @@ struct SetSongsView: View {
                                     height: tileHeight,
                                     index: rowIndex * columns + positionInRow,
                                     tileWidth: tileWidth,
-                                    orderedSongIDs: orderedIDs
+                                    orderedSongIDs: orderedIDs,
+                                    currentAudibleAudioFileID: currentAudibleAudioFileID,
+                                    isEngineStopped: isEngineStopped,
+                                    hasActivePlayback: hasActivePlayback,
+                                    preloadedStopElementID: preloadedStopElementID,
+                                    priorityNextSongID: priorityNextSongID,
+                                    priorityNextPlaybackMode: priorityNextPlaybackMode
                                 )
                             }
                             ForEach(0..<max(0, columns - row.count), id: \.self) { _ in
@@ -2459,22 +2473,27 @@ struct SetSongsView: View {
         height: CGFloat,
         index: Int,
         tileWidth: CGFloat,
-        orderedSongIDs: [Song.ID]
+        orderedSongIDs: [Song.ID],
+        currentAudibleAudioFileID: AudioFile.ID?,
+        isEngineStopped: Bool,
+        hasActivePlayback: Bool,
+        preloadedStopElementID: SetElement.ID?,
+        priorityNextSongID: Song.ID?,
+        priorityNextPlaybackMode: QueuePlaybackMode?
     ) -> some View {
         let isGhost = appState.isPlayed(song, in: set)
         if isGhost {
             ghostTile(song, height: height, tileWidth: tileWidth)
         } else {
-        let isCurrent = appState.isCurrentTrack(song.audio)
+        let isCurrent = song.audio?.audioFileID == currentAudibleAudioFileID
         let isSelected = selectedSongID == song.id
         let showsLeadingInsertion = proposedDropIndex == index && draggingShowSongID != song.id
         let showsTrailingInsertion = proposedDropIndex == index + 1 && index == orderedSongIDs.count - 1 && draggingShowSongID != song.id
         let isPriorityNext = priorityNextSongID == song.id
-        let priorityMode = isPriorityNext ? priorityNextItem?.playbackMode : nil
+        let priorityMode = isPriorityNext ? priorityNextPlaybackMode : nil
         let isPreloadedStop = !isPriorityNext
-            && appState.preloadedStopElementID == song.id
-            && appState.audioEngine.state == .stopped
-        let hasActivePlayback = appState.currentlyLoadedTrack != nil && appState.audioEngine.state != .stopped
+            && preloadedStopElementID == song.id
+            && isEngineStopped
         let canPrioritizeNext = !isCurrent && song.audio != nil && hasActivePlayback
         let isRecentlyAdded = appState.recentlyAddedLiveElementID == song.element.setElementID
         let isNextNatural = song.element.setElementID == appState.nextNaturalSongElementID
