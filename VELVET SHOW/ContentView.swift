@@ -464,10 +464,10 @@ private struct ToolbarGlassControlModifier: ViewModifier {
             .font(.system(size: 13, weight: isProminent ? .black : .semibold))
             .foregroundStyle(isProminent ? Color.white : (hasTint ? resolvedTint : Color.secondary))
             .frame(minWidth: minWidth + 12, minHeight: 28)
-            .contentShape(Rectangle())
             .background {
                 toolbarControlBackground(hasTint: hasTint, resolvedTint: resolvedTint)
             }
+            .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
     }
 
     @ViewBuilder
@@ -508,6 +508,7 @@ private struct ToolbarGlassSurfaceModifier: ViewModifier {
                         .overlay { shape.stroke(toolbarNeutralStroke(for: colorScheme), lineWidth: 1) }
                 }
             }
+            .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
     }
 }
 
