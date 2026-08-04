@@ -1909,17 +1909,7 @@ struct SetSongsView: View {
                     .fixedSize(horizontal: true, vertical: false)
                     .layoutPriority(1)
 
-                // − 0 dB + VUMeter. ViewThatFits : si l'en-tête manque de
-                // largeur (Quick Library ouverte, fenêtre étroite), bascule
-                // sur la variante sans VU mètre au lieu de déborder sur les
-                // colonnes voisines.
-                ViewThatFits(in: .horizontal) {
-                    LiveVolumeControl(appState: appState)
-                    LiveVolumeControl(appState: appState, showsVUMeter: false)
-                    // Dernier palier : fenêtre vraiment étroite, le contrôle
-                    // de volume disparaît plutôt que de déborder.
-                    Color.clear.frame(width: 0, height: 0)
-                }
+                LiveVolumeControl(appState: appState)
 
                 // Filtre de genre — masqué en mode concert (rarement utilisé en
                 // prestation ; la recherche instantanée remplit ce besoin).
