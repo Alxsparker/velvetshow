@@ -594,7 +594,10 @@ struct ShowTimelineStrip: View {
                 WaveformTimelineView(
                     audioURL: appState.resolvedAudioURL(for: track),
                     duration: appState.audioEngine.effectiveDuration,
-                    currentPosition: dragPosition ?? appState.audioEngine.effectivePosition,
+                    currentPosition: Binding(
+                        get: { dragPosition ?? appState.audioEngine.effectivePosition },
+                        set: { _ in }
+                    ),
                     memos: [],
                     displayMode: .waveformOnly,
                     showsModePicker: false,

@@ -301,7 +301,10 @@ struct PrompterPreviewView: View {
         WaveformTimelineView(
             audioURL: audioURL,
             duration: duration,
-            currentPosition: currentPosition,
+            currentPosition: Binding(
+                get: { currentPosition },
+                set: { _ in }
+            ),
             memos: timelineMemos,
             displayMode: .waveformAndMemos,
             showsModePicker: false,
