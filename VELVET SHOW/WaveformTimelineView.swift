@@ -31,7 +31,7 @@ enum WaveformTimelineDisplayMode: String, CaseIterable, Identifiable {
 struct WaveformTimelineView: View {
     let audioURL: URL?
     let duration: TimeInterval
-    @Binding private var currentPosition: TimeInterval
+    let currentPosition: TimeInterval
     let memos: [WaveformTimelineMemo]
     let displayMode: WaveformTimelineDisplayMode
     let showsModePicker: Bool
@@ -44,7 +44,7 @@ struct WaveformTimelineView: View {
     init(
         audioURL: URL?,
         duration: TimeInterval,
-        currentPosition: Binding<TimeInterval>,
+        currentPosition: TimeInterval,
         memos: [WaveformTimelineMemo],
         displayMode: WaveformTimelineDisplayMode = .waveformAndMemos,
         showsModePicker: Bool = false,
@@ -52,7 +52,7 @@ struct WaveformTimelineView: View {
     ) {
         self.audioURL = audioURL
         self.duration = max(1, duration)
-        self._currentPosition = currentPosition
+        self.currentPosition = currentPosition
         self.memos = memos
         self.displayMode = displayMode
         self.showsModePicker = showsModePicker
@@ -105,23 +105,22 @@ struct WaveformTimelineView: View {
                         .equatable()
 
                     if activeMode != .waveformOnly {
-                        MemoBlocksPlaybackView(
+                        let current = currentMemoID
+                        let next = nextMemoID
+                        MemoBlocksView(
                             memos: memos,
                             width: width,
                             height: height,
                             duration: duration,
                             palette: palette,
-                            currentPosition: $currentPosition
+                            currentID: current,
+                            nextID: next,
+                            pastIDs: pastMemoIDs
                         )
+                        .equatable()
                     }
 
-                    TimelinePlayheadView(
-                        currentPosition: $currentPosition,
-                        duration: duration,
-                        width: width,
-                        height: height,
-                        color: palette.playhead
-                    )
+                    playhead(width: width, height: height)
 
                     Text(timecode(duration))
                         .font(.caption2.monospacedDigit())
@@ -138,6 +137,39 @@ struct WaveformTimelineView: View {
         .task(id: audioURL) {
             await analyzeIfNeeded()
         }
+    }
+
+    private func playhead(width: CGFloat, height: CGFloat) -> some View {
+        Rectangle()
+            .fill(palette.playhead)
+            .frame(width: 3, height: height)
+            .shadow(color: palette.playhead.opacity(0.4), radius: 4)
+            .offset(x: xPosition(currentPosition, width: width) - 1.5)
+            .animation(.linear(duration: 1.0 / 30.0), value: currentPosition)
+    }
+
+    private var currentMemoID: String? {
+        memos.last { memo in
+            memo.startTime <= currentPosition && currentPosition <= memo.startTime + memo.duration
+        }?.id
+    }
+
+    private var nextMemoID: String? {
+        memos.first { $0.startTime > currentPosition }?.id
+    }
+
+    /// Mémos entièrement passés — ne change qu'aux franchissements de
+    /// bornes, pas à chaque tick : clé d'équivalence de MemoBlocksView.
+    private var pastMemoIDs: Set<String> {
+        var past: Set<String> = []
+        for memo in memos where memo.startTime + memo.duration < currentPosition {
+            past.insert(memo.id)
+        }
+        return past
+    }
+
+    private func xPosition(_ seconds: TimeInterval, width: CGFloat) -> CGFloat {
+        CGFloat(min(1, max(0, seconds / duration))) * width
     }
 
     private func analyzeIfNeeded() async {
@@ -269,74 +301,9 @@ private enum WaveformAnalyzer {
     }
 }
 
-fileprivate struct TimelinePlayheadView: View {
-    @Binding var currentPosition: TimeInterval
-    let duration: TimeInterval
-    let width: CGFloat
-    let height: CGFloat
-    let color: Color
-
-    var body: some View {
-        let position = currentPosition
-        Rectangle()
-            .fill(color)
-            .frame(width: 3, height: height)
-            .shadow(color: color.opacity(0.4), radius: 4)
-            .offset(x: xPosition(position, width: width) - 1.5)
-            .animation(.linear(duration: 1.0 / 30.0), value: position)
-    }
-
-    private func xPosition(_ seconds: TimeInterval, width: CGFloat) -> CGFloat {
-        CGFloat(min(1, max(0, seconds / duration))) * width
-    }
-}
-
-fileprivate struct MemoBlocksPlaybackView: View {
-    let memos: [WaveformTimelineMemo]
-    let width: CGFloat
-    let height: CGFloat
-    let duration: TimeInterval
-    let palette: WaveformTimelinePalette
-    @Binding var currentPosition: TimeInterval
-
-    var body: some View {
-        let current = currentMemoID
-        let next = nextMemoID
-        MemoBlocksView(
-            memos: memos,
-            width: width,
-            height: height,
-            duration: duration,
-            palette: palette,
-            currentID: current,
-            nextID: next,
-            pastIDs: pastMemoIDs
-        )
-        .equatable()
-    }
-
-    private var currentMemoID: String? {
-        memos.last { memo in
-            memo.startTime <= currentPosition && currentPosition <= memo.startTime + memo.duration
-        }?.id
-    }
-
-    private var nextMemoID: String? {
-        memos.first { $0.startTime > currentPosition }?.id
-    }
-
-    private var pastMemoIDs: Set<String> {
-        var past: Set<String> = []
-        for memo in memos where memo.startTime + memo.duration < currentPosition {
-            past.insert(memo.id)
-        }
-        return past
-    }
-}
-
 // MARK: - Sous-vues Equatable (phase 2 perfs)
 //
-// La vue parente ne lit plus currentPosition directement.
+// La vue parente est reconstruite à 30 Hz (elle reçoit currentPosition).
 // Ces sous-vues, marquées .equatable(), ne réévaluent leur body que si
 // leurs entrées changent réellement : le Path de la waveform (900 rects)
 // et l'assignation gloutonne des lanes ne sont plus recalculés qu'au

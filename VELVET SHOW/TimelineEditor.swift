@@ -1181,10 +1181,7 @@ struct TimelineEditorView: View {
                         WaveformTimelineView(
                             audioURL: appState.resolvedAudioURL(for: track),
                             duration: duration,
-                            currentPosition: Binding(
-                                get: { editorPlayhead },
-                                set: { _ in }
-                            ),
+                            currentPosition: editorPlayhead,
                             memos: [],
                             displayMode: .waveformOnly,
                             showsModePicker: false,
