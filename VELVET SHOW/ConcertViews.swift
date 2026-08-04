@@ -14,6 +14,34 @@ private enum PerformanceChrome {
     static let activeGlow = VelvetPalette.nowPlayingYellow.opacity(0.36)
 }
 
+@Observable
+private final class SetlistDragPreviewState {
+    var location: CGPoint?
+}
+
+private struct SetlistDragPreviewOverlay<Preview: View>: View {
+    let state: SetlistDragPreviewState
+    let preview: () -> Preview
+
+    init(
+        state: SetlistDragPreviewState,
+        @ViewBuilder preview: @escaping () -> Preview
+    ) {
+        self.state = state
+        self.preview = preview
+    }
+
+    var body: some View {
+        if let location = state.location {
+            preview()
+                .position(x: location.x, y: location.y)
+                .allowsHitTesting(false)
+                .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                .zIndex(1000)
+        }
+    }
+}
+
 struct CompactConcertStrip: View {
     let appState: AppState
     let set: ShowSet
@@ -1703,7 +1731,7 @@ struct SetSongsView: View {
     var toggleFocusMode: (() -> Void)? = nil
     @State private var selectedSongID: Song.ID?
     @State private var draggingShowSongID: Song.ID?
-    @State private var dragPreviewLocation: CGPoint?
+    @State private var dragPreviewState = SetlistDragPreviewState()
     @State private var proposedDropIndex: Int?
     @State private var setlistTileFrames: [Song.ID: CGRect] = [:]
     @State private var editingColorSong: Song?
@@ -2373,14 +2401,11 @@ struct SetSongsView: View {
     @ViewBuilder
     private var setlistDragPreview: some View {
         if let draggingShowSongID,
-           let location = dragPreviewLocation,
            let song = searchActiveSongs.first(where: { $0.id == draggingShowSongID }),
            let frame = setlistTileFrames[draggingShowSongID] {
-            dragPreviewTile(song, frame: frame)
-                .position(x: location.x, y: location.y)
-                .allowsHitTesting(false)
-                .transition(.opacity.combined(with: .scale(scale: 0.98)))
-                .zIndex(1000)
+            SetlistDragPreviewOverlay(state: dragPreviewState) {
+                dragPreviewTile(song, frame: frame)
+            }
         }
     }
 
@@ -2569,7 +2594,7 @@ struct SetSongsView: View {
                     )
                     moveDraggedSetlistSong(song.id, to: destinationIndex, orderedSongIDs: orderedSongIDs)
                     draggingShowSongID = nil
-                    dragPreviewLocation = nil
+                    dragPreviewState.location = nil
                     proposedDropIndex = nil
                 }
         )
@@ -2754,7 +2779,7 @@ struct SetSongsView: View {
         if draggingShowSongID != songID {
             draggingShowSongID = songID
         }
-        dragPreviewLocation = location
+        dragPreviewState.location = location
         let nextIndex = insertionIndex(at: location, draggingSongID: songID, orderedSongIDs: orderedSongIDs)
         if proposedDropIndex != nextIndex {
             proposedDropIndex = nextIndex
