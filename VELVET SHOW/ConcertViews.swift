@@ -2751,9 +2751,14 @@ struct SetSongsView: View {
     }
 
     private func updateSetlistDrag(songID: Song.ID, location: CGPoint, orderedSongIDs: [Song.ID]) {
-        draggingShowSongID = songID
+        if draggingShowSongID != songID {
+            draggingShowSongID = songID
+        }
         dragPreviewLocation = location
-        proposedDropIndex = insertionIndex(at: location, draggingSongID: songID, orderedSongIDs: orderedSongIDs)
+        let nextIndex = insertionIndex(at: location, draggingSongID: songID, orderedSongIDs: orderedSongIDs)
+        if proposedDropIndex != nextIndex {
+            proposedDropIndex = nextIndex
+        }
     }
 
     private func insertionIndex(at location: CGPoint, draggingSongID: Song.ID, orderedSongIDs: [Song.ID]) -> Int {
