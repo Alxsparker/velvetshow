@@ -2478,7 +2478,7 @@ struct SetSongsView: View {
         let canPrioritizeNext = !isCurrent && song.audio != nil && hasActivePlayback
         let isRecentlyAdded = appState.recentlyAddedLiveElementID == song.element.setElementID
         let isNextNatural = song.element.setElementID == appState.nextNaturalSongElementID
-        let titleSize = min(19, max(12, height * 0.44))
+        let titleSize = min(19, max(12, height * 0.44)) * 0.9
         let reservesNextUpControl = canPrioritizeNext
 
         HStack(spacing: 0) {
@@ -2685,7 +2685,7 @@ struct SetSongsView: View {
     private func ghostTile(_ song: Song, height: CGFloat, tileWidth: CGFloat) -> some View {
         let isNextNatural = song.element.setElementID == appState.nextNaturalSongElementID
         let isSelected = selectedSongID == song.id
-        let titleSize = min(19, max(12, height * 0.44))
+        let titleSize = min(19, max(12, height * 0.44)) * 0.9
         let titleColor = playedTileTitleColor
         let metadataColor = playedTileMetadataColor
         return ZStack(alignment: .leading) {
@@ -2738,7 +2738,7 @@ struct SetSongsView: View {
     private func dragPreviewTile(_ song: Song, frame: CGRect) -> some View {
         let isCurrent = appState.isCurrentTrack(song.audio)
         let isPriorityNext = priorityNextSongID == song.id
-        let titleSize = min(19, max(12, frame.height * 0.44))
+        let titleSize = min(19, max(12, frame.height * 0.44)) * 0.9
 
         return HStack(spacing: 0) {
             Text(song.title.uppercased())
