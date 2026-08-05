@@ -205,10 +205,10 @@ struct WaveformTimelinePalette {
     let secondaryText: Color
 
     static let standard = WaveformTimelinePalette(
-        background: Color.black.opacity(0.10),
-        waveform: Color.accentColor.opacity(0.78),
-        grid: Color.secondary.opacity(0.35),
-        playhead: Color.red,
+        background: Color.black.opacity(0.12),
+        waveform: Color(red: 0.82, green: 0.80, blue: 0.74).opacity(0.78),
+        grid: Color.secondary.opacity(0.28),
+        playhead: Color(red: 1.0, green: 0.68, blue: 0.24),
         memo: Color(red: 0.96, green: 0.82, blue: 0.55),
         pastMemo: Color(red: 0.76, green: 0.70, blue: 0.58),
         currentMemo: Color(red: 1.0, green: 0.68, blue: 0.24),
