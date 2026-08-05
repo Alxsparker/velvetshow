@@ -236,7 +236,7 @@ struct VUMeterView: View {
                         Rectangle()
                             .frame(width: geo.size.width * normalized)
                             .animation(
-                                normalized >= previousNormalized ? nil : .linear(duration: 0.045),
+                                normalized >= previousNormalized ? nil : .linear(duration: 0.015),
                                 value: normalized
                             )
                     }
