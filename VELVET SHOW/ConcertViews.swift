@@ -217,48 +217,57 @@ enum QueuePalette {
 // MARK: - VU-mètre vertical discret
 
 struct VUMeterView: View {
-    let level: Float
-    @State private var previousNormalized: Double = 0
+    let leftLevel: Float
+    let rightLevel: Float
 
-    private var normalized: Double {
-        Double(min(1.0, level * 2.5))
+    private static let ledCount = 18
+    private static let minimumDB: Double = -48
+
+    private var leftActiveLEDs: Int {
+        activeLEDs(for: leftLevel)
+    }
+
+    private var rightActiveLEDs: Int {
+        activeLEDs(for: rightLevel)
     }
 
     var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(meterGradient)
-                    .opacity(0.18)
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(meterGradient)
-                    .mask(alignment: .leading) {
-                        Rectangle()
-                            .frame(width: geo.size.width * normalized)
-                            .animation(
-                                normalized >= previousNormalized ? nil : .linear(duration: 0.015),
-                                value: normalized
-                            )
-                    }
-            }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 2))
-        .onChange(of: normalized) { _, newValue in
-            previousNormalized = newValue
+        VStack(spacing: 2) {
+            ledRow(activeLEDs: leftActiveLEDs)
+            ledRow(activeLEDs: rightActiveLEDs)
         }
     }
 
-    private var meterGradient: LinearGradient {
-        LinearGradient(
-            stops: [
-                .init(color: .green,  location: 0.0),
-                .init(color: .green,  location: 0.70),
-                .init(color: .orange, location: 0.88),
-                .init(color: .red,    location: 1.0),
-            ],
-            startPoint: .leading,
-            endPoint: .trailing
-        )
+    private func ledRow(activeLEDs: Int) -> some View {
+        HStack(spacing: 2) {
+            ForEach(0..<Self.ledCount, id: \.self) { index in
+                Capsule()
+                    .fill(index < activeLEDs ? ledColor(at: index) : ledColor(at: index).opacity(0.18))
+                    .frame(width: ledWidth(at: index), height: 4)
+            }
+        }
+    }
+
+    private func activeLEDs(for level: Float) -> Int {
+        guard level > 0 else { return 0 }
+        let db = max(Self.minimumDB, 20 * log10(Double(level)))
+        let normalized = pow((db - Self.minimumDB) / abs(Self.minimumDB), 0.72)
+        return min(Self.ledCount, max(0, Int((normalized * Double(Self.ledCount)).rounded(.up))))
+    }
+
+    private func ledWidth(at index: Int) -> CGFloat {
+        index < 10 ? 3 : 4
+    }
+
+    private func ledColor(at index: Int) -> Color {
+        switch index {
+        case 0..<12:
+            .green
+        case 12..<16:
+            .orange
+        default:
+            .red
+        }
     }
 }
 
@@ -416,8 +425,11 @@ struct LiveVolumeControl: View {
             .help("Raise volume by 1 dB")
 
             if showsVUMeter {
-                VUMeterView(level: appState.audioEngine.meterLevel)
-                    .frame(width: 86, height: 13)
+                VUMeterView(
+                    leftLevel: appState.audioEngine.meterLevelLeft,
+                    rightLevel: appState.audioEngine.meterLevelRight
+                )
+                .frame(width: 86, height: 13)
             }
         }
         .padding(.horizontal, 9)

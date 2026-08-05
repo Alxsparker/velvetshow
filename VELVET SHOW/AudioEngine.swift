@@ -182,9 +182,11 @@ final class AudioEngine {
     /// Dernière erreur — affichée éventuellement at l'utilisateur.
     private(set) var lastError: String?
 
-    /// Niveau RMS courant (0..1) — mis at jour ~30 Hz par le tap audio.
+    /// Niveau RMS courant (0..1) — mis at jour ~60 Hz par le tap audio.
     /// Consommé par le VU-mètre dans l'UI concert.
     private(set) var meterLevel: Float = 0
+    private(set) var meterLevelLeft: Float = 0
+    private(set) var meterLevelRight: Float = 0
 
     /// Position théorique du transport, indépendante du rendu CoreAudio.
     /// C'est volontairement la même horloge que `livePosition`.
@@ -2023,32 +2025,42 @@ final class AudioEngine {
         source.activate()
     }
 
-    // VU-mètre : le tap arrive ~43×/s (buffers de 1024 frames). On lisse
-    // côté tap (attaque immédiate, retombée douce) et on publie à ~30 Hz
+    // VU-mètre : le tap arrive ~86×/s (buffers de 512 frames). On lisse
+    // côté tap (attaque immédiate, retombée douce) et on publie à ~60 Hz
     // pour garder le niveau visuellement calé sur la musique.
-    @ObservationIgnored nonisolated(unsafe) private var meterSmoothed: Float = 0
+    @ObservationIgnored nonisolated(unsafe) private var meterSmoothedLeft: Float = 0
+    @ObservationIgnored nonisolated(unsafe) private var meterSmoothedRight: Float = 0
     private var meterLastPublish: Double = 0
-    private static let meterPublishInterval: Double = 1.0 / 30.0
+    private static let meterPublishInterval: Double = 1.0 / 60.0
 
     private func installMeterTap() {
         let mixer = engine.mainMixerNode
         let format = mixer.outputFormat(forBus: 0)
         guard format.sampleRate > 0 else { return }
-        mixer.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
+        mixer.installTap(onBus: 0, bufferSize: 512, format: format) { [weak self] buffer, _ in
             guard let self else { return }
-            guard let channelData = buffer.floatChannelData?[0] else { return }
+            guard let floatChannelData = buffer.floatChannelData else { return }
             let frameCount = Int(buffer.frameLength)
             guard frameCount > 0 else { return }
-            var sum: Float = 0
-            for i in 0..<frameCount { sum += channelData[i] * channelData[i] }
-            let rms = sqrt(sum / Float(frameCount))
+            let leftRMS = Self.rmsLevel(channelData: floatChannelData[0], frameCount: frameCount)
+            let rightRMS: Float
+            if buffer.format.channelCount > 1 {
+                rightRMS = Self.rmsLevel(channelData: floatChannelData[1], frameCount: frameCount)
+            } else {
+                rightRMS = leftRMS
+            }
 
             // Lissage sur le thread du tap (sériel) : attaque immédiate,
             // retombée exponentielle ~70 ms — mêmes crêtes visibles.
-            if rms >= self.meterSmoothed {
-                self.meterSmoothed = rms
+            if leftRMS >= self.meterSmoothedLeft {
+                self.meterSmoothedLeft = leftRMS
             } else {
-                self.meterSmoothed = self.meterSmoothed * 0.72 + rms * 0.28
+                self.meterSmoothedLeft = self.meterSmoothedLeft * 0.85 + leftRMS * 0.15
+            }
+            if rightRMS >= self.meterSmoothedRight {
+                self.meterSmoothedRight = rightRMS
+            } else {
+                self.meterSmoothedRight = self.meterSmoothedRight * 0.85 + rightRMS * 0.15
             }
 
             // Publication différée par `tick()` sur MainActor : aucune Task,
@@ -2056,9 +2068,18 @@ final class AudioEngine {
         }
     }
 
+    private nonisolated static func rmsLevel(channelData: UnsafePointer<Float>, frameCount: Int) -> Float {
+        var sum: Float = 0
+        for i in 0..<frameCount { sum += channelData[i] * channelData[i] }
+        return sqrt(sum / Float(frameCount))
+    }
+
     private func resetMeter() {
-        meterSmoothed = 0
+        meterSmoothedLeft = 0
+        meterSmoothedRight = 0
         meterLevel = 0
+        meterLevelLeft = 0
+        meterLevelRight = 0
         meterLastPublish = 0
     }
 
@@ -2070,7 +2091,9 @@ final class AudioEngine {
         monitorAudioContinuity(now: now, transport: theoreticalPosition)
         if now - meterLastPublish >= Self.meterPublishInterval {
             meterLastPublish = now
-            meterLevel = meterSmoothed
+            meterLevelLeft = meterSmoothedLeft
+            meterLevelRight = meterSmoothedRight
+            meterLevel = max(meterLevelLeft, meterLevelRight)
         }
         // Garde-fou : si le moteur s'est arrêté sans que
         // AVAudioEngineConfigurationChange ait encore été livré,
