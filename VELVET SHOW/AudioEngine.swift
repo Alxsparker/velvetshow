@@ -2023,13 +2023,12 @@ final class AudioEngine {
         source.activate()
     }
 
-    // VU-mètre : le tap arrive ~43×/s (buffers de 1024 frames). Publier
-    // chaque valeur créait 43 Task + 43 invalidations SwiftUI par seconde
-    // sur le main thread. On lisse côté tap (attaque immédiate, retombée
-    // douce — rendu identique à l'œil) et on publie à ~15 Hz.
+    // VU-mètre : le tap arrive ~43×/s (buffers de 1024 frames). On lisse
+    // côté tap (attaque immédiate, retombée douce) et on publie à ~30 Hz
+    // pour garder le niveau visuellement calé sur la musique.
     @ObservationIgnored nonisolated(unsafe) private var meterSmoothed: Float = 0
     private var meterLastPublish: Double = 0
-    private static let meterPublishInterval: Double = 1.0 / 15.0
+    private static let meterPublishInterval: Double = 1.0 / 30.0
 
     private func installMeterTap() {
         let mixer = engine.mainMixerNode

@@ -235,9 +235,8 @@ struct VUMeterView: View {
                         Rectangle()
                             .frame(width: geo.size.width * normalized)
                             // Durée calée sur l'intervalle de publication du
-                            // niveau (15 Hz ≈ 66 ms) : l'interpolation couvre
-                            // tout l'intervalle, aucun gel entre deux valeurs.
-                            .animation(.linear(duration: 0.07), value: normalized)
+                            // niveau (30 Hz ≈ 33 ms) pour limiter le retard visuel.
+                            .animation(.linear(duration: 0.035), value: normalized)
                     }
             }
         }
