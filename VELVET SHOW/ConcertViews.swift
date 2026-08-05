@@ -234,9 +234,6 @@ struct VUMeterView: View {
                     .mask(alignment: .leading) {
                         Rectangle()
                             .frame(width: geo.size.width * normalized)
-                            // Durée calée sur l'intervalle de publication du
-                            // niveau (30 Hz ≈ 33 ms) pour limiter le retard visuel.
-                            .animation(.linear(duration: 0.035), value: normalized)
                     }
             }
         }
