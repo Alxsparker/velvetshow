@@ -12,6 +12,10 @@ import SwiftUI
 struct ShowLibraryRoot: View {
     @Bindable var appState: AppState
     @AppStorage("showLibrarySidebarWidth") private var showsSidebarWidth: Double = 320
+    @AppStorage("showLibraryQuickSongsWidth") private var quickSongsWidth: Double = 300
+    @State private var isPrewarmingColumns = false
+    @State private var didPrewarmShowsSidebar = false
+    @State private var didPrewarmQuickLibrary = false
 
     private var isFocusMode: Bool {
         appState.showsSidebarVisibility == .detailOnly
@@ -19,6 +23,11 @@ struct ShowLibraryRoot: View {
 
     private var isShowsSidebarVisible: Bool {
         appState.showsSidebarVisibility != .detailOnly
+    }
+
+    private var selectedSet: ShowSet? {
+        guard let id = appState.selectedSetID else { return nil }
+        return appState.sets.first { $0.id == id }
     }
 
     var body: some View {
@@ -38,6 +47,28 @@ struct ShowLibraryRoot: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .animation(.easeInOut(duration: 0.22), value: isShowsSidebarVisible)
+        .background {
+            if isPrewarmingColumns {
+                ColumnPrewarmView(
+                    appState: appState,
+                    selectedSet: selectedSet,
+                    showsSidebarWidth: showsSidebarWidth,
+                    quickSongsWidth: quickSongsWidth
+                )
+            }
+        }
+        .task(id: selectedSet?.id) {
+            let shouldPrewarmShowsSidebar = !didPrewarmShowsSidebar
+            let shouldPrewarmQuickLibrary = selectedSet != nil && !didPrewarmQuickLibrary
+            guard shouldPrewarmShowsSidebar || shouldPrewarmQuickLibrary else { return }
+            didPrewarmShowsSidebar = true
+            if shouldPrewarmQuickLibrary {
+                didPrewarmQuickLibrary = true
+            }
+            isPrewarmingColumns = true
+            try? await Task.sleep(for: .milliseconds(600))
+            isPrewarmingColumns = false
+        }
     }
 
     /// Le triangle "focus concert" collapse simultanément les deux
@@ -53,6 +84,31 @@ struct ShowLibraryRoot: View {
                 appState.showsSidebarVisibility = .detailOnly
                 appState.isQuickLibraryVisible = false
             }
+        }
+    }
+}
+
+private struct ColumnPrewarmView: View {
+    let appState: AppState
+    let selectedSet: ShowSet?
+    let showsSidebarWidth: Double
+    let quickSongsWidth: Double
+
+    var body: some View {
+        GeometryReader { proxy in
+            HStack(spacing: 0) {
+                SetsSidebar(appState: appState)
+                    .frame(width: showsSidebarWidth)
+                if let selectedSet {
+                    QuickLibraryColumn(appState: appState, set: selectedSet)
+                        .frame(width: quickSongsWidth)
+                }
+            }
+            .frame(height: max(1, proxy.size.height))
+            .opacity(0.001)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+            .offset(x: -10_000, y: -10_000)
         }
     }
 }
