@@ -218,6 +218,7 @@ enum QueuePalette {
 
 struct VUMeterView: View {
     let level: Float
+    @State private var previousNormalized: Double = 0
 
     private var normalized: Double {
         Double(min(1.0, level * 2.5))
@@ -234,10 +235,17 @@ struct VUMeterView: View {
                     .mask(alignment: .leading) {
                         Rectangle()
                             .frame(width: geo.size.width * normalized)
+                            .animation(
+                                normalized >= previousNormalized ? nil : .linear(duration: 0.045),
+                                value: normalized
+                            )
                     }
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 2))
+        .onChange(of: normalized) { _, newValue in
+            previousNormalized = newValue
+        }
     }
 
     private var meterGradient: LinearGradient {
