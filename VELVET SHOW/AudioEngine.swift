@@ -770,6 +770,7 @@ final class AudioEngine {
         activeNode.pause()
         state = .paused
         stopTimer()
+        resetMeter()
         publishSchedulerClock()
     }
 
@@ -860,6 +861,7 @@ final class AudioEngine {
         currentPosition = min(effectiveEnd, positionAtPlayStart + elapsed)
         state = .paused
         stopTimer()
+        resetMeter()
         publishSchedulerClock()
 
         fadeVolume(to: 0, duration: fadeOutDuration) { [weak self] in
@@ -891,6 +893,7 @@ final class AudioEngine {
         state = .stopping
         print("[AUDIO] engine state → .stopping")
         stopTimer()
+        resetMeter()
         publishSchedulerClock()
         fadeVolume(to: 0, duration: fadeOutDuration) { [weak self] in
             print("[AUDIO] fade-out end — calling stopImmediately()")
@@ -920,6 +923,7 @@ final class AudioEngine {
         print("[AUDIO] engine state → .stopped")
         currentPosition = 0
         stopTimer()
+        resetMeter()
         publishSchedulerClock()
     }
 
@@ -1015,6 +1019,7 @@ final class AudioEngine {
         activeReverbNode.wetDryMix    = 20
         state = .stopping
         stopTimer()
+        resetMeter()
         publishSchedulerClock()
 
         let beatMs = Int(beatDuration * 1000)
@@ -2050,6 +2055,12 @@ final class AudioEngine {
             // Publication différée par `tick()` sur MainActor : aucune Task,
             // aucun print et aucune allocation dans ce callback temps réel.
         }
+    }
+
+    private func resetMeter() {
+        meterSmoothed = 0
+        meterLevel = 0
+        meterLastPublish = 0
     }
 
     private func tick() {
