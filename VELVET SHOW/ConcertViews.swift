@@ -2199,6 +2199,7 @@ struct SetSongsView: View {
         guard let audio = song.audio else { return }
         selectedSongID = song.id
         appState.selectShowSong(song, in: set)
+        guard !appState.isPlayed(song, in: set) else { return }
 
         // Si on a double-cliqué sur le song qui joue déjà, on tombe
         // sur le toggle normal (= stop avec fade-out défini par AudioEngine).

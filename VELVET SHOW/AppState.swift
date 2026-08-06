@@ -5437,9 +5437,15 @@ final class AppState {
     private func nextSong(after elementID: SetElement.ID, in set: ShowSet) -> Song? {
         let all = songs(in: set)
         guard let idx = all.firstIndex(where: { $0.element.setElementID == elementID }) else { return nil }
-        let next = all.index(after: idx)
-        guard next < all.endIndex else { return nil }
-        return all[next]
+        var next = all.index(after: idx)
+        while next < all.endIndex {
+            let song = all[next]
+            if !isPlayed(song, in: set) {
+                return song
+            }
+            next = all.index(after: next)
+        }
+        return nil
     }
 
     /// Déclenchement anticipatoire de l'Auto Next (appelé par le scheduler MIDI).
