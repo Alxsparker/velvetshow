@@ -129,7 +129,7 @@ struct MidiSettingsView: View {
             Divider()
 
             // ── Sortie MIDI / lighting ──────────────────────────────
-            Text("Sortie MIDI")
+            Text("MIDI Output")
                 .font(.subheadline.bold())
 
             if appState.midiEngine.destinations.isEmpty {
@@ -141,7 +141,7 @@ struct MidiSettingsView: View {
                 .foregroundStyle(.secondary)
             } else {
                 Picker("Destination", selection: $appState.maestroDestinationID) {
-                    Text("Aucune").tag(MIDIUniqueID?.none)
+                    Text("None").tag(MIDIUniqueID?.none)
                     ForEach(appState.midiEngine.destinations) { dest in
                         Text(dest.displayName).tag(Optional(dest.id))
                     }
@@ -256,9 +256,9 @@ struct MidiSettingsView: View {
             Divider()
 
             // ── Avance d'envoi (ex Offset MIDI global) ───────────────
-            Text("Avance d'envoi")
+            Text("Send Offset")
                 .font(.subheadline.bold())
-            Picker("Avance", selection: $appState.midiGlobalOffsetMillis) {
+            Picker("Offset", selection: $appState.midiGlobalOffsetMillis) {
                 ForEach(AppState.midiGlobalOffsetChoices, id: \.self) { ms in
                     Text(ms == 0 ? "0 ms (none)" : "\(ms) ms").tag(ms)
                 }
@@ -382,8 +382,8 @@ struct MidiSettingsView: View {
                         Text("Delay").font(.callout)
                         Picker("Delay", selection: $appState.restCueDelaySeconds) {
                             Text("Immediate").tag(0.0)
-                            Text("1 seconde").tag(1.0)
-                            Text("2 secondes").tag(2.0)
+                            Text("1 second").tag(1.0)
+                            Text("2 seconds").tag(2.0)
                         }
                         .pickerStyle(.menu)
                         .labelsHidden()
@@ -392,13 +392,13 @@ struct MidiSettingsView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Send lors de :").font(.caption.bold()).foregroundStyle(.secondary)
+                        Text("Send on:").font(.caption.bold()).foregroundStyle(.secondary)
                         Toggle(isOn: $appState.restCueTriggerOnStop) {
-                            Text("Stop manuel").font(.callout)
+                            Text("Manual stop").font(.callout)
                         }
                         Toggle(isOn: $appState.restCueTriggerOnNaturalEnd) {
                             VStack(alignment: .leading, spacing: 1) {
-                                Text("End naturelle d'un song").font(.callout)
+                                Text("Natural song end").font(.callout)
                                 Text("Ignored if a MIDI memo was triggered in the last \(Int(AppState.naturalEndMidiWindowSeconds)) seconds.")
                                     .font(.caption).foregroundStyle(.secondary)
                             }
@@ -420,7 +420,7 @@ struct MidiSettingsView: View {
             } label: {
                 // Label fermé : titre + résumé compact
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Cue de repos")
+                    Text("Rest Cue")
                         .font(.subheadline.bold())
                     if !isRestCueExpanded {
                         if appState.restCueEnabled {
@@ -483,7 +483,7 @@ struct MidiSettingsView: View {
 
                     // Nettoyage MIDI
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Nettoyage MIDI")
+                        Text("MIDI Cleanup")
                             .font(.subheadline.bold())
                         Button {
                             isShowingTailCleanup = true
@@ -539,7 +539,7 @@ struct MidiSettingsView: View {
 
                     // Trims ShowBuddy + Correction TrimEnd
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Trims ShowBuddy")
+                        Text("ShowBuddy Trims")
                             .font(.subheadline.bold())
                         Text("Import song starts/endings defined in ShowBuddy. Only songs without Velvet trims are updated; trims you set yourself are not touched.")
                             .font(.caption)
@@ -591,7 +591,7 @@ struct MidiSettingsView: View {
                                 }
                             }
                         } label: {
-                            Label("Corriger les trims ShowBuddy...", systemImage: "waveform.path.ecg")
+                            Label("Fix ShowBuddy Trims...", systemImage: "waveform.path.ecg")
                         }
                         .controlSize(.small)
                         .tint(VSColor.warning)
@@ -775,7 +775,7 @@ private struct VelvetMidiLibrarySection: View {
                     Button {
                         showingMidiImport = true
                     } label: {
-                        Label("Fichier MIDI (.mid)...", systemImage: "doc.badge.arrow.up")
+                        Label("MIDI File (.mid)...", systemImage: "doc.badge.arrow.up")
                     }
                 } label: {
                     Label("Import", systemImage: "square.and.arrow.down.on.square")
@@ -797,7 +797,7 @@ private struct VelvetMidiLibrarySection: View {
                 .foregroundStyle(.secondary)
 
             // Filtres
-            Picker("Filtre", selection: $filter) {
+            Picker("Filter", selection: $filter) {
                 ForEach(MidiLibraryFilter.allCases) { f in
                     Text(f.localizedLabel).tag(f)
                 }
@@ -938,7 +938,7 @@ private struct MidiFileImportSheet: View {
             // ── Boutons actions (toujours visibles) ─────────────────
             HStack(spacing: 12) {
                 if let r = report, !r.newEntries.isEmpty, !applied {
-                    Button("Appliquer (\(r.newEntries.count) nouveau\(r.newEntries.count > 1 ? "x" : ""))") {
+                    Button("Apply (\(r.newEntries.count) new)") {
                         appState.applyMidiFileImport(r)
                         applied = true
                     }
@@ -1253,14 +1253,14 @@ private struct MaestroDMXImportSheet: View {
 
             // ── Boutons (toujours visibles en bas) ──────────────────
             HStack(spacing: 12) {
-                Button("Analyser") {
+                Button("Analyze") {
                     report = appState.analyzeMaestroDMXImport(validPairs)
                 }
                 .buttonStyle(.bordered)
                 .disabled(validPairs.isEmpty)
 
                 if let r = report, !r.newEntries.isEmpty, !applied {
-                    Button("Appliquer (\(r.newEntries.count) nouveau\(r.newEntries.count > 1 ? "x" : ""))") {
+                    Button("Apply (\(r.newEntries.count) new)") {
                         appState.applyMaestroDMXImport(r)
                         applied = true
                         report  = appState.analyzeMaestroDMXImport(validPairs)
@@ -1348,14 +1348,14 @@ private struct MaestroDMXImportSheet: View {
     @ViewBuilder
     private func reportView(_ r: AppState.MaestroDMXImportReport) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Rapport d'analyse").font(.subheadline.bold())
+            Text("Analysis Report").font(.subheadline.bold())
 
             // Résumé chiffré
             HStack(spacing: 20) {
-                statBadge("\(r.newEntries.count) nouveau\(r.newEntries.count != 1 ? "x" : "")", color: .green)
+                statBadge("\(r.newEntries.count) new", color: .green)
                 statBadge("\(r.alreadyPresent.count) already present\(r.alreadyPresent.count != 1 ? "s" : "")", color: .secondary)
-                if !r.nameConflicts.isEmpty  { statBadge("\(r.nameConflicts.count) conflit\(r.nameConflicts.count != 1 ? "s" : "") de nom", color: .orange) }
-                if !r.midiEquivalents.isEmpty { statBadge("\(r.midiEquivalents.count) equivalent\(r.midiEquivalents.count != 1 ? "s" : "") MIDI", color: .yellow) }
+                if !r.nameConflicts.isEmpty  { statBadge("\(r.nameConflicts.count) name conflict\(r.nameConflicts.count != 1 ? "s" : "")", color: .orange) }
+                if !r.midiEquivalents.isEmpty { statBadge("\(r.midiEquivalents.count) MIDI equivalent\(r.midiEquivalents.count != 1 ? "s" : "")", color: .yellow) }
             }
 
             // Détail par entrée
@@ -2033,7 +2033,7 @@ private struct VelvetMidiEventRow: View {
                 .buttonStyle(.borderless)
 
                 if isRenaming {
-                    TextField("Nom", text: $renameDraft)
+                    TextField("Name", text: $renameDraft)
                         .textFieldStyle(.roundedBorder)
                         .controlSize(.small)
                         .onSubmit { commitRename() }

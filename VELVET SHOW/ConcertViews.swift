@@ -1973,7 +1973,7 @@ struct SetSongsView: View {
                         )) {
                             Text("Soft").tag(-18.0)
                             Text("Normal").tag(-16.0)
-                            Text("Dynamique").tag(-14.0)
+                            Text("Dynamic").tag(-14.0)
                         }
                     } label: {
                         loudnessMenuLabel

@@ -707,7 +707,7 @@ struct TimelineEditorView: View {
         HStack(spacing: 8) {
             if isAnalyzingLoudness {
                 ProgressView().controlSize(.small)
-                Text("Analyse...")
+                Text("Analyzing...")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else if let info = appState.loudnessInfo(for: track) {
@@ -773,7 +773,7 @@ struct TimelineEditorView: View {
                 Button {
                     runAnalysis()
                 } label: {
-                    Label("Analyser LUFS", systemImage: "waveform.badge.magnifyingglass")
+                    Label("Analyze LUFS", systemImage: "waveform.badge.magnifyingglass")
                         .font(.caption.bold())
                 }
                 .buttonStyle(.bordered)
@@ -3268,7 +3268,7 @@ private struct GenrePickerPopover: View {
             // ── Genres personnalisés ───────────────────────────
             if !appState.customGenreNames.isEmpty {
                 Divider().padding(.vertical, 4)
-                Text("Mes genres")
+                Text("My Genres")
                     .font(.caption.bold())
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 14)
