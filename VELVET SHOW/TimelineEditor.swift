@@ -63,6 +63,7 @@ struct TimelineEditorView: View {
     @State private var isConfirmingMemoDelete = false
     @State private var dragOrigins: [EditableMemo.ID: Double] = [:]
     @State private var resizeOrigins: [EditableMemo.ID: Double] = [:]
+    @State private var isEditingTimelineInteractively = false
     @State private var isShowingLyricsImport = false
     @State private var isShowingMemoEditor = false
     @State private var isAnalyzingLoudness = false
@@ -222,9 +223,11 @@ struct TimelineEditorView: View {
             if !isEmbedded { appState.exitEditingMode() }
         }
         .onChange(of: editableMemos) { _, newValue in
+            guard !isEditingTimelineInteractively else { return }
             appState.saveEditableMemos(newValue, for: track)
         }
         .onChange(of: cuePoints) { _, newValue in
+            guard !isEditingTimelineInteractively else { return }
             appState.saveCuePoints(newValue, for: track)
         }
         .onChange(of: midiCues) { _, newValue in
@@ -1627,6 +1630,7 @@ struct TimelineEditorView: View {
         .gesture(
             DragGesture(minimumDistance: 2)
                 .onChanged { value in
+                    isEditingTimelineInteractively = true
                     selectedCuePointID = cue.id
                     let origin = cuePointDragOrigins[cue.id] ?? cue.time
                     if cuePointDragOrigins[cue.id] == nil {
@@ -1642,6 +1646,8 @@ struct TimelineEditorView: View {
                 .onEnded { _ in
                     cuePointDragOrigins[cue.id] = nil
                     draggingCueTime[cue.id] = nil
+                    isEditingTimelineInteractively = false
+                    appState.saveCuePoints(cuePoints, for: track)
                 }
         )
         .simultaneousGesture(
@@ -1995,6 +2001,7 @@ struct TimelineEditorView: View {
     private func dragGesture(for memo: EditableMemo, width: CGFloat) -> some Gesture {
         DragGesture()
             .onChanged { value in
+                isEditingTimelineInteractively = true
                 // Si le mémo glissé n'est pas dans la sélection, on bascule
                 // en sélection exclusive sur lui (comportement Endder/Keynote).
                 if !selectedMemoIDs.contains(memo.id) {
@@ -2023,6 +2030,8 @@ struct TimelineEditorView: View {
             }
             .onEnded { _ in
                 for id in selectedMemoIDs { dragOrigins[id] = nil }
+                isEditingTimelineInteractively = false
+                appState.saveEditableMemos(editableMemos, for: track)
             }
     }
 
@@ -2031,6 +2040,7 @@ struct TimelineEditorView: View {
         // seuil qui donnait l'impression de "rater" la poignée.
         DragGesture(minimumDistance: 0)
             .onChanged { value in
+                isEditingTimelineInteractively = true
                 guard let index = editableMemos.firstIndex(where: { $0.id == memo.id }) else { return }
                 let origin = resizeOrigins[memo.id] ?? editableMemos[index].memoLength
                 if resizeOrigins[memo.id] == nil {
@@ -2046,6 +2056,8 @@ struct TimelineEditorView: View {
             }
             .onEnded { _ in
                 resizeOrigins[memo.id] = nil
+                isEditingTimelineInteractively = false
+                appState.saveEditableMemos(editableMemos, for: track)
             }
     }
 
