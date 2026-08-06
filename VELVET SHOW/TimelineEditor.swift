@@ -893,7 +893,7 @@ struct TimelineEditorView: View {
             } else {
                 ScrollViewReader { proxy in
                     ScrollView {
-                        VStack(spacing: 12) {
+                        LazyVStack(spacing: 12) {
                             ForEach(editableMemos.indices, id: \.self) { index in
                                 let memo = editableMemos[index]
                                 let isSelected = memo.id == primarySelectedMemoID
