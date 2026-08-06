@@ -86,6 +86,20 @@ enum TransitionEffect: String, CaseIterable, Codable {
     }
 }
 
+struct LoudnessSetAnalysisProgress: Equatable {
+    let analyzed: Int
+    let total: Int
+
+    var pending: Int { max(0, total - analyzed) }
+    var isComplete: Bool { total > 0 && pending == 0 }
+}
+
+struct LoudnessSetAnalysisSummary: Equatable {
+    let analyzed: Int
+    let skipped: Int
+    let failed: Int
+}
+
 @MainActor
 @Observable
 final class AppState {
@@ -3183,10 +3197,17 @@ final class AppState {
             resetVolume(for: track)
             return
         }
+        let existing = volumeByAudioFileID[track.audioFileID]
         volumeByAudioFileID[track.audioFileID] = VelvetTrackVolume(
             audioFileID: track.audioFileID,
             volumeOffsetDB: safe,
-            updatedAt: Date()
+            updatedAt: Date(),
+            measuredLUFS: existing?.measuredLUFS,
+            measuredTruePeakDB: existing?.measuredTruePeakDB,
+            measuredPcmPeakDB: existing?.measuredPcmPeakDB,
+            normGainDB: existing?.normGainDB,
+            normTarget: existing?.normTarget,
+            normAnalysedAt: existing?.normAnalysedAt
         )
         if currentlyLoadedTrack?.audioFileID == track.audioFileID {
             audioEngine.setVolumeOffsetDB(safe)
@@ -3194,7 +3215,22 @@ final class AppState {
     }
 
     func resetVolume(for track: AudioFile) {
-        volumeByAudioFileID.removeValue(forKey: track.audioFileID)
+        if let existing = volumeByAudioFileID[track.audioFileID],
+           existing.measuredLUFS != nil || existing.measuredTruePeakDB != nil {
+            volumeByAudioFileID[track.audioFileID] = VelvetTrackVolume(
+                audioFileID: track.audioFileID,
+                volumeOffsetDB: 0,
+                updatedAt: Date(),
+                measuredLUFS: existing.measuredLUFS,
+                measuredTruePeakDB: existing.measuredTruePeakDB,
+                measuredPcmPeakDB: existing.measuredPcmPeakDB,
+                normGainDB: existing.normGainDB,
+                normTarget: existing.normTarget,
+                normAnalysedAt: existing.normAnalysedAt
+            )
+        } else {
+            volumeByAudioFileID.removeValue(forKey: track.audioFileID)
+        }
         if currentlyLoadedTrack?.audioFileID == track.audioFileID {
             audioEngine.setVolumeOffsetDB(0)
         }
@@ -3207,6 +3243,17 @@ final class AppState {
         get { store.state.isNormalizationEnabled }
         set {
             store.update { $0.isNormalizationEnabled = newValue }
+            if let track = currentlyLoadedTrack {
+                audioEngine.setNormGainDB(effectiveNormGainDB(for: track))
+            }
+        }
+    }
+
+    var normalizationTargetLUFS: Double {
+        get { store.state.normTargetLUFS }
+        set {
+            let safe = max(-20.0, min(-12.0, newValue))
+            store.update { $0.normTargetLUFS = safe }
             if let track = currentlyLoadedTrack {
                 audioEngine.setNormGainDB(effectiveNormGainDB(for: track))
             }
@@ -3259,6 +3306,58 @@ final class AppState {
             normTarget:         target,
             normAnalysedAt:     Date()
         )
+    }
+
+    private func uniqueAudioTracks(in songs: [Song]) -> [AudioFile] {
+        var seen = Set<Int64>()
+        var tracks: [AudioFile] = []
+        for song in songs {
+            guard let audio = song.audio, seen.insert(audio.audioFileID).inserted else { continue }
+            tracks.append(audio)
+        }
+        return tracks
+    }
+
+    private func needsLoudnessAnalysis(for track: AudioFile) -> Bool {
+        guard let info = volumeByAudioFileID[track.audioFileID],
+              info.measuredLUFS != nil,
+              info.measuredTruePeakDB != nil,
+              let target = info.normTarget else { return true }
+        return abs(target - store.state.normTargetLUFS) > 0.01
+    }
+
+    func loudnessAnalysisProgress(for songs: [Song]) -> LoudnessSetAnalysisProgress {
+        let tracks = uniqueAudioTracks(in: songs)
+        let analyzed = tracks.filter { !needsLoudnessAnalysis(for: $0) }.count
+        return LoudnessSetAnalysisProgress(analyzed: analyzed, total: tracks.count)
+    }
+
+    func analyzeLoudnessForSet(
+        songs: [Song],
+        force: Bool = false,
+        progress: ((Int, Int, AudioFile) async -> Void)? = nil
+    ) async -> LoudnessSetAnalysisSummary {
+        let tracks = uniqueAudioTracks(in: songs)
+        var analyzed = 0
+        var skipped = 0
+        var failed = 0
+
+        for (index, track) in tracks.enumerated() {
+            if !force && !needsLoudnessAnalysis(for: track) {
+                skipped += 1
+                await progress?(index + 1, tracks.count, track)
+                continue
+            }
+            do {
+                try await analyzeLoudness(for: track)
+                analyzed += 1
+            } catch {
+                failed += 1
+            }
+            await progress?(index + 1, tracks.count, track)
+        }
+
+        return LoudnessSetAnalysisSummary(analyzed: analyzed, skipped: skipped, failed: failed)
     }
 
     private func invalidateLoudnessAnalysis(for track: AudioFile) {

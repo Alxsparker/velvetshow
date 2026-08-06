@@ -1756,6 +1756,10 @@ struct SetSongsView: View {
     @State private var showRemainingCount = false
     @State private var trashingVelvetTrack: VelvetTrack?
     @State private var confirmRemoveFromConcert: Song?
+    @State private var isAnalyzingSetLoudness = false
+    @State private var setLoudnessCompleted = 0
+    @State private var setLoudnessTotal = 0
+    @State private var setLoudnessError: String?
 
     /// Texte saisi dans la barre de recherche instantanée.
     /// Vide = pas de filtre actif. Remis at "" dès qu'un song est lancé.
@@ -1793,6 +1797,72 @@ struct SetSongsView: View {
         guard !searchText.isEmpty else { return }
         searchText = ""
         isSearchFocused = false
+    }
+
+    private var loudnessProgress: LoudnessSetAnalysisProgress {
+        appState.loudnessAnalysisProgress(for: songs)
+    }
+
+    private var canAnalyzeSetLoudness: Bool {
+        appState.audioEngine.state != .playing && !appState.audioEngine.isCrossfading
+    }
+
+    private var loudnessButtonHelp: String {
+        if !canAnalyzeSetLoudness {
+            return "Analyze the set before playback to avoid UI slowdowns."
+        }
+        return setLoudnessError ?? "Analyze this set and enable loudness normalization"
+    }
+
+    private var loudnessMenuLabel: some View {
+        HStack(spacing: 5) {
+            if isAnalyzingSetLoudness {
+                ProgressView()
+                    .controlSize(.mini)
+                Text("\(setLoudnessCompleted)/\(max(setLoudnessTotal, 1))")
+                    .font(.caption2.bold().monospacedDigit())
+            } else {
+                Image(systemName: loudnessProgress.isComplete && appState.isNormalizationEnabled
+                      ? "speaker.wave.2.circle.fill"
+                      : "waveform.badge.magnifyingglass")
+                    .font(.system(size: 13, weight: .semibold))
+                Text(loudnessProgress.isComplete
+                     ? String(format: "%.0f", appState.normalizationTargetLUFS)
+                     : "\(loudnessProgress.analyzed)/\(loudnessProgress.total)")
+                    .font(.caption2.bold().monospacedDigit())
+            }
+        }
+        .lineLimit(1)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    private func normalizeSetLoudness(force: Bool = false) {
+        guard !isAnalyzingSetLoudness else { return }
+        guard canAnalyzeSetLoudness else { return }
+        let initialProgress = loudnessProgress
+        guard initialProgress.total > 0 else { return }
+        isAnalyzingSetLoudness = true
+        setLoudnessCompleted = 0
+        setLoudnessTotal = initialProgress.total
+        setLoudnessError = nil
+
+        Task {
+            let summary = await appState.analyzeLoudnessForSet(songs: songs, force: force) { completed, total, _ in
+                await MainActor.run {
+                    setLoudnessCompleted = completed
+                    setLoudnessTotal = total
+                }
+            }
+            await MainActor.run {
+                isAnalyzingSetLoudness = false
+                if summary.failed == 0 {
+                    appState.isNormalizationEnabled = true
+                    setLoudnessError = nil
+                } else {
+                    setLoudnessError = "\(summary.failed) loudness analysis failed"
+                }
+            }
+        }
     }
 
     private var priorityNextItem: ConcertQueueItem? {
@@ -1872,6 +1942,47 @@ struct SetSongsView: View {
                     .lineLimit(1)
                     .fixedSize(horizontal: true, vertical: false)
                     .layoutPriority(1)
+
+                if loudnessProgress.total > 0 {
+                    Menu {
+                        Button {
+                            normalizeSetLoudness(force: false)
+                        } label: {
+                            Label(loudnessProgress.isComplete ? "Check set" : "Analyze set",
+                                  systemImage: "waveform.badge.magnifyingglass")
+                        }
+                        .disabled(isAnalyzingSetLoudness || !canAnalyzeSetLoudness)
+
+                        Button {
+                            normalizeSetLoudness(force: true)
+                        } label: {
+                            Label("Reanalyze set", systemImage: "arrow.clockwise")
+                        }
+                        .disabled(isAnalyzingSetLoudness || !canAnalyzeSetLoudness)
+
+                        Toggle("Enable normalization", isOn: Binding(
+                            get: { appState.isNormalizationEnabled },
+                            set: { appState.isNormalizationEnabled = $0 }
+                        ))
+
+                        Divider()
+
+                        Picker("Target", selection: Binding(
+                            get: { appState.normalizationTargetLUFS },
+                            set: { appState.normalizationTargetLUFS = $0 }
+                        )) {
+                            Text("Soft").tag(-18.0)
+                            Text("Normal").tag(-16.0)
+                            Text("Dynamique").tag(-14.0)
+                        }
+                    } label: {
+                        loudnessMenuLabel
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .tint(appState.isNormalizationEnabled ? VelvetPalette.nowPlayingYellow : nil)
+                    .help(loudnessButtonHelp)
+                }
 
                 // Recherche intégrée dans la barre — visible hors mode édition.
                 // (Bouton Tracks library déplacé dans la toolbar principale
