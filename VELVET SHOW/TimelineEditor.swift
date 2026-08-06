@@ -846,12 +846,14 @@ struct TimelineEditorView: View {
         let logicalH = Self.iPadPreviewLogicalSize.height
         let displayW = logicalW * scale
         let displayH = logicalH * scale
+        let currentMemo = activeMemoForPlayhead
+        let nextMemo = nextMemoForPlayhead
 
         return PrompterPreviewView(
             title: track.name ?? "Untitled",
-            currentMemoTitle: activeMemoForPlayhead?.shortName,
-            currentMemoText: memoDisplayText(activeMemoForPlayhead),
-            nextMemoText: memoDisplayText(nextMemoForPlayhead),
+            currentMemoTitle: currentMemo?.shortName,
+            currentMemoText: memoDisplayText(currentMemo),
+            nextMemoText: memoDisplayText(nextMemo),
             remainingTime: Self.timecode(max(0, duration - editorPlayhead)),
             playbackState: RemotePlaybackState(editorPlaybackState),
             audioURL: appState.resolvedAudioURL(for: track),
@@ -874,6 +876,7 @@ struct TimelineEditorView: View {
     @ViewBuilder
     private var selectedMemoPanel: some View {
         let displayH = Self.iPadPreviewLogicalSize.height * editorPreviewScale
+        let activeMemoID = activeMemoForPlayhead?.id
 
         Group {
             if editableMemos.isEmpty {
@@ -891,11 +894,10 @@ struct TimelineEditorView: View {
                 ScrollViewReader { proxy in
                     ScrollView {
                         VStack(spacing: 12) {
-                            let activeID = activeMemoForPlayhead?.id
                             ForEach(editableMemos.indices, id: \.self) { index in
                                 let memo = editableMemos[index]
                                 let isSelected = memo.id == primarySelectedMemoID
-                                let isActive = memo.id == activeID
+                                let isActive = memo.id == activeMemoID
                                 memoPanelCard(index: index, isSelected: isSelected, isActive: isActive)
                                     .id(memo.id)
                                 if index < editableMemos.count - 1 {
@@ -907,7 +909,7 @@ struct TimelineEditorView: View {
                     }
                     // Scroll automatique to le mémo at la position d'écoute —
                     // suit la lecture et tout seek dans la timeline.
-                    .onChange(of: activeMemoForPlayhead?.id) { _, newID in
+                    .onChange(of: activeMemoID) { _, newID in
                         guard let newID else { return }
                         withAnimation(.easeOut(duration: 0.25)) {
                             proxy.scrollTo(newID, anchor: .center)
@@ -920,7 +922,7 @@ struct TimelineEditorView: View {
         .frame(maxWidth: .infinity)
             .frame(height: displayH)
             .animation(.snappy(duration: 0.18), value: primarySelectedMemoID)
-            .animation(.snappy(duration: 0.18), value: activeMemoForPlayhead?.id)
+            .animation(.snappy(duration: 0.18), value: activeMemoID)
     }
 
     private func midiMenu(index: Int, hasMidi: Bool) -> some View {
