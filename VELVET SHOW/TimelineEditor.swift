@@ -9,6 +9,8 @@
 
 import SwiftUI
 import AVFoundation
+import AppKit
+import UniformTypeIdentifiers
 
 private enum EditorChrome {
     static let panelRadius: CGFloat = 16
@@ -307,7 +309,7 @@ struct TimelineEditorView: View {
                         }
                     }
                 )
-                .frame(width: 500, height: 430)
+                .frame(width: 520, height: 560)
             }
         }
         .confirmationDialog(
@@ -1081,6 +1083,7 @@ struct TimelineEditorView: View {
 
     @ViewBuilder
     private func memoPanelCardContent(index: Int, hasMidi: Bool, isEditing: Bool) -> some View {
+        let hasImage = appState.attachments(for: editableMemos[index].id).contains { $0.type == .image }
         VStack(alignment: .leading, spacing: 7) {
             HStack(spacing: 7) {
                 if isEditing {
@@ -1097,6 +1100,12 @@ struct TimelineEditorView: View {
                 Text(Self.timecodeSeconds(editableMemos[index].memoTime))
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
+                if hasImage {
+                    Image(systemName: "photo.fill")
+                        .font(.caption)
+                        .foregroundStyle(VelvetPalette.nowPlayingYellow)
+                        .help("Image attached")
+                }
                 midiMenu(index: index, hasMidi: hasMidi)
                 Button {
                     selectMemo(editableMemos[index].id, extending: false)
@@ -1815,6 +1824,7 @@ struct TimelineEditorView: View {
         let isSelected = selectedMemoIDs.contains(memo.id)
         let isPrimary  = primarySelectedMemoID == memo.id
         let multiCount = selectedMemoIDs.count
+        let hasImage = appState.attachments(for: memo.id).contains { $0.type == .image }
         let x = xPosition(memo.memoTime, width: width)
         let blockWidth = max(44, CGFloat(memo.memoLength / duration) * width)
         // 3 lanes max : avec la waveform at 150 px, la 4e lane (y=144+28)
@@ -1828,6 +1838,13 @@ struct TimelineEditorView: View {
                 .shadow(color: .black.opacity(0.25), radius: 1, x: 0, y: 1)
                 .padding(.horizontal, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
+
+            if hasImage {
+                Image(systemName: "photo.fill")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.90))
+                    .padding(.trailing, 3)
+            }
 
             // Poignée de redimensionnement : visuel 8 pt + zone de prise
             // élargie at 20 pt (dont débordement at droite du bloc) pour
@@ -2106,6 +2123,10 @@ struct MemoInspectorView: View {
         appState.midiEvent(id: memo.startMidiEventID)
     }
 
+    private var imageAttachments: [MemoAttachment] {
+        appState.attachments(for: memo.id).filter { $0.type == .image }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -2132,6 +2153,39 @@ struct MemoInspectorView: View {
             TextField("Text", text: $memo.memo, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(8...18)
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Label("Images", systemImage: "photo.on.rectangle")
+                        .font(.headline)
+                    Spacer()
+                    Button {
+                        addImageAttachment()
+                    } label: {
+                        Label("Add Image", systemImage: "plus")
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+
+                if imageAttachments.isEmpty {
+                    Text("No image attached")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ScrollView(.horizontal) {
+                        HStack(spacing: 10) {
+                            ForEach(imageAttachments) { attachment in
+                                attachmentThumbnail(attachment)
+                            }
+                        }
+                        .padding(.vertical, 2)
+                    }
+                    .frame(height: 86)
+                }
+            }
+            .padding(14)
+            .editorPanelChrome(radius: 12)
 
             VStack(alignment: .leading, spacing: 10) {
                 Label("Lighting Cue", systemImage: "light.cylindrical.ceiling.fill")
@@ -2196,6 +2250,65 @@ struct MemoInspectorView: View {
             get: { memo.startMidiEventID ?? 0 },
             set: { memo.startMidiEventID = $0 == 0 ? nil : $0 }
         )
+    }
+
+    private func addImageAttachment() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = true
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.allowedContentTypes = [.image]
+        panel.begin { response in
+            guard response == .OK else { return }
+            for url in panel.urls {
+                appState.addAttachment(sourceURL: url, to: memo.id, type: .image)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func attachmentThumbnail(_ attachment: MemoAttachment) -> some View {
+        ZStack(alignment: .topTrailing) {
+            MemoImageThumbnail(url: attachment.fileURL)
+                .frame(width: 72, height: 72)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
+                }
+                .help(attachment.fileName)
+
+            Button {
+                appState.removeAttachment(attachment)
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 15, weight: .semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(.white, .black.opacity(0.65))
+            }
+            .buttonStyle(.plain)
+            .padding(4)
+            .help("Remove image")
+        }
+    }
+}
+
+private struct MemoImageThumbnail: View {
+    let url: URL
+
+    var body: some View {
+        if let image = NSImage(contentsOf: url) {
+            Image(nsImage: image)
+                .resizable()
+                .scaledToFill()
+        } else {
+            ZStack {
+                Rectangle()
+                    .fill(Color.primary.opacity(0.06))
+                Image(systemName: "photo")
+                    .foregroundStyle(.secondary)
+            }
+        }
     }
 }
 
