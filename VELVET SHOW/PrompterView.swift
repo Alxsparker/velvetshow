@@ -27,6 +27,7 @@ import SwiftUI
 import Combine
 #if os(macOS)
 import AVKit
+import AppKit
 #endif
 
 #if os(macOS)
@@ -39,10 +40,11 @@ struct PrompterView: View {
     @Environment(AppState.self) private var appState
 
     var body: some View {
+        let currentMemo = appState.currentMemo()
         PrompterPreviewView(
             title: appState.currentlyLoadedTrack?.name ?? "No song loaded",
-            currentMemoTitle: appState.currentMemo()?.shortName,
-            currentMemoText: Self.memoDisplayText(appState.currentMemo()),
+            currentMemoTitle: currentMemo?.shortName,
+            currentMemoText: Self.memoDisplayText(currentMemo),
             nextMemoText: Self.memoDisplayText(appState.nextMemo()),
             remainingTime: formatTime(appState.audioEngine.effectiveRemaining),
             playbackState: RemotePlaybackState(appState.audioEngine.state),
@@ -53,7 +55,8 @@ struct PrompterView: View {
             palette: appState.prompterTheme.palette,
             upcomingTitle: appState.upcomingTrack?.name,
             showsClock: true,
-            videoPlayer: appState.videoController.currentURL != nil ? appState.videoController.player : nil
+            videoPlayer: appState.videoController.currentURL != nil ? appState.videoController.player : nil,
+            currentMemoImageURL: currentMemo.flatMap { imageURL(for: $0) }
         )
         .frame(minWidth: 800, minHeight: 500)
         .background {
@@ -103,6 +106,10 @@ struct PrompterView: View {
         let title = memo.shortName.trimmingCharacters(in: .whitespacesAndNewlines)
         return title.isEmpty ? nil : title
     }
+
+    private func imageURL(for memo: EditableMemo) -> URL? {
+        appState.attachments(for: memo.id).first { $0.type == .image }?.fileURL
+    }
 }
 #endif // os(macOS)
 
@@ -138,6 +145,7 @@ struct PrompterPreviewView: View {
     /// iOS ignore ce paramètre — AVKit n'est utilisé que côté macOS en V1.
     #if os(macOS)
     var videoPlayer: AVPlayer? = nil
+    var currentMemoImageURL: URL? = nil
     #endif
 
     var body: some View {
@@ -159,6 +167,10 @@ struct PrompterPreviewView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .clipped()
                         .background(Color.black)
+                        .layoutPriority(3)
+                } else if let currentMemoImageURL {
+                    MemoPrompterImageView(url: currentMemoImageURL)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .layoutPriority(3)
                 } else {
                     currentMemoView
@@ -327,6 +339,25 @@ struct PrompterPreviewView: View {
 // MARK: - AppKit AVPlayerView wrapper (Mac only)
 
 #if os(macOS)
+private struct MemoPrompterImageView: View {
+    let url: URL
+
+    var body: some View {
+        if let image = NSImage(contentsOf: url) {
+            Image(nsImage: image)
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black.opacity(0.18))
+        } else {
+            Text("Image unavailable")
+                .font(.system(size: 42, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+}
+
 /// Wrapper SwiftUI autour de `AVPlayerView` (AppKit/AVKit "classique").
 ///
 /// Remplace `SwiftUI.VideoPlayer` qui crashe en Release sur certaines builds
