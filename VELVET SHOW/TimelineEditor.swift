@@ -1128,20 +1128,34 @@ struct TimelineEditorView: View {
 
     private var activeMemoForPlayhead: EditableMemo? {
         let position = editorPlayhead
-        return editableMemos
-            .sorted { $0.memoTime < $1.memoTime }
-            .filter { memo in
-                let end = memo.memoTime + memo.memoLength
-                return memo.memoTime <= position && position <= end
+        var active: EditableMemo?
+        for memo in editableMemos {
+            let end = memo.memoTime + memo.memoLength
+            guard memo.memoTime <= position && position <= end else { continue }
+            if let current = active {
+                if memo.memoTime >= current.memoTime {
+                    active = memo
+                }
+            } else {
+                active = memo
             }
-            .last
+        }
+        return active
     }
 
     private var nextMemoForPlayhead: EditableMemo? {
         let position = editorPlayhead
-        return editableMemos
-            .sorted { $0.memoTime < $1.memoTime }
-            .first { $0.memoTime > position }
+        var next: EditableMemo?
+        for memo in editableMemos where memo.memoTime > position {
+            if let current = next {
+                if memo.memoTime < current.memoTime {
+                    next = memo
+                }
+            } else {
+                next = memo
+            }
+        }
+        return next
     }
 
     private func memoDisplayText(_ memo: EditableMemo?) -> String? {
@@ -1202,8 +1216,9 @@ struct TimelineEditorView: View {
                                 primarySelectedMemoID = nil
                             }
 
+                        let activeMemoID = activeMemoForPlayhead?.id
                         ForEach(editableMemos) { memo in
-                            memoBlock(memo, width: contentWidth)
+                            memoBlock(memo, width: contentWidth, activeMemoID: activeMemoID)
                                 .padding(.top, Self.trimBadgeHeight)
                         }
 
@@ -1788,7 +1803,7 @@ struct TimelineEditorView: View {
         }
     }
 
-    private func memoBlock(_ memo: EditableMemo, width: CGFloat) -> some View {
+    private func memoBlock(_ memo: EditableMemo, width: CGFloat, activeMemoID: EditableMemo.ID?) -> some View {
         let isSelected = selectedMemoIDs.contains(memo.id)
         let isPrimary  = primarySelectedMemoID == memo.id
         let multiCount = selectedMemoIDs.count
@@ -1825,14 +1840,14 @@ struct TimelineEditorView: View {
         .frame(width: blockWidth, height: isSelected ? 32 : 30)
         .foregroundStyle(.white)
         .background(
-            clipFill(for: memo, isSelected: isSelected),
+            clipFill(for: memo, isSelected: isSelected, activeMemoID: activeMemoID),
             in: RoundedRectangle(cornerRadius: EditorChrome.clipRadius, style: .continuous)
         )
         .overlay {
             // Contour de sélection : 2.5 pt for le mémo primaire,
             // 1.5 pt for les mémos secondaires de la sélection.
             RoundedRectangle(cornerRadius: EditorChrome.clipRadius, style: .continuous)
-                .strokeBorder(clipStrokeColor(for: memo, isSelected: isSelected),
+                .strokeBorder(clipStrokeColor(for: memo, isSelected: isSelected, activeMemoID: activeMemoID),
                               lineWidth: isPrimary ? 2.6 : (isSelected ? 2.0 : 1))
 
             // Badge compteur sur le mémo primaire quand plusieurs sont sélectionnés.
@@ -1856,7 +1871,7 @@ struct TimelineEditorView: View {
         )
         .offset(x: x, y: y)
         .animation(.snappy(duration: 0.18), value: isSelected)
-        .animation(.snappy(duration: 0.18), value: activeMemoForPlayhead?.id)
+        .animation(.snappy(duration: 0.18), value: activeMemoID)
         .gesture(dragGesture(for: memo, width: width))
         .onTapGesture {
             // ⌘ ou ⇧ = bascule le mémo dans/hors de la sélection.
@@ -1903,8 +1918,8 @@ struct TimelineEditorView: View {
                            : "Memo: ⌘-click for multiple selection")
     }
 
-    private func clipFill(for memo: EditableMemo, isSelected: Bool) -> LinearGradient {
-        let base = clipBaseColor(for: memo)
+    private func clipFill(for memo: EditableMemo, isSelected: Bool, activeMemoID: EditableMemo.ID?) -> LinearGradient {
+        let base = clipBaseColor(for: memo, activeMemoID: activeMemoID)
         return LinearGradient(
             colors: [
                 base.opacity(isSelected ? 1.0 : 0.90),
@@ -1915,14 +1930,14 @@ struct TimelineEditorView: View {
         )
     }
 
-    private func clipStrokeColor(for memo: EditableMemo, isSelected: Bool) -> Color {
+    private func clipStrokeColor(for memo: EditableMemo, isSelected: Bool, activeMemoID: EditableMemo.ID?) -> Color {
         if isSelected { return EditorChrome.selectedStroke }
-        if activeMemoForPlayhead?.id == memo.id { return VelvetPalette.nowPlayingYellow.opacity(0.95) }
+        if activeMemoID == memo.id { return VelvetPalette.nowPlayingYellow.opacity(0.95) }
         return .white.opacity(0.22)
     }
 
-    private func clipBaseColor(for memo: EditableMemo) -> Color {
-        if activeMemoForPlayhead?.id == memo.id { return VelvetPalette.nowPlayingYellow }
+    private func clipBaseColor(for memo: EditableMemo, activeMemoID: EditableMemo.ID?) -> Color {
+        if activeMemoID == memo.id { return VelvetPalette.nowPlayingYellow }
         if memo.hasMidi { return .orange }
         return VSColor.interactive
     }
