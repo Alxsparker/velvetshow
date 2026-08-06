@@ -21,6 +21,10 @@ struct VELVET_SHOWApp: App {
     @State private var licenseManager = LicenseManager()
     @State private var updateChecker  = UpdateChecker()
 
+    init() {
+        SavedWindowStateCleaner.clearVelvetSavedState()
+    }
+
     var body: some Scene {
 
         // ── Window principale ────────────────────────────────────────────
@@ -128,6 +132,30 @@ struct VELVET_SHOWApp: App {
         .windowResizability(.contentMinSize)
         .windowStyle(.hiddenTitleBar)
         .restorationBehavior(.disabled)
+    }
+}
+
+private enum SavedWindowStateCleaner {
+    private static let bundleIDs = [
+        "fr.loveandlive.VELVET-SHOW",
+        "fr.loveandlive.velvet-show"
+    ]
+
+    static func clearVelvetSavedState() {
+        let fm = FileManager.default
+        let home = fm.homeDirectoryForCurrentUser
+        let candidateRoots = [
+            home.appendingPathComponent("Library/Saved Application State", isDirectory: true),
+            home.appendingPathComponent("Library/Containers/fr.loveandlive.VELVET-SHOW/Data/Library/Saved Application State", isDirectory: true),
+            home.appendingPathComponent("Library/Containers/fr.loveandlive.velvet-show/Data/Library/Saved Application State", isDirectory: true)
+        ]
+
+        for root in candidateRoots {
+            for bundleID in bundleIDs {
+                let url = root.appendingPathComponent("\(bundleID).savedState", isDirectory: true)
+                try? fm.removeItem(at: url)
+            }
+        }
     }
 }
 
