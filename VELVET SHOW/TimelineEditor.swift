@@ -302,11 +302,8 @@ struct TimelineEditorView: View {
                     appState: appState,
                     onDelete: {
                         let deletedID = editableMemos[index].id
-                        editableMemos.remove(at: index)
-                        selectedMemoIDs.remove(deletedID)
-                        if primarySelectedMemoID == deletedID {
-                            primarySelectedMemoID = selectedMemoIDs.first
-                        }
+                        isShowingMemoEditor = false
+                        deleteMemos([deletedID])
                     }
                 )
                 .frame(width: 520, height: 560)
@@ -326,9 +323,7 @@ struct TimelineEditorView: View {
                 role: .destructive
             ) {
                 let toDelete = selectedMemoIDs
-                editableMemos.removeAll { toDelete.contains($0.id) }
-                selectedMemoIDs = []
-                primarySelectedMemoID = nil
+                deleteMemos(toDelete)
             }
             Button("Cancel", role: .cancel) {}
         }
@@ -862,7 +857,8 @@ struct TimelineEditorView: View {
             duration: duration,
             currentPosition: editorPlayhead,
             timelineMemos: waveformMemos,
-            palette: appState.prompterTheme.palette
+            palette: appState.prompterTheme.palette,
+            currentMemoImageURL: currentMemo.flatMap { imageURL(for: $0) }
         )
         .frame(width: logicalW, height: logicalH)
         .scaleEffect(scale, anchor: .topLeading)
@@ -1106,16 +1102,51 @@ struct TimelineEditorView: View {
                         .foregroundStyle(VelvetPalette.nowPlayingYellow)
                         .help("Image attached")
                 }
-                midiMenu(index: index, hasMidi: hasMidi)
                 Button {
+                    selectMemo(editableMemos[index].id, extending: false)
+                    isShowingMemoEditor = true
+                } label: {
+                    Label("Edit", systemImage: "slider.horizontal.3")
+                        .font(.caption2.weight(.semibold))
+                        .labelStyle(.titleAndIcon)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                }
+                .buttonStyle(.borderless)
+                .help("Open memo inspector")
+                Button {
+                    selectMemo(editableMemos[index].id, extending: false)
+                    addImageAttachment(to: editableMemos[index].id)
+                } label: {
+                    Label("Image", systemImage: "photo.badge.plus")
+                        .font(.caption2.weight(.semibold))
+                        .labelStyle(.titleAndIcon)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                }
+                .buttonStyle(.borderless)
+                .help("Attach an image to this memo")
+                midiMenu(index: index, hasMidi: hasMidi)
+                Button(role: .destructive) {
                     selectMemo(editableMemos[index].id, extending: false)
                     isConfirmingMemoDelete = true
                 } label: {
-                    Image(systemName: "trash")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
+                    Label("Delete", systemImage: "trash")
+                        .font(.caption2.weight(.semibold))
+                        .labelStyle(.titleAndIcon)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .foregroundStyle(VSColor.danger)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(VSColor.danger.opacity(0.10))
+                        )
+                        .overlay {
+                            Capsule(style: .continuous)
+                                .strokeBorder(VSColor.danger.opacity(0.24), lineWidth: 1)
+                        }
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.borderless)
                 .help("Delete this memo (confirmation required)")
             }
             if isEditing {
@@ -1178,6 +1209,10 @@ struct TimelineEditorView: View {
         if !text.isEmpty { return text }
         let title = memo.shortName.trimmingCharacters(in: .whitespacesAndNewlines)
         return title.isEmpty ? nil : title
+    }
+
+    private func imageURL(for memo: EditableMemo) -> URL? {
+        appState.attachments(for: memo.id).first { $0.type == .image }?.fileURL
     }
 
     private var waveformOverview: some View {
@@ -1984,6 +2019,40 @@ struct TimelineEditorView: View {
         } else {
             selectedMemoIDs = [id]
             primarySelectedMemoID = id
+        }
+    }
+
+    private func deleteMemos(_ ids: Set<EditableMemo.ID>) {
+        guard !ids.isEmpty else { return }
+
+        let deletedIndexes = editableMemos.indices.filter { ids.contains(editableMemos[$0].id) }
+        let nextSelectionIndex = deletedIndexes.min().map { deletedIndex in
+            min(deletedIndex, editableMemos.count - ids.count - 1)
+        }
+
+        editableMemos.removeAll { ids.contains($0.id) }
+
+        if let nextSelectionIndex, editableMemos.indices.contains(nextSelectionIndex) {
+            let nextID = editableMemos[nextSelectionIndex].id
+            selectedMemoIDs = [nextID]
+            primarySelectedMemoID = nextID
+        } else {
+            selectedMemoIDs = []
+            primarySelectedMemoID = nil
+        }
+    }
+
+    private func addImageAttachment(to memoID: EditableMemo.ID) {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = true
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.allowedContentTypes = [.image]
+        panel.begin { response in
+            guard response == .OK else { return }
+            for url in panel.urls {
+                appState.addAttachment(sourceURL: url, to: memoID, type: .image)
+            }
         }
     }
 
