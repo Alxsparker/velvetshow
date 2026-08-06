@@ -3,17 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Velvet Show — Professional Show Control for Live Musicians</title>
-  <meta name="description" content="Professional backing track software and MIDI show control for live musicians. An alternative to ShowBuddy, Stage Traxx and BandHelper — with lyrics prompter, OSC, lighting automation and iPhone remote.">
+  <title>Velvet Show — Mac, iPad &amp; iPhone Show Control for Live Musicians</title>
+  <meta name="description" content="Velvet Show turns your Mac, iPad and iPhone into one show control system for live musicians. Backing tracks, MIDI, OSC, lighting automation and a lyrics prompter — a modern alternative to ShowBuddy, Stage Traxx and BandHelper.">
   <meta name="keywords" content="backing track software, MIDI show control, lyrics prompter for musicians, ShowBuddy alternative, Stage Traxx alternative, BandHelper alternative, QLab alternative, live performance software, show control macOS, OSC show control, lighting automation musicians">
-  <meta property="og:title" content="Velvet Show — Backing Track Software &amp; MIDI Show Control for Live Musicians">
-  <meta property="og:description" content="Professional backing track software for live musicians. MIDI, OSC, lyrics prompter, lighting automation and iPhone remote. Alternative to ShowBuddy, Stage Traxx and BandHelper.">
+  <meta property="og:title" content="Velvet Show — Mac, iPad &amp; iPhone Show Control for Live Musicians">
+  <meta property="og:description" content="One system for your whole performance. Mac runs the show, iPad prompts you, iPhone controls it — with MIDI, OSC and lighting automation built in.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://velvetshow.app">
   <link rel="canonical" href="https://velvetshow.app">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Velvet Show",
+    "operatingSystem": "macOS",
+    "applicationCategory": "MultimediaApplication",
+    "url": "https://velvetshow.app",
+    "description": "Show control software for live musicians. Backing tracks, MIDI cues, OSC events, lighting automation and a synced iPhone/iPad remote in one macOS app.",
+    "offers": {
+      "@type": "Offer",
+      "price": "79",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
 </head>
 <body>
 
@@ -27,11 +43,11 @@
         <span class="menubar__title">VELVET SHOW</span>
       </div>
       <nav class="menubar__nav" aria-label="Primary">
-        <a href="#features">Features</a>
+        <a href="#features">How it works</a>
+        <a href="#cues">Cues &amp; Lighting</a>
         <a href="#remote">Velvet Remote</a>
-        <a href="#maestrodmx">MaestroDMX</a>
         <a href="#compare">Compare</a>
-        <a href="#roadmap">Roadmap</a>
+        <a href="#faq">FAQ</a>
         <a href="#beta" data-download-link target="_blank" rel="noopener" class="menubar__cta">Download</a>
       </nav>
     </div>
@@ -41,22 +57,22 @@
   <section class="hero">
     <div class="hero__bg" aria-hidden="true"></div>
     <div class="hero__content">
-      <p class="eyebrow">macOS · Show Control Software</p>
-      <h1 class="hero__title">One timeline.<br>Everything synchronized.</h1>
+      <p class="eyebrow">macOS · iPad · iPhone — One Show Control System</p>
+      <h1 class="hero__title">Mac runs the show.<br>iPad prompts you. iPhone controls it.</h1>
       <p class="hero__seo">Professional backing track software for live musicians. A modern alternative to ShowBuddy, Stage Traxx and BandHelper — with MIDI show control, lyrics prompter, OSC, lighting automation and iPhone remote.</p>
       <p class="hero__subtitle">
-        Velvet Show controls your entire performance from a single Mac —
-        backing tracks, lyrics, MIDI cues, OSC events, lighting and a live
-        remote for your iPhone or iPad.
+        One system for your whole performance — backing tracks, lyrics, MIDI and OSC
+        cues, lighting automation and a live remote, synced across every device on stage.
       </p>
       <div class="hero__actions">
-        <a href="#beta" data-download-link target="_blank" rel="noopener" class="btn btn--primary">Download for macOS</a>
-        <a href="#remote" class="btn btn--ghost">Get Velvet Remote</a>
+        <a href="#features" class="btn btn--primary">See how it works</a>
+        <a href="#beta" data-download-link target="_blank" rel="noopener" class="btn btn--ghost">Download for macOS</a>
       </div>
-      <p class="hero__meta">macOS · 30-day free trial · $79 full licence</p>
+      <p class="hero__meta">$79 once — not a subscription · 30-day free trial · Velvet Remote for iPhone &amp; iPad is free</p>
     </div>
-    <div class="hero__window">
-      <div class="appwin">
+
+    <div class="herostage">
+      <div class="herostage__mac appwin">
         <div class="appwin__bar">
           <div class="appwin__traffic">
             <span class="tlight tlight--close"></span>
@@ -77,37 +93,64 @@
           <img class="appwin__video-fallback" src="assets/screenshots/hero-poster.jpg" alt="Velvet Show setlist" loading="eager">
         </div>
       </div>
+      <div class="herostage__ipad">
+        <img src="assets/screenshots/screen-ipad-prompter.jpeg" alt="Velvet Remote on iPad showing the lyrics prompter" loading="eager">
+      </div>
+      <div class="herostage__iphone">
+        <img src="assets/screenshots/remote-iphone.png" alt="Velvet Remote on iPhone showing the setlist" loading="eager">
+      </div>
+    </div>
+    <p class="herostage__caption">Mac · iPad · iPhone — one system, synced live</p>
+  </section>
+
+  <!-- TRUST BAR -->
+  <section class="trustbar">
+    <div class="trustbar__inner">
+      <span class="trustbar__fact">Built by a touring musician</span>
+      <span class="trustbar__fact">$79 once — not a subscription</span>
+      <span class="trustbar__fact">30-day free trial, no card required</span>
+      <span class="trustbar__fact">MIDI + OSC + MaestroDMX built in</span>
     </div>
   </section>
 
-  <!-- CONCEPT STRIP -->
-  <section class="concept" id="features">
-    <p class="concept__line">One Timeline. Every element of your show.</p>
-    <div class="arch">
-      <div class="arch__node arch__node--center"><span class="arch__label">Velvet Show</span></div>
-      <div class="arch__branches">
-        <span class="arch__branch">Backing Tracks</span>
-        <span class="arch__branch">Lyrics &amp; Notes</span>
-        <span class="arch__branch arch__branch--midi">MIDI Cues</span>
-        <span class="arch__branch arch__branch--osc">OSC Events</span>
-        <span class="arch__branch arch__branch--dmx">MaestroDMX</span>
-        <span class="arch__branch arch__branch--remote">Velvet Remote</span>
+  <!-- HOW IT WORKS -->
+  <section class="howit" id="features">
+    <div class="howit__inner">
+      <p class="feature__label feature__label--center">How it works</p>
+      <h2 class="howit__title">From soundcheck to encore, one timeline.</h2>
+      <div class="howit__grid">
+        <div class="howit__step">
+          <span class="howit__num">1</span>
+          <h3>Prepare</h3>
+          <p>Import your repertoire, drop lyrics, chords, cue points and memos onto the timeline. BPM and crossfades are detected automatically.</p>
+        </div>
+        <div class="howit__step">
+          <span class="howit__num">2</span>
+          <h3>Rehearse</h3>
+          <p>Run through the show exactly as it will play live — same timeline, same cues, same prompter you'll see on stage.</p>
+        </div>
+        <div class="howit__step">
+          <span class="howit__num">3</span>
+          <h3>Perform</h3>
+          <p>Mac runs the show. iPad prompts you. iPhone controls it. PANIC is always one shortcut away if you lose your place.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- SETLIST & SHOWS — real screenshot -->
-  <section class="feature" id="setlist">
+  <!-- TIMELINE (Setlist + Lyrics merged) -->
+  <section class="feature" id="timeline">
     <div class="feature__grid feature__grid--media-right">
       <div class="feature__copy">
         <p class="feature__label">Setlist &amp; Shows</p>
         <h2 class="feature__title">Your entire repertoire,<br>color-coded and ready to play.</h2>
         <p class="feature__text">
-          Organize songs into shows. Navigate your setlist live with the color-coded grid —
-          each tile is a track, each color is a category. Tap to queue, AUTO handles the rest.
+          Organize songs into shows, and shows into sets. Navigate your setlist live with the
+          color-coded grid — each tile is a track, each color is a category. Tap to queue, AUTO handles the rest.
         </p>
         <ul class="feature__list">
-          <li>Unlimited shows and songs</li>
+          <li>Unlimited shows and songs, organized into sets</li>
+          <li>A searchable music library behind every show</li>
           <li>Color-coded grid — navigate at a glance under any lighting</li>
           <li>Waveform timeline with remaining time</li>
           <li>Auto-advance between songs</li>
@@ -131,8 +174,7 @@
     </div>
   </section>
 
-  <!-- LYRICS & TIMELINE — real screenshot -->
-  <section class="feature feature--alt" id="lyrics">
+  <section class="feature feature--alt">
     <div class="feature__grid feature__grid--media-left">
       <div class="feature__media">
         <div class="window window--screenshot">
@@ -151,100 +193,146 @@
         <p class="feature__label">Lyrics, Notes &amp; Timeline</p>
         <h2 class="feature__title">Everything you need,<br>timed to the track.</h2>
         <p class="feature__text">
-          Drop lyric blocks, chord changes, stage notes and cue points directly onto the waveform.
+          Drop lyric blocks, chord changes, stage notes and memos directly onto the waveform.
           They appear automatically as the song plays — no scrolling, no guessing.
         </p>
         <ul class="feature__list">
           <li>Import lyrics in one click</li>
           <li>Chords and key changes synced to the waveform</li>
+          <li>Memos synced to the timeline, with images attached — a stage plot, a chord chart, a lighting reference</li>
           <li>Cue MIDI, OSC, and memos from the same timeline</li>
           <li>Automatic BPM detection for every song</li>
         </ul>
       </div>
     </div>
-  </section>
-
-  <!-- MIDI -->
-  <section class="feature" id="midi">
-    <div class="feature__grid feature__grid--media-right">
-      <div class="feature__copy">
-        <p class="feature__label">Automatic MIDI Cues</p>
-        <h2 class="feature__title">Lighting and visuals,<br>triggered by the music.</h2>
-        <p class="feature__text">
-          Place MIDI cues anywhere on the timeline and Velvet Show fires them
-          automatically during playback — switching scenes, triggering
-          blackouts, starting video loops, with no second controller needed.
-        </p>
-        <div class="compat">
-          <p class="compat__label">Works with</p>
-          <div class="compat__chips">
-            <span class="chip chip--dmx">MaestroDMX</span>
-            <span class="chip chip--more">+ any MIDI system</span>
-          </div>
-        </div>
-      </div>
-      <div class="feature__media">
-        <div class="window window--cues">
-          <div class="window__bar">
-            <div class="window__traffic">
-              <span class="tlight tlight--close"></span>
-              <span class="tlight tlight--min"></span>
-              <span class="tlight tlight--max"></span>
-            </div>
-            <span class="window__label">MIDI Cue Track</span>
-          </div>
-          <div class="cuepanel">
-            <div class="cuepanel__row"><span class="cuepanel__time">00:12.4</span><span class="cuepanel__name">Intro — house lights down</span><span class="cuepanel__tag cuepanel__tag--midi">CH 1 · CC 21 → 0</span></div>
-            <div class="cuepanel__row"><span class="cuepanel__time">00:48.0</span><span class="cuepanel__name">Drop — full wash, blue</span><span class="cuepanel__tag cuepanel__tag--midi">CH 1 · PC 04</span></div>
-            <div class="cuepanel__row cuepanel__row--active"><span class="cuepanel__time">01:35.2</span><span class="cuepanel__name">Chorus — strobe</span><span class="cuepanel__tag cuepanel__tag--midi">CH 2 · PC 11</span><span class="cuepanel__live">● LIVE</span></div>
-            <div class="cuepanel__row"><span class="cuepanel__time">03:02.6</span><span class="cuepanel__name">Outro — fade to gold</span><span class="cuepanel__tag cuepanel__tag--midi">CH 1 · CC 21 → 80</span></div>
-          </div>
-        </div>
+    <div class="timeline-extra">
+      <p class="timeline-extra__label">Also built into the timeline</p>
+      <div class="timeline-extra__chips">
+        <span class="chip">Playlists</span>
+        <span class="chip">Import existing shows</span>
+        <span class="chip">Music library management</span>
+        <span class="chip">Sets within a show</span>
+        <span class="chip">Auto Next</span>
       </div>
     </div>
   </section>
 
-  <!-- OSC -->
-  <section class="feature feature--alt" id="osc">
-    <div class="feature__grid feature__grid--media-left">
-      <div class="feature__media">
-        <div class="window window--osc">
-          <div class="window__bar">
-            <div class="window__traffic">
-              <span class="tlight tlight--close"></span>
-              <span class="tlight tlight--min"></span>
-              <span class="tlight tlight--max"></span>
+  <!-- PANIC -->
+  <section class="panic" id="panic">
+    <div class="panic__inner">
+      <p class="feature__label feature__label--panic">Panic Mode</p>
+      <h2 class="panic__title">One shortcut. Never lose your place.</h2>
+      <p class="panic__text">
+        Lose your place on stage? Press PANIC. Your lyrics and notes appear instantly,
+        right on your Mac, in bold readable type — while the music keeps playing.
+      </p>
+      <div class="panicbtn">
+        <span class="panicbtn__icon">⏻</span>
+        <span class="panicbtn__label">PANIC</span>
+      </div>
+      <p class="panic__hint">⌘⇧P — one shortcut, reachable in the dark.</p>
+    </div>
+  </section>
+
+  <!-- CUES: MIDI + OSC (merged) + MaestroDMX -->
+  <section class="feature" id="cues">
+    <div class="cues__intro">
+      <p class="feature__label feature__label--center">Automated Cues</p>
+      <h2 class="feature__title feature__title--center">Lighting and visuals, triggered by the music.</h2>
+      <p class="feature__text feature__text--center">
+        Place cues anywhere on the timeline and Velvet Show fires them automatically during
+        playback — no second operator, no manual triggers. Use MIDI for hardware — dimmers,
+        consoles, video switchers. Use OSC for networked systems — MaestroDMX, Resolume, QLab, Companion.
+      </p>
+    </div>
+
+    <div class="cuetabs">
+      <input type="radio" name="cuetab" id="cuetab-midi" class="cuetabs__input" checked>
+      <input type="radio" name="cuetab" id="cuetab-osc" class="cuetabs__input">
+
+      <div class="cuetabs__nav">
+        <label for="cuetab-midi" class="cuetabs__label cuetabs__label--midi">MIDI Cues</label>
+        <label for="cuetab-osc" class="cuetabs__label cuetabs__label--osc">OSC Events</label>
+      </div>
+
+      <div class="cuetabs__panel cuetabs__panel--midi">
+        <div class="feature__grid feature__grid--media-right">
+          <div class="feature__copy">
+            <p class="feature__label">Works with hardware</p>
+            <p class="feature__text">
+              Place MIDI cues anywhere on the timeline and Velvet Show fires them automatically
+              during playback — switching scenes, triggering blackouts, starting video loops.
+            </p>
+            <div class="compat">
+              <p class="compat__label">Works with</p>
+              <div class="compat__chips">
+                <span class="chip chip--dmx">MaestroDMX</span>
+                <span class="chip chip--more">+ any MIDI system</span>
+              </div>
             </div>
-            <span class="window__label">OSC Events</span>
           </div>
-          <div class="cuepanel">
-            <div class="cuepanel__row"><span class="cuepanel__time">00:08.0</span><span class="cuepanel__name">Scene 1 — Intro wash</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/scene/1</span></div>
-            <div class="cuepanel__row cuepanel__row--active"><span class="cuepanel__time">01:12.0</span><span class="cuepanel__name">Brightness — 80%</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/brightness 0.8</span><span class="cuepanel__live">● LIVE</span></div>
-            <div class="cuepanel__row"><span class="cuepanel__time">02:44.5</span><span class="cuepanel__name">Bridge — scene reset</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/scene/5</span></div>
-            <div class="cuepanel__row"><span class="cuepanel__time">03:30.0</span><span class="cuepanel__name">Outro — blackout</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/brightness 0</span></div>
+          <div class="feature__media">
+            <div class="window window--cues">
+              <div class="window__bar">
+                <div class="window__traffic">
+                  <span class="tlight tlight--close"></span>
+                  <span class="tlight tlight--min"></span>
+                  <span class="tlight tlight--max"></span>
+                </div>
+                <span class="window__label">MIDI Cue Track</span>
+              </div>
+              <div class="cuepanel">
+                <div class="cuepanel__row"><span class="cuepanel__time">00:12.4</span><span class="cuepanel__name">Intro — house lights down</span><span class="cuepanel__tag cuepanel__tag--midi">CH 1 · CC 21 → 0</span></div>
+                <div class="cuepanel__row"><span class="cuepanel__time">00:48.0</span><span class="cuepanel__name">Drop — full wash, blue</span><span class="cuepanel__tag cuepanel__tag--midi">CH 1 · PC 04</span></div>
+                <div class="cuepanel__row cuepanel__row--active"><span class="cuepanel__time">01:35.2</span><span class="cuepanel__name">Chorus — strobe</span><span class="cuepanel__tag cuepanel__tag--midi">CH 2 · PC 11</span><span class="cuepanel__live">● LIVE</span></div>
+                <div class="cuepanel__row"><span class="cuepanel__time">03:02.6</span><span class="cuepanel__name">Outro — fade to gold</span><span class="cuepanel__tag cuepanel__tag--midi">CH 1 · CC 21 → 80</span></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="feature__copy">
-        <p class="feature__label feature__label--osc">OSC — New in 2026</p>
-        <h2 class="feature__title">A modern alternative to MIDI<br>for networked systems.</h2>
-        <p class="feature__text">
-          Velvet Show includes a full OSC engine. Place OSC events on the
-          timeline exactly like MIDI cues, and fire them automatically during
-          playback — over your local network, no extra hardware.
-        </p>
-        <ul class="feature__list">
-          <li>OSC timeline cues — fire at precise positions</li>
-          <li>OSC to MaestroDMX — scenes, brightness, cue import</li>
-          <li>Manual OSC — send any message on demand</li>
-          <li>OSC Events Library — reusable cue presets</li>
-          <li>MIDI + OSC simultaneously</li>
-        </ul>
-        <div class="compat">
-          <p class="compat__label">Works with</p>
-          <div class="compat__chips">
-            <span class="chip chip--dmx">MaestroDMX</span>
-            <span class="chip chip--more">+ any OSC system</span>
+
+      <div class="cuetabs__panel cuetabs__panel--osc">
+        <div class="feature__grid feature__grid--media-left">
+          <div class="feature__media">
+            <div class="window window--osc">
+              <div class="window__bar">
+                <div class="window__traffic">
+                  <span class="tlight tlight--close"></span>
+                  <span class="tlight tlight--min"></span>
+                  <span class="tlight tlight--max"></span>
+                </div>
+                <span class="window__label">OSC Events</span>
+              </div>
+              <div class="cuepanel">
+                <div class="cuepanel__row"><span class="cuepanel__time">00:08.0</span><span class="cuepanel__name">Scene 1 — Intro wash</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/scene/1</span></div>
+                <div class="cuepanel__row cuepanel__row--active"><span class="cuepanel__time">01:12.0</span><span class="cuepanel__name">Brightness — 80%</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/brightness 0.8</span><span class="cuepanel__live">● LIVE</span></div>
+                <div class="cuepanel__row"><span class="cuepanel__time">02:44.5</span><span class="cuepanel__name">Bridge — scene reset</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/scene/5</span></div>
+                <div class="cuepanel__row"><span class="cuepanel__time">03:30.0</span><span class="cuepanel__name">Outro — blackout</span><span class="cuepanel__tag cuepanel__tag--osc">/maestro/brightness 0</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="feature__copy">
+            <p class="feature__label feature__label--osc">Works with networked systems</p>
+            <p class="feature__text">
+              Velvet Show includes a full OSC engine. Place OSC events on the timeline exactly
+              like MIDI cues, and fire them automatically during playback — over your local
+              network, no extra hardware.
+            </p>
+            <ul class="feature__list">
+              <li>OSC timeline cues — fire at precise positions</li>
+              <li>OSC to MaestroDMX — scenes, brightness, cue import</li>
+              <li>Manual OSC — send any message on demand</li>
+              <li>OSC Events Library — reusable cue presets</li>
+              <li>MIDI + OSC simultaneously</li>
+            </ul>
+            <div class="compat">
+              <p class="compat__label">Works with</p>
+              <div class="compat__chips">
+                <span class="chip chip--dmx">MaestroDMX</span>
+                <span class="chip chip--more">+ any OSC system</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -252,7 +340,7 @@
   </section>
 
   <!-- MAESTRODMX -->
-  <section class="feature" id="maestrodmx">
+  <section class="feature feature--alt" id="maestrodmx">
     <div class="feature__grid feature__grid--media-right">
       <div class="feature__copy">
         <p class="feature__label feature__label--dmx">MaestroDMX Integration</p>
@@ -306,8 +394,8 @@
       <p class="feature__label feature__label--center">Velvet Remote</p>
       <h2 class="remote__title">Your show in your hand.</h2>
       <p class="remote__sub">
-        Velvet Remote is available now on iPhone and iPad.
-        Control Velvet Show from anywhere on stage — no cable, no keyboard.
+        Velvet Remote is free, and included with Velvet Show — the third piece of the system.
+        Control Velvet Show from anywhere on stage, no cable, no keyboard.
       </p>
 
       <div class="remote__badge-row">
@@ -383,58 +471,76 @@
     </div>
   </section>
 
-  <!-- PANIC -->
-  <section class="panic" id="panic">
-    <div class="panic__inner">
-      <div class="panic__copy">
-        <p class="feature__label feature__label--panic">Panic Mode</p>
-        <h2 class="feature__title">One shortcut. Never lose your place.</h2>
-        <p class="feature__text">
-          Lose your place on stage? Press PANIC.
-          Your lyrics and notes appear instantly, right on your Mac,
-          in bold readable type — while the music keeps playing.
-        </p>
-      </div>
-      <div class="panic__demo">
-        <div class="panicbtn">
-          <span class="panicbtn__icon">⏻</span>
-          <span class="panicbtn__label">PANIC</span>
-        </div>
-        <p class="panic__hint">⌘⇧P — one shortcut, reachable in the dark.</p>
-      </div>
+  <!-- BUILT FOR -->
+  <section class="audience">
+    <p class="feature__label feature__label--center">Built for live performers</p>
+    <h2 class="audience__title">Whoever is on stage, Velvet Show runs the room.</h2>
+    <div class="audience__grid">
+      <div class="audience__card"><h3>Solo performers</h3><p>Run backing tracks, lyrics and lighting cues without a second pair of hands.</p></div>
+      <div class="audience__card"><h3>Duos &amp; bands</h3><p>One setlist, one stage screen, one source of truth for the whole show.</p></div>
+      <div class="audience__card"><h3>Wedding &amp; event musicians</h3><p>Move between ceremony, cocktail and dancefloor with smooth transitions and MIDI lighting.</p></div>
+      <div class="audience__card"><h3>Show-control professionals</h3><p>Sync MIDI and OSC cues to lighting, video and sound — without the rig or the price tag.</p></div>
     </div>
   </section>
 
-  <!-- ROADMAP -->
-  <section class="roadmap" id="roadmap">
-    <div class="roadmap__inner">
-      <p class="feature__label feature__label--center">Roadmap</p>
-      <h2 class="roadmap__title">What's coming next.</h2>
-      <div class="roadmap__grid">
-        <div class="roadmap__item roadmap__item--soon">
-          <span class="roadmap__badge">Coming Soon</span>
-          <h3 class="roadmap__item-title">OSC Remote Control</h3>
-          <p class="roadmap__item-text">Control MaestroDMX in real time from Velvet Remote — trigger scenes, launch cues and adjust brightness directly from your iPhone or iPad.</p>
-          <div class="roadmap__item-chain">
-            <span class="remote__chip">Velvet Remote</span>
-            <span class="remote__arrow">→</span>
-            <span class="remote__chip remote__chip--dmx">MaestroDMX</span>
-          </div>
-        </div>
-        <div class="roadmap__item">
-          <span class="roadmap__badge roadmap__badge--dev">In Development</span>
-          <h3 class="roadmap__item-title">Velvet Visualizer</h3>
-          <p class="roadmap__item-text">A visual representation of your lighting fixtures, stage layout and show environment. Velvet Visualizer is a separate product, currently under development.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MIGRATION -->
+  <!-- PRICING / COMPARE -->
   <section class="migration" id="compare">
     <div class="migration__inner">
-      <p class="feature__label feature__label--center">Migration &amp; Alternatives</p>
-      <h2 class="migration__title">Coming from another app? Velvet Show has you covered.</h2>
+      <p class="feature__label feature__label--center">Pricing &amp; Alternatives</p>
+      <h2 class="migration__title">Why $79, once.</h2>
+
+      <div class="pricetable-wrap">
+        <table class="pricetable">
+          <thead>
+            <tr>
+              <th>&nbsp;</th>
+              <th class="pricetable__velvet">Velvet Show</th>
+              <th>ShowBuddy</th>
+              <th>Stage Traxx</th>
+              <th>BandHelper</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pricing model</td>
+              <td class="pricetable__velvet">One-time</td>
+              <td>One-time, two apps</td>
+              <td>One-time</td>
+              <td>Subscription</td>
+            </tr>
+            <tr>
+              <td>Price</td>
+              <td class="pricetable__velvet">$79</td>
+              <td>$318+ (Setlist $119 + Active $199)</td>
+              <td>~$55</td>
+              <td>$$$ / year</td>
+            </tr>
+            <tr>
+              <td>OSC output</td>
+              <td class="pricetable__velvet">✓</td>
+              <td>Active receives only</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>MaestroDMX integration</td>
+              <td class="pricetable__velvet">✓</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>iPhone / iPad remote</td>
+              <td class="pricetable__velvet">✓ Free, native</td>
+              <td>TouchOSC required</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="pricetable__note">Comparison based on public pricing at time of writing. Full breakdown on each comparison page below.</p>
+      </div>
+
       <div class="migration__grid">
         <a href="/showbuddy-alternative.html" class="migration__card">
           <div class="migration__card-from">Switching from · $318+ (2 apps)</div>
@@ -461,39 +567,49 @@
           <span class="migration__card-cta">Learn more →</span>
         </a>
       </div>
-      <div class="migration__maestro">
-        <h3>Already using MaestroDMX?</h3>
-        <p>Velvet Show integrates directly with MaestroDMX — import your cue list straight into the timeline, trigger scenes automatically via MIDI or OSC, and control Master Brightness, all from the same app as your backing tracks.</p>
-        <div class="migration__maestro-chips">
-          <span class="chip chip--dmx">Import MaestroDMX cue list</span>
-          <span class="chip chip--dmx">Auto MIDI triggering</span>
-          <span class="chip chip--dmx">OSC control</span>
-          <span class="chip chip--dmx">Master Brightness</span>
-          <span class="chip chip--dmx">MIDI + OSC simultaneously</span>
-        </div>
-        <div style="margin-top:1.5rem;">
-          <a href="/#beta" data-download-link target="_blank" rel="noopener" class="btn btn--primary">Download Velvet Show — Free trial</a>
-        </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="faq__inner">
+      <p class="feature__label feature__label--center">FAQ</p>
+      <h2 class="feature__title feature__title--center">Before you download.</h2>
+
+      <div class="faq__list">
+        <details class="faq__item">
+          <summary>Is $79 really a one-time purchase?</summary>
+          <p>Yes. $79 is a one-time licence, not a subscription. There's a 30-day free trial before you pay anything.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Why isn't Velvet Show on the Mac App Store?</summary>
+          <p>Velvet Show is distributed directly from GitHub Releases rather than the Mac App Store, downloaded as a standard macOS app. Velvet Remote for iPhone and iPad is on the App Store.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Do I need Velvet Remote to use Velvet Show?</summary>
+          <p>No. Velvet Show runs a complete show from the Mac on its own. Velvet Remote is a free companion app for iPhone and iPad — install it when you want a wireless prompter or a remote control on stage.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Can I move my setlists over from ShowBuddy, Stage Traxx or BandHelper?</summary>
+          <p>There's no automatic importer yet. Your audio files work as-is — rebuilding a setlist in Velvet Show is a manual, one-time setup, usually a couple of hours for a full repertoire.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Does Velvet Show need an internet connection on stage?</summary>
+          <p>No. Velvet Show and Velvet Remote run fully offline — Velvet Remote connects to Velvet Show over your local WiFi via Bonjour, with no cloud dependency.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Can I use MIDI and OSC at the same time?</summary>
+          <p>Yes. Velvet Show can send MIDI and OSC cues simultaneously from the same timeline.</p>
+        </details>
+        <details class="faq__item">
+          <summary>What if I need help or want a refund?</summary>
+          <p>Use the 30-day free trial to run a real show with it before buying. If you have questions before or after, contact us directly — see the form below.</p>
+        </details>
       </div>
     </div>
   </section>
 
-  <!-- BUILT FOR -->
-  <section class="audience">
-    <p class="feature__label feature__label--center">Built for live performers</p>
-    <h2 class="audience__title">Whoever is on stage, Velvet Show runs the room.</h2>
-    <div class="audience__grid">
-      <div class="audience__card"><h3>Solo performers</h3><p>Run backing tracks, lyrics and lighting cues without a second pair of hands.</p></div>
-      <div class="audience__card"><h3>Duos &amp; bands</h3><p>One setlist, one stage screen, one source of truth for the whole show.</p></div>
-      <div class="audience__card"><h3>Wedding &amp; event musicians</h3><p>Move between ceremony, cocktail and dancefloor with smooth transitions and MIDI lighting.</p></div>
-      <div class="audience__card"><h3>Show-control professionals</h3><p>Sync MIDI and OSC cues to lighting, video and sound — without the rig or the price tag.</p></div>
-    </div>
-    <p class="audience__migrate">
-      Coming from <strong>ShowBuddy</strong>, <strong>Stage Traxx</strong>,
-      <strong>BandHelper</strong> or a QLab-style workflow?
-      Velvet Show is a direct alternative — same core workflow, with MIDI, OSC,
-      real-time lighting control and an iPhone remote built in.
-    </p>
+  <!-- BETA / DOWNLOAD -->
   <section class="beta" id="beta">
     <div class="beta__inner">
       <p class="feature__label feature__label--center">Download</p>
@@ -503,16 +619,16 @@
       </p>
       <div class="betadownload">
         <a href="#beta" data-download-link target="_blank" rel="noopener" class="btn btn--primary betadownload__btn">Download for macOS</a>
-        <p class="betadownload__meta">macOS · 30-day free trial · $79 full licence</p>
+        <p class="betadownload__meta">macOS · 30-day free trial · $79 one-time licence</p>
         <p class="betadownload__note">Distributed directly from the official Velvet Show channel. Velvet Remote for iPhone &amp; iPad is free.</p>
       </div>
-      <div class="beta__divider"><span>or request access</span></div>
+      <div class="beta__divider"><span>or ask a question first</span></div>
       <form class="betaform" id="betaform" action="mailto:alexandre.chalon@gmail.com" method="GET">
         <div class="betaform__row"><label for="bf-name">Name</label><input type="text" id="bf-name" name="name" placeholder="Your name" required></div>
         <div class="betaform__row"><label for="bf-email">Email</label><input type="email" id="bf-email" name="email" placeholder="you@example.com" required></div>
         <div class="betaform__row"><label for="bf-software">Current software</label><input type="text" id="bf-software" name="software" placeholder="e.g. ShowBuddy, QLab, BandHelper, none"></div>
         <div class="betaform__row"><label for="bf-mac">Mac model</label><input type="text" id="bf-mac" name="mac" placeholder="e.g. MacBook Pro M1, 2021"></div>
-        <button type="submit" class="btn btn--primary betaform__submit">Send Request</button>
+        <button type="submit" class="btn btn--primary betaform__submit">Send Message</button>
         <p class="betaform__note">Opens an email to alexandre.chalon@gmail.com — no data stored on this site.</p>
       </form>
     </div>
