@@ -71,6 +71,7 @@ struct VELVET_SHOWApp: App {
         }
         .defaultSize(width: 1400, height: 860)
         .windowResizability(.contentMinSize)
+        .restorationBehavior(.disabled)
         .commands { TourCommands(tourState: tourState) }
 
         // ── Settings (instance unique, déplaçable, scrollable) ──────────────
@@ -84,6 +85,7 @@ struct VELVET_SHOWApp: App {
         .defaultSize(width: 440, height: 680)
         .defaultPosition(.center)
         .windowResizability(.contentMinSize)
+        .restorationBehavior(.disabled)
 
         // ── Window Prompter (instance unique) ───────────────────────────
         // `Window` (et non `WindowGroup`) garantit une seule instance :
@@ -102,6 +104,7 @@ struct VELVET_SHOWApp: App {
         .defaultSize(width: 1280, height: 720)
         .defaultPosition(.center)
         .windowResizability(.contentMinSize)
+        .restorationBehavior(.disabled)
 
         // ── Queue flottante (instance unique) ────────────────────────────
         // `Window` : même raison que le Prompter.
@@ -124,6 +127,7 @@ struct VELVET_SHOWApp: App {
         .defaultPosition(.topTrailing)
         .windowResizability(.contentMinSize)
         .windowStyle(.hiddenTitleBar)
+        .restorationBehavior(.disabled)
     }
 }
 
