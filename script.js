@@ -4,7 +4,7 @@
 // ============================================================
 // SINGLE SOURCE OF TRUTH — Download URL
 // ============================================================
-var VELVET_SHOW_DOWNLOAD_URL = 'https://github.com/Alxsparker/velvetshow/releases/download/v1.3/VELVET.SHOW.zip';
+var VELVET_SHOW_DOWNLOAD_URL = 'https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip';
 
 (function () {
   var downloadLinks = document.querySelectorAll('[data-download-link]');
