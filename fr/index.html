@@ -107,6 +107,20 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mut);font-siz
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
 footer a{color:var(--mut)}
 footer a:hover{color:var(--text)}
+
+@media(max-width:600px){
+  .hero__products{flex-direction:column;gap:0;bottom:36px;width:90%}
+  .hero__sep{width:80%;height:1px;margin:4px auto}
+  .hero__product{flex-direction:row;min-width:unset;width:100%;padding:10px 16px;gap:12px;justify-content:flex-start}
+  .hero__product__icon{width:44px;height:44px;flex-shrink:0}
+  .hero__product__pitch{display:none}
+  .hero__product__name{font-size:12px}
+  .hero__product__price{font-size:10px}
+  .hero__duo{font-size:11px;bottom:6px;width:90%;text-align:center}
+  .nav .cta{display:none}
+  nav a{margin-left:10px;font-size:12px}
+}
+
 </style>
 </head>
 <body>
