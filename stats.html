@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Statistiques — Velvet Show</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .stats-wrap { max-width: 900px; margin: 0 auto; padding: 60px 20px 100px; }
+  .stats-wrap h1 { font-family: var(--font-display); }
+  .stats-updated { color: var(--text-soft); margin-top: -8px; margin-bottom: 32px; }
+  .stat-grid { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0 40px; }
+  .stat-card { flex: 1 1 200px; background: var(--card); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 20px 22px; }
+  .stat-card .num { font-family: var(--font-display); font-weight: 700; font-size: 2.4rem; color: var(--gold); line-height: 1; }
+  .stat-card .lbl { color: var(--text-soft); font-size: .85rem; margin-top: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 32px; font-size: .92rem; }
+  th { text-align: left; color: var(--text-soft); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; border-bottom: 1px solid var(--hairline); }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--hairline); }
+  tr:last-child td { border-bottom: none; }
+  .empty { color: var(--text-faint); font-style: italic; }
+  #loading { color: var(--text-soft); }
+  .back-link { color: var(--blue); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="stats-wrap">
+  <p><a class="back-link" href="/">&larr; Retour au site</a></p>
+  <h1>Statistiques de visite</h1>
+  <p class="stats-updated">Nombre de visites anonymes sur velvetshow.app — aucune donnée personnelle n'est suivie.</p>
+
+  <div id="loading">Chargement...</div>
+  <div id="content" hidden>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="num" id="stat-total">–</div><div class="lbl">Visites au total</div></div>
+      <div class="stat-card"><div class="num" id="stat-7d">–</div><div class="lbl">Sur les 7 derniers jours</div></div>
+    </div>
+
+    <h2>Par jour (14 derniers jours)</h2>
+    <table id="table-days"><thead><tr><th>Jour</th><th>Visites</th></tr></thead><tbody></tbody></table>
+
+    <h2>Par page (14 derniers jours)</h2>
+    <table id="table-paths"><thead><tr><th>Page</th><th>Visites</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<script>
+(function(){
+  const FN_URL = 'https://pmgqpdjzptryegjfhsry.supabase.co/functions/v1/velvet-stats';
+  const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ3FwZGp6cHRyeWVnamZoc3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzg2OTUsImV4cCI6MjA5ODgxNDY5NX0.efAsSxWcpzq6oWX3KfgV-6xcjxppX8Z_3WWi8kmBqqI';
+
+  function esc(s){ const d=document.createElement('div'); d.textContent=String(s); return d.innerHTML; }
+
+  fetch(FN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ANON_KEY, 'apikey': ANON_KEY },
+    body: JSON.stringify({ action: 'summary' })
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('loading').hidden = true;
+    document.getElementById('content').hidden = false;
+    document.getElementById('stat-total').textContent = data.total ?? 0;
+    document.getElementById('stat-7d').textContent = data.last7 ?? 0;
+
+    const days = Object.keys(data.byDay || {}).sort().reverse();
+    const daysBody = document.querySelector('#table-days tbody');
+    daysBody.innerHTML = days.length
+      ? days.map(d => '<tr><td>' + esc(d) + '</td><td>' + esc(data.byDay[d]) + '</td></tr>').join('')
+      : '<tr><td colspan="2" class="empty">Aucune visite pour l\'instant.</td></tr>';
+
+    const paths = Object.keys(data.byPath || {}).sort((a,b) => data.byPath[b] - data.byPath[a]);
+    const pathsBody = document.querySelector('#table-paths tbody');
+    pathsBody.innerHTML = paths.length
+      ? paths.map(p => '<tr><td>' + esc(p) + '</td><td>' + esc(data.byPath[p]) + '</td></tr>').join('')
+      : '<tr><td colspan="2" class="empty">Aucune visite pour l\'instant.</td></tr>';
+  })
+  .catch(() => {
+    document.getElementById('loading').textContent = "Impossible de charger les statistiques — réessaie.";
+  });
+})();
+</script>
+</body>
+</html>
