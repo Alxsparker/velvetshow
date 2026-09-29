@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Velvet Visualizer — Mode d'emploi</title>
+<meta name="description" content="Mode d'emploi complet de Velvet Visualizer : construction de scène, bibliothèque de fixtures, Art-Net/sACN, import MaestroDMX, exports, assistant IA, licence.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d0e12;--panel:#15171d;--line:#262a33;--text:#eceef3;--mut:#9aa1b0;--dim:#565c6e;--gold:#f0bd57;--blue:#4d8fff}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+header{position:sticky;top:0;background:rgba(13,14,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:100}
+.nav{max-width:1180px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav__brand{font-family:Oswald,sans-serif;font-size:15px;font-weight:700;letter-spacing:.1em;color:var(--text)}
+.nav__links{display:flex;align-items:center;gap:18px}
+.nav__links a{font-size:13px;color:var(--mut)}
+.nav__links a:hover{color:var(--text)}
+.btn-p{background:var(--gold);color:#1a1405;padding:7px 16px;border-radius:8px;font-weight:600;font-size:13px}
+.btn-p:hover{opacity:.88;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.layout{display:grid;grid-template-columns:260px 1fr;gap:48px;padding:48px 0 100px;align-items:start}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.toc{position:sticky;top:76px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.toc ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.toc a{color:var(--mut);font-size:13px;line-height:1.4}
+.toc a:hover{color:var(--text)}
+.article h1{font-family:Oswald,sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;line-height:1.15;margin-bottom:8px}
+.tagline{color:var(--mut);font-size:1rem;margin-bottom:32px;font-weight:300}
+.article h2{font-family:Oswald,sans-serif;font-size:1.5rem;font-weight:600;margin:44px 0 14px;padding-top:8px;border-top:1px solid var(--line)}
+.article h2:first-of-type{border-top:none;margin-top:0}
+.article h3{font-family:Oswald,sans-serif;font-size:1.1rem;font-weight:600;margin:24px 0 10px;color:var(--gold)}
+.article p{margin-bottom:14px;color:#d5d9e2;font-size:.95rem}
+.article ul,.article ol{margin:0 0 14px 22px;color:#d5d9e2;font-size:.95rem}
+.article li{margin-bottom:6px}
+.article strong{color:var(--text)}
+.article code{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono',monospace;font-size:.85em}
+footer{border-top:1px solid var(--line);padding:24px 0}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/fr/velvet-visualizer.html" class="nav__brand">VELVET VISUALIZER</a>
+    <div class="nav__links">
+      <a href="/visualizer-guide.html">EN</a>
+      <a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest" class="btn-p">Sur cette page</a>
+    </div>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="layout">
+    <nav class="toc">
+      <div class="toc-title">Sur cette page</div>
+      <ul>
+<li><a href="#1-bienvenue-sur-velvet-visualizer">1. Bienvenue sur Velvet Visualizer</a></li>
+<li><a href="#2-installation">2. Installation</a></li>
+<li><a href="#3-premier-lancement-et-prise-en-main">3. Premier lancement et prise en main</a></li>
+<li><a href="#4-construire-sa-scène">4. Construire sa scène</a></li>
+<li><a href="#5-la-bibliothèque-de-fixtures">5. La bibliothèque de fixtures</a></li>
+<li><a href="#6-le-patch-dmx">6. Le patch DMX</a></li>
+<li><a href="#7-connecter-sa-console">7. Connecter sa console</a></li>
+<li><a href="#8-importer-depuis-maestrodmx">8. Importer depuis MaestroDMX</a></li>
+<li><a href="#9-moniteur-dmx-et-enregistrement">9. Moniteur DMX et enregistrement</a></li>
+<li><a href="#10-travailler-en-3d">10. Travailler en 3D</a></li>
+<li><a href="#11-les-plans-plusieurs-configurations-par-projet">11. Les Plans — plusieurs configurations par projet</a></li>
+<li><a href="#12-exporter">12. Exporter</a></li>
+<li><a href="#13-assistant-de-configuration-ia">13. Assistant de configuration (IA)</a></li>
+<li><a href="#14-licence-et-essai-gratuit">14. Licence et essai gratuit</a></li>
+<li><a href="#15-préférences-et-réglages">15. Préférences et réglages</a></li>
+<li><a href="#16-raccourcis-clavier">16. Raccourcis clavier</a></li>
+<li><a href="#17-signaler-un-bug">17. Signaler un bug</a></li>
+<li><a href="#18-crédits">18. Crédits</a></li>
+<li><a href="#19-questions-fréquentes">19. Questions fréquentes</a></li>
+      </ul>
+    </nav>
+    <article class="article">
+      <h1>Velvet Visualizer</h1>
+<p class="tagline">Voyez votre show en 3D avant de le jouer.</p>
+<h2 id="1-bienvenue-sur-velvet-visualizer">1. Bienvenue sur Velvet Visualizer</h2>
+<p>Velvet Visualizer est une appli macOS qui affiche votre vrai plan de feu en 3D, en direct, avant et pendant le concert. Connectez-la à votre console lumière en Art-Net ou sACN — ou importez directement un fichier MaestroDMX — et elle reproduit exactement ce que votre console envoie, fixture par fixture.</p>
+<p><strong>À quoi sert Velvet Visualizer :</strong></p>
+<ul>
+<li>Préparer et placer un plan de feu dans une salle virtuelle aux vraies dimensions</li>
+<li>Vérifier son patch DMX et repérer les conflits avant de toucher aux vrais câbles</li>
+<li>Prévisualiser son vrai show en direct, piloté par sa vraie console</li>
+<li>Produire des plans et des listes de matériel (PDF, CSV) pour soi ou pour son équipe</li>
+</ul>
+<p><strong>Ce que Velvet Visualizer n'est pas :</strong></p>
+<ul>
+<li>Une console lumière — elle ne pilote pas le DMX, elle ne fait que le recevoir (sauf quand vous construisez une scène à la main, avant de connecter une console)</li>
+<li>Un remplacement de MaestroDMX ou de tout autre logiciel de contrôle</li>
+</ul>
+<h2 id="2-installation">2. Installation</h2>
+<p>Velvet Visualizer est distribué sous forme d'un fichier <code>.zip</code> contenant l'appli.</p>
+<ol>
+<li>Décompressez et glissez <strong>Velvet Visualizer</strong> dans votre dossier Applications.</li>
+<li>Lancez-la depuis Applications ou Spotlight.</li>
+<li>Au premier lancement, macOS peut vous demander de confirmer l'ouverture. Cliquez sur <strong>Ouvrir</strong>.</li>
+</ol>
+<p><strong>Configuration requise :</strong> macOS 14 ou plus récent.</p>
+<h2 id="3-premier-lancement-et-prise-en-main">3. Premier lancement et prise en main</h2>
+<p>Le guide <strong>Prise en main</strong> (menu Aide) vous accompagne en six étapes, chacune avec un bouton qui fait l'action directement :</p>
+<ol>
+<li>Choisir un modèle de départ, ou importer un fichier MaestroDMX</li>
+<li>Ajouter son matériel (depuis la bibliothèque, une recherche en ligne, ou en créant une fixture personnalisée)</li>
+<li>La placer et l'ajuster (Inspecteur)</li>
+<li>Vérifier ses adresses DMX (Patch)</li>
+<li>Connecter sa console (Assistant Art-Net)</li>
+<li>Jouer, sauvegarder et exporter</li>
+</ol>
+<p>Pas besoin de suivre l'ordre — c'est disponible dès qu'on a besoin d'un rappel.</p>
+<p><strong>Modèles de démarrage rapide</strong> : au lieu de partir d'une scène vide, on peut démarrer un nouveau projet à partir d'un plan de feu tout prêt — Scène vide, DJ, DJ + écran + public, Groupe, Structure + 2 totems, ou Mariage/soirée privée.</p>
+<p><strong>Démos</strong> : deux morceaux de démonstration intégrés (Electro et Rock) remplissent automatiquement un plan de feu et jouent un show synchronisé son + lumière, pour voir l'appli en action sans aucun matériel réel connecté. Ils se lancent depuis la section Démo de la bibliothèque.</p>
+<h2 id="4-construire-sa-scène">4. Construire sa scène</h2>
+<h3>Le panneau Bibliothèque (⌘L)</h3>
+<p>Tout part de la Bibliothèque. Elle est organisée en sections :</p>
+<ul>
+<li><strong>Démarrage rapide</strong> — les modèles cités plus haut</li>
+<li><strong>Démo</strong> — les deux démos</li>
+<li><strong>Structures &amp; Supports</strong> — structure, totem, pied, barre lumineuse, T-Bar, support au sol</li>
+<li><strong>Décor</strong> — fond de scène</li>
+<li><strong>Musiciens</strong> — DJ, cabine DJ, chanteurs, guitariste, bassiste, pianiste, batterie (utile comme repères visuels sur scène)</li>
+<li><strong>Vrai matériel</strong> — une liste de fixtures réelles avec recherche, plus des boutons pour en créer une personnalisée ou en importer une</li>
+</ul>
+<h3>Placer les fixtures</h3>
+<p>Les fixtures ajoutées démarrent "non placées" dans un tiroir. Vous pouvez :</p>
+<ul>
+<li>Les glisser vous-même sur la scène</li>
+<li>Double-cliquer dessus, ou utiliser <strong>Placement automatique</strong>, pour qu'elles remplissent toutes seules un point de fixation libre sur une structure ou une barre</li>
+</ul>
+<h3>Les positionner</h3>
+<p>Cliquer pour sélectionner, glisser pour déplacer. Pour un contrôle précis, ouvrez l'<strong>Inspecteur</strong> (⌘I) :</p>
+<ul>
+<li>Position et rotation X / Y / Z chiffrées, avec des réglages de rotation prédéfinis</li>
+<li>Orientations physiques prédéfinies : Normal, Vertical 90°, Vertical -90°, Retourné, Contre-plongée</li>
+<li>Mode de fixation, orientation, côté de la barre</li>
+<li>Attacher ou détacher d'un support (structure, barre, pied) à un point de fixation précis</li>
+<li>Aligner et répartir plusieurs objets sélectionnés (gauche/centre/droite, fond/milieu/avant, répartition régulière)</li>
+<li>Grouper/dégrouper, verrouiller, masquer, dupliquer, supprimer, déplacer au clavier</li>
+<li>Actions rapides "Centrer" et "Poser au sol"</li>
+<li>Champs poids et puissance — remplis automatiquement depuis la fiche de la fixture, modifiables, et utilisés ensuite dans vos totaux de matériel</li>
+</ul>
+<p>Un clic droit sur n'importe quel objet ouvre un menu (dupliquer, copier/coller, renommer, cadrer, verrouiller, masquer, grouper, supprimer, tout sélectionner, tout afficher, enregistrer cette vue caméra) ou, sur une fixture, permet de voir ses canaux DMX, de l'attacher à un support, de la détacher, ou de la viser directement vers le public ou vers le fond de scène.</p>
+<h3>Régler la salle</h3>
+<p>La section <strong>Salle</strong> permet de choisir une taille de scène prédéfinie ou de saisir sa propre largeur, profondeur et hauteur sous plafond. Velvet Visualizer prévient si un objet placé dépasse le plafond.</p>
+<h2 id="5-la-bibliothèque-de-fixtures">5. La bibliothèque de fixtures</h2>
+<p>Au-delà de la bibliothèque intégrée, trois façons d'obtenir exactement la fixture que vous possédez :</p>
+<p><strong>Fichiers GDTF</strong> — importez un fichier <code>.gdtf</code> (le format standard du métier, avec la géométrie 3D complète et l'articulation des têtes mobiles) depuis le menu Fichier ou le bouton Importer de la Bibliothèque. Avec un compte <strong>GDTF Share</strong> (gdtf-share.com), Velvet Visualizer peut se connecter et l'utiliser en coulisses pour trouver automatiquement le bon profil des fixtures qu'il ne reconnaît pas lors d'un import MaestroDMX.</p>
+<p><strong>Open Fixture Library</strong> — une recherche en ligne gratuite, sans compte. Cherchez par nom, choisissez le bon résultat, et importez-le directement. Un fichier <code>.json</code> local peut aussi être importé à la main.</p>
+<p><strong>Créateur de fixture personnalisée</strong> — pour une fixture introuvable ailleurs. Cliquez sur "Créer…" dans la Bibliothèque, nommez-la, choisissez son type, et construisez sa liste de canaux DMX vous-même (ou partez d'un modèle courant comme "PAR LED 7 canaux" et ajustez). Elle est enregistrée sur votre Mac et disponible dans tous vos futurs projets.</p>
+<p>Vous pouvez aussi faire un clic droit sur n'importe quelle fixture et choisir "Voir les canaux DMX…" pour voir son mode, la liste complète de ses canaux, et — si elle reçoit des données en direct — la valeur actuelle de chaque canal.</p>
+<h2 id="6-le-patch-dmx">6. Le patch DMX</h2>
+<p>Ouvrez le tableau de patch avec ⇧⌘P. Il liste chaque fixture avec son univers, son adresse et son mode, et permet de :</p>
+<ul>
+<li>Renommer les fixtures directement dans le tableau</li>
+<li>Changer les adresses avec des boutons +/-</li>
+<li>Voir les conflits et dépassements mis en évidence automatiquement</li>
+<li>Sélectionner plusieurs fixtures pour décaler leurs adresses, les renuméroter avec un pas fixe, ou les déplacer vers un autre univers</li>
+<li>Copier tout le patch dans le presse-papiers, ou l'exporter en tableur CSV</li>
+<li>Annuler n'importe quel changement</li>
+</ul>
+<h2 id="7-connecter-sa-console">7. Connecter sa console</h2>
+<p>Velvet Visualizer écoute l'<strong>Art-Net</strong> et le <strong>sACN (E1.31)</strong> sur votre réseau — pas besoin de câble direct, juste le même réseau que votre console.</p>
+<p>Activez le bouton <strong>Live DMX</strong> pour que le signal reçu pilote l'appli. Pendant que c'est actif, les commandes manuelles des lumières sont désactivées — c'est votre console qui a la main.</p>
+<p>L'<strong>Assistant de connexion Art-Net</strong> (menu Outils) vous accompagne en direct, en quatre étapes :</p>
+<ol>
+<li>Affiche l'adresse IP de ce Mac — à saisir comme destination sur votre console</li>
+<li>Confirme que l'appli est bien à l'écoute</li>
+<li>Une checklist pour les réglages de sortie de votre console (protocole, destination, univers, adresses)</li>
+<li>Un test en direct : les paquets arrivent-ils ? Sont-ils du bon format (Art-Net ou sACN) ? Sur quels univers, et correspondent-ils à ce qui est attendu ? Il y a aussi un réglage pour la numérotation des univers Art-Net (à partir de 0 ou de 1, selon comment compte votre console), et un bouton pour générer un rapport de diagnostic à copier ou envoyer par e-mail si quelque chose ne fonctionne pas.</li>
+</ol>
+<h2 id="8-importer-depuis-maestrodmx">8. Importer depuis MaestroDMX</h2>
+<p>Plutôt que de tout repatcher à la main, vous pouvez importer votre show directement depuis MaestroDMX.</p>
+<p><strong>Fichier ▸ Importer un fichier MaestroDMX… (⇧⌘I)</strong> lit le fichier JSON exporté depuis Maestro. Il fait correspondre chaque fixture à un vrai profil (en cherchant sur GDTF Share si besoin, puis un profil générique en dernier recours), les place automatiquement, et indique ce qui a été importé, ignoré, ou en conflit.</p>
+<p>Un <strong>guide MaestroDMX</strong> complet est intégré dans l'appli (bouton "Guide MaestroDMX" dans la Bibliothèque) et détaille tout le processus en neuf étapes : dupliquer ses fixtures dans Maestro pour avoir une copie dédiée à l'Art-Net, comprendre ce qu'est l'Art-Net, trouver l'adresse IP de son Mac, régler les copies en Art-Net, vérifier que la vraie sortie DMX n'est pas touchée, exporter le bon fichier JSON, le déposer dans Velvet Visualizer, vérifier que le signal arrive, et que faire si une fixture n'est pas reconnue. Il inclut le même test de signal en direct que l'Assistant Art-Net, plus un rapport de diagnostic à copier ou envoyer par e-mail.</p>
+<h2 id="9-moniteur-dmx-et-enregistrement">9. Moniteur DMX et enregistrement</h2>
+<p>Ouvrez le <strong>Moniteur DMX</strong> avec ⇧⌘D pour une grille en direct de chaque canal sur chaque univers, avec les changements récents mis en évidence. Vous pouvez filtrer sur les canaux non nuls seulement, ou sur la fixture sélectionnée, et voir des statistiques de paquets et d'univers en un coup d'œil.</p>
+<p>Il inclut aussi un <strong>enregistrement et une relecture</strong> : enregistrez le DMX reçu dans un fichier, puis relisez-le plus tard — avec boucle et curseur de lecture — même sans aucune console réelle branchée. Pratique pour tester ou pour préparer une démo.</p>
+<h2 id="10-travailler-en-3d">10. Travailler en 3D</h2>
+<h3>Caméra</h3>
+<p>Passez à une vue prédéfinie — Public, Régie, Scène → Public, Vue du dessus, Jardin, Cour — depuis le menu caméra. Enregistrez vos propres vues sous un nom et retrouvez-les à tout moment. Orbite libre (clic droit + glisser, ou deux doigts + ⇧ sur le trackpad), déplacement latéral (deux doigts), zoom (pincer ou molette), ou déplacement au clavier avec les flèches ; barre d'espace pour recentrer.</p>
+<h3>Modes de rendu</h3>
+<ul>
+<li><strong>Installation</strong> — une vue de jour normale et bien éclairée, pour construire et ajuster son plan de feu</li>
+<li><strong>Spectacle</strong> — assombrit la salle pour vraiment voir la lumière, avec un curseur de fumée (Inspecteur, section Rendu) pour régler la visibilité des faisceaux</li>
+</ul>
+<h3>Réglages lumière</h3>
+<p>Pour chaque fixture : couleur, intensité, angle du faisceau, pan/tilt (ou une visée simple pour les fixtures fixes), gobo (ouvert ou motif), prisme (aucun, ou de 3 à 8 facettes), et un bouton "Miroir" pour forcer un comportement symétrique gauche/droite entre les têtes mobiles.</p>
+<h3>Viser</h3>
+<p>Cliquez sur "Viser un point…", puis cliquez n'importe où dans la scène — la ou les fixtures sélectionnées s'orientent vers ce point, avec un petit résumé de ce qu'elles visent désormais. Un clic droit sur une fixture propose aussi des raccourcis en un clic : "Éclairer le public" ou "Éclairer le fond de scène".</p>
+<h3>Présenter</h3>
+<p>La barre de show permet de lancer ou arrêter une démo, de sortir du mode présentation, et d'exporter un PNG ou une vidéo directement depuis la caméra actuelle.</p>
+<h2 id="11-les-plans-plusieurs-configurations-par-projet">11. Les Plans — plusieurs configurations par projet</h2>
+<p>Un même projet peut contenir plusieurs <strong>Plans</strong> : différentes combinaisons de placement de fixtures, de patch et de vues caméra, toutes dans le même fichier. Basculez entre eux, dupliquez-en un pour tester une variante, créez-en un vide, renommez ou supprimez-les — depuis le menu Plans de la barre d'outils. Pratique pour comparer deux idées de plan de feu, ou garder une configuration "chargement" et une configuration "show" côte à côte.</p>
+<h2 id="12-exporter">12. Exporter</h2>
+<h3>PDF</h3>
+<p>Exporter en PDF (barre d'outils ou menu Fichier) ouvre une fenêtre d'options avec trois versions prêtes à l'emploi :</p>
+<ul>
+<li><strong>Client</strong> — page de garde, plan, vues 3D et liste de matériel. Pas de liste détaillée des adresses DMX, pas de notes, pas de détail poids/puissance.</li>
+<li><strong>Technicien / équipe</strong> — tout, y compris la liste complète des fixtures avec adresses DMX, poids et puissance.</li>
+<li><strong>Porteur / transport</strong> — page de garde et liste de matériel avec poids et puissance uniquement.</li>
+</ul>
+<p>Chaque page est activable séparément (garde, plan, vues 3D, liste des fixtures, liste du matériel, une page de notes libres), et le plan peut afficher en option les étiquettes DMX et les dimensions. Vous pouvez ajouter vos propres coordonnées et votre logo, imprimés sur le document.</p>
+<h3>Patch DMX en CSV</h3>
+<p>Un tableur avec une ligne par fixture : nom, type, fabricant/modèle, univers, plage d'adresses, mode, nombre de canaux, son support, et toute alerte de conflit ou de dépassement. (Barre d'outils : "Exporter le patch".)</p>
+<h3>Images et vidéo</h3>
+<p>Exportez un PNG de la vue actuelle (⇧⌘E) — standard ou en 4K — ou une vidéo en rotation à 360° de toute la scène, sur une durée au choix, depuis la barre de show.</p>
+<h2 id="13-assistant-de-configuration-ia">13. Assistant de configuration (IA)</h2>
+<p>L'<strong>Assistant de configuration</strong> (⇧⌘A, ou l'icône étoile dans la barre d'outils) aide à construire un plan de feu à partir d'une simple description de son matériel, plutôt qu'en ajoutant tout à la main.</p>
+<p>La première fois, un écran explique ce qui est envoyé (votre description tapée et les noms des fixtures/supports déjà dans votre scène — jamais votre fichier de projet, et pas de photo dans cette version), qu'elle utilise <strong>votre propre clé Anthropic</strong> (stockée en sécurité sur votre Mac, jamais dans le fichier du projet, facturée directement à vous), et que les suggestions sont un point de départ à vérifier, pas une garantie.</p>
+<p>Décrivez votre matériel avec vos propres mots — tapés ou dictés — et l'assistant propose une liste structurée, mise en correspondance avec de vraies fiches de fixtures. Chaque suggestion s'affiche comme une carte à examiner : accepter, en demander une autre, choisir un modèle précis, prendre "Générique", chercher en ligne, ou importer un fichier GDTF à la place. Vous pouvez aussi simplement continuer à discuter pour corriger une réponse précédente — la conversation est enregistrée et peut être reprise plus tard. Des indications de placement (au sol, sur pied, sur barre, sur structure, au-dessus ou en dessous, gauche/centre/droite, visé vers la scène ou le public) sont incluses automatiquement, pour que les fixtures acceptées se retrouvent à peu près au bon endroit plutôt qu'empilées au même point. Chaque demande affiche son coût estimé avant validation.</p>
+<h2 id="14-licence-et-essai-gratuit">14. Licence et essai gratuit</h2>
+<p>Velvet Visualizer propose un <strong>essai gratuit de 30 jours</strong>, compté depuis le tout premier lancement. Un badge dans la barre d'outils indique le nombre de jours restants.</p>
+<p>Une fois l'essai terminé sans licence, l'appli entière se verrouille — pas seulement l'export — jusqu'à ce qu'une clé soit saisie ou achetée. Rien n'est perdu : les projets sont conservés tels quels, et se débloquent dès l'activation.</p>
+<p>Une clé de licence fonctionne sur <strong>2 Mac</strong>. Une fois activée, l'appli continue de fonctionner <strong>hors ligne indéfiniment</strong> — perdre sa connexion Internet ne bloque jamais l'accès ; seule une réponse explicite "clé invalide" le fait. Pour déplacer une licence vers un nouveau Mac, désactivez-la d'abord sur l'ancien.</p>
+<h2 id="15-préférences-et-réglages">15. Préférences et réglages</h2>
+<ul>
+<li><strong>Langue</strong> — français ou anglais, depuis l'icône globe</li>
+<li><strong>Unités</strong> — métrique ou impérial (pieds/pouces), depuis l'icône règle</li>
+<li><strong>Aimantation à la grille</strong> — activable/désactivable pendant les déplacements</li>
+<li><strong>Outil actif</strong> — Sélection, Déplacement ou Rotation (aussi V / M / R)</li>
+<li><strong>Réseau d'objets</strong> — dupliquer un objet en rangée</li>
+<li><strong>Miroir de sélection</strong> — gauche/droite ou avant/arrière</li>
+<li><strong>Mises à jour</strong> — Velvet Visualizer vérifie automatiquement une nouvelle version (au maximum toutes les 6 heures) et affiche un badge quand une est disponible ; cliquer dessus ouvre la page de la version dans le navigateur. Rien ne s'installe tout seul.</li>
+</ul>
+<h2 id="16-raccourcis-clavier">16. Raccourcis clavier</h2>
+<p>La liste complète est toujours disponible depuis <strong>Aide ▸ Raccourcis clavier (⌘/)</strong>, classée par Projet, Édition, Objets, Outils &amp; déplacement, Caméra, et Fenêtres. Le moyen le plus rapide d'en retrouver un sans quitter l'appli.</p>
+<h2 id="17-signaler-un-bug">17. Signaler un bug</h2>
+<p><strong>Aide ▸ Signaler un bug…</strong> (ainsi que les boutons de rapport de diagnostic dans l'Assistant Art-Net et le Guide MaestroDMX) préparent un court résumé technique — nombre de fixtures et de projets, état de l'écoute Art-Net/sACN, résultat du dernier import MaestroDMX — à copier ou envoyer par e-mail. Ça permet de comprendre beaucoup plus vite ce qui s'est passé, sans aller-retour de questions.</p>
+<h2 id="18-crédits">18. Crédits</h2>
+<p>Velvet Visualizer utilise des modèles 3D gratuits (crédités individuellement, licence CC BY, via Sketchfab) et des bibliothèques open-source (GLTFKit2/cgltf, licence MIT ; KTX-Software, licence Apache 2.0). L'appli n'est affiliée ni à MaestroDMX, ni à Chauvet, ADJ, Martin, Cameo ou BeamZ — les noms de marques ne servent qu'à décrire la compatibilité. Crédits complets : Aide ▸ Crédits.</p>
+<h2 id="19-questions-fréquentes">19. Questions fréquentes</h2>
+<p><strong>Me faut-il autre chose que mon Mac et mon Maestro (ou une autre console) ?</strong></p>
+<p>Pas de matériel en plus — juste votre Mac et votre console sur le même réseau, avec l'Art-Net ou le sACN activé.</p>
+<p><strong>Ça montre exactement ce qui se passe sur scène ?</strong></p>
+<p>Oui — l'appli affiche le vrai signal envoyé par votre console, donc ce que vous voyez correspond toujours à ce qui part réellement.</p>
+<p><strong>Dois-je repatcher mes fixtures à la main si je les ai déjà dans MaestroDMX ?</strong></p>
+<p>Non — importez le fichier JSON exporté par votre Maestro, il ramène vos fixtures, adresses et groupes automatiquement.</p>
+<p><strong>Que se passe-t-il après l'essai ?</strong></p>
+<p>Vos projets sont conservés. Saisissez une clé de licence pour débloquer à nouveau l'appli.</p>
+<p><strong>Puis-je utiliser ma licence sur un autre Mac ?</strong></p>
+<p>Oui — une licence fonctionne sur 2 Mac. Désactivez-la sur l'un avant de l'activer sur un troisième.</p>
+<p><strong>Y a-t-il une version Windows ?</strong></p>
+<p>Pas encore — Velvet Visualizer fonctionne uniquement sur Mac (macOS 14 ou plus récent).</p>
+
+    </article>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a href="/fr/velvet-visualizer.html">← Retour à Velvet Visualizer</a>
+    </div>
+    <p>© Alexandre Chalon · Velvet · contact@loveandlive.fr</p>
+  </div>
+</footer>
+</body>
+</html>
