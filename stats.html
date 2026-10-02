@@ -41,6 +41,35 @@
 
     <h2>Par page (14 derniers jours)</h2>
     <table id="table-paths"><thead><tr><th>Page</th><th>Visites</th></tr></thead><tbody></tbody></table>
+
+    <h1 style="font-size:1.6rem;margin:48px 0 8px">Téléchargements</h1>
+    <p class="stats-updated">Essais gratuits récupérés par les visiteurs. Aucune donnée personnelle.</p>
+    <div id="dl-loading" style="color:var(--text-soft)">Chargement...</div>
+    <div id="dl-content" hidden>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="num" id="dl-gh-show">–</div><div class="lbl">Velvet Show — total GitHub</div></div>
+        <div class="stat-card"><div class="num" id="dl-gh-vis">–</div><div class="lbl">Velvet Visualizer — total GitHub</div></div>
+        <div class="stat-card"><div class="num" id="dl-today">–</div><div class="lbl">Clics « Télécharger » aujourd'hui</div></div>
+        <div class="stat-card"><div class="num" id="dl-7d">–</div><div class="lbl">Clics sur 7 jours</div></div>
+        <div class="stat-card"><div class="num" id="dl-30d">–</div><div class="lbl">Clics sur 30 jours</div></div>
+      </div>
+
+      <h2>Clics par jour (14 derniers jours)</h2>
+      <table id="dl-days"><thead><tr><th>Jour</th><th>Show</th><th>Visualizer</th><th>Total</th></tr></thead><tbody></tbody></table>
+      <h2>Clics par semaine (8 dernières)</h2>
+      <table id="dl-weeks"><thead><tr><th>Semaine du</th><th>Show</th><th>Visualizer</th><th>Total</th></tr></thead><tbody></tbody></table>
+      <h2>Clics par mois</h2>
+      <table id="dl-months"><thead><tr><th>Mois</th><th>Show</th><th>Visualizer</th><th>Total</th></tr></thead><tbody></tbody></table>
+
+      <h2>Détail GitHub par version</h2>
+      <table id="dl-versions"><thead><tr><th>Version</th><th>Application</th><th>Téléchargements</th></tr></thead><tbody></tbody></table>
+
+      <p style="color:var(--text-faint);font-size:.82rem;margin-top:16px">
+        « Total GitHub » compte tous les téléchargements depuis le début, les tiens et ceux de tes testeurs compris, mais ne donne pas de détail par jour.
+        Les « clics » sont comptés depuis le 2 octobre 2026, uniquement sur les boutons du site (jour, semaine et mois dans l'heure de ton navigateur).
+        Pour Visualizer, un clic ouvre la page de la version, d'où on télécharge : c'est un peu plus que les vrais téléchargements.
+      </p>
+    </div>
   </div>
 </div>
 
@@ -77,6 +106,94 @@
   })
   .catch(() => {
     document.getElementById('loading').textContent = "Impossible de charger les statistiques — réessaie.";
+  });
+})();
+
+(function(){
+  const FN_URL = 'https://pmgqpdjzptryegjfhsry.supabase.co/functions/v1/velvet-stats';
+  const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ3FwZGp6cHRyeWVnamZoc3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzg2OTUsImV4cCI6MjA5ODgxNDY5NX0.efAsSxWcpzq6oWX3KfgV-6xcjxppX8Z_3WWi8kmBqqI';
+  const REPOS = [
+    { app: 'Velvet Show', repo: 'Alxsparker/velvetshow', ghId: 'dl-gh-show' },
+    { app: 'Velvet Visualizer', repo: 'Alxsparker/VELVET-VISUALIZER-releases', ghId: 'dl-gh-vis' }
+  ];
+
+  function esc(s){ const d=document.createElement('div'); d.textContent=String(s); return d.innerHTML; }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function dayKey(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function mondayOf(d){ const x=new Date(d.getFullYear(), d.getMonth(), d.getDate()); const wd=(x.getDay()+6)%7; x.setDate(x.getDate()-wd); return x; }
+  function monthKey(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1); }
+
+  function fillTable(id, keys, counts){
+    const body = document.querySelector('#'+id+' tbody');
+    body.innerHTML = keys.map(k => {
+      const c = counts[k] || {show:0, visualizer:0};
+      return '<tr><td>'+esc(k)+'</td><td>'+c.show+'</td><td>'+c.visualizer+'</td><td>'+(c.show+c.visualizer)+'</td></tr>';
+    }).join('');
+  }
+
+  async function loadClicks(){
+    const r = await fetch(FN_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+ANON_KEY,'apikey':ANON_KEY},
+      body: JSON.stringify({action:'downloads'})
+    });
+    const data = await r.json();
+    const rows = (data.rows || []).map(x => ({app: x.app, d: new Date(x.t)}));
+    const byDay={}, byWeek={}, byMonth={};
+    function add(map,key,app){ (map[key] = map[key] || {show:0, visualizer:0})[app]++; }
+    rows.forEach(x => {
+      if (x.app !== 'show' && x.app !== 'visualizer') return;
+      add(byDay, dayKey(x.d), x.app);
+      add(byWeek, dayKey(mondayOf(x.d)), x.app);
+      add(byMonth, monthKey(x.d), x.app);
+    });
+
+    const now = new Date();
+    const days = [];
+    for (let i=0;i<14;i++){ const d=new Date(now.getFullYear(), now.getMonth(), now.getDate()-i); days.push(dayKey(d)); }
+    const weeks = [];
+    const m0 = mondayOf(now);
+    for (let i=0;i<8;i++){ const d=new Date(m0.getFullYear(), m0.getMonth(), m0.getDate()-7*i); weeks.push(dayKey(d)); }
+    const months = Object.keys(byMonth).sort().reverse();
+    if (!months.length) months.push(monthKey(now));
+
+    fillTable('dl-days', days, byDay);
+    fillTable('dl-weeks', weeks, byWeek);
+    fillTable('dl-months', months, byMonth);
+
+    const sum = k => { const c = byDay[k] || {show:0,visualizer:0}; return c.show + c.visualizer; };
+    document.getElementById('dl-today').textContent = sum(days[0]);
+    document.getElementById('dl-7d').textContent = days.slice(0,7).reduce((a,k)=>a+sum(k),0);
+    const d30 = []; for (let i=0;i<30;i++){ d30.push(dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate()-i))); }
+    document.getElementById('dl-30d').textContent = d30.reduce((a,k)=>a+sum(k),0);
+  }
+
+  async function loadGitHub(){
+    const versions = [];
+    for (const r of REPOS){
+      try {
+        const res = await fetch('https://api.github.com/repos/'+r.repo+'/releases?per_page=100');
+        if (!res.ok) throw new Error(res.status);
+        const rel = await res.json();
+        let total = 0;
+        rel.forEach(x => {
+          const n = (x.assets || []).reduce((a,y)=>a+(y.download_count||0),0);
+          total += n;
+          versions.push({tag:x.tag_name, app:r.app, n:n});
+        });
+        document.getElementById(r.ghId).textContent = total;
+      } catch(e) {
+        document.getElementById(r.ghId).textContent = '?';
+      }
+    }
+    document.querySelector('#dl-versions tbody').innerHTML = versions.length
+      ? versions.map(v => '<tr><td>'+esc(v.tag)+'</td><td>'+esc(v.app)+'</td><td>'+v.n+'</td></tr>').join('')
+      : '<tr><td colspan="3" class="empty">GitHub n\'a pas répondu — réessaie dans quelques minutes.</td></tr>';
+  }
+
+  Promise.all([loadClicks().catch(()=>{}), loadGitHub().catch(()=>{})]).then(() => {
+    document.getElementById('dl-loading').hidden = true;
+    document.getElementById('dl-content').hidden = false;
   });
 })();
 </script>
