@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy — EzQuiel</title>
+<meta name="description" content="What the EzQuiel app does with your data: what stays on your iPhone, what is sent, and why.">
+<meta property="og:title" content="Privacy — EzQuiel">
+<meta property="og:description" content="What the EzQuiel app does with your data: what stays on your iPhone, what is sent, and why.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://velvetshow.app/assets/ezquiel/icon.png">
+<link rel="icon" href="/assets/ezquiel/icon.png">
+<link rel="apple-touch-icon" href="/assets/ezquiel/icon.png">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel-privacy.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel-confidentialite.html">
+<meta name="apple-itunes-app" content="app-id=6745174198">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/ezquiel/ezquiel.css">
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="brand" href="/"><i></i>VELVET</a>
+    <nav>
+      <a href="/ezquiel.html">EzQuiel</a>
+      <a href="/ezquiel-support.html">Help</a>
+      <a class="hide-sm" href="/ezquiel-privacy.html" aria-current="page">Privacy</a>
+      <a href="/fr/ezquiel-confidentialite.html" hreflang="fr">FR</a>
+    </nav>
+  </div>
+</header>
+
+<main class="doc">
+<div class="narrow">
+  <h1>Privacy</h1>
+  <p class="updated">Last updated: October 4, 2026</p>
+  <div class="box">In short: no account to create, no ads, no tracking. The sound of your room is never recorded or sent. Only a numeric summary of the measurement is sent to generate the advice.</div>
+  <h2>What stays on your iPhone</h2>
+  <ul><li><strong>Microphone audio.</strong> It's analyzed live on your iPhone to compute the spectrum and sound level. No audio recording is kept or sent.</li><li><strong>Photos.</strong> Photos of the venue, stage or gear are analyzed on your iPhone (Apple Vision). They are never sent.</li><li><strong>Location.</strong> If you allow it, it's only used to prefill the venue of the analysis and stays on your iPhone. Coordinates are never sent.</li><li><strong>Room measurement (LiDAR), your setups, your history, game scores.</strong> Everything stays on your iPhone.</li><li><strong>Local network.</strong> Only used to find your mixer on the Wi-Fi and send it the EQ settings. Nothing leaves your network.</li></ul>
+  <h2>What is sent, and why</h2>
+  <ul><li><strong>To generate the advice</strong>, the app sends a text describing the analysis: the numeric spectrum summary, the sound level, the venue type and description, the music style, the audience's age, the EQ type and the gear you entered. This text goes through our server (Supabase, hosted in Ireland) and is then passed to OpenAI, which generates the advice. Our server doesn't keep this text. OpenAI may retain it temporarily under its own policy, and doesn't use it to train its models through this service.</li><li><strong>To manage your credits</strong>, the app automatically creates an anonymous account: a random identifier, with no name, email or phone number. The server keeps your credit balance, the history of credits used or added, and the references of App Store purchases, to verify with Apple that they are genuine.</li></ul>
+  <h2>What there isn't</h2>
+  <ul><li>No ads, no trackers, no third-party analytics.</li><li>No selling or sharing of data for commercial purposes.</li><li>Payments are made through Apple: we never see your card.</li></ul>
+  <h2>Your rights</h2>
+  <ul><li>You can ask to access or delete the data linked to your anonymous account (credit balance and history) by writing to <a href="mailto:alexandre.chalon@gmail.com">alexandre.chalon@gmail.com</a>. Deleting the app erases everything stored on your iPhone.</li><li>In the EU you can also file a complaint with your data protection authority.</li></ul>
+  <h2>Contact</h2>
+  <p>Alexandre Chalon — <a href="mailto:alexandre.chalon@gmail.com">alexandre.chalon@gmail.com</a></p>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="/ezquiel.html">EzQuiel</a>
+      <a href="/ezquiel-support.html">Help</a>
+      <a href="/ezquiel-privacy.html">Privacy</a>
+      <a href="/">Velvet Show & Visualizer</a>
+    </div>
+    <div>© 2026 Alexandre Chalon</div>
+  </div>
+</footer>
+
+</body>
+</html>
