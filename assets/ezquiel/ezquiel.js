@@ -1,4 +1,4 @@
-// Pages EzQuiel : apparition au défilement et légère inclinaison des écrans.
+// Pages EzQuiel : apparition au défilement et léger glissement des écrans.
 (function () {
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var items = document.querySelectorAll('.ez-reveal');
@@ -20,8 +20,8 @@
     phones.forEach(function (p, i) {
       var r = p.getBoundingClientRect();
       var t = ((r.top + r.height / 2) - vh / 2) / vh; // -1 … 1 autour du centre de l'écran
-      var dir = i % 2 ? -1 : 1;
-      p.style.transform = 'perspective(900px) rotateY(' + (dir * t * 10).toFixed(2) + 'deg) translateY(' + (t * 18).toFixed(1) + 'px)';
+      // Léger glissement vertical uniquement : aucune rotation, les captures gardent leurs proportions
+      p.style.transform = 'translateY(' + (Math.max(-1, Math.min(1, t)) * 14).toFixed(1) + 'px)';
     });
     ticking = false;
   }
