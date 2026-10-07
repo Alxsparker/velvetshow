@@ -8,35 +8,33 @@
 
   <!-- Pages principales EN -->
   <url><loc>https://velvetshow.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://velvetshow.app/velvet-show.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/velvet-visualizer.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 
   <!-- Pages SEO EN -->
-  <url><loc>https://velvetshow.app/backing-track-software-mac.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/showbuddy-alternative.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/stage-traxx-alternative.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/midi-show-control-mac.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/lyrics-prompter-musicians.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/backing-track-software</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/showbuddy-alternative</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/stagetraxx-alternative</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/midi-show-control-software</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/lyrics-prompter-for-musicians</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- Pages SEO FR -->
-  <url><loc>https://velvetshow.app/fr/logiciel-backing-track.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/fr/alternative-showbuddy.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/fr/alternative-stage-traxx.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/fr/prompteur-paroles-musicien.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/fr/controle-scene-midi.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/fr/logiciel-backing-track</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/fr/alternative-showbuddy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/fr/alternative-stage-traxx</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/fr/prompteur-paroles-musicien</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/fr/logiciel-show-control-midi</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
-  <!-- Pages SEO Visualizer FR -->
-  <url><loc>https://velvetshow.app/fr/visualizer-dmx-mac.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/fr/visualizer-artnet-mac.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/fr/alternative-madmapper.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- Guides Visualizer -->
+  <url><loc>https://velvetshow.app/visualizer-guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/fr/guide-visualizer.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 
-  <!-- Pages SEO Visualizer EN -->
-  <url><loc>https://velvetshow.app/dmx-visualizer-mac.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/artnet-visualizer-mac.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://velvetshow.app/maestrodmx-visualizer.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- EzQuiel -->
+  <url><loc>https://velvetshow.app/ezquiel.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://velvetshow.app/fr/ezquiel.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://velvetshow.app/ezquiel-support.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://velvetshow.app/fr/ezquiel-aide.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://velvetshow.app/ezquiel-privacy.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://velvetshow.app/fr/ezquiel-confidentialite.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 
-  <url><loc>https://velvetshow.app/ezquiel.html</loc><lastmod>2026-10-04</lastmod></url>
-  <url><loc>https://velvetshow.app/fr/ezquiel.html</loc><lastmod>2026-10-04</lastmod></url>
-  <url><loc>https://velvetshow.app/ezquiel-support.html</loc><lastmod>2026-10-04</lastmod></url>
-  <url><loc>https://velvetshow.app/fr/ezquiel-aide.html</loc><lastmod>2026-10-04</lastmod></url>
-  <url><loc>https://velvetshow.app/ezquiel-privacy.html</loc><lastmod>2026-10-04</lastmod></url>
-  <url><loc>https://velvetshow.app/fr/ezquiel-confidentialite.html</loc><lastmod>2026-10-04</lastmod></url>
 </urlset>
