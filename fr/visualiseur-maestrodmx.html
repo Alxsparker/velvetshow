@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualiseur MaestroDMX sur Mac — Votre show en 3D</title>
+  <meta name="description" content="Branchez MaestroDMX en Art-Net et voyez votre show en 3D sur votre Mac. Importez votre scène, sans monter de projecteurs. Essai gratuit 30 jours.">
+  <link rel="canonical" href="https://velvetshow.app/fr/visualiseur-maestrodmx">
+  <link rel="alternate" hreflang="en" href="https://velvetshow.app/maestrodmx-visualizer">
+  <meta property="og:title" content="Visualiseur MaestroDMX sur Mac — Votre show en 3D">
+  <meta property="og:description" content="Branchez MaestroDMX en Art-Net et voyez votre show en 3D sur votre Mac. Importez votre scène, sans monter de projecteurs. Essai gratuit 30 jours.">
+  <meta property="og:image" content="https://velvetshow.app/screenshots/og-visualizer.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://velvetshow.app/screenshots/og-visualizer.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .lp { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .lp h1 { font-family: 'Oswald', sans-serif; font-size: clamp(2rem,5vw,3rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; }
+    .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 .75rem; text-transform: uppercase; letter-spacing: .04em; }
+    .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: .95rem; }
+    .lp ul, .lp ol { color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem; font-size: .95rem; }
+    .lp h1, .lp h2 { text-wrap: balance; }
+    .lp p, .lp li { text-wrap: pretty; }
+    .lp .small { font-size: .8rem; opacity: .8; }
+    .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Faut-il du matériel en plus du Mac et du MaestroDMX ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Votre Mac et votre MaestroDMX sur le même réseau, avec l'Art-Net activé, suffisent."}}, {"@type": "Question", "name": "Dois-je re-patcher mes projecteurs à la main ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Importez le fichier JSON exporté de votre MaestroDMX : Velvet Visualizer reprend vos projecteurs, leurs adresses et leurs groupes."}}, {"@type": "Question", "name": "Existe-t-il une version Windows ou iPad ?", "acceptedAnswer": {"@type": "Answer", "text": "Pas encore. Velvet Visualizer fonctionne sur Mac uniquement (macOS 14 ou plus récent)."}}, {"@type": "Question", "name": "Y a-t-il un essai gratuit ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, 30 jours. Ensuite, c'est un achat unique, sans abonnement."}}]}</script>
+</head>
+<body>
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--red"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span>
+        <span class="menubar__title">VELVET VISUALIZER</span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/fr/">Accueil</a>
+        <a href="/fr/velvet-visualizer.html">Velvet Visualizer</a>
+        <a href="/fr/guide-visualizer.html">Guide d'utilisation</a>
+      </nav>
+    </div>
+  </header>
+  <div class="lp">
+    <p class="eyebrow">Visualiseur MaestroDMX</p>
+    <h1>Voyez votre show MaestroDMX en 3D, sans monter un seul projecteur</h1>
+    <p>Vous avez programmé un show sur votre MaestroDMX, mais les projecteurs sont dans le camion, ou pas encore installés&nbsp;? Velvet Visualizer montre votre show en 3D sur votre Mac&nbsp;: votre scène, vos projecteurs, et la lumière qui change avec la musique.</p>
+    <h2>Comment ça marche, en 3 étapes</h2>
+    <ol>
+      <li><strong>Envoyez de l'Art-Net depuis votre MaestroDMX.</strong> Le logiciel MaestroDMX 1.5 (mars 2026) peut envoyer un univers DMX complet en Art-Net. Votre Mac et votre Maestro doivent être sur le même réseau.</li>
+      <li><strong>Importez votre show.</strong> Dans Velvet Visualizer, choisissez <em>Fichier &#9656; Importer un fichier MaestroDMX&hellip;</em> et sélectionnez le fichier JSON exporté de votre Maestro. Les projecteurs, les adresses et les groupes sont placés pour vous. Un guide MaestroDMX intégré à l'app vous accompagne pas à pas.</li>
+      <li><strong>Regardez-le en direct.</strong> La vue 3D reflète le signal que votre Maestro envoie vraiment, projecteur par projecteur. Un assistant de réglage vérifie que le signal Art-Net arrive et vous prévient quand quelque chose ne va pas.</li>
+    </ol>
+    <h2>Ce que vous pouvez faire</h2>
+    <ul>
+      <li>Voir votre show lumière avant le concert, sans aucun projecteur sur scène</li>
+      <li>Construire une salle virtuelle aux dimensions réelles et y placer votre matériel</li>
+      <li>Vérifier votre patch DMX et repérer les conflits avant de toucher un câble</li>
+      <li>Ajouter des projecteurs depuis les catalogues GDTF et Open Fixture Library</li>
+      <li>Exporter un plan et une liste de matériel (PDF) pour votre équipe</li>
+    </ul>
+    <h2>Pour qui&nbsp;?</h2>
+    <p>Pour les musiciens, les groupes et les petits prestataires qui pilotent leurs lumières avec un MaestroDMX et veulent prévisualiser, préparer ou montrer à un client ce que donnera le show.</p>
+    <h2>Questions</h2>
+    <p><strong>Faut-il du matériel en plus&nbsp;?</strong><br>Non. Votre Mac et votre MaestroDMX sur le même réseau, avec l'Art-Net activé, suffisent.</p>
+    <p><strong>Dois-je re-patcher mes projecteurs à la main&nbsp;?</strong><br>Non. Importez le fichier JSON exporté de votre MaestroDMX&nbsp;: projecteurs, adresses et groupes arrivent automatiquement.</p>
+    <p><strong>Windows ou iPad&nbsp;?</strong><br>Pas encore. Velvet Visualizer fonctionne sur Mac uniquement (macOS 14 ou plus récent).</p>
+    <p><strong>Est-ce gratuit&nbsp;?</strong><br>Vous avez 30 jours d'essai gratuit. Ensuite, c'est un achat unique, sans abonnement. Le prix du moment est sur la <a href="/fr/velvet-visualizer.html">page Velvet Visualizer</a>.</p>
+    <p class="small">Velvet Visualizer est un produit indépendant. Il n'est ni affilié ni approuvé par MaestroDMX ou Limbic Media. Les noms de marques servent uniquement à décrire la compatibilité.</p>
+    <div class="cta-row">
+      <a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest" class="btn btn--primary" target="_blank" rel="noopener">Télécharger — Essai gratuit 30 jours</a>
+      <a href="/fr/velvet-visualizer.html" class="btn btn--ghost">Voir toutes les fonctionnalités</a>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand"><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="footer__name">Velvet Visualizer</span></div>
+      <p class="footer__copy">&copy; 2026 Velvet Visualizer &middot; <a href="/">velvetshow.app</a></p>
+    </div>
+  </footer>
+  <script src="../stats.js"></script>
+</body>
+</html>
