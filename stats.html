@@ -42,6 +42,10 @@
     <h2>Par page (14 derniers jours)</h2>
     <table id="table-paths"><thead><tr><th>Page</th><th>Visites</th></tr></thead><tbody></tbody></table>
 
+    <h2>Par source (14 derniers jours)</h2>
+    <p class="stats-updated">Visites arrivées par un lien repéré, par exemple <code>?s=soundswitch</code> ajouté à la fin de l'adresse. Les visites sans repère ne sont pas listées.</p>
+    <table id="table-sources"><thead><tr><th>Source</th><th>Visites</th></tr></thead><tbody></tbody></table>
+
     <h1 style="font-size:1.6rem;margin:48px 0 8px">Téléchargements</h1>
     <p class="stats-updated">Essais gratuits récupérés par les visiteurs. Aucune donnée personnelle.</p>
     <div id="dl-loading" style="color:var(--text-soft)">Chargement...</div>
@@ -98,11 +102,27 @@
       ? days.map(d => '<tr><td>' + esc(d) + '</td><td>' + esc(data.byDay[d]) + '</td></tr>').join('')
       : '<tr><td colspan="2" class="empty">Aucune visite pour l\'instant.</td></tr>';
 
-    const paths = Object.keys(data.byPath || {}).sort((a,b) => data.byPath[b] - data.byPath[a]);
+    // Une visite peut s'appeler « /page?s=source » : on compte la page sans le repère, et on compte les sources à part.
+    const pageCount = {}, sourceCount = {};
+    Object.keys(data.byPath || {}).forEach(raw => {
+      const n = data.byPath[raw];
+      const parts = raw.split('?s=');
+      const page = parts[0] || '/';
+      pageCount[page] = (pageCount[page] || 0) + n;
+      if (parts.length > 1 && parts[1]) sourceCount[parts[1]] = (sourceCount[parts[1]] || 0) + n;
+    });
+
+    const paths = Object.keys(pageCount).sort((a,b) => pageCount[b] - pageCount[a]);
     const pathsBody = document.querySelector('#table-paths tbody');
     pathsBody.innerHTML = paths.length
-      ? paths.map(p => '<tr><td>' + esc(p) + '</td><td>' + esc(data.byPath[p]) + '</td></tr>').join('')
+      ? paths.map(p => '<tr><td>' + esc(p) + '</td><td>' + esc(pageCount[p]) + '</td></tr>').join('')
       : '<tr><td colspan="2" class="empty">Aucune visite pour l\'instant.</td></tr>';
+
+    const sources = Object.keys(sourceCount).sort((a,b) => sourceCount[b] - sourceCount[a]);
+    const sourcesBody = document.querySelector('#table-sources tbody');
+    sourcesBody.innerHTML = sources.length
+      ? sources.map(p => '<tr><td>' + esc(p) + '</td><td>' + esc(sourceCount[p]) + '</td></tr>').join('')
+      : '<tr><td colspan="2" class="empty">Aucune visite repérée pour l\'instant.</td></tr>';
   })
   .catch(() => {
     document.getElementById('loading').textContent = "Impossible de charger les statistiques — réessaie.";

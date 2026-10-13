@@ -12,7 +12,13 @@
     }).catch(function () { /* une visite ratée n'est pas grave */ });
   }
 
-  track(location.pathname);
+  // Repère de source facultatif dans le lien (?s=soundswitch) : on l'ajoute à la page pour savoir d'où vient la visite.
+  var source = '';
+  try {
+    source = (new URLSearchParams(location.search).get('s') || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 30);
+  } catch (e) { /* navigateur ancien : pas de repère */ }
+
+  track(location.pathname + (source ? '?s=' + source : ''));
 
   // Clic sur un bouton de téléchargement (essai gratuit) : on compte le clic, rien d'autre.
   document.addEventListener('click', function (e) {
