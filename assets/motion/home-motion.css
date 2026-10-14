@@ -1,0 +1,73 @@
+/* Accueil velvetshow.app — finitions de mouvement. Décoratif : sans ce fichier, la page reste complète. */
+:root { --mo-ease: cubic-bezier(.22, 1, .36, 1); }
+
+/* Barre de progression de lecture */
+.mo-progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 200;
+  background: linear-gradient(90deg, var(--orange, #ff6b35), var(--gold, #f0bd57), var(--blue, #4d8fff));
+  transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+}
+
+/* Les deux produits du hero : entrée en cascade, léger flottement des icônes, halo au survol */
+.hero__product { opacity: 0; transform: translateY(16px); animation: mo-rise .9s var(--mo-ease) forwards; }
+.hero__products > a:nth-child(1) { animation-delay: .35s; }
+.hero__products > a:nth-child(3) { animation-delay: .5s; }
+.hero__duo { opacity: 0; animation: mo-fade 1s ease .8s forwards; }
+@keyframes mo-rise { to { opacity: 1; transform: none; } }
+@keyframes mo-fade { to { opacity: 1; } }
+.hero__product__icon { animation: mo-float 6s ease-in-out infinite; }
+.hero__products > a:nth-child(3) .hero__product__icon { animation-delay: -3s; }
+@keyframes mo-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.hero__product { transition: background .3s, transform .35s var(--mo-ease), box-shadow .35s; }
+.hero__product:hover { box-shadow: 0 10px 40px rgba(240,189,87,.12); }
+.hero__product--viz:hover { box-shadow: 0 10px 40px rgba(255,107,53,.16); }
+
+/* Boutons : reflet au survol */
+.btn { position: relative; overflow: hidden; }
+.btn.primary::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-120%);
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.38) 50%, transparent 70%);
+  transition: transform .7s var(--mo-ease);
+}
+.btn.primary:hover { box-shadow: 0 8px 30px rgba(240,189,87,.28); }
+.btn.primary:hover::after { transform: translateX(120%); }
+.btn:active { transform: translateY(0) scale(.98); }
+
+/* Menu : soulignement qui glisse */
+header nav a:not(.cta) { position: relative; }
+header nav a:not(.cta)::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px;
+  background: var(--gold, #f0bd57); transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform .35s var(--mo-ease);
+}
+header nav a:not(.cta):hover::after { transform: scaleX(1); }
+
+/* Titres de section : filet doré */
+.sec-title::after {
+  content: ""; display: block; height: 2px; width: 56px; margin: 12px auto 0; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold, #f0bd57), transparent);
+  transform: scaleX(0); transition: transform .9s var(--mo-ease) .2s;
+}
+.reveal.on .sec-title::after, .sec-title.on::after, .sec-title.reveal.on::after { transform: scaleX(1); }
+
+/* Cartes produits et tarifs */
+.card:hover { box-shadow: 0 18px 44px rgba(0,0,0,.4); border-color: rgba(240,189,87,.28); }
+.price:hover { transform: translateY(-4px); }
+.price.best { animation: mo-price-glow 4.5s ease-in-out infinite; }
+@keyframes mo-price-glow {
+  0%, 100% { box-shadow: 0 0 0 1px var(--gold, #f0bd57), 0 0 30px rgba(240,189,87,.06); }
+  50%      { box-shadow: 0 0 0 1px var(--gold, #f0bd57), 0 0 56px rgba(240,189,87,.20); }
+}
+
+@media (hover: none) { .card:hover, .price:hover, .hero__product:hover { transform: none; } }
+
+/* Mouvement réduit : tout reste visible, rien ne bouge */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero__product, .hero__duo { animation: none; opacity: 1; transform: none; }
+  .hero__product__icon, .price.best { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .sec-title::after { transform: scaleX(1); transition: none; }
+  .btn.primary::after { transition: none; }
+  .mo-progress { display: none; }
+}

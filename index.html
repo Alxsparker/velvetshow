@@ -111,6 +111,7 @@ footer a:hover{color:var(--text)}
   nav a{margin-left:10px;font-size:12px}
 }
 </style>
+<link rel="stylesheet" href="assets/motion/home-motion.css">
 </head>
 <body>
 
@@ -356,7 +357,16 @@ footer a:hover{color:var(--text)}
     ctx.font=`700 ${Math.min(w*.03,28)}px 'Oswald',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillStyle='rgba(155,107,255,.9)';ctx.shadowColor='rgba(155,107,255,1)';ctx.shadowBlur=20;
     ctx.fillText('VISUALIZER',0,0);ctx.restore();
-    t+=.016;requestAnimationFrame(draw);
+    t+=.016;
+    // Mouvement réduit : une seule image fixe. Hors écran ou onglet masqué : l'animation s'arrête.
+    if(!reduceMotion && running) requestAnimationFrame(draw);
+  }
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let running = true;
+  function setRunning(on){ if(on && !running && !reduceMotion){ running = true; requestAnimationFrame(draw); } else if(!on){ running = false; } }
+  if(!reduceMotion && 'IntersectionObserver' in window){
+    new IntersectionObserver(es=>setRunning(es[0].isIntersecting && !document.hidden),{threshold:0}).observe(canvas);
+    document.addEventListener('visibilitychange',()=>setRunning(!document.hidden));
   }
   document.fonts.ready.then(draw);
 })();
@@ -367,5 +377,6 @@ footer a:hover{color:var(--text)}
 })();
 </script>
   <script src="stats.js"></script>
+<script src="assets/motion/home-motion.js" defer></script>
 </body>
 </html>
