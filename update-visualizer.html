@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Downloading Velvet Visualizer…</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0d0e12; color: #e9ebf0; font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; text-align: center; padding: 24px; }
+    main { max-width: 440px; }
+    h1 { font-size: 1.4rem; margin: 0 0 .75rem; }
+    p { color: #9aa1b0; line-height: 1.6; margin: 0 0 1rem; }
+    a.btn { display: inline-block; background: #f2bd57; color: #1a1a1a; font-weight: 600; padding: .7rem 1.2rem; border-radius: 10px; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Your download is starting…</h1>
+    <p>Velvet Visualizer is downloading. When it is done, unzip the file and drag the app into your Applications folder, replacing the old version.</p>
+    <p><a id="dl" class="btn" href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest">Download Velvet Visualizer</a></p>
+    <p style="font-size:.85rem">Nothing happens? Click the button above.</p>
+  </main>
+  <script src="stats.js"></script>
+  <script>
+    // Cherche le ZIP de la dernière version et le télécharge. Si GitHub ne répond pas, le bouton garde le lien vers la page de la version.
+    (function () {
+      var link = document.getElementById('dl');
+      fetch('https://api.github.com/repos/Alxsparker/VELVET-VISUALIZER-releases/releases/latest', { headers: { 'Accept': 'application/vnd.github+json' } })
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function (rel) {
+          var zip = (rel.assets || []).filter(function (a) { return /\.zip$/i.test(a.name); })[0];
+          if (zip && /^https:\/\/github\.com\//.test(zip.browser_download_url)) link.href = zip.browser_download_url;
+        })
+        .catch(function () { /* garde le lien de repli */ })
+        .then(function () { link.click(); });
+    })();
+  </script>
+</body>
+</html>

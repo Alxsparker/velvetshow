@@ -18,6 +18,14 @@
     source = (new URLSearchParams(location.search).get('s') || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 30);
   } catch (e) { /* navigateur ancien : pas de repère */ }
 
+  // Le repère est gardé le temps de la visite : si la personne arrive par ?s=soundswitch puis change de page,
+  // son clic « Télécharger » est quand même rattaché à cette source.
+  var downloadSource = source;
+  try {
+    if (source) sessionStorage.setItem('velvetSrc', source);
+    else downloadSource = sessionStorage.getItem('velvetSrc') || '';
+  } catch (e) { /* stockage indisponible : on garde seulement le repère de la page */ }
+
   track(location.pathname + (source ? '?s=' + source : ''));
 
   // Clic sur un bouton de téléchargement (essai gratuit) : on compte le clic, rien d'autre.
@@ -25,7 +33,8 @@
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
     if (!a) return;
     var href = a.getAttribute('href') || '';
-    if (href.indexOf('velvetshow/releases/latest/download/VELVET.SHOW.zip') !== -1) track('/download/show');
-    else if (href.indexOf('VELVET-VISUALIZER-releases') !== -1) track('/download/visualizer');
+    var suffix = downloadSource ? '?s=' + downloadSource : '';
+    if (href.indexOf('velvetshow/releases/latest/download/VELVET.SHOW.zip') !== -1) track('/download/show' + suffix);
+    else if (href.indexOf('VELVET-VISUALIZER-releases') !== -1) track('/download/visualizer' + suffix);
   });
 })();

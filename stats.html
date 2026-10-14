@@ -65,6 +65,10 @@
       <h2>Clics par mois</h2>
       <table id="dl-months"><thead><tr><th>Mois</th><th>Show</th><th>Visualizer</th><th>Total</th></tr></thead><tbody></tbody></table>
 
+      <h2>Clics par source</h2>
+      <p class="stats-updated">D'où venait la personne qui a cliqué sur « Télécharger » (repère <code>?s=</code> du lien). « sans repère » : arrivée directe, recherche Google ou lien non repéré.</p>
+      <table id="dl-sources"><thead><tr><th>Source</th><th>Show</th><th>Visualizer</th><th>Total</th></tr></thead><tbody></tbody></table>
+
       <h2>Détail GitHub par version</h2>
       <table id="dl-versions"><thead><tr><th>Version</th><th>Application</th><th>Téléchargements</th></tr></thead><tbody></tbody></table>
 
@@ -158,14 +162,15 @@
       body: JSON.stringify({action:'downloads'})
     });
     const data = await r.json();
-    const rows = (data.rows || []).map(x => ({app: x.app, d: new Date(x.t)}));
-    const byDay={}, byWeek={}, byMonth={};
+    const rows = (data.rows || []).map(x => ({app: x.app, src: x.src || '', d: new Date(x.t)}));
+    const byDay={}, byWeek={}, byMonth={}, bySource={};
     function add(map,key,app){ (map[key] = map[key] || {show:0, visualizer:0})[app]++; }
     rows.forEach(x => {
       if (x.app !== 'show' && x.app !== 'visualizer') return;
       add(byDay, dayKey(x.d), x.app);
       add(byWeek, dayKey(mondayOf(x.d)), x.app);
       add(byMonth, monthKey(x.d), x.app);
+      add(bySource, x.src || 'sans repère', x.app);
     });
 
     const now = new Date();
@@ -180,6 +185,11 @@
     fillTable('dl-days', days, byDay);
     fillTable('dl-weeks', weeks, byWeek);
     fillTable('dl-months', months, byMonth);
+    const sources = Object.keys(bySource).sort((a,b) => {
+      const ta = bySource[a].show + bySource[a].visualizer, tb = bySource[b].show + bySource[b].visualizer;
+      return tb - ta;
+    });
+    fillTable('dl-sources', sources, bySource);
 
     const sum = k => { const c = byDay[k] || {show:0,visualizer:0}; return c.show + c.visualizer; };
     document.getElementById('dl-today').textContent = sum(days[0]);
