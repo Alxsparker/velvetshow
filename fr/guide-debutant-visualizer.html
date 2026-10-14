@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velvet Visualizer pour débutants — vos 5 premières minutes</title>
+  <meta name="description" content="Guide pas à pas pour débutants : ouvrir Velvet Visualizer, charger une scène, voir vos lumières en 3D, ajouter vos projecteurs et brancher votre logiciel de lumière en Art-Net.">
+  <link rel="canonical" href="https://velvetshow.app/fr/guide-debutant-visualizer.html">
+  <link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-for-beginners.html">
+  <meta property="og:title" content="Velvet Visualizer pour débutants — vos 5 premières minutes">
+  <meta property="og:description" content="Ouvrir l'app, charger une scène, voir vos lumières en 3D, brancher votre logiciel de lumière. Pas à pas, avec captures d'écran.">
+  <meta property="og:image" content="https://velvetshow.app/screenshots/og-visualizer.jpg">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .lp { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .lp h1 { font-family: 'Oswald', sans-serif; font-size: clamp(2rem,5vw,3rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; text-wrap: balance; }
+    .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--text); margin: 3rem 0 .75rem; letter-spacing: .02em; text-wrap: balance; }
+    .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: 1rem; text-wrap: pretty; }
+    .lp li { color: var(--text-muted); line-height: 1.8; font-size: 1rem; }
+    .lp ul, .lp ol { padding-left: 1.25rem; margin-bottom: 1.25rem; }
+    .lp .step-n { display: inline-block; min-width: 2rem; height: 2rem; line-height: 2rem; text-align: center; border-radius: 50%; background: rgba(255,255,255,.1); margin-right: .6rem; font-size: 1rem; }
+    .lp figure { margin: 1.25rem 0 1.5rem; }
+    .lp figure img { width: 100%; height: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,.12); display: block; }
+    .lp figcaption { color: var(--text-muted); font-size: .85rem; margin-top: .5rem; opacity: .85; }
+    .lp .tip { border-left: 3px solid #f2bd57; padding: .6rem 1rem; background: rgba(242,189,87,.07); border-radius: 0 8px 8px 0; margin: 1rem 0 1.25rem; color: var(--text-muted); line-height: 1.7; }
+    .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+  </style>
+</head>
+<body>
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--red"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span>
+        <span class="menubar__title">VELVET VISUALIZER</span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/fr/">Accueil</a>
+        <a href="/fr/velvet-visualizer.html">Velvet Visualizer</a>
+        <a href="/fr/guide-visualizer.html">Guide complet</a>
+      </nav>
+    </div>
+  </header>
+  <div class="lp">
+    <p class="eyebrow">Guide du débutant</p>
+    <h1>Velvet Visualizer, pas à pas&nbsp;: vos 5 premières minutes</h1>
+    <p>Aucune connaissance de console lumière n'est nécessaire. À la fin de cette page, vous aurez une scène à l'écran, vos lumières qui jouent en 3D, et vous saurez brancher votre propre logiciel de lumière.</p>
+
+    <h2><span class="step-n">0</span>Le faire tourner</h2>
+    <ol>
+      <li><a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest" target="_blank" rel="noopener">Téléchargez l'essai gratuit</a> (un fichier .zip). Il fonctionne sur un Mac avec macOS 14 ou plus récent.</li>
+      <li>Double-cliquez sur le .zip pour le décompresser, puis glissez <strong>Velvet Visualizer</strong> dans votre dossier <strong>Applications</strong>.</li>
+      <li>Ouvrez-le. Vous avez <strong>30 jours</strong> pour tout essayer, sans compte et sans carte bancaire.</li>
+    </ol>
+
+    <h2><span class="step-n">1</span>Choisir un point de départ</h2>
+    <p>La première fois que vous ouvrez l'app, une carte d'accueil vous demande comment commencer. Le choix le plus simple est <strong>DJ</strong> : une scène toute prête avec un pupitre DJ et quelques lumières.</p>
+    <figure>
+      <img src="../screenshots/guide/fr/01-accueil.jpg" alt="Carte d'accueil de Velvet Visualizer avec les choix Importer mon fichier de régie, Décrire mon matériel, Guide de connexion, Scène vide, DJ, Groupe, Show électro et Show rock" loading="lazy">
+      <figcaption>La carte d'accueil. Cliquez sur <strong>DJ</strong> pour commencer, ou sur <strong>Show électro</strong> / <strong>Show rock</strong> pour voir une démonstration.</figcaption>
+    </figure>
+    <div class="tip">Vous utilisez MaestroDMX&nbsp;? Choisissez plutôt <strong>Importer mon fichier de régie (JSON)</strong> : vos projecteurs sont placés pour vous.</div>
+
+    <h2><span class="step-n">2</span>Regarder votre scène</h2>
+    <p>Votre scène apparaît avec ses lumières. Cliquez sur une lumière et glissez-la pour la déplacer. Le bandeau du bas indique <em>Scène prête</em> quand tout est en place.</p>
+    <figure>
+      <img src="../screenshots/guide/fr/02-modele-dj.jpg" alt="La scène DJ chargée dans Velvet Visualizer&nbsp;: un pupitre DJ, un truss avec des lyres et des projecteurs, et le message Scène prête" loading="lazy">
+      <figcaption>Le point de départ DJ&nbsp;: un pupitre, un truss et cinq lumières.</figcaption>
+    </figure>
+
+    <h2><span class="step-n">3</span>Allumer les lumières&nbsp;: le mode Spectacle</h2>
+    <p>Cliquez sur <strong>Spectacle</strong> en haut à gauche. La salle s'éteint pour que vous voyiez les faisceaux, comme à un vrai concert. Un petit panneau <em>Vue Public</em> permet de regarder depuis la gauche, le centre ou la droite. Cliquez de nouveau sur <strong>Spectacle</strong> pour revenir.</p>
+    <figure>
+      <img src="../screenshots/guide/fr/03-mode-spectacle.jpg" alt="Mode Spectacle&nbsp;: la scène plongée dans le noir avec des faisceaux colorés du truss et le panneau Vue Public" loading="lazy">
+      <figcaption>Le mode Spectacle&nbsp;: ce que verrait votre public.</figcaption>
+    </figure>
+
+    <h2><span class="step-n">4</span>Ajouter vos propres lumières</h2>
+    <p>Cliquez sur <strong>Bibliothèque</strong> (en haut à gauche). Tapez le nom de votre projecteur dans la recherche, sous <em>Projecteurs réels</em>. Introuvable&nbsp;? Cliquez sur <strong>Chercher en ligne</strong> : des milliers de modèles sont disponibles. Toujours rien&nbsp;? <strong>Créer…</strong> vous laisse le décrire vous-même.</p>
+    <figure>
+      <img src="../screenshots/guide/fr/04-bibliotheque.jpg" alt="Le panneau Bibliothèque ouvert à gauche&nbsp;: départs rapides, démos et structures" loading="lazy">
+      <figcaption>La Bibliothèque&nbsp;: départs rapides, démos, structures et vos projecteurs.</figcaption>
+    </figure>
+
+    <h2><span class="step-n">5</span>Brancher votre logiciel de lumière</h2>
+    <p>C'est l'étape qui fait réagir la scène à <em>votre</em> show. Cliquez sur le petit <strong>?</strong> à côté de l'interrupteur <strong>Live DMX</strong> : l'assistant de configuration Art-Net s'ouvre.</p>
+    <figure>
+      <img src="../screenshots/guide/fr/05-assistant-artnet.jpg" alt="L'assistant de configuration Art-Net&nbsp;: l'adresse de ce Mac, l'état de l'écoute, et les réglages à faire dans votre logiciel de lumière" loading="lazy">
+      <figcaption>L'assistant de configuration. L'étape 1 montre l'adresse de ce Mac sur votre réseau (masquée ici).</figcaption>
+    </figure>
+    <ol>
+      <li><strong>Copiez l'adresse</strong> affichée à l'étape 1.</li>
+      <li>Dans votre logiciel de lumière (MaestroDMX, SoundSwitch, QLC+…), activez la sortie <strong>Art-Net</strong> et collez cette adresse comme destination.</li>
+      <li>De retour dans Velvet Visualizer, cliquez sur <strong>Activer Live DMX pour tester</strong>. Allumez une lumière dans votre logiciel&nbsp;: chaque étape de l'assistant passe au vert quand le signal arrive.</li>
+    </ol>
+    <div class="tip">Un autre logiciel utilise déjà le port Art-Net (SoundSwitch, par exemple)&nbsp;? Velvet Visualizer passe tout seul en mode local et affiche un voyant bleu <strong>LOCAL</strong>. Il reçoit alors ce qui est envoyé depuis ce même Mac.</div>
+
+    <h2>Enregistrer et partager</h2>
+    <p>Utilisez le menu <strong>Projet</strong> (en haut à droite) pour enregistrer votre scène ou exporter un plan PDF pour votre technicien ou votre client.</p>
+
+    <h2>Un blocage&nbsp;?</h2>
+    <p>Tout est expliqué dans le <a href="/fr/guide-visualizer.html">guide complet</a>. Vous pouvez aussi m'écrire directement&nbsp;: je suis développeur seul et je lis tout.</p>
+
+    <div class="cta-row">
+      <a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest" class="btn btn--primary" target="_blank" rel="noopener">Télécharger — essai gratuit de 30 jours</a>
+      <a href="/fr/velvet-visualizer.html" class="btn btn--ghost">Voir toutes les fonctions</a>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand"><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="footer__name">Velvet Visualizer</span></div>
+      <p class="footer__copy">&copy; 2026 Velvet Visualizer &middot; <a href="/fr/">velvetshow.app</a></p>
+    </div>
+  </footer>
+  <script src="../stats.js"></script>
+</body>
+</html>
