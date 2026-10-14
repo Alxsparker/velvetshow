@@ -1,0 +1,125 @@
+/* Velvet Visualizer — mouvement et finitions (page produit).
+   Tout est décoratif : sans ce fichier, la page reste complète. Mouvement réduit respecté en bas de fichier. */
+
+:root { --mo-ease: cubic-bezier(.22, 1, .36, 1); }
+
+/* ---------- Barre de progression de lecture (en haut de la page) ---------- */
+.mo-progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 200;
+  background: linear-gradient(90deg, var(--orange, #ff6b35), var(--gold, #f0bd57), var(--blue, #4d8fff));
+  transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+}
+
+/* ---------- Hero : faisceaux de scène ---------- */
+.hero { position: relative; overflow: hidden; isolation: isolate; }
+.hero__inner { position: relative; z-index: 2; }
+
+.mo-beams { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.mo-beam {
+  position: absolute; top: -20%; left: 50%; width: 220px; height: 150%;
+  transform-origin: 50% 0;
+  background: linear-gradient(180deg, rgba(var(--c), .55) 0%, rgba(var(--c), .16) 38%, rgba(var(--c), 0) 78%);
+  clip-path: polygon(47% 0, 53% 0, 100% 100%, 0 100%);
+  filter: blur(20px);
+  opacity: .0;
+  animation: mo-beam-in 1.4s var(--mo-ease) forwards, mo-sway var(--dur, 9s) ease-in-out infinite alternate;
+  animation-delay: var(--delay, 0s), var(--delay, 0s);
+  will-change: transform;
+}
+.mo-beam:nth-child(1) { --c: 255,107,53;  --dur: 10s; --delay: .15s; margin-left: -520px; --from: -22deg; --to: -4deg; }
+.mo-beam:nth-child(2) { --c: 77,143,255;  --dur: 12s; --delay: .45s; margin-left: -300px; --from: -8deg;  --to: 14deg; }
+.mo-beam:nth-child(3) { --c: 155,107,255; --dur: 11s; --delay: .30s; margin-left:  120px; --from: -14deg; --to: 8deg;  }
+.mo-beam:nth-child(4) { --c: 240,189,87;  --dur: 13s; --delay: .60s; margin-left:  320px; --from: 4deg;   --to: 24deg; }
+.mo-beams.mo-paused .mo-beam { animation-play-state: paused; }
+.mo-glow {
+  position: absolute; left: 50%; bottom: -35%; width: 120%; height: 70%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 100%, rgba(240,189,87,.10), rgba(255,107,53,.05) 45%, transparent 70%);
+}
+@keyframes mo-beam-in { to { opacity: .62; } }
+@keyframes mo-sway {
+  from { transform: rotate(var(--from, -10deg)); }
+  to   { transform: rotate(var(--to, 10deg)); }
+}
+
+/* ---------- Hero : entrée en cascade ---------- */
+.mo-hero-in { opacity: 0; transform: translateY(14px); animation: mo-rise .8s var(--mo-ease) forwards; }
+@keyframes mo-rise { to { opacity: 1; transform: none; } }
+
+/* Souris : léger décalage des faisceaux (variables posées par le script) */
+.mo-beams { transform: translate3d(var(--mx, 0px), var(--my, 0px), 0); transition: transform .5s var(--mo-ease); }
+
+/* ---------- Boutons ---------- */
+/* Le bouton doré de l'en-tête héritait du gris des liens (texte gris sur fond doré) : on rétablit le texte foncé. */
+.nav__links a.btn-p, .nav__links a.btn-p:hover { color: #1a1405; }
+.btn { position: relative; overflow: hidden; transition: transform .25s var(--mo-ease), box-shadow .25s, background .2s, opacity .2s; }
+.btn-p::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-120%);
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.38) 50%, transparent 70%);
+  transition: transform .7s var(--mo-ease);
+}
+.btn-p:hover { opacity: 1; box-shadow: 0 8px 30px rgba(240,189,87,.28); transform: translateY(-2px); }
+.btn-p:hover::after { transform: translateX(120%); }
+.btn-p:active, .btn-g:active { transform: translateY(0) scale(.98); }
+.btn-g:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.18), 0 8px 24px rgba(0,0,0,.35); }
+
+/* ---------- Navigation : soulignement qui glisse ---------- */
+.nav__links a { position: relative; }
+.nav__links a:not(.btn)::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px;
+  background: var(--gold, #f0bd57); transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform .35s var(--mo-ease);
+}
+.nav__links a:not(.btn):hover::after { transform: scaleX(1); }
+
+/* ---------- Titres de section : un filet qui se trace à l'apparition ---------- */
+.sec-title { position: relative; }
+.sec-title::after {
+  content: ""; display: block; height: 2px; width: 56px; margin-top: 12px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold, #f0bd57), transparent);
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform .9s var(--mo-ease) .25s;
+}
+.reveal.on .sec-title::after, .sec-title.reveal.on::after, .mo-in .sec-title::after { transform: scaleX(1); }
+
+/* ---------- Captures d'écran : inclinaison douce vers la souris ---------- */
+.frame { transform-style: preserve-3d; will-change: transform; transition: transform .5s var(--mo-ease), box-shadow .5s; }
+.frame:hover { transform: translateY(-4px) scale(1.015); box-shadow: 0 28px 70px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.08); }
+.frame.mo-tilting { transition: transform .08s linear, box-shadow .5s; }
+
+/* ---------- Cartes ---------- */
+.card3 { transition: transform .35s var(--mo-ease), border-color .35s, box-shadow .35s; }
+.card3:hover { transform: translateY(-3px); border-color: rgba(240,189,87,.35); box-shadow: 0 14px 34px rgba(0,0,0,.4); }
+.pcard { animation: mo-price-glow 4.5s ease-in-out infinite; }
+@keyframes mo-price-glow {
+  0%, 100% { box-shadow: 0 0 0 1px var(--gold, #f0bd57), 0 0 50px rgba(240,189,87,.07); }
+  50%      { box-shadow: 0 0 0 1px var(--gold, #f0bd57), 0 0 70px rgba(240,189,87,.20); }
+}
+
+/* ---------- Chaîne de signal : une impulsion qui traverse les étapes ---------- */
+.prow .pc { animation: mo-signal 6s ease-in-out infinite; animation-delay: calc(var(--i, 0) * .55s); }
+@keyframes mo-signal {
+  0%, 18%, 100% { box-shadow: none; filter: none; }
+  8%            { box-shadow: 0 0 0 1px rgba(240,189,87,.5), 0 0 22px rgba(240,189,87,.28); filter: brightness(1.35); }
+}
+
+/* ---------- Mobile : on allège ---------- */
+@media (max-width: 700px) {
+  .mo-beam { width: 150px; }
+  .mo-beam:nth-child(3), .mo-beam:nth-child(4) { display: none; }
+  .mo-beam:nth-child(1) { margin-left: -250px; }
+  .mo-beam:nth-child(2) { margin-left: 60px; }
+}
+@media (hover: none) { .frame:hover, .card3:hover { transform: none; } }
+
+/* ---------- Mouvement réduit : tout reste visible, rien ne bouge ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .mo-beam { animation: none; opacity: .5; transform: rotate(var(--from, -8deg)); }
+  .mo-hero-in { animation: none; opacity: 1; transform: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .sec-title::after { transform: scaleX(1); transition: none; }
+  .pcard, .prow .pc { animation: none; }
+  .btn, .btn-p::after, .frame, .card3 { transition: none; }
+  .mo-progress { display: none; }
+}
