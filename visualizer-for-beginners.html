@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velvet Visualizer for beginners — your first 5 minutes</title>
+  <meta name="description" content="A step-by-step guide for complete beginners: open Velvet Visualizer, load a stage, see your lights in 3D, add your fixtures and connect your lighting software over Art-Net.">
+  <link rel="canonical" href="https://velvetshow.app/visualizer-for-beginners.html">
+  <meta property="og:title" content="Velvet Visualizer for beginners — your first 5 minutes">
+  <meta property="og:description" content="Open the app, load a stage, see your lights in 3D, connect your lighting software. Step by step, with screenshots.">
+  <meta property="og:image" content="https://velvetshow.app/screenshots/og-visualizer.jpg">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .lp { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .lp h1 { font-family: 'Oswald', sans-serif; font-size: clamp(2rem,5vw,3rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; text-wrap: balance; }
+    .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--text); margin: 3rem 0 .75rem; letter-spacing: .02em; text-wrap: balance; }
+    .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: 1rem; text-wrap: pretty; }
+    .lp li { color: var(--text-muted); line-height: 1.8; font-size: 1rem; }
+    .lp ul, .lp ol { padding-left: 1.25rem; margin-bottom: 1.25rem; }
+    .lp .step-n { display: inline-block; min-width: 2rem; height: 2rem; line-height: 2rem; text-align: center; border-radius: 50%; background: rgba(255,255,255,.1); margin-right: .6rem; font-size: 1rem; }
+    .lp figure { margin: 1.25rem 0 1.5rem; }
+    .lp figure img { width: 100%; height: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,.12); display: block; }
+    .lp figcaption { color: var(--text-muted); font-size: .85rem; margin-top: .5rem; opacity: .85; }
+    .lp .tip { border-left: 3px solid #f2bd57; padding: .6rem 1rem; background: rgba(242,189,87,.07); border-radius: 0 8px 8px 0; margin: 1rem 0 1.25rem; color: var(--text-muted); line-height: 1.7; }
+    .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+  </style>
+</head>
+<body>
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--red"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span>
+        <span class="menubar__title">VELVET VISUALIZER</span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/velvet-visualizer.html">Velvet Visualizer</a>
+        <a href="/visualizer-guide.html">Full user guide</a>
+      </nav>
+    </div>
+  </header>
+  <div class="lp">
+    <p class="eyebrow">Beginner's guide</p>
+    <h1>Velvet Visualizer, step by step: your first 5 minutes</h1>
+    <p>No lighting-console knowledge needed. By the end of this page you will have a stage on your screen, your lights playing in 3D, and you will know how to plug in your own lighting software.</p>
+
+    <h2><span class="step-n">0</span>Get it running</h2>
+    <ol>
+      <li><a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest" target="_blank" rel="noopener">Download the free trial</a> (a .zip file). It works on a Mac with macOS 14 or newer.</li>
+      <li>Double-click the .zip to unzip it, then drag <strong>Velvet Visualizer</strong> into your <strong>Applications</strong> folder.</li>
+      <li>Open it. You get <strong>30 days</strong> to try everything, no account, no card.</li>
+    </ol>
+
+    <h2><span class="step-n">1</span>Pick a starting point</h2>
+    <p>The first time you open the app, a welcome card asks how you want to start. The simplest choice is <strong>DJ</strong>: a ready-made stage with a DJ booth and a few lights.</p>
+    <figure>
+      <img src="screenshots/guide/01-welcome.jpg" alt="Velvet Visualizer welcome card with the options Import my lighting file, Describe my gear, Connection guide, Empty stage, DJ, Band, Electro show and Rock show" loading="lazy">
+      <figcaption>The welcome card. Click <strong>DJ</strong> to get started, or <strong>Electro show</strong> / <strong>Rock show</strong> to watch a demo.</figcaption>
+    </figure>
+    <div class="tip">Use MaestroDMX? Choose <strong>Import my lighting file (JSON)</strong> instead and your fixtures are placed for you.</div>
+
+    <h2><span class="step-n">2</span>Look at your stage</h2>
+    <p>Your stage appears with its lights. Click and drag a light to move it. The panel at the bottom says <em>Stage ready</em> when everything is in place.</p>
+    <figure>
+      <img src="screenshots/guide/02-dj-layout.jpg" alt="The DJ stage loaded in Velvet Visualizer: a DJ booth, a truss with moving heads and spots, and the Stage ready message" loading="lazy">
+      <figcaption>The DJ starting point: a booth, a truss and five lights.</figcaption>
+    </figure>
+
+    <h2><span class="step-n">3</span>Switch the lights on: Show mode</h2>
+    <p>Click <strong>Show</strong> at the top left. The room goes dark so you can see the beams, like at a real gig. A small <em>Audience View</em> panel lets you look from the left, the centre or the right. Click <strong>Show</strong> again to come back.</p>
+    <figure>
+      <img src="screenshots/guide/03-show-mode.jpg" alt="Show mode: the dark stage with coloured beams from the truss and the Audience View panel" loading="lazy">
+      <figcaption>Show mode: what your audience would see.</figcaption>
+    </figure>
+
+    <h2><span class="step-n">4</span>Add your own lights</h2>
+    <p>Click <strong>Library</strong> (top left). Type the name of your fixture in the search box under <em>Real fixtures</em>. Not found? Click <strong>Search online</strong>: thousands of models are available. Still nothing? <strong>Create…</strong> lets you describe it yourself.</p>
+    <figure>
+      <img src="screenshots/guide/04-library.jpg" alt="The Library panel open on the left: quick starts, demo shows and structures" loading="lazy">
+      <figcaption>The Library: quick starts, demo shows, structures and your fixtures.</figcaption>
+    </figure>
+
+    <h2><span class="step-n">5</span>Connect your lighting software</h2>
+    <p>This is the step that makes the stage react to <em>your</em> show. Click the small <strong>?</strong> next to the <strong>Live DMX</strong> switch: the Art-Net Setup Assistant opens.</p>
+    <figure>
+      <img src="screenshots/guide/05-artnet-assistant.jpg" alt="The Art-Net Setup Assistant: this Mac's address, the listening status, and the settings to enter in your lighting software" loading="lazy">
+      <figcaption>The Setup Assistant. Step 1 shows this Mac's network address (hidden here).</figcaption>
+    </figure>
+    <ol>
+      <li><strong>Copy the address</strong> shown in step 1.</li>
+      <li>In your lighting software (MaestroDMX, SoundSwitch, QLC+…), turn on the <strong>Art-Net</strong> output and paste that address as the destination.</li>
+      <li>Back in Velvet Visualizer, click <strong>Turn on Live DMX to test</strong>. Play a light in your software: each step in the assistant turns green when the signal arrives.</li>
+    </ol>
+    <div class="tip">Another app already uses the Art-Net port (SoundSwitch, for example)? Velvet Visualizer switches to a local mode on its own and shows a blue <strong>LOCAL</strong> light. It then receives what is sent from this same Mac.</div>
+
+    <h2>Save and share</h2>
+    <p>Use the <strong>Project</strong> menu (top right) to save your stage or to export a PDF plan for your technician or your client.</p>
+
+    <h2>Stuck?</h2>
+    <p>Everything is explained in the <a href="/visualizer-guide.html">full user guide</a>. You can also write to me directly: I'm a solo developer and I read everything.</p>
+
+    <div class="cta-row">
+      <a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest" class="btn btn--primary" target="_blank" rel="noopener">Download — free 30-day trial</a>
+      <a href="/velvet-visualizer.html" class="btn btn--ghost">See all features</a>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand"><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="footer__name">Velvet Visualizer</span></div>
+      <p class="footer__copy">&copy; 2026 Velvet Visualizer &middot; <a href="/">velvetshow.app</a></p>
+    </div>
+  </footer>
+  <script src="stats.js"></script>
+</body>
+</html>
