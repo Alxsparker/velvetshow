@@ -93,4 +93,29 @@
       });
     });
   }
+
+  // 5) Démo du hero : elle ne tourne que lorsqu'elle est visible
+  var demo = document.querySelector('video.mo-demo');
+  if (demo) {
+    if (reduce || !('IntersectionObserver' in window)) {
+      demo.controls = true;
+    } else {
+      new IntersectionObserver(function (entries) {
+        var on = entries[0].isIntersecting && !document.hidden;
+        if (on) { var p = demo.play(); if (p && p.catch) p.catch(function () {}); } else { demo.pause(); }
+      }, { threshold: 0.25 }).observe(demo);
+      document.addEventListener('visibilitychange', function () { if (document.hidden) demo.pause(); });
+    }
+  }
+
+  // 6) Lueur qui suit le pointeur sur les cartes
+  if (!reduce && window.matchMedia('(hover: hover)').matches) {
+    Array.prototype.forEach.call(document.querySelectorAll('.card3'), function (c) {
+      c.addEventListener('pointermove', function (e) {
+        var r = c.getBoundingClientRect();
+        c.style.setProperty('--px', (e.clientX - r.left) + 'px');
+        c.style.setProperty('--py', (e.clientY - r.top) + 'px');
+      }, { passive: true });
+    });
+  }
 })();
