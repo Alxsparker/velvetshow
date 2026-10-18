@@ -160,10 +160,11 @@ footer a:hover{color:var(--text)}
       <div class="hero__product__icon"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAAAAMEBQYHAgEI/8QAOBAAAQMDAAUICAYDAAAAAAAAAQACAwQFEQYSITGBBxMyQVFhcbEUIiQzQpHB0SNFUpPh8BVig//EABoBAAIDAQEAAAAAAAAAAAAAAAMEAAEFAgb/xAAiEQACAgIBBQADAAAAAAAAAAAAAQIDBBFBBRIhIjETUYH/2gAMAwEAAhEDEQA/AMLUxbNHpa9pkllbBEN5cMn5KNp2gygnqOz+/NW60ziVuoAPVGNXuR64KT0xnHpVj8iQ0aswGHXGoJ6yIhjzQdG7IPzGo/bH3XtxifS1Gqei8Zae5RElU5pIJXUoKL0yra+x6JJ2j9lH5hP+2Pukn2Ozt3V85/5j7qLdVO7Vy2dziBlc6Qs3ofSWm1gerVz574x90yq7U6BnORSCWPwwQpG3UUldWNiaNg2uPYBvKeXhraKLVxhztjR3Iyx9xchWWWlNQX0qWEJSUeuShLDaewiOHDx+ilLfWei1LH7xnaO0KHedVuR1H6JRkuRkFdQlpjFNjg9o0yttzbtaDzO2ZrdeIj4h2cfNZ7WZDw7t3+Kumh10M1O6m1vxqf12f7M6xwO3im2m9i9FfHcadvslXlwwNjJB0m8d6dtSsrU0bGbRG2hXw/pSC85Tuhj15NYjIbtTTUOstA5PNGxdK11XUs9ho8SSk7nO+FvHyCWph3S0eUzblTW5MsNg0fFrsgmqAG1FQ3nHl3wM3jPn8lnF8rxX3KWRuyIHDB2AblpPKDevQbNzDXYqa/Jx+mIH6nyKx6SXGSSncuxRSrjwZHSqp2OWRZ9fw8ecvPBCTjOtkntQsw9CvCPJvd8fokWuIOwpaf3fFNwqOkTNkuklsucFWzaY3ZLf1DrHELcbdbqPSK1z2WR49GroxLRzH4H72n6HivnuI7Vs3JfcTW0JoC72ijdz0HaWE+sOB28SmarNJpmthXt1ypfJQHaN18d9dan07xWNm5kxY262cYW6RWan0btFLYWPa0RNM9fMNxdjLj4ADA8Fcm6PW6W7x6UOhBrmwau7YXYwHeONizLlOujrXZJKcO9suTiXnrbED9T5I2POKba4PKdWplZqH7ZkOl9+ffL9U1nRiJ1YmfpYNjR8lWXuJO0peodlxTYpSyTb2x2mtQgorgcQdE+KF5T9E+KENBzqf3fFN2sJTmQZy3t3eKQa8sKnJa1yOqejlkcNVpWk8nVtudFf6SshjBDHjWBeAC07CN/Ys5p7hJCQWvI8CrFaNKKuGdg55+AetxKPDs15NLF/Bv2b2fYLIo/RAwe7IzwXz1ynWe73K+1FW6D8HoxgPB1WjYBvV3puUqKPRIOLhz7RqglY9e9Oq+eokDah7WknoOI8kTFjGCbmzF6lTdGaUfJTaygngcQ9hCjnsIO0KVrLtNVOJkkc495yo17y8oVvZv1JV369hSn6J8ULqIYGPmhCQcHjIwknbekM9/WhCpkOMN7HJRkhjOW5/vFCFRabQ8/zFWIea1zqdmP5TN8rpDl2fl/KEK9sjbl9OMDvXTRjcMd6EKihZg1QhCF0Q//Z" alt="Velvet Visualizer"></div>
       <div class="hero__product__name">Velvet Visualizer</div>
       <div class="hero__product__pitch">Show lumière 3D · ArtNet · IA</div>
-      <div class="hero__product__price"><s>99 €</s> 69 € · lancement</div>
+      <div class="hero__product__price"><span data-launch-after="99 €"><s>99 €</s> 69 € · lancement</span></div>
     </a>
   </div>
   <div class="hero__duo">Les deux — <strong>Velvet Duo <s>139 €</s> 109 €</strong> · <a href="#pricing">Voir les tarifs →</a></div>
+  <p data-launch-countdown hidden style="text-align:center;color:var(--orange,#ff6b35);font-weight:600;margin:10px 0 0"></p>
 </section>
 
 <div class="wrap">
@@ -243,12 +244,13 @@ footer a:hover{color:var(--text)}
     </div>
     <div class="price reveal d3">
       <h3>Velvet Visualizer</h3>
-      <p class="was"><s>99 €</s> Prix de lancement</p>
-      <div class="amount">69<small> €</small></div>
+      <p class="was" data-launch-hide><s>99 €</s> Prix de lancement</p>
+      <div class="amount" data-launch-after='99<small> €</small>'>69<small> €</small></div>
       <p class="trial">Essai gratuit 30 jours</p>
       <a class="btn" href="https://velvetshow.lemonsqueezy.com/checkout/buy/9d48e0fc-d518-4ebb-9990-a52e0edfdc38?checkout[discount_code]=EXMZU0OA">Acheter</a>
     </div>
   </div>
+  <p data-launch-countdown hidden class="note" style="color:var(--orange,#ff6b35);font-weight:600"></p>
   <p class="note">Une licence fonctionne sur 2 de vos Mac. Prix de lancement pour les 100 premiers clients ou 2 mois.</p>
 </section>
 
@@ -397,6 +399,7 @@ footer a:hover{color:var(--text)}
 })();
 </script>
   <script src="../stats.js"></script>
+  <script src="../assets/launch-countdown.js" defer></script>
 <script src="../assets/motion/home-motion.js" defer></script>
 </body>
 </html>
