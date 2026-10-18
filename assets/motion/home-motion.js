@@ -19,4 +19,29 @@
     }, { passive: true });
     update();
   }
+
+  // La démo du Visualizer ne tourne que lorsqu'elle est visible (et jamais en mode « mouvement réduit »).
+  var demo = document.querySelector('video.mo-demo');
+  if (demo) {
+    if (reduce || !('IntersectionObserver' in window)) {
+      demo.controls = true;
+    } else {
+      new IntersectionObserver(function (entries) {
+        var on = entries[0].isIntersecting && !document.hidden;
+        if (on) { var p = demo.play(); if (p && p.catch) p.catch(function () {}); } else { demo.pause(); }
+      }, { threshold: 0.25 }).observe(demo);
+      document.addEventListener('visibilitychange', function () { if (document.hidden) demo.pause(); });
+    }
+  }
+
+  // Lueur qui suit le pointeur sur les cartes produits.
+  if (!reduce && window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.card').forEach(function (card) {
+      card.addEventListener('pointermove', function (e) {
+        var r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      }, { passive: true });
+    });
+  }
 })();
