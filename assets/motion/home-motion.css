@@ -113,3 +113,34 @@ header nav a:not(.cta):hover::after { transform: scaleX(1); }
   .card ul li { opacity: 1; transform: none; transition: none; }
   .card::before { display: none; }
 }
+
+/* Bandeau EzQuiel : attire l'œil sans gêner la lecture */
+.ez-strip { position: relative; overflow: hidden; isolation: isolate; transition: transform .35s var(--mo-ease), box-shadow .35s, border-color .35s; }
+/* Un reflet qui traverse le bandeau toutes les quelques secondes */
+.ez-strip::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 40%; z-index: -1; pointer-events: none;
+  background: linear-gradient(105deg, transparent 0%, rgba(34,211,238,.16) 45%, rgba(168,85,247,.16) 55%, transparent 100%);
+  transform: translateX(-120%); animation: mo-ez-sweep 5.5s ease-in-out 1.2s infinite;
+}
+@keyframes mo-ez-sweep { 0% { transform: translateX(-120%); } 38%, 100% { transform: translateX(330%); } }
+/* Bordure qui respire entre cyan et violet */
+.ez-strip { animation: mo-ez-border 4.5s ease-in-out infinite; }
+@keyframes mo-ez-border {
+  0%, 100% { border-color: rgba(34,211,238,.45); box-shadow: 0 0 0 0 rgba(34,211,238,0), 0 0 28px rgba(34,211,238,.10); }
+  50%      { border-color: rgba(168,85,247,.55); box-shadow: 0 0 0 0 rgba(168,85,247,0), 0 0 38px rgba(168,85,247,.20); }
+}
+/* L'icône bat doucement, avec un anneau qui s'étend */
+.ez-strip img { position: relative; animation: mo-ez-icon 3.2s ease-in-out infinite; }
+@keyframes mo-ez-icon {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34,211,238,.45); }
+  50%      { transform: scale(1.06); box-shadow: 0 0 0 10px rgba(34,211,238,0); }
+}
+/* La flèche pousse vers la droite */
+.ez-strip-cta { display: inline-block; animation: mo-ez-nudge 2.4s ease-in-out infinite; }
+@keyframes mo-ez-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
+.ez-strip:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(34,211,238,.16), 0 0 44px rgba(168,85,247,.18); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ez-strip, .ez-strip img, .ez-strip-cta { animation: none; }
+  .ez-strip::before { display: none; }
+}
