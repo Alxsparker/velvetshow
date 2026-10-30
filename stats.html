@@ -21,6 +21,9 @@
   .empty { color: var(--text-faint); font-style: italic; }
   #loading { color: var(--text-soft); }
   .back-link { color: var(--blue); text-decoration: none; }
+  .fb-link { font-size: .78rem; word-break: break-all; color: var(--text-soft); }
+  .fb-copy { margin-left: 6px; padding: 3px 10px; border-radius: 6px; border: 1px solid var(--hairline); background: transparent; color: var(--text); font: inherit; font-size: .78rem; cursor: pointer; }
+  .fb-copy:hover { border-color: var(--gold); color: var(--gold); }
 </style>
 </head>
 <body>
@@ -45,6 +48,11 @@
     <h2>Par source (14 derniers jours)</h2>
     <p class="stats-updated">Visites arrivées par un lien repéré, par exemple <code>?s=soundswitch</code> ajouté à la fin de l'adresse (c'est le repère que tu choisis). Les sources qui commencent par <code>ref-</code> (ref-facebook, ref-google…) sont devinées automatiquement d'après le site d'où vient la personne, quand son navigateur le dit. Les visites sans repère ne sont pas listées. Pour ne plus te compter toi-même, ouvre <code>velvetshow.app/?notrack=1</code> une fois sur chaque appareil.</p>
     <table id="table-sources"><thead><tr><th>Source</th><th>Visites</th></tr></thead><tbody></tbody></table>
+
+
+    <h2>Groupes Facebook</h2>
+    <p class="stats-updated">Facebook ne dit jamais de quel groupe vient une visite : pour les distinguer, poste dans chaque groupe le lien qui lui correspond (celui qui se termine par <code>?s=fb-…</code>). Tu peux ajouter ce même repère à n'importe quelle page du site, par exemple <code>velvetshow.app/velvet-show.html?s=fb-789847994426069</code>. Les liens proposés ici mènent à la page EzQuiel (ces deux groupes parlent de tables Allen &amp; Heath). Les visites sont comptées sur 14 jours. Les clics « Télécharger » ne concernent que Velvet Show et Visualizer : le bouton App Store d'EzQuiel n'est pas compté.</p>
+    <table id="table-fb"><thead><tr><th>Groupe</th><th>Visites</th><th>Clics « Télécharger »</th><th>Lien à poster</th></tr></thead><tbody><tr><td colspan="4" class="empty">Chargement...</td></tr></tbody></table>
 
     <h1 style="font-size:1.6rem;margin:48px 0 8px">Téléchargements</h1>
     <p class="stats-updated">Essais gratuits récupérés par les visiteurs. Aucune donnée personnelle.</p>
@@ -224,6 +232,51 @@
   Promise.all([loadClicks().catch(()=>{}), loadGitHub().catch(()=>{})]).then(() => {
     document.getElementById('dl-loading').hidden = true;
     document.getElementById('dl-content').hidden = false;
+  });
+})();
+</script>
+
+<script>
+// Groupes Facebook : visites et clics « Télécharger » attribués aux liens repérés (?s=fb-…). Aucune donnée personnelle.
+(function(){
+  const FN_URL = 'https://pmgqpdjzptryegjfhsry.supabase.co/functions/v1/velvet-stats';
+  const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ3FwZGp6cHRyeWVnamZoc3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzg2OTUsImV4cCI6MjA5ODgxNDY5NX0.efAsSxWcpzq6oWX3KfgV-6xcjxppX8Z_3WWi8kmBqqI';
+  const BASE = 'https://velvetshow.app/ezquiel.html';
+  const GROUPS = [
+    { src: 'fb-789847994426069',  name: 'ALLEN & HEATH Qu/SQ/CQ Series (groupe 789847994426069)' },
+    { src: 'fb-3457246984538074', name: 'Allen & Heath CQ18t Owners (groupe 3457246984538074)' }
+  ];
+  const OTHER = { src: 'ref-facebook', name: 'Facebook, sans repère de groupe (lien non repéré)' };
+
+  function esc(s){ const d=document.createElement('div'); d.textContent=String(s); return d.innerHTML; }
+  function post(body){
+    return fetch(FN_URL, { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+ANON_KEY,'apikey':ANON_KEY}, body: JSON.stringify(body) }).then(r => r.json());
+  }
+
+  Promise.all([post({action:'summary'}), post({action:'downloads'})]).then(function(res){
+    const sum = res[0] || {}, dl = res[1] || {};
+    const visits = {}, clicks = {};
+    // Une visite repérée s'appelle « /page?s=source » : on additionne les pages d'une même source.
+    Object.keys(sum.byPath || {}).forEach(function(raw){
+      const p = raw.split('?s=');
+      if (p.length > 1 && p[1]) visits[p[1]] = (visits[p[1]] || 0) + sum.byPath[raw];
+    });
+    (dl.rows || []).forEach(function(x){ if (x.src) clicks[x.src] = (clicks[x.src] || 0) + 1; });
+
+    const body = document.querySelector('#table-fb tbody');
+    body.innerHTML = GROUPS.concat([OTHER]).map(function(g){
+      const link = g === OTHER ? '—' : '<code class="fb-link">' + esc(BASE + '?s=' + g.src) + '</code> <button type="button" class="fb-copy" data-link="' + esc(BASE + '?s=' + g.src) + '">Copier</button>';
+      return '<tr><td>' + esc(g.name) + '</td><td>' + (visits[g.src] || 0) + '</td><td>' + (clicks[g.src] || 0) + '</td><td>' + link + '</td></tr>';
+    }).join('');
+    body.querySelectorAll('.fb-copy').forEach(function(b){
+      b.addEventListener('click', function(){
+        const text = b.getAttribute('data-link');
+        const done = function(){ b.textContent = 'Copié'; setTimeout(function(){ b.textContent = 'Copier'; }, 1800); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, done); else done();
+      });
+    });
+  }).catch(function(){
+    document.querySelector('#table-fb tbody').innerHTML = '<tr><td colspan="4" class="empty">Impossible de charger — réessaie.</td></tr>';
   });
 })();
 </script>
