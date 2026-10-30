@@ -3,7 +3,47 @@
   var FN_URL = 'https://pmgqpdjzptryegjfhsry.supabase.co/functions/v1/velvet-stats';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ3FwZGp6cHRyeWVnamZoc3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzg2OTUsImV4cCI6MjA5ODgxNDY5NX0.efAsSxWcpzq6oWX3KfgV-6xcjxppX8Z_3WWi8kmBqqI';
 
+  // Pour ne plus te compter toi-même : ouvre une page du site avec ?notrack=1 (une fois par appareil).
+  // ?notrack=0 remet le comptage. Le réglage reste dans le navigateur, rien n'est envoyé.
+  var optedOut = false;
+  try {
+    var flag = new URLSearchParams(location.search).get('notrack');
+    if (flag === '1') localStorage.setItem('velvetNoTrack', '1');
+    else if (flag === '0') localStorage.removeItem('velvetNoTrack');
+    optedOut = localStorage.getItem('velvetNoTrack') === '1';
+  } catch (e) { /* stockage indisponible : on compte comme avant */ }
+
+  // Quand le lien n'a pas de repère (?s=…), on devine le site d'origine d'après la page précédente de la personne.
+  // On ne garde que le nom du site (« ref-facebook »), jamais l'adresse complète. Beaucoup d'applications (Facebook, Instagram sur
+  // téléphone) ne transmettent pas cette information : ces visites restent « sans repère ».
+  function sourceFromReferrer(ref, ownHost) {
+    if (!ref) return '';
+    var host = '';
+    try { host = new URL(ref).hostname.toLowerCase(); } catch (e) { return ''; }
+    host = host.replace(/^www\./, '');
+    ownHost = (ownHost || '').toLowerCase().replace(/^www\./, '');
+    if (!host || host === ownHost || /(^|\.)velvetshow\.app$/.test(host)) return '';
+    var known = [
+      [/(^|\.)facebook\.com$|(^|\.)fb\.com$|^fb\.me$/, 'facebook'],
+      [/(^|\.)instagram\.com$/, 'instagram'],
+      [/^mail\.google\.com$/, 'gmail'],
+      [/(^|\.)google\.[a-z.]+$/, 'google'],
+      [/(^|\.)bing\.com$/, 'bing'],
+      [/(^|\.)duckduckgo\.com$/, 'duckduckgo'],
+      [/(^|\.)youtube\.com$|^youtu\.be$/, 'youtube'],
+      [/(^|\.)reddit\.com$/, 'reddit'],
+      [/(^|\.)linkedin\.com$|^lnkd\.in$/, 'linkedin'],
+      [/^t\.co$|(^|\.)twitter\.com$|^x\.com$/, 'x'],
+      [/(^|\.)github\.com$/, 'github']
+    ];
+    for (var i = 0; i < known.length; i++) {
+      if (known[i][0].test(host)) return 'ref-' + known[i][1];
+    }
+    return ('ref-' + host.replace(/[^a-z0-9]+/g, '-')).slice(0, 30).replace(/-+$/, '');
+  }
+
   function track(path) {
+    if (optedOut) return;
     fetch(FN_URL, {
       method: 'POST',
       keepalive: true,
@@ -17,6 +57,11 @@
   try {
     source = (new URLSearchParams(location.search).get('s') || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 30);
   } catch (e) { /* navigateur ancien : pas de repère */ }
+
+  // Pas de repère dans le lien et pas de source déjà retenue pour cette visite : on regarde d'où vient la personne.
+  var storedSource = '';
+  try { storedSource = sessionStorage.getItem('velvetSrc') || ''; } catch (e) { /* stockage indisponible */ }
+  if (!source && !storedSource) source = sourceFromReferrer(document.referrer, location.hostname);
 
   // Le repère est gardé le temps de la visite : si la personne arrive par ?s=soundswitch puis change de page,
   // son clic « Télécharger » est quand même rattaché à cette source.
