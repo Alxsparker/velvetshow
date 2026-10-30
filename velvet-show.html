@@ -106,6 +106,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
     "@type": "Offer",
     "price": "59.00",
     "priceCurrency": "EUR",
+    "priceValidUntil": "2026-11-26",
     "availability": "https://schema.org/InStock",
     "url": "https://velvetshow.app/velvet-show.html",
     "description": "Launch price, then 79 EUR. 30-day free trial, one-time purchase."
@@ -142,7 +143,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
       <a href="https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip" class="btn btn-p">Download — Free 30-day trial</a>
       <a href="#timeline" class="btn btn-g">See the timeline →</a>
     </div>
-    <p class="meta">macOS · 30-day trial · <s>€79</s> €59 (≈ $66) launch · full licence · Velvet Remote free</p>
+    <p class="meta">macOS · 30-day trial · <span data-launch-after="€79 (≈ $88)"><s>€79</s> €59 (≈ $66) launch</span> · full licence · Velvet Remote free</p>
+    <p data-launch-countdown hidden style="color:var(--orange);font-weight:600;font-size:15px;margin:8px 0 0;text-align:center"></p>
   </div>
 </section>
 
@@ -308,8 +310,9 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
     <p class="sec-sub reveal d2" style="margin:0 auto;text-align:center">One-time purchase. No subscription. 1.x updates included.</p>
     <div class="pcard reveal d2">
       <p class="eyebrow">Velvet Show</p>
-      <p style="text-align:center;color:var(--mut);font-size:14px;margin:0 0 4px"><s>€79 (≈ $88)</s> Launch price — first 100 customers or 2 months</p>
-      <div class="pamount">59 <span style="font-size:26px;color:var(--mut)">€ (≈ $66)</span></div>
+      <p data-launch-hide style="text-align:center;color:var(--mut);font-size:14px;margin:0 0 4px"><s>€79 (≈ $88)</s> Launch price — ends 25 November</p>
+      <p data-launch-countdown hidden style="text-align:center;color:var(--orange);font-size:14px;font-weight:600;margin:0 0 6px"></p>
+      <div class="pamount" data-launch-after='79 <span style="font-size:26px;color:var(--mut)">€ (≈ $88)</span>'>59 <span style="font-size:26px;color:var(--mut)">€ (≈ $66)</span></div>
       <p class="pperiod">One-time purchase</p>
       <ul class="pfeats">
         <li>Unlimited shows and setlists</li>
@@ -319,11 +322,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
         <li>30-day free trial</li>
         <li>Licence valid on 2 Macs</li>
       </ul>
-      <a href="https://velvetshow.lemonsqueezy.com/checkout/buy/dc45e379-8a71-436f-b028-8215cd330ff5?checkout[discount_code]=G4NDC3MQ" class="btn btn-p" style="width:100%;display:block;text-align:center">Buy Velvet Show — €59 (≈ $66)</a>
+      <a href="https://velvetshow.lemonsqueezy.com/checkout/buy/dc45e379-8a71-436f-b028-8215cd330ff5?checkout[discount_code]=G4NDC3MQ" class="btn btn-p" style="width:100%;display:block;text-align:center" data-launch-after="Buy Velvet Show — €79 (≈ $88)">Buy Velvet Show — €59 (≈ $66)</a>
       <p style="margin-top:12px;font-size:12px;color:var(--dim);text-align:center">Or <a href="/" style="color:var(--gold)">download the 30-day free trial →</a></p>
     </div>
     <p class="reveal" style="text-align:center;margin-top:20px;font-size:13px;color:var(--dim)">
-      Also available — <a href="https://velvetshow.lemonsqueezy.com/checkout/buy/39998983-76a4-47a1-bcef-d954c5709493?checkout[discount_code]=GXMJU1MG" style="color:var(--gold)">Velvet Duo (Show + Visualizer) at €109 (≈ $122)</a>
+      Also available — <a href="https://velvetshow.lemonsqueezy.com/checkout/buy/39998983-76a4-47a1-bcef-d954c5709493?checkout[discount_code]=GXMJU1MG" style="color:var(--gold)" data-launch-after="Velvet Duo (Show + Visualizer) at €139 (≈ $155)">Velvet Duo (Show + Visualizer) at €109 (≈ $122)</a>
     </p>
   </div>
 </section>
@@ -348,5 +351,6 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
 </script>
   <script src="stats.js"></script>
 <script src="assets/motion/visualizer-motion.js" defer></script>
+<script src="assets/launch-countdown.js" defer></script>
 </body>
 </html>

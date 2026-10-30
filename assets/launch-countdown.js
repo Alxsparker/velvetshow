@@ -1,5 +1,6 @@
-// Compteur de la remise de lancement du Velvet Visualizer.
-// Date de fin : le code de réduction EXMZU0OA expire le 26/11/2026 à 00:00 UTC (lu dans Lemon Squeezy le 18/10/2026).
+// Compteur de la remise de lancement (Velvet Visualizer, Velvet Show et Velvet Duo).
+// Date de fin : les codes de réduction EXMZU0OA (Visualizer), G4NDC3MQ (Show) et GXMJU1MG (Duo) expirent tous le 26/11/2026 à 00:00 UTC
+// (Visualizer lu dans Lemon Squeezy le 18/10/2026 ; Show et Duo lus le 30/10/2026).
 // Une date fixe, jamais remise à zéro : le compteur dit la vérité. Après cette date, les prix de la page reprennent
 // automatiquement leur valeur normale (99 €), pour ne jamais afficher un prix que la boutique n'applique plus.
 (function () {
