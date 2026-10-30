@@ -1,0 +1,42 @@
+/* Pages Velvet Show — compléments de mouvement (en plus de visualizer-motion.css, qui gère faisceaux, progression, inclinaison,
+   boutons, chaîne de signal). Décoratif : sans ce fichier ni JavaScript, la page reste complète. */
+:root { --mo-ease: cubic-bezier(.22, 1, .36, 1); }
+
+/* L'icône du hero flotte doucement */
+.hero__icon { animation: mo-float 6s ease-in-out infinite; }
+@keyframes mo-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+/* Listes de fonctions : les lignes arrivent l'une après l'autre quand la colonne apparaît */
+.fcopy .flist li { opacity: 0; transform: translateX(-12px); transition: opacity .55s var(--mo-ease), transform .55s var(--mo-ease); }
+.fcopy.on .flist li { opacity: 1; transform: none; }
+.fcopy.on .flist li:nth-child(1) { transition-delay: .30s; } .fcopy.on .flist li:nth-child(2) { transition-delay: .38s; }
+.fcopy.on .flist li:nth-child(3) { transition-delay: .46s; } .fcopy.on .flist li:nth-child(4) { transition-delay: .54s; }
+.fcopy.on .flist li:nth-child(5) { transition-delay: .62s; } .fcopy.on .flist li:nth-child(6) { transition-delay: .70s; }
+.fcopy.on .flist li:nth-child(n+7) { transition-delay: .78s; }
+
+/* Capture de l'iPhone : onglets Music / Lights qui se répondent */
+.ps-stage { display: grid; background: #05060a; }
+.ps { grid-area: 1 / 1; display: block; width: 100%; height: auto; opacity: 0; transform: scale(.985); transition: opacity .6s var(--mo-ease), transform .6s var(--mo-ease); }
+.ps.on { opacity: 1; transform: none; }
+.ps-tabs { display: none; gap: 6px; padding: 8px; border-top: 1px solid var(--line, #262a33); background: rgba(255,255,255,.02); }
+.mo-js .ps-tabs { display: flex; }
+.ps-tabs button {
+  position: relative; overflow: hidden; flex: 1; min-width: 0; cursor: pointer; padding: 10px 2px; border-radius: 6px;
+  font: 600 10px/1 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase;
+  border: 1px solid var(--line, #262a33); background: transparent; color: var(--mut, #9aa1b0);
+  transition: background .3s, color .3s, border-color .3s;
+}
+.ps-tabs button.on { background: var(--gold, #f0bd57); border-color: var(--gold, #f0bd57); color: #16130b; }
+.ps-tabs button.on.auto::after {
+  content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: rgba(0,0,0,.4);
+  transform-origin: 0 50%; animation: mo-tab var(--ps-time, 4.5s) linear forwards;
+}
+@keyframes mo-tab { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Mouvement réduit : tout reste visible, rien ne bouge */
+@media (prefers-reduced-motion: reduce) {
+  .hero__icon { animation: none; }
+  .fcopy .flist li { opacity: 1; transform: none; transition: none; }
+  .ps, .ps-tabs button { transition: none; }
+  .ps-tabs button.on.auto::after { display: none; }
+}
