@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Velvet Light DJ — Your DJ software drives your lights</title>
+<meta name="description" content="Velvet Light DJ reads the track you just started in djay and fires the matching MaestroDMX cue, plus a peak cue on the first drop. Mac app.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d0e12;--panel:#15171d;--line:#262a33;--text:#eceef3;--mut:#9aa1b0;--dim:#565c6e;--gold:#f0bd57;--blue:#4d8fff;--purple:#9b6bff;--pink:#ff5fa8;--green:#34d17a;--orange:#ff6b35}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;background:rgba(13,14,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:100}
+.nav{max-width:1080px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav__brand{font-family:Oswald,sans-serif;font-size:15px;font-weight:700;letter-spacing:.1em;display:flex;align-items:center;gap:10px}
+.nav__brand img{width:28px;height:28px;border-radius:6px}
+.nav__links{display:flex;align-items:center;gap:18px}
+.nav__links a{font-size:13px;color:var(--mut);transition:color .2s}
+.nav__links a:hover{color:var(--text)}
+.btn{display:inline-block;padding:10px 20px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid var(--line);transition:all .2s}
+.btn-p{background:var(--gold);color:#1a1405;border-color:var(--gold)}
+.btn-p:hover{opacity:.88;transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.05);color:var(--text)}
+.btn-g:hover{background:rgba(255,255,255,.1);transform:translateY(-1px)}
+.hero{background:radial-gradient(ellipse at 20% 0%,rgba(255,95,168,.16),transparent 55%),radial-gradient(ellipse at 85% 10%,rgba(155,107,255,.18),transparent 55%),linear-gradient(180deg,#080a0f 0%,var(--bg) 100%);padding:80px 20px 60px;text-align:center;border-bottom:1px solid var(--line)}
+.hero__inner{max-width:780px;margin:0 auto}
+.hero__icon{width:96px;height:96px;border-radius:22px;margin:0 auto 24px;display:block;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pink);margin-bottom:12px}
+.hero h1{font-family:Oswald,sans-serif;font-size:clamp(2.2rem,5.5vw,4rem);font-weight:700;line-height:1.08;margin-bottom:20px}
+.hero p.lead{font-size:1rem;color:var(--mut);max-width:580px;margin:0 auto 32px;font-weight:300;line-height:1.7}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.08em}
+.soon{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);border:1px solid rgba(255,107,53,.35);background:rgba(255,107,53,.08);border-radius:999px;padding:6px 14px;margin-bottom:22px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.lbl-gold{color:var(--gold)}.lbl-blue{color:var(--blue)}.lbl-purple{color:var(--purple)}.lbl-green{color:var(--green)}.lbl-pink{color:var(--pink)}
+.sec-title{font-family:Oswald,sans-serif;font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:700;line-height:1.1;margin-bottom:12px}
+.sec-sub{font-size:.93rem;color:var(--mut);line-height:1.7;font-weight:300;max-width:560px}
+.feature{padding:72px 0;border-top:1px solid var(--line)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+@media(max-width:760px){.fg{grid-template-columns:1fr;gap:32px}}
+.fcopy{display:flex;flex-direction:column;gap:14px}
+.flist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.flist li{font-size:.84rem;color:var(--mut);line-height:1.6;padding-left:16px;position:relative}
+.flist li::before{content:'—';color:var(--dim);position:absolute;left:0;top:0}
+.flist li strong{color:var(--text)}
+.pipeline{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px}
+.pipeline h3{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;font-weight:400}
+.prow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pc{font-size:.75rem;padding:5px 12px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--mut)}
+.pc-s{background:rgba(255,95,168,.1);border-color:rgba(255,95,168,.28);color:var(--pink)}
+.pc-m{background:rgba(232,160,32,.1);border-color:rgba(232,160,32,.25);color:#e8a020}
+.pa{color:var(--dim);font-size:.8rem}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+@media(max-width:760px){.steps{grid-template-columns:1fr}}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+.step .n{font-family:Oswald,sans-serif;font-size:2rem;font-weight:700;color:var(--pink);line-height:1}
+.step h3{font-family:Oswald,sans-serif;font-size:1.1rem;margin:8px 0 6px}
+.step p{font-size:.84rem;color:var(--mut)}
+.demo{border:1px dashed var(--line);border-radius:12px;padding:40px 24px;text-align:center;color:var(--dim);font-size:.9rem;background:rgba(255,255,255,.015)}
+.demo strong{display:block;font-family:Oswald,sans-serif;font-size:1.2rem;color:var(--mut);margin-bottom:6px}
+.limits{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:8px;max-width:680px}
+.limits li{font-size:.86rem;color:var(--mut);padding-left:16px;position:relative}
+.limits li::before{content:'•';color:var(--orange);position:absolute;left:0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mut);font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/" class="nav__brand">
+      <img src="assets/light-dj/icon.png" alt="Velvet Light DJ">
+      VELVET LIGHT DJ
+    </a>
+    <div class="nav__links">
+      <a href="#how">How it works</a>
+      <a href="#choice">Cue choice</a>
+      <a href="#demo">Demo</a>
+      <a href="#limits">Limits</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero__inner">
+    <img src="assets/light-dj/icon.png" alt="Velvet Light DJ" class="hero__icon">
+    <p class="soon">Coming soon · not public yet</p>
+    <p class="eyebrow">macOS · DJ lighting automation</p>
+    <h1>You mix.<br>Your lights follow.</h1>
+    <p class="lead">Start a track in djay. Velvet Light DJ recognises it and fires the matching MaestroDMX mood, then a peak cue on the first big drop. No operator, no timeline to build.</p>
+    <p class="meta">macOS · works with djay Pro and MaestroDMX · VirtualDJ support in progress</p>
+  </div>
+</section>
+
+<section class="feature" id="how">
+  <div class="wrap">
+    <div class="fg">
+      <div class="fcopy">
+        <p class="lbl lbl-pink">How it works</p>
+        <h2 class="sec-title">Three steps,<br>nothing to program.</h2>
+        <p class="sec-sub">The app reads djay's own history, read-only. Nothing is ever written into djay, and nothing changes in the way you DJ.</p>
+        <ul class="flist">
+          <li><strong>Reads the history 5 times per second</strong> — djay logs each track the second it starts.</li>
+          <li><strong>Cues leave 300 ms early</strong> — the same lead as Velvet Show, so lights land on the beat.</li>
+          <li><strong>One switch to stop everything</strong> — "Auto lights" can be paused instantly, and starts paused.</li>
+          <li><strong>Fix any track by hand</strong> — your choice is remembered for next time.</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="pipeline">
+          <h3>Full pipeline</h3>
+          <div class="prow">
+            <span class="pc">djay</span>
+            <span class="pa">→ history</span>
+            <span class="pc pc-s">Velvet Light DJ</span>
+            <span class="pa">→ OSC</span>
+            <span class="pc pc-m">MaestroDMX</span>
+            <span class="pa">→ Art-Net</span>
+            <span class="pc">DMX fixtures</span>
+          </div>
+        </div>
+        <div class="pipeline">
+          <h3>Live colours</h3>
+          <p style="font-size:.84rem;color:var(--mut)">The app window takes the colours of your real fixtures in real time (flowers, towers, beams), received over Art-Net from the MaestroDMX box. A pinnable mini window stays on top, even over djay full screen.</p>
+        </div>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Load your cues</h3><p>The app reads your MaestroDMX cue list and learns what each cue looks like.</p></div>
+      <div class="step"><div class="n">2</div><h3>Play a track</h3><p>It analyses the file once: style, tempo, and where the first drop hits.</p></div>
+      <div class="step"><div class="n">3</div><h3>Lights follow</h3><p>Mood on the track start, peak cue on the drop. Correct anything by hand.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="choice">
+  <div class="wrap">
+    <div class="fg">
+      <div class="fcopy">
+        <p class="lbl lbl-purple">Which cue, and why</p>
+        <h2 class="sec-title">It picks, it explains,<br>it learns.</h2>
+        <p class="sec-sub">For every track the app proposes its three best cues and says why. You always have the last word.</p>
+        <ul class="flist">
+          <li><strong>Rule first</strong> — the genre written in the file, then the folder name, then the title.</li>
+          <li><strong>Then what it learned</strong> — careful learning: same cue for 2 tracks of an artist, or 3 of a genre, with no contrary choice.</li>
+          <li><strong>Then energy</strong> — from the cue's own settings, and finally the tempo.</li>
+          <li><strong>Peak cue on the first real drop</strong> — a bass rise of at least 12 dB, never on calm moods.</li>
+          <li><strong>Works with any show</strong> — it guesses 23 track styles from your cue names and energy, and asks you to confirm.</li>
+        </ul>
+      </div>
+      <div class="pipeline">
+        <h3>Priority order</h3>
+        <div class="prow" style="gap:8px">
+          <span class="pc pc-s">1 · File genre</span><span class="pa">→</span>
+          <span class="pc">2 · Folder</span><span class="pa">→</span>
+          <span class="pc">3 · Title</span><span class="pa">→</span>
+          <span class="pc">4 · Tempo</span>
+        </div>
+        <p style="font-size:.8rem;color:var(--dim);margin-top:14px">Your manual choices and what the app learned always come before the automatic guess.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="demo">
+  <div class="wrap">
+    <p class="lbl lbl-green">Demo</p>
+    <h2 class="sec-title" style="margin-bottom:24px">See it work.</h2>
+    <div class="demo">
+      <strong>Demo video coming soon</strong>
+      A screen recording of a real set — djay on one side, the lights following on the other — will go here.
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="limits">
+  <div class="wrap">
+    <p class="lbl lbl-gold">Honest limits</p>
+    <h2 class="sec-title">What it doesn't do yet.</h2>
+    <ul class="limits">
+      <li>If you change a track's pitch in djay, the drop lands a bit before or after the cue.</li>
+      <li>If you jump inside a track, the peak cue keeps its planned time.</li>
+      <li>Streamed tracks (Apple Music…) have no file to analyse: the mood follows the tempo, with no peak cue.</li>
+      <li>The MaestroDMX box only reacts to its line input: if the mixer is off, beams stay still even if the cues are right.</li>
+      <li>VirtualDJ is partly working and still being tested. Serato and rekordbox are not supported yet.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a href="/">← Home</a>
+      <a href="/velvet-show.html" style="margin-left:20px">Velvet Show →</a>
+      <a href="/velvet-visualizer.html" style="margin-left:20px">Velvet Visualizer →</a>
+    </div>
+    <p>© Alexandre Chalon · Velvet</p>
+  </div>
+</footer>
+</body>
+</html>
