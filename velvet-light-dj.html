@@ -65,6 +65,21 @@ header{position:sticky;top:0;background:rgba(13,14,18,.92);backdrop-filter:blur(
 @media(max-width:640px){.nav__links{display:none}.nav__brand{white-space:nowrap}}
 .demo-caption{max-width:960px;margin-top:14px;padding:14px 18px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:1.05rem;line-height:1.5;color:var(--text);min-height:3.4em}
 .demo-video{display:block;width:100%;max-width:960px;border-radius:12px;border:1px solid var(--line);background:#000;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.steps.steps4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.steps.steps4{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.steps.steps4{grid-template-columns:1fr}}
+.need{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+@media(max-width:760px){.need{grid-template-columns:1fr}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+.box h3{font-family:Oswald,sans-serif;font-size:1.05rem;margin-bottom:10px}
+.box ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.box li{font-size:.86rem;color:var(--mut);padding-left:18px;position:relative}
+.box.yes li::before{content:'✓';color:var(--green);position:absolute;left:0;font-weight:700}
+.box.no li::before{content:'✕';color:var(--orange);position:absolute;left:0;font-weight:700}
+.words{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+@media(max-width:760px){.words{grid-template-columns:1fr}}
+.words div{border-left:2px solid var(--pink);padding:2px 0 2px 14px;font-size:.86rem;color:var(--mut)}
+.words strong{display:block;color:var(--text);margin-bottom:2px}
 .limits{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:8px;max-width:680px}
 .limits li{font-size:.86rem;color:var(--mut);padding-left:16px;position:relative}
 .limits li::before{content:'•';color:var(--orange);position:absolute;left:0}
@@ -80,10 +95,12 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
       VELVET LIGHT DJ
     </a>
     <div class="nav__links">
+      <a href="#start">Start here</a>
       <a href="#how">How it works</a>
       <a href="#choice">Cue choice</a>
       <a href="#demo">Demo</a>
       <a href="#limits">Limits</a>
+      <a href="/fr/velvet-light-dj.html">FR</a>
     </div>
   </nav>
 </header>
@@ -96,6 +113,25 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
     <h1>You mix.<br>Your lights follow.</h1>
     <p class="lead">The missing link between your DJ software and your lights. Start a track in djay: Velvet Light DJ recognises it, fires the matching MaestroDMX mood, then steps the lights up on the first big drop. No operator, no timeline to build.</p>
     <p class="meta">macOS · works with djay Pro and MaestroDMX · VirtualDJ support in progress</p>
+  </div>
+</section>
+
+<section class="feature" id="start">
+  <div class="wrap">
+    <p class="lbl lbl-green">Start here</p>
+    <h2 class="sec-title">New to this? Read this first.</h2>
+    <p class="sec-sub">Velvet Light DJ does not create lights. It is a <strong>remote control</strong>: at the right moment, it presses the right button on your lighting for you.</p>
+    <div class="steps steps4">
+      <div class="step"><div class="n">1</div><h3>Build your cues</h3><p>In MaestroDMX (or your lighting device), create a few cues. A cue is a lighting mood saved in the box: colours, movement, speed. Make a calm one, a party one, a disco one, a very strong one for drops. You do this once.</p></div>
+      <div class="step"><div class="n">2</div><h3>Connect them</h3><p>Your Mac and your MaestroDMX box must be on the same network (same router).</p></div>
+      <div class="step"><div class="n">3</div><h3>Let the app read your cues</h3><p>In Velvet Light DJ, click “Read the cues from the box”. The app learns the name and the strength of each of your cues.</p></div>
+      <div class="step"><div class="n">4</div><h3>Mix</h3><p>For each track you start, the app picks the best of <strong>your</strong> cues and sends it to the box, as if it pressed the button. On the drop, it moves to a stronger cue.</p></div>
+    </div>
+    <div class="need">
+      <div class="box yes"><h3>What you need</h3><ul><li>A Mac (macOS 14 or newer).</li><li>A DJ software: djay Pro (best supported), Serato DJ, or VirtualDJ (partly).</li><li>A MaestroDMX box with your cues already created. For now it is built and tested only with MaestroDMX. Another device that accepts the same messages (OSC, cue numbers) might work, but it has not been tested.</li><li>Your music files on the Mac or on an SD card, so the app can find the drops.</li></ul></div>
+      <div class="box no"><h3>What it does not do</h3><ul><li>It does not create cues or lights: that stays in MaestroDMX.</li><li>It does not play music, and does not replace your DJ software or your box.</li><li>It sends nothing while “Auto lights” is on pause. On the very first launch, it is on pause.</li><li>It does not take decisions you can't undo: you can change any cue by hand, at any time.</li></ul></div>
+    </div>
+    <div class="words"><div><strong>Cue</strong>A lighting mood saved in your box, with a number and a name.</div><div><strong>Drop</strong>The moment a track bursts back in after a quiet part. That's when the lights should go up.</div><div><strong>Auto lights</strong>The switch that lets the app send cues. Off = it only watches.</div></div>
   </div>
 </section>
 
@@ -146,7 +182,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
       <div class="fcopy">
         <p class="lbl lbl-purple">Which cue, and why</p>
         <h2 class="sec-title">It picks, it explains,<br>it learns.</h2>
-        <p class="sec-sub">For every track the app proposes its three best cues and says why. You always have the last word.</p>
+        <p class="sec-sub">The app never invents lights: it chooses among <strong>the cues you created</strong>. For every track it proposes its three best and says why. You always have the last word.</p>
         <ul class="flist">
           <li><strong>Rule first</strong> — the genre written in the file, then the folder name, then the title.</li>
           <li><strong>Then what it learned</strong> — careful learning: same cue for 2 tracks of an artist, or 3 of a genre, with no contrary choice.</li>
