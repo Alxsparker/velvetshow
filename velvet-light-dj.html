@@ -62,6 +62,8 @@ header{position:sticky;top:0;background:rgba(13,14,18,.92);backdrop-filter:blur(
 .step p{font-size:.84rem;color:var(--mut)}
 .demo{border:1px dashed var(--line);border-radius:12px;padding:40px 24px;text-align:center;color:var(--dim);font-size:.9rem;background:rgba(255,255,255,.015)}
 .demo strong{display:block;font-family:Oswald,sans-serif;font-size:1.2rem;color:var(--mut);margin-bottom:6px}
+@media(max-width:640px){.nav__links{display:none}.nav__brand{white-space:nowrap}}
+.demo-video{display:block;width:100%;max-width:960px;border-radius:12px;border:1px solid var(--line);background:#000;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .limits{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:8px;max-width:680px}
 .limits li{font-size:.86rem;color:var(--mut);padding-left:16px;position:relative}
 .limits li::before{content:'•';color:var(--orange);position:absolute;left:0}
@@ -91,7 +93,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
     <p class="soon">Coming soon · not public yet</p>
     <p class="eyebrow">macOS · DJ lighting automation</p>
     <h1>You mix.<br>Your lights follow.</h1>
-    <p class="lead">Start a track in djay. Velvet Light DJ recognises it and fires the matching MaestroDMX mood, then a peak cue on the first big drop. No operator, no timeline to build.</p>
+    <p class="lead">The missing link between your DJ software and your lights. Start a track in djay: Velvet Light DJ recognises it, fires the matching MaestroDMX mood, then steps the lights up on the first big drop. No operator, no timeline to build.</p>
     <p class="meta">macOS · works with djay Pro and MaestroDMX · VirtualDJ support in progress</p>
   </div>
 </section>
@@ -169,11 +171,9 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
 <section class="feature" id="demo">
   <div class="wrap">
     <p class="lbl lbl-green">Demo</p>
-    <h2 class="sec-title" style="margin-bottom:24px">See it work.</h2>
-    <div class="demo">
-      <strong>Demo video coming soon</strong>
-      A screen recording of a real set — djay on one side, the lights following on the other — will go here.
-    </div>
+    <h2 class="sec-title" style="margin-bottom:8px">See it work.</h2>
+    <p class="sec-sub" style="margin-bottom:24px">Real screen recording, no sound: djay on the bottom, Velvet Visualizer showing the lights from a real MaestroDMX show, and the Velvet Light DJ mini window on top.</p>
+    <video class="demo-video" src="assets/light-dj/demo.mp4" poster="assets/light-dj/poster.jpg" controls muted playsinline preload="metadata"></video>
   </div>
 </section>
 
@@ -182,11 +182,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
     <p class="lbl lbl-gold">Honest limits</p>
     <h2 class="sec-title">What it doesn't do yet.</h2>
     <ul class="limits">
-      <li>If you change a track's pitch in djay, the drop lands a bit before or after the cue.</li>
-      <li>If you jump inside a track, the peak cue keeps its planned time.</li>
+      <li>Pause, rewind and skip are followed in <strong>djay only</strong>: the app reads djay's time display, which needs the macOS Accessibility permission. Without it, or with another DJ app, the app counts the time on its own and can't tell a pause.</li>
+      <li>A track you restart from zero without reloading it is not seen as a new track by djay's history. The app keeps following it, but it doesn't re-pick the mood.</li>
       <li>Streamed tracks (Apple Music…) have no file to analyse: the mood follows the tempo, with no peak cue.</li>
       <li>The MaestroDMX box only reacts to its line input: if the mixer is off, beams stay still even if the cues are right.</li>
-      <li>VirtualDJ is partly working and still being tested. Serato and rekordbox are not supported yet.</li>
+      <li>Serato DJ: each track you start is detected, with local files and SD cards. VirtualDJ is partly working and still being tested, with about 30 seconds of delay. rekordbox doesn't record what you play, so it can't be supported.</li>
     </ul>
   </div>
 </section>
