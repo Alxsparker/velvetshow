@@ -385,5 +385,20 @@ footer a:hover{color:var(--text)}
   <script src="stats.js"></script>
   <script src="assets/launch-countdown.js" defer></script>
 <script src="assets/motion/home-motion.js" defer></script>
+<script>
+// Accès discret : trois clics sur un point violet de la scène ouvrent la page Velvet Light DJ (page non listée).
+(function(){
+  var canvas=document.getElementById('stage-canvas'); if(!canvas) return;
+  var purple=[.31,.93], count=0, last=0;
+  document.addEventListener('click',function(e){
+    var r=canvas.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top, srcY=r.height*.03, hit=false;
+    purple.forEach(function(xr){ if(Math.hypot(x-xr*r.width,y-srcY)<=26) hit=true; });
+    if(!hit){ count=0; return; }
+    var now=Date.now();
+    count=(now-last<800)?count+1:1; last=now;
+    if(count>=3){ count=0; location.href='/velvet-light-dj.html'; }
+  });
+})();
+</script>
 </body>
 </html>
