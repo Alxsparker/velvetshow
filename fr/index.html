@@ -40,14 +40,16 @@ nav a.cta{background:var(--gold);color:#1a1405;padding:6px 14px;border-radius:6p
 .hero{position:relative;min-height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:200px 0 36px}
 #stage-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .hero__fade{position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(to bottom,transparent,var(--bg));z-index:1;pointer-events:none}
-.hero__products{position:relative;margin-top:34px;z-index:3;display:flex;align-items:center;gap:0}
-.hero__sep{width:1px;height:80px;background:var(--line);margin:0 36px;flex-shrink:0}
+.hero__label{position:relative;z-index:3;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.hero__sep::before{content:'+';color:var(--dim);font-size:26px;font-weight:300;line-height:1}
+.hero__products{position:relative;margin-top:12px;z-index:3;display:flex;align-items:center;gap:0}
+.hero__sep{margin:0 20px;flex-shrink:0;display:flex;align-items:center}
 .hero__product{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 28px;border-radius:14px;transition:background .25s,transform .25s;cursor:pointer;min-width:190px}
 .hero__product:hover{background:rgba(255,255,255,.04);transform:translateY(-3px)}
 .hero__product__icon{width:56px;height:56px;border-radius:12px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.7)}
 .hero__product__icon img{width:100%;height:100%;object-fit:cover;display:block}
 .hero__product__name{font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
-.hero__product__pitch{font-size:12px;color:var(--mut);text-align:center;line-height:1.4;white-space:nowrap}
+.hero__product__pitch{font-size:12px;color:var(--mut);text-align:center;line-height:1.4;max-width:190px}
 .hero__product__price{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:.06em}
 .hero__product--viz .hero__product__price{color:var(--orange)}
 .hero__duo{position:relative;margin-top:16px;z-index:3;font-size:12px;color:var(--mut);text-align:center;padding:0 16px}
@@ -71,7 +73,7 @@ nav a.cta{background:var(--gold);color:#1a1405;padding:6px 14px;border-radius:6p
 .hero__count{color:var(--orange,#ff6b35);font-weight:600;font-size:13px;margin-top:6px}
 .hero__new{font-style:normal;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;background:var(--green);color:#06210f;padding:1px 6px;border-radius:99px;vertical-align:2px;margin-left:4px}
 .hero__product--ldj .hero__product__price{color:var(--green)}
-@media(max-width:900px){.hero__main{grid-template-columns:1fr;gap:0}.hero__copy{align-items:center;text-align:center}.hero__video{display:none}.hero__sep{margin:0 14px}.hero__product{padding:12px 14px;min-width:150px}.hero__product__pitch{white-space:normal;max-width:150px}}
+@media(max-width:900px){.hero__main{grid-template-columns:1fr;gap:0}.hero__copy{align-items:center;text-align:center}.hero__video{display:none}.hero__sep{margin:0 14px}.hero__product{padding:12px 14px;min-width:150px}.hero__product__pitch{white-space:normal;max-width:150px}.hero__sep{margin:0 8px}}
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 
 /* CARDS */
@@ -136,14 +138,16 @@ footer a:hover{color:var(--text)}
 
 @media(max-width:600px){
   .hero__products{flex-direction:column;gap:0;width:90%;margin-top:22px}
-  .hero__sep{width:80%;height:1px;margin:4px auto}
+  .hero__sep{width:80%;height:1px;margin:4px auto;background:var(--line);display:block}
+  .hero__sep::before{content:none}
   .hero{padding-top:170px;min-height:0}
-  .hero__sub{display:none}
+  .hero__sub{font-size:13px;margin:8px 0 12px}
   .hero__new{display:none}
   .hero__product{min-width:unset;max-width:none}
-  .hero__product{flex-direction:row;min-width:unset;width:100%;padding:10px 16px;gap:12px;justify-content:flex-start}
+  .hero__product{display:grid;grid-template-columns:44px 1fr;column-gap:12px;row-gap:1px;align-items:center;justify-items:start;min-width:unset;width:100%;padding:10px 16px}
+  .hero__product__icon{grid-row:1/4}
   .hero__product__icon{width:44px;height:44px;flex-shrink:0}
-  .hero__product__pitch{display:none}
+  .hero__product__pitch{text-align:left;max-width:none;font-size:11px}
   .hero__product__name{font-size:12px}
   .hero__product__price{font-size:10px}
   .hero__duo{font-size:11px;width:90%;margin-top:10px}
@@ -177,26 +181,27 @@ footer a:hover{color:var(--text)}
   <div class="hero__main">
     <div class="hero__copy">
     <h1>Vous jouez vos morceaux.<br><span>La lumière suit.</span></h1>
-    <p class="hero__sub">Trois apps Mac pour la lumière de scène et les backing tracks, faites par un duo qui joue chaque week-end.</p>
+    <p class="hero__sub">Trois apps Mac, seules ou ensemble : préparer, jouer, et laisser la lumière suivre.</p>
     <a class="btn primary hero__cta" href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip">Essayer Velvet Visualizer gratuitement 30 jours</a>
-    <p class="hero__note">Chaque app a 30 jours d’essai gratuit : <a href="https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip">Show</a> · <a href="https://github.com/Alxsparker/VELVET-LIGHT-DJ-releases/releases/latest/download/VELVET-LIGHT-DJ.zip">Light DJ</a><br>Le Visualizer ne demande aucun matériel</p>
-    <p class="hero__once"><strong>Pas d’abonnement.</strong> Un seul achat, mises à jour de la version 1 comprises.</p>
+    <p class="hero__note">30 jours d’essai gratuit pour chaque app : <a href="https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip">Show</a> · <a href="https://github.com/Alxsparker/VELVET-LIGHT-DJ-releases/releases/latest/download/VELVET-LIGHT-DJ.zip">Light DJ</a></p>
+    <p class="hero__once"><strong>Pas d’abonnement.</strong> Un seul achat, à vous pour de bon.</p>
     <p data-launch-countdown hidden class="hero__count"></p>
   </div>
     <div class="hero__video"><video class="mo-demo" muted loop playsinline preload="none" poster="/assets/video/velvet-visualizer-poster.jpg" aria-label="Démo du Velvet Visualizer — scène 3D"><source src="/assets/video/velvet-visualizer-demo.webm" type="video/webm"><source src="/assets/video/velvet-visualizer-demo.mp4" type="video/mp4"></video><span class="hero__video__cap">Démo du Velvet Visualizer</span></div>
   </div>
+  <p class="hero__label">Prenez-en une, ou les trois ensemble</p>
   <div class="hero__products">
     <a href="/fr/velvet-visualizer.html" class="hero__product hero__product--viz">
       <div class="hero__product__icon"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAAAAMEBQYHAgEI/8QAOBAAAQMDAAUICAYDAAAAAAAAAQACAwQFEQYSITGBBxMyQVFhcbEUIiQzQpHB0SNFUpPh8BVig//EABoBAAIDAQEAAAAAAAAAAAAAAAMEAAEFAgb/xAAiEQACAgIBBQADAAAAAAAAAAAAAQIDBBFBBRIhIjETUYH/2gAMAwEAAhEDEQA/AMLUxbNHpa9pkllbBEN5cMn5KNp2gygnqOz+/NW60ziVuoAPVGNXuR64KT0xnHpVj8iQ0aswGHXGoJ6yIhjzQdG7IPzGo/bH3XtxifS1Gqei8Zae5RElU5pIJXUoKL0yra+x6JJ2j9lH5hP+2Pukn2Ozt3V85/5j7qLdVO7Vy2dziBlc6Qs3ofSWm1gerVz574x90yq7U6BnORSCWPwwQpG3UUldWNiaNg2uPYBvKeXhraKLVxhztjR3Iyx9xchWWWlNQX0qWEJSUeuShLDaewiOHDx+ilLfWei1LH7xnaO0KHedVuR1H6JRkuRkFdQlpjFNjg9o0yttzbtaDzO2ZrdeIj4h2cfNZ7WZDw7t3+Kumh10M1O6m1vxqf12f7M6xwO3im2m9i9FfHcadvslXlwwNjJB0m8d6dtSsrU0bGbRG2hXw/pSC85Tuhj15NYjIbtTTUOstA5PNGxdK11XUs9ho8SSk7nO+FvHyCWph3S0eUzblTW5MsNg0fFrsgmqAG1FQ3nHl3wM3jPn8lnF8rxX3KWRuyIHDB2AblpPKDevQbNzDXYqa/Jx+mIH6nyKx6SXGSSncuxRSrjwZHSqp2OWRZ9fw8ecvPBCTjOtkntQsw9CvCPJvd8fokWuIOwpaf3fFNwqOkTNkuklsucFWzaY3ZLf1DrHELcbdbqPSK1z2WR49GroxLRzH4H72n6HivnuI7Vs3JfcTW0JoC72ijdz0HaWE+sOB28SmarNJpmthXt1ypfJQHaN18d9dan07xWNm5kxY262cYW6RWan0btFLYWPa0RNM9fMNxdjLj4ADA8Fcm6PW6W7x6UOhBrmwau7YXYwHeONizLlOujrXZJKcO9suTiXnrbED9T5I2POKba4PKdWplZqH7ZkOl9+ffL9U1nRiJ1YmfpYNjR8lWXuJO0peodlxTYpSyTb2x2mtQgorgcQdE+KF5T9E+KENBzqf3fFN2sJTmQZy3t3eKQa8sKnJa1yOqejlkcNVpWk8nVtudFf6SshjBDHjWBeAC07CN/Ys5p7hJCQWvI8CrFaNKKuGdg55+AetxKPDs15NLF/Bv2b2fYLIo/RAwe7IzwXz1ynWe73K+1FW6D8HoxgPB1WjYBvV3puUqKPRIOLhz7RqglY9e9Oq+eokDah7WknoOI8kTFjGCbmzF6lTdGaUfJTaygngcQ9hCjnsIO0KVrLtNVOJkkc495yo17y8oVvZv1JV369hSn6J8ULqIYGPmhCQcHjIwknbekM9/WhCpkOMN7HJRkhjOW5/vFCFRabQ8/zFWIea1zqdmP5TN8rpDl2fl/KEK9sjbl9OMDvXTRjcMd6EKihZg1QhCF0Q//Z" alt="Velvet Visualizer"></div>
       <div class="hero__product__name">Velvet Visualizer</div>
-      <div class="hero__product__pitch">Show lumière 3D · ArtNet · IA</div>
+      <div class="hero__product__pitch">Préparez votre lumière en 3D, sans aucun matériel</div>
       <div class="hero__product__price"><span data-launch-after="99 €"><s>99 €</s> 69 € · lancement</span></div>
     </a>
     <div class="hero__sep"></div>
     <a href="/fr/velvet-show.html" class="hero__product">
       <div class="hero__product__icon"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAGwAAAQUBAQAAAAAAAAAAAAAAAAECAwYHBQT/xAA0EAABAwMCAgYJBAMAAAAAAAABAAIDBAUREiExQQYTUWFykQcUIjJCYnGBsUOSwfAjUqH/xAAZAQADAQEBAAAAAAAAAAAAAAABAgQDBQD/xAAlEQACAgEEAQMFAAAAAAAAAAAAAQIRAwQSITFBBROBUZGh0fD/2gAMAwEAAhEDEQA/AMGp6frsve7TE3YkDJJPAAcypaqN9FMYZKJ0DwAdM7TrweGQcfhTW24SWu50FVCGl1PIJQHtyCc53Hkr109pm9IIYL7EcyujAkA7kyjasvwaR5sU5Q7iZv13yR/tSdZ8jPJI5hacFNSkLvyP6z5W+SNfyt8kxCNgH9Z8jPJT0sMtZMIYaR87yCdMLSXYG5wAvO1pccBaF0Hczo22a9POJ2xlsY+qs0mmnqJ0ujLLkUFZQZ4OqIIJLDsCRgg8wR2oXsuVwlulyr6uYND6h5lcGtwAc8h9yhS5ElLjoeLbXJ4n7PZ4QrzZriJ7R6rIcjGFRZfeZ4Aujbqsw7ZQi6Op6fqPZyv6MW60ojncW8MrlEbrt1sglGVyC0ueGtBJJwAOaDMNXGO9uJdorA21ejCS9T2uKpnrpdLZJM5p4jlrXjvLgf8AiogGStU9It+rndCujFPHF6hDW0h6+lj2GGaQ1vbjnjvHYsuYMlT6VyknKXlv9GOak0l4R7qCEGVpIXZudfooRAw4GOS5NO8RtyoKyYyHGV28ef2cLUe2RShunbPOw5L/AAlCSP4/CULmtm6CbizwD8JYn6Skm4s8A/CYClQ91I9plJbxV+9HFqpq6xdJaiDQb02AQ0TnHeLU12XN7Ccac8vus4DtlYuizrnbJZL5A/qLfTkR1Erx7Emf0wPiceQHDicDdY6lSeNqLp/3HybwmnJbuj29LhJH0R6I00rHRyRQThzXjBB6zmqrUUs9DVy0tTGY54nFr2O4ghavHU2jprHTVroDUT0ZcY6aaXSNZxhsm27SQN1mF6mr5r5WzXRjmVz5nOma4YIcTuMLLSZW7i1TV38s9qMajUk7T6+x59eAoHuyUpcmFXSlZLQ+L4/CUIh+PwFCQIs/Fngb+FEppRqjieOBbpP1H9CjDQeYQXQX2KwantbnGTjJWj+kl8cFjsdptzNFuo9bCG85MD2j3n2j9ys+jgjd70zW/Yq0RX0CJkVS1lYxzQ2RjmEtfjgTnG/eCpc974yXi+CnClskn5K9arlVWauZV053Gzmng9vMFajcaS19MrXBdI6Z0t0o48+rDZ1U0DPVO55HEHiRsOIxzGU1ilsZr6WOjttQ12n/ADa5ng9rQSQPruqtS1xs1ZJLTXAzazl2A4Eu/wBsnmsHP3pboKpL8m6xvFGpO0yuO2JGMdyau7eK2juT3VT6WSKrfu57HNa157SN9/pjK4hbjmuhGTkraIJR2uh8P6ngKERezHK/ljSPqf6UI+QPoSOXSCxw1Ru4j+R3oLGH3JBjsdsUIXqPJgGEfGzzUoc4fqM/chCVjLgeZXlmnrWY8ShIOffZ+5CEFwFuxHAu4vZ5pAxgPtyDHY0ZKEJhWEkmoBrRpY3gP5PehCEyVCn/2Q==" alt="Velvet Show"></div>
       <div class="hero__product__name">Velvet Show</div>
-      <div class="hero__product__pitch">Backtracks · Prompteur · MIDI &amp; OSC</div>
+      <div class="hero__product__pitch">Lancez backing tracks, paroles et cues lumière</div>
       <div class="hero__product__price"><span data-launch-after="79 €"><s>79 €</s> 59 € · lancement</span></div>
     </a>
     <div class="hero__sep"></div>
