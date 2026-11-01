@@ -21,8 +21,7 @@
   }
 
   // La démo du Visualizer ne tourne que lorsqu'elle est visible (et jamais en mode « mouvement réduit »).
-  var demo = document.querySelector('video.mo-demo');
-  if (demo) {
+  document.querySelectorAll('video.mo-demo').forEach(function (demo) {
     if (reduce || !('IntersectionObserver' in window)) {
       demo.controls = true;
     } else {
@@ -32,7 +31,7 @@
       }, { threshold: 0.25 }).observe(demo);
       document.addEventListener('visibilitychange', function () { if (document.hidden) demo.pause(); });
     }
-  }
+  });
 
   // Lueur qui suit le pointeur sur les cartes produits.
   if (!reduce && window.matchMedia && window.matchMedia('(hover: hover)').matches) {
