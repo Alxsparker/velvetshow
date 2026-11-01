@@ -3,9 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://velvetshow.app/fr/velvet-light-dj.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-light-dj.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-light-dj.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/velvet-light-dj.html">
 <title>Velvet Light DJ — Votre logiciel DJ pilote vos lumières</title>
-<meta name="description" content="Velvet Light DJ lit le morceau que vous lancez dans djay et envoie la meilleure cue MaestroDMX, puis une cue plus forte sur le premier drop. Application Mac.">
+<meta name="description" content="Velvet Light DJ lit le morceau que vous lancez dans djay ou Serato et envoie la bonne cue MaestroDMX, en montant au premier drop. App Mac, essai gratuit 30 jours, 49 € au lancement.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Velvet Light DJ — Votre logiciel DJ pilote vos lumières">
+<meta property="og:description" content="Velvet Light DJ lit le morceau que vous lancez dans djay ou Serato et envoie la bonne cue MaestroDMX, en montant au premier drop. App Mac, essai gratuit 30 jours, 49 € au lancement.">
+<meta property="og:image" content="https://velvetshow.app/assets/light-dj/poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Velvet Light DJ",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "DJ lighting automation",
+  "operatingSystem": "macOS 14 or later",
+  "description": "Velvet Light DJ lit le morceau que vous lancez dans djay ou Serato et envoie la bonne cue MaestroDMX, en montant au premier drop. App Mac, essai gratuit 30 jours, 49 € au lancement.",
+  "url": "https://velvetshow.app/fr/velvet-light-dj.html",
+  "image": "https://velvetshow.app/assets/light-dj/poster.jpg",
+  "inLanguage": "fr",
+  "downloadUrl": "https://github.com/Alxsparker/VELVET-LIGHT-DJ-releases/releases/latest/download/VELVET-LIGHT-DJ.zip",
+  "author": { "@type": "Person", "name": "Alexandre Chalon" },
+  "offers": {
+    "@type": "Offer",
+    "price": "69.00",
+    "priceCurrency": "EUR",
+    "availability": "https://schema.org/InStock",
+    "url": "https://velvetshow.app/fr/velvet-light-dj.html",
+    "description": "One-time purchase, 30-day free trial. Launch price 49 EUR until 31 December 2026."
+  }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -83,6 +115,17 @@ header{position:sticky;top:0;background:rgba(13,14,18,.92);backdrop-filter:blur(
 .limits{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:8px;max-width:680px}
 .limits li{font-size:.86rem;color:var(--mut);padding-left:16px;position:relative}
 .limits li::before{content:'•';color:var(--orange);position:absolute;left:0}
+.countdown{color:var(--orange);font-weight:600;font-size:14px;margin-top:10px}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+@media(max-width:760px){.price-grid{grid-template-columns:1fr}}
+.price-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+.price-card.main{border-color:var(--pink);box-shadow:0 0 40px rgba(255,95,168,.08)}
+.price-card h3{font-family:Oswald,sans-serif;font-size:1.05rem;margin-bottom:6px}
+.price-card .amt{font-family:Oswald,sans-serif;font-size:2.4rem;font-weight:700;line-height:1;margin:4px 0 10px}
+.price-card p,.price-card li{font-size:.86rem;color:var(--mut)}
+.price-card ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.price-card li::before{content:'✓';color:var(--green);margin-right:8px;font-weight:700}
+.price-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
 footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mut);font-size:13px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
 </style>
@@ -99,6 +142,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
       <a href="#how">Fonctionnement</a>
       <a href="#choice">Choix des cues</a>
       <a href="#demo">Démo</a>
+      <a href="#price">Prix</a>
       <a href="#limits">Limites</a>
       <a href="/velvet-light-dj.html">EN</a>
     </div>
@@ -108,11 +152,15 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
 <section class="hero">
   <div class="hero__inner">
     <img src="/assets/light-dj/icon.png" alt="Velvet Light DJ" class="hero__icon">
-    <p class="soon">Bientôt disponible · pas encore public</p>
     <p class="eyebrow">macOS · Lumières automatiques pour DJ</p>
     <h1>Vous mixez.<br>Vos lumières suivent.</h1>
     <p class="lead">Le chaînon manquant entre votre logiciel DJ et vos lumières. Lancez un morceau dans djay : Velvet Light DJ le reconnaît, choisit la bonne ambiance parmi vos cues MaestroDMX, puis monte les lumières au premier gros drop. Pas d'opérateur, pas de programmation.</p>
-    <p class="meta">macOS · fonctionne avec djay Pro et MaestroDMX · Serato DJ détecté · VirtualDJ en cours</p>
+    <div class="hero-btns">
+      <a href="https://velvetshow.lemonsqueezy.com/checkout/buy/2772dc45-02bb-4e99-a0de-5ddc0fdc129b?checkout[discount_code]=CYNJK2NG" class="btn btn-p">Acheter — <span data-ldj-after="69&nbsp;€">49&nbsp;€ prix de lancement</span></a>
+      <a href="https://github.com/Alxsparker/VELVET-LIGHT-DJ-releases/releases/latest/download/VELVET-LIGHT-DJ.zip" class="btn btn-g">Télécharger — essai gratuit 30&nbsp;jours</a>
+    </div>
+    <p class="meta">macOS 14+ · fonctionne avec djay Pro, Serato DJ et MaestroDMX · achat unique, mises à jour 1.x gratuites</p>
+    <p class="countdown" data-ldj-countdown hidden></p>
   </div>
 </section>
 
@@ -235,6 +283,23 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
   </div>
 </section>
 
+<section class="feature" id="price">
+  <div class="wrap">
+    <p class="lbl lbl-gold">Prix</p>
+    <h2 class="sec-title">On paie une fois. C'est à vous.</h2>
+    <p class="sec-sub">Pas d'abonnement. Votre clé de licence marche sur deux Mac, et toutes les mises à jour de la version&nbsp;1 sont gratuites.</p>
+    <div class="price-grid">
+      <div class="price-card"><h3>Essai gratuit</h3><div class="amt">0&nbsp;€</div><p>30 jours, rien à saisir.</p><ul><li>Tout fonctionne</li><li>Sans compte ni carte</li></ul></div>
+      <div class="price-card main"><h3>Velvet Light DJ</h3><div class="amt"><span data-ldj-after="69&nbsp;€">49&nbsp;€</span></div><p data-ldj-launch>Prix de lancement jusqu'au 31&nbsp;décembre, puis 69&nbsp;€.</p><ul><li>Achat unique</li><li>Mises à jour 1.x gratuites</li><li>Clé envoyée par e-mail, sur 2&nbsp;Mac</li></ul></div>
+      <div class="price-card"><h3>Ce qu'il vous faut</h3><div class="amt">MaestroDMX</div><p>Velvet Light DJ envoie les cues à votre boîtier MaestroDMX. Le boîtier est vendu à part.</p></div>
+    </div>
+    <div class="price-cta">
+      <a href="https://velvetshow.lemonsqueezy.com/checkout/buy/2772dc45-02bb-4e99-a0de-5ddc0fdc129b?checkout[discount_code]=CYNJK2NG" class="btn btn-p">Acheter — <span data-ldj-after="69&nbsp;€">49&nbsp;€ prix de lancement</span></a>
+      <a href="https://github.com/Alxsparker/VELVET-LIGHT-DJ-releases/releases/latest/download/VELVET-LIGHT-DJ.zip" class="btn btn-g">Télécharger l'essai gratuit</a>
+    </div>
+  </div>
+</section>
+
 <section class="feature" id="limits">
   <div class="wrap">
     <p class="lbl lbl-gold">Limites, en toute honnêteté</p>
@@ -256,8 +321,25 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;a
       <a href="/fr/velvet-show.html" style="margin-left:20px">Velvet Show →</a>
       <a href="/fr/velvet-visualizer.html" style="margin-left:20px">Velvet Visualizer →</a>
     </div>
-    <p>© Alexandre Chalon · Velvet</p>
+    <p><a href="/privacy.html">Confidentialité</a> · © Alexandre Chalon · Velvet</p>
   </div>
 </footer>
+<script>
+(function(){
+  // Prix de lancement : le code CYNJK2NG expire le 1er janvier 2027 à 00:00 UTC (dernier jour d'achat : 31 décembre).
+  // Après cette date, les textes reprennent seuls le vrai prix : on n'affiche jamais un prix que la boutique n'applique plus.
+  var END=Date.parse('2027-01-01T00:00:00Z'), fr=(document.documentElement.lang||'en').slice(0,2)==='fr';
+  var over=Date.now()>=END;
+  document.querySelectorAll('[data-ldj-launch]').forEach(function(el){ if(over) el.hidden=true; });
+  document.querySelectorAll('[data-ldj-after]').forEach(function(el){ if(over) el.innerHTML=el.getAttribute('data-ldj-after'); });
+  var c=document.querySelector('[data-ldj-countdown]');
+  if(c&&!over){
+    var d=Math.ceil((END-Date.now())/86400000);
+    c.textContent = fr ? (d<=1?'Dernier jour au prix de lancement.':'Prix de lancement jusqu’au 31 décembre : plus que '+d+' jours.')
+                       : (d<=1?'Last day at the launch price.':'Launch price until 31 December: '+d+' days left.');
+    c.hidden=false;
+  }
+})();
+</script>
 </body>
 </html>
