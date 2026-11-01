@@ -23,7 +23,7 @@ TXT = {
  sub="Choisissez votre situation. Le dessin se construit une brique à la fois : à chaque brique, vous voyez ce qu'elle apporte et qui parle à qui.",
  aria="Schéma animé : une installation de scène construite brique par brique.",
  tabs=['DJ', 'Musiciens sur bande', 'Groupe de musique'],
- titles=['Je suis DJ', 'Je joue avec des backing tracks et des clics', 'Je joue en groupe, instruments en direct'],
+ titles=['Je suis DJ', 'Je joue avec des backing tracks et des clics', 'Je joue en groupe, avec une piste clic ou des backing tracks'],
  prev='Précédent', play='Lecture', pause='Pause', next='Ajouter la brique suivante', again='Recommencer', word='Brique',
  legend=['Son', 'Ordre : numéro de cue ou commande', 'Lumière (Art-Net)'],
  n=dict(who=['Le DJ', 'Sur scène', 'Le groupe'], mix='Table de mixage', box='MaestroDMX', mac='Mac', ipad='iPad', phone='iPhone',
@@ -32,7 +32,7 @@ TXT = {
  notes=[
   "",
   "Le détail des câbles et du routeur n'est pas montré : il dépend de votre installation.",
-  "Première version : les éléments marqués « à confirmer » ne sont pas vérifiés. Le détail des câbles n'est pas montré."],
+  "Le détail des câbles et du routeur n'est pas montré : il dépend de votre installation."],
  bricks=[
  [('Le point de départ', "Le DJ mixe avec djay sur son Mac. Le son part vers la table de mixage."),
   ('Velvet Visualizer', "Avec <b>Velvet Visualizer</b>, vous pouvez aussi voir et préparer votre lumière en 3D sur le Mac, avant la soirée, sans aucun matériel."),
@@ -47,20 +47,20 @@ TXT = {
   ('EzQuiel', "Avec <b>EzQuiel</b> sur un iPhone, vous pouvez aussi régler la table de mixage numérique (souvent une table comme la Allen &amp; Heath CQ), sans quitter la scène."),
   ('Velvet Remote', "Avec <b>Velvet Remote</b>, ce même iPhone devient ensuite une télécommande qui pilote Velvet Show. Un second iPhone est possible, mais facultatif."),
   ('Lancer les morceaux', "Avec Velvet Show, vous pouvez aussi lancer un morceau depuis le Mac, depuis l'iPhone, ou laisser la lecture automatique enchaîner les morceaux, avec ou sans fondu (le fondu se règle dans les réglages de Velvet Show).")],
- [('Le point de départ', "Le groupe joue avec ses instruments en direct. Le son part vers la table de mixage."),
+ [('Le point de départ', "Le groupe joue ses instruments en direct, sur une piste clic ou des backing tracks. Le son des instruments part vers la table de mixage."),
   ('MaestroDMX', "Avec le boîtier <b>MaestroDMX</b>, vous pouvez aussi avoir de la lumière automatique : il écoute le son de la table, par son entrée « ligne », et joue ses ambiances sur les projecteurs."),
   ('Velvet Visualizer', "Avec <b>Velvet Visualizer</b>, vous pouvez aussi préparer votre lumière en 3D avant le concert, sans aucun matériel."),
   ('EzQuiel', "Avec <b>EzQuiel</b> sur un iPhone, vous pouvez aussi régler la table de mixage numérique (tables Allen &amp; Heath CQ)."),
-  ('Velvet Show', "Avec <b>Velvet Show</b> sur le Mac, vous pouvez aussi choisir vous-même les cues de lumière : il envoie au boîtier le numéro de la cue, par le réseau. <span class=\"tag\">à confirmer</span> qui lance les cues pendant un concert."),
-  ('iPad prompteur', "Avec un <b>iPad en prompteur</b>, vous pouvez aussi afficher les paroles devant les chanteurs. <span class=\"tag\">à confirmer</span> comment l'iPad est relié."),
-  ('Velvet Remote', "Avec <b>Velvet Remote</b>, l'iPhone devient une télécommande qui pilote Velvet Show. <span class=\"tag\">à confirmer</span>")],
+  ('Velvet Show', "Avec <b>Velvet Show</b> sur le Mac, vous pouvez aussi lancer une piste clic ou des backing tracks, et placer vos cues de lumière sur cette piste : à chaque cue, il envoie au boîtier le numéro de la cue, par le réseau. Le Mac peut être en régie ou sur scène."),
+  ('iPad prompteur', "Avec un <b>iPad en prompteur</b>, vous pouvez aussi afficher les paroles devant les chanteurs, au rythme de la piste. L'iPad se relie au Mac en Sidecar (par câble, c'est le plus solide) ou par le réseau."),
+  ('Velvet Remote', "Avec <b>Velvet Remote</b>, l'iPhone devient une télécommande qui pilote Velvet Show : un membre du groupe lance les morceaux et les cues depuis la scène, ou un technicien depuis le Mac en régie. Vous pouvez aussi laisser la lecture automatique enchaîner les morceaux.")],
  ]),
 'en': dict(
  lbl='In pictures', title='Your setup, brick by brick',
  sub="Pick your situation. The picture builds one brick at a time: each brick shows what it adds and who talks to whom.",
  aria="Animated diagram: a stage setup built brick by brick.",
  tabs=['DJ', 'Musicians on tracks', 'Live band'],
- titles=['I am a DJ', 'I play along with backing tracks and click tracks', 'I play in a band, live instruments'],
+ titles=['I am a DJ', 'I play along with backing tracks and click tracks', 'I play in a band, with a click track or backing tracks'],
  prev='Previous', play='Play', pause='Pause', next='Add the next brick', again='Start over', word='Brick',
  legend=['Sound', 'Order: cue number or command', 'Light (Art-Net)'],
  n=dict(who=['The DJ', 'On stage', 'The band'], mix='Mixing desk', box='MaestroDMX', mac='Mac', ipad='iPad', phone='iPhone',
@@ -69,7 +69,7 @@ TXT = {
  notes=[
   "",
   "Exact cables and router are not shown: they depend on your setup.",
-  "First draft: items marked \"to confirm\" are not verified. Exact cabling is not shown."],
+  "Exact cables and router are not shown: they depend on your setup."],
  bricks=[
  [('The starting point', "The DJ mixes with djay on a Mac. The sound goes to the mixing desk."),
   ('Velvet Visualizer', "With <b>Velvet Visualizer</b>, you can also see and prepare your lighting in 3D on the Mac, before the night, with no hardware at all."),
@@ -84,13 +84,13 @@ TXT = {
   ('EzQuiel', "With <b>EzQuiel</b> on an iPhone, you can also adjust the digital mixing desk (often a desk like the Allen &amp; Heath CQ) without leaving the stage."),
   ('Velvet Remote', "With <b>Velvet Remote</b>, that same iPhone then becomes a remote control for Velvet Show. A second iPhone is possible, but optional."),
   ('Starting songs', "With Velvet Show, you can also start a song from the Mac, from the iPhone, or let automatic playback chain the songs, with or without a crossfade (the crossfade is set in Velvet Show's settings).")],
- [('The starting point', "The band plays live instruments. The sound goes to the mixing desk."),
+ [('The starting point', "The band plays live instruments, along with a click track or backing tracks. The sound of the instruments goes to the mixing desk."),
   ('MaestroDMX', "With the <b>MaestroDMX</b> box, you can also get automatic lighting: it listens to the sound from the desk, through its \"line\" input, and plays its own looks on the lights."),
   ('Velvet Visualizer', "With <b>Velvet Visualizer</b>, you can also prepare your lighting in 3D before the show, with no hardware at all."),
   ('EzQuiel', "With <b>EzQuiel</b> on an iPhone, you can also adjust the digital mixing desk (Allen &amp; Heath CQ desks)."),
-  ('Velvet Show', "With <b>Velvet Show</b> on the Mac, you can also choose the lighting cues yourself: it sends the box the cue number, over the network. <span class=\"tag\">to confirm</span> who starts the cues during a gig."),
-  ('iPad teleprompter', "With an <b>iPad as a teleprompter</b>, you can also show the lyrics in front of the singers. <span class=\"tag\">to confirm</span> how the iPad is linked."),
-  ('Velvet Remote', "With <b>Velvet Remote</b>, the iPhone becomes a remote control for Velvet Show. <span class=\"tag\">to confirm</span>")],
+  ('Velvet Show', "With <b>Velvet Show</b> on the Mac, you can also start a click track or backing tracks, and place your lighting cues on that track: at each cue, it sends the box the cue number, over the network. The Mac can be at the booth or on stage."),
+  ('iPad teleprompter', "With an <b>iPad as a teleprompter</b>, you can also show the lyrics in front of the singers, in time with the track. The iPad connects to the Mac through Sidecar (by cable is the most solid) or over the network."),
+  ('Velvet Remote', "With <b>Velvet Remote</b>, the iPhone becomes a remote control for Velvet Show: a band member starts the songs and cues from the stage, or a technician does it from the Mac at the booth. You can also let automatic playback chain the songs.")],
  ]),
 }
 
@@ -224,10 +224,10 @@ def svg(si, L, ttl):
         parts += [mac, badge(2, slots, 'Velvet Visualizer', BLUE), viz_screen(2)]; slots += 1
         parts.append(phone(20, n['phone'], 'CQ', 3, n, n['ez'])); parts.append(arrow(sid, 3, 'M56 474 L56 448', ROSE, True))
         parts.append(badge(4, slots, 'Velvet Show', GOLD)); parts.append(timeline_screen(4)); slots += 1
-        parts.append(arrow(sid, 4, 'M478 366 L388 366', ROSE)); parts.append(txt(4, 434, 394, '', ROSE, lines=n['cue'])); parts.append(tagtxt(4, 412, 442, L_, 'start'))
+        parts.append(arrow(sid, 4, 'M478 366 L388 366', ROSE)); parts.append(txt(4, 434, 394, '', ROSE, lines=n['cue']))
         parts.append(br(4, f'<rect x="-28" y="-15" width="56" height="30" rx="15" fill="{ROSE}"/><text x="0" y="6" text-anchor="middle" class="bt">cue 7</text>', 'bubble', ROSE))
-        parts.append(ipad(5, n)); parts.append(arrow(sid, 5, 'M500 434 L340 500', ROSE, True)); parts.append(tagtxt(5, 440, 492, L_))
-        parts.append(phone(512, n['phone'], 'cue 7', 6, n, n['remote'])); parts.append(arrow(sid, 6, 'M548 474 L548 434', ROSE)); parts.append(tagtxt(6, 632, 458, L_, 'end'))
+        parts.append(ipad(5, n)); parts.append(arrow(sid, 5, 'M500 434 L336 522', ROSE, True)); parts.append(txt(5, 420, 548, n['side'], ROSE))
+        parts.append(phone(512, n['phone'], 'cue 7', 6, n, n['remote'])); parts.append(arrow(sid, 6, 'M548 474 L548 434', ROSE))
     return f'<svg class="story-svg" viewBox="0 0 640 {460 if si == 0 else 612}" role="img" aria-label="{ttl}" data-b="0"><defs>{markers(sid)}</defs>{"".join(parts)}</svg>'
 
 def section(L):
