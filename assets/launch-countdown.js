@@ -21,10 +21,10 @@
   var text;
   if (lang === 'fr') {
     text = days <= 1 ? 'Dernier jour au prix de lancement (fin le 25 novembre).'
-                     : 'Prix de lancement jusqu’au 25 novembre : plus que ' + days + ' jours.';
+                     : 'Prix de lancement jusqu’au\u00a025\u00a0novembre\u00a0: plus\u00a0que\u00a0' + days + '\u00a0jours.';
   } else {
     text = days <= 1 ? 'Last day at the launch price (ends 25 November).'
-                     : 'Launch price until 25 November: ' + days + ' days left.';
+                     : 'Launch price until 25\u00a0November: ' + days + '\u00a0days\u00a0left.';
   }
   document.querySelectorAll('[data-launch-countdown]').forEach(function (el) {
     el.textContent = text;
