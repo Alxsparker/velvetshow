@@ -114,6 +114,16 @@ nav a.cta{background:var(--gold);color:#1a1405;padding:6px 14px;border-radius:6p
 .sec-sub{text-align:center;color:var(--mut);margin-bottom:32px;font-size:14px}
 .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .prices--single{grid-template-columns:minmax(0,340px);justify-content:center;margin-top:18px}
+.ezp{grid-template-columns:minmax(0,640px)}
+.ezp h3 small{font-size:12px;color:var(--mut);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-left:6px}
+.ezp__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.ezp__cell{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border:1px solid var(--line);border-radius:10px}
+.ezp__n{font-size:12px;color:var(--mut)}
+.ezp__cell strong{font-family:Oswald,sans-serif;font-size:22px;font-weight:600}
+.ezp__cell em{font-style:normal;font-size:11px;color:var(--green)}
+.ezp__cell small{font-size:11px;color:var(--dim)}
+.ezp__badge{display:inline-block;margin-top:4px}
+@media(max-width:700px){.ezp__grid{grid-template-columns:1fr 1fr}.ezp{grid-template-columns:1fr}}
 @media(max-width:700px){.prices{grid-template-columns:1fr}.prices--single{grid-template-columns:1fr}}
 .price{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 24px;text-align:center;position:relative;transition:transform .3s}
 .price:hover{transform:translateY(-3px)}
@@ -340,8 +350,19 @@ footer a:hover{color:var(--text)}
       <p class="note" style="margin-top:10px;font-size:12px">Needs a MaestroDMX box, sold separately.</p>
     </div>
   </div>
+
   <p data-launch-countdown hidden class="note" style="color:var(--orange,#ff6b35);font-weight:600"></p>
   <p class="note">One licence works on 2 of your Macs. <span data-launch-hide>Launch pricing until 25 November.</span></p>
+
+  <div class="prices prices--single ezp">
+    <div class="price reveal d1">
+      <h3>EzQuiel <small>iPhone</small></h3>
+      <p class="was">Only on the App Store</p>
+      <div class="ezp__grid"><div class="ezp__cell"><span class="ezp__n">3 analyses</span><strong>Free</strong><em>on first launch</em></div><div class="ezp__cell"><span class="ezp__n">10 analyses</span><strong>€2.99</strong><small>$2.99 in the US</small></div><div class="ezp__cell"><span class="ezp__n">50 analyses</span><strong>€9.99</strong><small>$8.99 in the US</small></div><div class="ezp__cell"><span class="ezp__n">Unlimited</span><strong>€29.99</strong><em>one purchase, forever</em><small>$24.99 in the US</small></div></div>
+      <a class="ezp__badge" href="https://apps.apple.com/app/id6745174198" aria-label="Download on the App Store"><img src="/assets/screenshots/appstore-badge-white.svg" alt="Download on the App Store" height="44" loading="lazy"></a>
+      <p class="note" style="margin-top:10px;font-size:12px">Prices are set by Apple and shown here as listed on the App Store; they vary by country. EzQuiel is not sold on this website.</p>
+    </div>
+  </div>
 </section>
 
 <section class="faq" id="faq">
@@ -406,6 +427,7 @@ footer a:hover{color:var(--text)}
     <div>
       <a href="/fr/">Version française</a>
     </div>
+    <p style="flex-basis:100%;font-size:12px;color:var(--dim);margin-top:4px">App Store and the Apple logo are trademarks of Apple Inc.</p>
   </div>
 </footer>
 
