@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://velvetshow.app/stage-lighting-3-setup.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-3-regler.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-3-setup.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/stage-lighting-3-setup.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Velvet"><meta property="og:locale" content="en_US"><meta property="og:url" content="https://velvetshow.app/stage-lighting-3-setup.html"><meta property="og:title" content="Setting up&amp;nbsp;the apps — what to&amp;nbsp;click"><meta property="og:description" content="What to click, in which order: set up Velvet Visualizer, EzQuiel, Velvet Show and Velvet Light DJ with a MaestroDMX box.">
+<title>Setting up&nbsp;the apps — what to&nbsp;click</title>
+<meta name="description" content="What to click, in which order: set up Velvet Visualizer, EzQuiel, Velvet Show and Velvet Light DJ with a MaestroDMX box.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/guide-lumiere.css">
+<link rel="stylesheet" href="/assets/guide-motion.css">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/stage-lighting-in-5-minutes.html" class="nav__brand">GUIDE <span>LIGHTING</span></a>
+    <div class="nav__links"><a href="/stage-lighting-1-understand.html">1&nbsp;· Understand</a><a href="/stage-lighting-2-connect.html">2&nbsp;· Connect</a><a href="/stage-lighting-3-setup.html" class="on">3&nbsp;· Set up</a><a href="/stage-lighting-4-troubleshoot.html">4&nbsp;· Troubleshoot</a><a href="/fr/lumiere-3-regler.html">FR</a></div>
+  </nav>
+</header>
+<section class="hero hero--small"><div class="hero__inner">
+<p class="soon">First&nbsp;version</p><p class="eyebrow">Part&nbsp;3&nbsp;of&nbsp;4</p>
+<h1>Set&nbsp;up</h1>
+<p class="lead">What to click, in which order, in each app.</p>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-pink">In&nbsp;the order&nbsp;of&nbsp;a&nbsp;show</p>
+<h2 class="sec-title">One app after&nbsp;another</h2>
+<p class="sec-sub">Each app has its own role. Here are the useful settings, in the order of a show. The names in quotes are the names of the buttons in the apps.</p>
+<div class="box" style="margin-top:16px"><p class="lbl lbl-gold" style="margin-bottom:4px">Step&nbsp;·&nbsp;1</p><h3>Velvet&nbsp;Visualizer</h3>
+<ol class="olist"><li><strong>Nothing to plug in for the preview.</strong> It works with no gear at all: a 3D preview on the Mac.</li><li><strong>Import your MaestroDMX show:</strong> File ▸ “Import a MaestroDMX file…”, then pick the JSON file exported from your Maestro. The fixtures, their addresses and the groups are placed for you.</li><li><strong>To see the real light:</strong> in MaestroDMX (version 1.5 or later), turn on Art-Net output. The Mac and the box must be on the same network.</li><li><strong>Turn on the “Live DMX” switch</strong> in the toolbar. When the light is green, the 3D view follows what the box sends.</li></ol></div>
+<div class="box" style="margin-top:16px"><p class="lbl lbl-gold" style="margin-bottom:4px">Step&nbsp;·&nbsp;2</p><h3>EzQuiel</h3>
+<p>EzQuiel adjusts the sound of the room, on iPhone or iPad (App Store). It is built for Allen &amp; Heath CQ mixers.</p><ul><li><strong>The link with the lights:</strong> the mixer must send sound to the box's line input, or the box hears nothing.</li><li>To connect the app to the mixer and adjust the sound, see <a href="/ezquiel-support.html">the EzQuiel help</a>.</li></ul></div>
+<div class="box" style="margin-top:16px"><p class="lbl lbl-gold" style="margin-bottom:4px">Step&nbsp;·&nbsp;3</p><h3>Velvet&nbsp;Show</h3>
+<ol class="olist"><li><strong>Import your cues:</strong> in the settings, “Import MaestroDMX → OSC Library” reads a MaestroDMX show or backup file and creates the OSC events.</li><li><strong>Set up OSC:</strong> “OSC Host” is the box's address. The port is <strong>7672</strong>, the one MaestroDMX uses out of the box. You have nothing to change, unless you changed the box's port.</li><li><strong>Test:</strong> “OSC Test (raw)” sends a test message to the box, without touching your cues.</li><li><strong>Place your cues on the timeline</strong> of the song, at the right moment. Velvet Show fires them over MIDI or OSC.</li><li>Velvet Remote (iPhone, iPad) works as a remote, and automatic playback can chain the songs.</li></ol></div>
+<div class="box" style="margin-top:16px"><p class="lbl lbl-gold" style="margin-bottom:4px">Step&nbsp;·&nbsp;4</p><h3>Velvet Light&nbsp;DJ</h3>
+<ol class="olist"><li><strong>Open the settings</strong> (the third tab). “Address for cues (OSC)” is the box's address. “OSC port” is <strong>7672</strong> by default. “Address to read the cue names” lets the app read the cues of your box.</li><li><strong>Allow Accessibility</strong> when macOS asks: that is what lets the app follow the position in djay. Without it, the app counts the time on its own.</li><li><strong>Turn on “Auto lights”.</strong> It starts paused: nothing is sent until you turn it on.</li><li><strong>Start a track in djay.</strong> The app picks the cue that fits. To change it, use the “Mood for this track” menu.</li><li><strong>Do not use Velvet Show at the same time:</strong> both would send cues to the box.</li></ol><p>Velvet Light DJ is made for MaestroDMX only.</p></div>
+<div class="pager"><a class="btn" href="/stage-lighting-2-connect.html">← 2&nbsp;· Connect</a><a class="btn btn-p" href="/stage-lighting-4-troubleshoot.html">4&nbsp;· Troubleshoot →</a></div>
+</div></section>
+<footer>
+  <div class="wrap">
+    <p>First version of&nbsp;the guide. A&nbsp;mistake, an&nbsp;idea?<br><a href="mailto:contact@loveandlive.fr">contact@loveandlive.fr</a></p>
+    <p>© Alexandre Chalon ·&nbsp;Velvet</p>
+  </div>
+</footer>
+<script src="/assets/guide-motion.js" defer></script>
+</body>
+</html>

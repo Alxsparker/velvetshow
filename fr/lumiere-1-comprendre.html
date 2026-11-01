@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://velvetshow.app/fr/lumiere-1-comprendre.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-1-comprendre.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-1-understand.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/stage-lighting-1-understand.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Velvet"><meta property="og:locale" content="fr_FR"><meta property="og:url" content="https://velvetshow.app/fr/lumiere-1-comprendre.html"><meta property="og:title" content="Comprendre la&amp;nbsp;lumière de&amp;nbsp;scène — glossaire"><meta property="og:description" content="Glossaire illustré de la lumière de scène : projecteur, DMX, Art-Net, cue, boîtier MaestroDMX, drop… expliqués en mots simples, avec des schémas.">
+<title>Comprendre la&nbsp;lumière de&nbsp;scène — glossaire</title>
+<meta name="description" content="Glossaire illustré de la lumière de scène : projecteur, DMX, Art-Net, cue, boîtier MaestroDMX, drop… expliqués en mots simples, avec des schémas.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/guide-lumiere.css">
+<link rel="stylesheet" href="/assets/guide-motion.css">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/fr/lumiere-de-scene-en-5-minutes.html" class="nav__brand">GUIDE <span>LUMIÈRE</span></a>
+    <div class="nav__links"><a href="/fr/lumiere-1-comprendre.html" class="on">1&nbsp;· Comprendre</a><a href="/fr/lumiere-2-brancher.html">2&nbsp;· Brancher</a><a href="/fr/lumiere-3-regler.html">3&nbsp;· Régler</a><a href="/fr/lumiere-4-depanner.html">4&nbsp;· Dépanner</a><a href="/stage-lighting-1-understand.html">EN</a></div>
+  </nav>
+</header>
+<section class="hero hero--small"><div class="hero__inner">
+<p class="soon">Première&nbsp;version</p><p class="eyebrow">Partie 1&nbsp;sur&nbsp;4</p>
+<h1>Comprendre</h1>
+<p class="lead">Les mots de&nbsp;la&nbsp;lumière de&nbsp;scène, expliqués simplement. Chaque mot&nbsp;: une définition courte, sans&nbsp;jargon.</p>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-pink">Les&nbsp;lumières</p>
+<h2 class="sec-title">Ce&nbsp;qu'on&nbsp;commande</h2>
+<p class="sec-sub">Tout commence par un&nbsp;projecteur qui obéit à&nbsp;des&nbsp;ordres.</p>
+<figure class="fig"><svg viewBox="0 0 360 150" role="img" aria-labelledby="fxt">
+<title id="fxt">Un projecteur et ses curseurs</title>
+<circle cx="62" cy="64" r="24" fill="rgba(240,189,87,.18)" stroke="#f0bd57" stroke-width="2"/>
+<g stroke="#f0bd57" stroke-width="2" stroke-linecap="round"><line x1="62" y1="22" x2="62" y2="12"/><line x1="26" y1="30" x2="19" y2="23"/><line x1="98" y1="30" x2="105" y2="23"/><line x1="20" y1="64" x2="9" y2="64"/><line x1="104" y1="64" x2="115" y2="64"/></g>
+<text class="b" x="62" y="116" text-anchor="middle">Projecteur</text>
+<text class="sm m" x="62" y="133" text-anchor="middle">un appareil</text>
+<g><text x="150" y="40">Intensité</text><line x1="240" y1="36" x2="338" y2="36" stroke="#565c6e" stroke-width="4" stroke-linecap="round"/><circle cx="312" cy="36" r="8" fill="#f0bd57"/>
+<text x="150" y="80">Couleur</text><line x1="240" y1="76" x2="338" y2="76" stroke="#565c6e" stroke-width="4" stroke-linecap="round"/><circle cx="275" cy="76" r="8" fill="#ff5fa8"/>
+<text x="150" y="120">Mouvement</text><line x1="240" y1="116" x2="338" y2="116" stroke="#565c6e" stroke-width="4" stroke-linecap="round"/><circle cx="256" cy="116" r="8" fill="#4d8fff"/></g>
+</svg><figcaption>Un&nbsp;projecteur a&nbsp;plusieurs «&nbsp;curseurs&nbsp;»&nbsp;: les canaux. Le&nbsp;DMX règle ces&nbsp;curseurs.</figcaption></figure>
+<div class="glossgrid"><div class="term "><h3>Projecteur</h3><p class="alias">aussi «&nbsp;lumière&nbsp;», «&nbsp;fixture&nbsp;»&nbsp;en&nbsp;anglais</p><p>Un&nbsp;appareil d'éclairage de&nbsp;scène que l'on&nbsp;commande à&nbsp;distance&nbsp;: on&nbsp;peut changer son intensité, sa&nbsp;couleur, et&nbsp;parfois le&nbsp;faire&nbsp;bouger.</p><p><span class="eg">Exemples&nbsp;: une barre LED, une lyre (un&nbsp;projecteur qui bouge), un&nbsp;faisceau.</span></p></div><div class="term "><h3>Canal</h3><p class="alias">un&nbsp;«&nbsp;curseur&nbsp;»&nbsp;du&nbsp;projecteur</p><p>Chaque réglage d'un&nbsp;projecteur est un&nbsp;canal&nbsp;: un&nbsp;pour la&nbsp;luminosité, un&nbsp;pour la&nbsp;couleur, un&nbsp;pour le&nbsp;mouvement… Un&nbsp;canal prend une valeur&nbsp;de&nbsp;0&nbsp;à&nbsp;255.</p></div><div class="term k-blue"><h3>DMX</h3><p class="alias">la&nbsp;langue des&nbsp;projecteurs</p><p>Le&nbsp;DMX est la&nbsp;façon standard de&nbsp;dire à&nbsp;un&nbsp;projecteur quoi faire. C'est une longue liste de&nbsp;valeurs de&nbsp;canaux, renvoyée sans arrêt, plusieurs dizaines de&nbsp;fois par&nbsp;seconde.</p></div><div class="term k-blue"><h3>Univers</h3><p class="alias">un&nbsp;paquet de&nbsp;512&nbsp;canaux</p><p>Un&nbsp;univers DMX contient au&nbsp;plus 512 canaux. Un&nbsp;petit show en&nbsp;utilise un&nbsp;seul&nbsp;; un&nbsp;grand show en&nbsp;utilise&nbsp;plusieurs.</p></div></div>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-gold">Les&nbsp;ambiances</p>
+<h2 class="sec-title">Ce&nbsp;qu'on&nbsp;enregistre</h2>
+<p class="sec-sub">Personne ne&nbsp;règle chaque curseur à&nbsp;la&nbsp;main pendant le&nbsp;show. On&nbsp;enregistre des ambiances, puis on&nbsp;les&nbsp;lance.</p>
+<figure class="fig"><svg viewBox="0 0 360 140" role="img" aria-labelledby="cut">
+<title id="cut">Trois cues le long du temps</title>
+<defs><marker id="mt" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#565c6e"/></marker></defs>
+<rect x="10" y="14" width="104" height="62" rx="10" fill="rgba(77,143,255,.12)" stroke="#4d8fff"/>
+<text class="sm m" x="62" y="34" text-anchor="middle">Cue 1</text><text class="b" x="62" y="56" text-anchor="middle">Calme</text>
+<rect x="128" y="14" width="104" height="62" rx="10" fill="rgba(155,107,255,.12)" stroke="#9b6bff"/>
+<text class="sm m" x="180" y="34" text-anchor="middle">Cue 2</text><text class="b" x="180" y="56" text-anchor="middle">Fête</text>
+<rect x="246" y="14" width="104" height="62" rx="10" fill="rgba(255,95,168,.14)" stroke="#ff5fa8"/>
+<text class="sm m" x="298" y="34" text-anchor="middle">Cue 3</text><text class="b" x="298" y="56" text-anchor="middle">Drop</text>
+<line x1="10" y1="104" x2="344" y2="104" stroke="#565c6e" stroke-width="2.5" marker-end="url(#mt)"/>
+<text class="sm m" x="10" y="128">le morceau commence</text><text class="sm m" x="350" y="128" text-anchor="end">le temps</text>
+</svg><figcaption>Trois cues d'exemple. Un&nbsp;show, c'est le&nbsp;bon numéro lancé au&nbsp;bon&nbsp;moment.</figcaption></figure>
+<div class="glossgrid"><div class="term k-gold"><h3>Cue</h3><p class="alias">prononcez&nbsp;«&nbsp;kiou&nbsp;»</p><p>Une <strong>ambiance lumineuse enregistrée</strong>&nbsp;: couleurs, mouvements, vitesse. Elle a&nbsp;un&nbsp;numéro et&nbsp;un&nbsp;nom, comme une photo rangée dans&nbsp;un&nbsp;album.</p><p>Quand on&nbsp;«&nbsp;lance la&nbsp;cue 3&nbsp;», toutes les lumières prennent cette ambiance&nbsp;d'un&nbsp;coup.</p></div><div class="term k-gold"><h3>Drop</h3><p class="alias">le&nbsp;moment où&nbsp;ça&nbsp;repart&nbsp;fort</p><p>Dans un&nbsp;morceau, c'est l'instant où&nbsp;la&nbsp;musique repart fort après un&nbsp;passage calme. C'est là&nbsp;que la&nbsp;lumière doit monter&nbsp;d'un&nbsp;cran.</p></div><div class="term k-gold"><h3>Backing&nbsp;track</h3><p class="alias">piste&nbsp;d'accompagnement</p><p>Un&nbsp;enregistrement (batterie, basse, chœurs…) que le&nbsp;groupe fait jouer pendant qu'il&nbsp;chante et&nbsp;joue&nbsp;par-dessus.</p></div><div class="term k-gold"><h3>Clic</h3><p class="alias">le&nbsp;métronome dans les&nbsp;oreilles</p><p>Un&nbsp;battement régulier que le&nbsp;groupe entend seul, dans ses oreillettes, pour jouer exactement au&nbsp;même rythme que les&nbsp;pistes.</p></div><div class="term k-gold"><h3>Timeline</h3><p class="alias">la&nbsp;ligne&nbsp;du&nbsp;temps</p><p>Une frise qui représente le&nbsp;morceau du&nbsp;début à&nbsp;la&nbsp;fin. On&nbsp;y&nbsp;pose des événements&nbsp;: «&nbsp;à&nbsp;cet instant, lancer la&nbsp;cue&nbsp;2&nbsp;».</p></div></div>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-green">Les&nbsp;branchements</p>
+<h2 class="sec-title">Ce&nbsp;qui parle&nbsp;à&nbsp;quoi</h2>
+<p class="sec-sub">Il&nbsp;y&nbsp;a&nbsp;deux sortes de&nbsp;liaisons&nbsp;: le <strong>son</strong> (un&nbsp;câble audio) et&nbsp;les <strong>ordres</strong> (le&nbsp;réseau).</p>
+<div class="glossgrid"><div class="term k-green"><h3>Boîtier</h3><p class="alias">MaestroDMX</p><p>Un&nbsp;petit appareil qui <strong>crée et&nbsp;joue les cues lui-même</strong>, puis commande les projecteurs. Il&nbsp;coûte environ 800&nbsp;à&nbsp;900&nbsp;€.</p><p>Les apps Velvet ne&nbsp;remplacent pas le&nbsp;boîtier&nbsp;: elles lui <em>disent quelle cue lancer</em>.</p></div><div class="term k-green"><h3>Table&nbsp;de&nbsp;mixage</h3><p class="alias">la&nbsp;console&nbsp;du&nbsp;son</p><p>L'appareil qui rassemble tous les sons (micros, instruments, musique) et&nbsp;les envoie aux enceintes. Les tables Allen &amp; Heath CQ&nbsp;en&nbsp;sont&nbsp;un&nbsp;exemple.</p></div><div class="term k-green"><h3>Entrée&nbsp;ligne</h3><p class="alias">l'oreille&nbsp;du&nbsp;boîtier</p><p>Une prise audio du&nbsp;boîtier. C'est la <strong>seule</strong> façon dont il&nbsp;entend la&nbsp;musique, et&nbsp;elle doit venir de&nbsp;la&nbsp;table&nbsp;de&nbsp;mixage.</p><p>Table éteinte ou&nbsp;sans son&nbsp;: les faisceaux restent figés, même si&nbsp;les cues sont&nbsp;bonnes.</p></div><div class="term k-green"><h3>Réseau&nbsp;et&nbsp;routeur</h3><p class="alias">le&nbsp;«&nbsp;même&nbsp;réseau&nbsp;»</p><p>Le&nbsp;routeur est l'appareil qui relie vos appareils entre eux (comme la&nbsp;box de&nbsp;votre maison). Des appareils branchés dessus sont sur le <strong>même réseau</strong> et&nbsp;peuvent&nbsp;se&nbsp;parler.</p><p>Le&nbsp;Mac et&nbsp;le&nbsp;boîtier doivent être sur le&nbsp;même&nbsp;réseau.</p></div><div class="term k-green"><h3>Art-Net</h3><p class="alias">le&nbsp;DMX par&nbsp;le&nbsp;réseau</p><p>C'est du&nbsp;DMX qui voyage par le&nbsp;réseau, au&nbsp;lieu d'un&nbsp;câble spécial. Le&nbsp;boîtier s'en&nbsp;sert pour envoyer la&nbsp;lumière aux projecteurs&nbsp;et&nbsp;au&nbsp;Mac.</p></div><div class="term k-green"><h3>OSC</h3><p class="alias">un&nbsp;petit message par&nbsp;le&nbsp;réseau</p><p>Une app l'envoie à&nbsp;une autre pour dire «&nbsp;fais ceci&nbsp;». Ici&nbsp;: «&nbsp;lance la&nbsp;cue numéro 4&nbsp;». Velvet Light DJ&nbsp;et&nbsp;Velvet Show l'envoient&nbsp;au&nbsp;boîtier.</p><p><span class="eg">Le&nbsp;message s'appelle <code>/show/cue/index</code> et&nbsp;le&nbsp;port est réglable.</span></p></div><div class="term k-green"><h3>MIDI</h3><p class="alias">un&nbsp;autre langage&nbsp;de&nbsp;commande</p><p>Venu de&nbsp;la&nbsp;musique, il&nbsp;sert aussi à&nbsp;déclencher des choses. Velvet Show peut s'en&nbsp;servir (ou&nbsp;d'OSC) pour lancer les&nbsp;cues.</p></div></div>
+<div class="pipeline"><h3>En&nbsp;une&nbsp;ligne</h3><div class="prow">
+<span class="pc">Velvet Light DJ</span><span class="pa">→ OSC</span><span class="pc pc-m">MaestroDMX</span><span class="pa">→ DMX</span><span class="pc">Projecteurs</span></div>
+<p style="font-size:.84rem;color:var(--mut);margin-top:12px">Une app dit quelle cue lancer (OSC). Le&nbsp;boîtier joue la&nbsp;cue et&nbsp;envoie la&nbsp;lumière (DMX). Les projecteurs&nbsp;obéissent.</p></div>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-purple">Dans les&nbsp;apps</p>
+<h2 class="sec-title">Les mots que vous verrez&nbsp;à&nbsp;l'écran</h2>
+<div class="glossgrid"><div class="term k-purple"><h3>Aperçu&nbsp;3D</h3><p class="alias">Velvet&nbsp;Visualizer</p><p>Vos lumières, dessinées en&nbsp;3D&nbsp;sur l'écran. Ça&nbsp;marche <strong>sans aucun matériel</strong>&nbsp;: c'est fait pour essayer avant&nbsp;d'installer.</p></div><div class="term k-purple"><h3>Live&nbsp;DMX</h3><p class="alias">un&nbsp;interrupteur&nbsp;du&nbsp;Visualizer</p><p>Pour voir la&nbsp;lumière <em>réelle</em> du&nbsp;boîtier dans l'aperçu 3D, allumez l'interrupteur <strong>Live DMX</strong>. Le&nbsp;voyant devient&nbsp;vert.</p></div><div class="term k-purple"><h3>Auto&nbsp;lights</h3><p class="alias">l'interrupteur de&nbsp;Velvet Light&nbsp;DJ</p><p>Tant qu'il&nbsp;est en&nbsp;pause, l'app n'envoie rien. Il&nbsp;démarre&nbsp;en&nbsp;pause.</p></div><div class="term k-purple"><h3>Velvet&nbsp;Remote</h3><p class="alias">la&nbsp;télécommande</p><p>Une app pour iPhone et&nbsp;iPad qui sert de&nbsp;télécommande à&nbsp;Velvet&nbsp;Show.</p></div></div>
+<div class="pager"><span></span><a class="btn btn-p" href="/fr/lumiere-2-brancher.html">2&nbsp;· Brancher →</a></div>
+</div></section>
+<footer>
+  <div class="wrap">
+    <p>Première version du guide. Une erreur, une idée&nbsp;?<br><a href="mailto:contact@loveandlive.fr">contact@loveandlive.fr</a></p>
+    <p>© Alexandre Chalon ·&nbsp;Velvet</p>
+  </div>
+</footer>
+<script src="/assets/guide-motion.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://velvetshow.app/fr/lumiere-3-regler.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-3-regler.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-3-setup.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/stage-lighting-3-setup.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Velvet"><meta property="og:locale" content="fr_FR"><meta property="og:url" content="https://velvetshow.app/fr/lumiere-3-regler.html"><meta property="og:title" content="Régler les apps — quoi cliquer"><meta property="og:description" content="Quoi cliquer, dans quel ordre : régler Velvet Visualizer, EzQuiel, Velvet Show et Velvet Light DJ avec un boîtier MaestroDMX.">
+<title>Régler les apps — quoi cliquer</title>
+<meta name="description" content="Quoi cliquer, dans quel ordre : régler Velvet Visualizer, EzQuiel, Velvet Show et Velvet Light DJ avec un boîtier MaestroDMX.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/guide-lumiere.css">
+<link rel="stylesheet" href="/assets/guide-motion.css">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/fr/lumiere-de-scene-en-5-minutes.html" class="nav__brand">GUIDE <span>LUMIÈRE</span></a>
+    <div class="nav__links"><a href="/fr/lumiere-1-comprendre.html">1&nbsp;· Comprendre</a><a href="/fr/lumiere-2-brancher.html">2&nbsp;· Brancher</a><a href="/fr/lumiere-3-regler.html" class="on">3&nbsp;· Régler</a><a href="/fr/lumiere-4-depanner.html">4&nbsp;· Dépanner</a><a href="/stage-lighting-3-setup.html">EN</a></div>
+  </nav>
+</header>
+<section class="hero hero--small"><div class="hero__inner">
+<p class="soon">Première&nbsp;version</p><p class="eyebrow">Partie 3&nbsp;sur&nbsp;4</p>
+<h1>Régler</h1>
+<p class="lead">Quoi cliquer, dans quel ordre, dans chaque app.</p>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-pink">Dans l'ordre&nbsp;d'un&nbsp;show</p>
+<h2 class="sec-title">Une app après&nbsp;l'autre</h2>
+<p class="sec-sub">Chaque app a son rôle. Voici les réglages utiles, dans l'ordre d'un show. Les noms entre guillemets sont ceux des boutons dans les apps.</p>
+<div class="box" style="margin-top:16px"><p class="lbl lbl-gold" style="margin-bottom:4px">Étape&nbsp;·&nbsp;1</p><h3>Velvet&nbsp;Visualizer</h3>
+<ol class="olist"><li><strong>Rien à brancher pour l'aperçu.</strong> Il marche sans aucun matériel&nbsp;: un aperçu 3D sur le Mac.</li><li><strong>Importez votre show MaestroDMX&nbsp;:</strong> menu Fichier ▸ «&nbsp;Importer un fichier MaestroDMX…&nbsp;», puis choisissez le fichier JSON exporté de votre Maestro. Les projecteurs, leurs adresses et les groupes sont placés pour vous.</li><li><strong>Pour voir la vraie lumière&nbsp;:</strong> dans MaestroDMX (version 1.5 ou plus récente), activez l'envoi d'Art-Net. Le Mac et le boîtier doivent être sur le même réseau.</li><li><strong>Allumez l'interrupteur «&nbsp;Live DMX&nbsp;»</strong> de la barre d'outils. Quand le voyant est vert, la vue 3D suit ce que le boîtier envoie.</li></ol></div>
+<div class="box" style="margin-top:16px"><p class="lbl lbl-gold" style="margin-bottom:4px">Étape&nbsp;·&nbsp;2</p><h3>EzQuiel</h3>
+<p>EzQuiel règle le son de la salle, sur iPhone ou iPad (App Store). Il est pensé pour les tables Allen &amp; Heath CQ.</p><ul><li><strong>Le lien avec la lumière&nbsp;:</strong> la table doit envoyer du son à l'entrée ligne du boîtier, sinon il n'écoute rien.</li><li>Pour relier l'app à la table et régler le son, voir <a href="/fr/ezquiel-aide.html">l'aide d'EzQuiel</a>.</li></ul></div>
+<div class="box" style="margin-top:16px"><p class="lbl lbl-gold" style="margin-bottom:4px">Étape&nbsp;·&nbsp;3</p><h3>Velvet&nbsp;Show</h3>
+<ol class="olist"><li><strong>Importez vos cues&nbsp;:</strong> dans les réglages, «&nbsp;Import MaestroDMX → OSC Library&nbsp;» lit un fichier de show ou de sauvegarde MaestroDMX et crée les événements OSC.</li><li><strong>Réglez l'envoi OSC&nbsp;:</strong> «&nbsp;OSC Host&nbsp;» est l'adresse du boîtier. Le port est <strong>7672</strong>, celui de MaestroDMX tel qu'il sort de la boîte. Vous n'avez rien à changer, sauf si vous avez modifié le port du boîtier.</li><li><strong>Testez&nbsp;:</strong> «&nbsp;OSC Test (raw)&nbsp;» envoie un message d'essai au boîtier, sans toucher à vos cues.</li><li><strong>Posez vos cues sur la timeline</strong> du morceau, au bon moment. Velvet Show les déclenche en MIDI ou en OSC.</li><li>Velvet Remote (iPhone, iPad) sert de télécommande, et la lecture automatique peut enchaîner les morceaux.</li></ol></div>
+<div class="box" style="margin-top:16px"><p class="lbl lbl-gold" style="margin-bottom:4px">Étape&nbsp;·&nbsp;4</p><h3>Velvet Light&nbsp;DJ</h3>
+<ol class="olist"><li><strong>Ouvrez les réglages</strong> (le troisième onglet). «&nbsp;Adresse pour les cues (OSC)&nbsp;» est l'adresse du boîtier. «&nbsp;Port OSC&nbsp;» est <strong>7672</strong> par défaut. «&nbsp;Adresse pour lire les noms des cues&nbsp;» permet à l'app de lire les cues de votre boîtier.</li><li><strong>Autorisez l'Accessibilité</strong> quand macOS le demande&nbsp;: c'est ce qui permet à l'app de suivre la position dans djay. Sans elle, l'app compte le temps toute seule.</li><li><strong>Allumez «&nbsp;Lumières auto&nbsp;».</strong> Elle démarre en pause&nbsp;: rien ne part tant que vous ne l'activez pas.</li><li><strong>Lancez un morceau dans djay.</strong> L'app choisit la cue qui va avec. Pour la corriger, utilisez le menu «&nbsp;Ambiance de ce morceau&nbsp;».</li><li><strong>N'utilisez pas Velvet Show en même temps&nbsp;:</strong> les deux enverraient des cues au boîtier.</li></ol><p>Velvet Light DJ est fait pour MaestroDMX uniquement.</p></div>
+<div class="pager"><a class="btn" href="/fr/lumiere-2-brancher.html">← 2&nbsp;· Brancher</a><a class="btn btn-p" href="/fr/lumiere-4-depanner.html">4&nbsp;· Dépanner →</a></div>
+</div></section>
+<footer>
+  <div class="wrap">
+    <p>Première version du guide. Une erreur, une idée&nbsp;?<br><a href="mailto:contact@loveandlive.fr">contact@loveandlive.fr</a></p>
+    <p>© Alexandre Chalon ·&nbsp;Velvet</p>
+  </div>
+</footer>
+<script src="/assets/guide-motion.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-4-depanner.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Velvet"><meta property="og:locale" content="en_US"><meta property="og:url" content="https://velvetshow.app/stage-lighting-4-troubleshoot.html"><meta property="og:title" content="Troubleshooting — why are my&amp;nbsp;lights not moving?"><meta property="og:description" content="Why are my lights not moving? The causes to check in order: sound, network, Art-Net, OSC, with the fix for each.">
+<title>Troubleshooting — why are my&nbsp;lights not moving?</title>
+<meta name="description" content="Why are my lights not moving? The causes to check in order: sound, network, Art-Net, OSC, with the fix for each.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/guide-lumiere.css">
+<link rel="stylesheet" href="/assets/guide-motion.css">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/stage-lighting-in-5-minutes.html" class="nav__brand">GUIDE <span>LIGHTING</span></a>
+    <div class="nav__links"><a href="/stage-lighting-1-understand.html">1&nbsp;· Understand</a><a href="/stage-lighting-2-connect.html">2&nbsp;· Connect</a><a href="/stage-lighting-3-setup.html">3&nbsp;· Set up</a><a href="/stage-lighting-4-troubleshoot.html" class="on">4&nbsp;· Troubleshoot</a><a href="/fr/lumiere-4-depanner.html">FR</a></div>
+  </nav>
+</header>
+<section class="hero hero--small"><div class="hero__inner">
+<p class="soon">First&nbsp;version</p><p class="eyebrow">Part&nbsp;4&nbsp;of&nbsp;4</p>
+<h1>Troubleshoot</h1>
+<p class="lead">“Why are my&nbsp;lights not moving?” The causes to&nbsp;check,&nbsp;in&nbsp;order.</p>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-orange">First&nbsp;of&nbsp;all</p>
+<h2 class="sec-title">Three questions to&nbsp;cut the problem&nbsp;in&nbsp;half</h2>
+<p class="sec-sub">Each question checks one stretch of&nbsp;the diagram. Answer&nbsp;in&nbsp;order.</p>
+<ol class="olist"><li><strong>Does the box hear the music?</strong> Is&nbsp;the mixer on, and does it&nbsp;send sound to&nbsp;the line&nbsp;input?</li><li><strong>Do&nbsp;the orders arrive?</strong> Are the Mac and the box on&nbsp;the same&nbsp;network?</li><li><strong>Do&nbsp;you see the light in&nbsp;the Visualizer?</strong> Is&nbsp;the Live DMX switch on&nbsp;(green&nbsp;light)?</li></ol>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-pink">The&nbsp;causes</p>
+<h2 class="sec-title">The real causes, one&nbsp;by&nbsp;one</h2>
+<div class="cause"><h3>The beams are frozen while the music&nbsp;plays</h3><p>The box listens only to&nbsp;its line input. If&nbsp;the mixer is&nbsp;off, or&nbsp;sends it&nbsp;no&nbsp;sound, it&nbsp;stops moving, <strong>even if&nbsp;the cues are right</strong>.</p><p class="fix"><strong>To&nbsp;do:</strong> turn the mixer on&nbsp;and check it&nbsp;sends sound to&nbsp;the box's&nbsp;line&nbsp;input.</p></div><div class="cause"><h3>The Visualizer shows no&nbsp;light from the&nbsp;box</h3><p>Without the <strong>Live DMX</strong> switch on, the 3D&nbsp;preview does not show the&nbsp;box's&nbsp;light. MaestroDMX must also send Art-Net (version 1.5 or later).</p><p class="fix"><strong>To&nbsp;do:</strong> turn on Art-Net in MaestroDMX, turn Live&nbsp;DMX on in the Visualizer's toolbar, and wait for the green&nbsp;light.</p></div><div class="cause"><h3>Choosing a&nbsp;cue has&nbsp;no&nbsp;effect</h3><p>The Mac and the box must be&nbsp;on&nbsp;the same network. Otherwise the cue number never reaches the&nbsp;box.</p><p class="fix"><strong>To&nbsp;do:</strong> check both are connected to&nbsp;the same&nbsp;router.</p></div><div class="cause"><h3>Velvet Light DJ&nbsp;sends&nbsp;nothing</h3><p>The <strong>Auto lights</strong> switch starts paused. While paused, the app sends&nbsp;nothing.</p><p class="fix"><strong>To&nbsp;do:</strong> turn Auto lights&nbsp;on.</p></div><div class="cause"><h3>The cue number goes out, but the box does not&nbsp;react</h3><p>The OSC message port is&nbsp;adjustable in&nbsp;the apps. If&nbsp;the app's&nbsp;port is&nbsp;not the one the box expects, the message&nbsp;is&nbsp;lost.</p><p class="fix"><strong>To&nbsp;do:</strong> compare the two&nbsp;ports.</p><p>By default, the port is <strong>7672</strong> in&nbsp;Velvet Show and in&nbsp;Velvet Light&nbsp;DJ. Only change it if&nbsp;you changed MaestroDMX's&nbsp;port.</p></div><div class="cause"><h3>Cues collide or&nbsp;go&nbsp;all&nbsp;over&nbsp;the&nbsp;place</h3><p>Velvet Show and Velvet Light&nbsp;DJ both send cues to&nbsp;the box. If&nbsp;both run at&nbsp;the same time, it&nbsp;receives conflicting&nbsp;orders.</p><p class="fix"><strong>To&nbsp;do:</strong> use only one of&nbsp;the&nbsp;two at&nbsp;a&nbsp;time.</p></div><div class="cause"><h3>The light does not follow pauses or&nbsp;jumps in&nbsp;djay</h3><p>Velvet Light&nbsp;DJ follows the&nbsp;position of&nbsp;the&nbsp;track in&nbsp;djay thanks to&nbsp;the macOS “Accessibility” permission. Without it, the app counts the time on&nbsp;its own: a&nbsp;pause or&nbsp;a&nbsp;jump forward throws it&nbsp;off.</p><p class="fix"><strong>To&nbsp;do:</strong> allow Velvet Light&nbsp;DJ in&nbsp;System Settings ▸ Privacy &amp; Security ▸ Accessibility.</p></div><div class="cause"><h3>Other possible&nbsp;causes</h3><p>Audio cables, fixture power, router, crowded Wi-Fi: these depend on&nbsp;your gear.</p><p class="fix"><strong>To&nbsp;do:</strong> check them last, once the three questions at&nbsp;the top are&nbsp;passed.</p></div><div class="pager"><a class="btn" href="/stage-lighting-3-setup.html">← 3&nbsp;· Set up</a><span></span></div>
+</div></section>
+<footer>
+  <div class="wrap">
+    <p>First version of&nbsp;the guide. A&nbsp;mistake, an&nbsp;idea?<br><a href="mailto:contact@loveandlive.fr">contact@loveandlive.fr</a></p>
+    <p>© Alexandre Chalon ·&nbsp;Velvet</p>
+  </div>
+</footer>
+<script src="/assets/guide-motion.js" defer></script>
+</body>
+</html>
