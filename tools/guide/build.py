@@ -25,10 +25,10 @@ TXT = {
  tabs=['DJ', 'Musiciens sur bande', 'Groupe de musique'],
  titles=['Je suis DJ', 'Je joue avec des backing tracks et des clics', 'Je joue en groupe, avec une piste clic ou des backing tracks'],
  prev='Précédent', play='Lecture', pause='Pause', next='Ajouter la brique suivante', again='Recommencer', word='Brique',
- legend=['Son', 'Ordre : numéro de cue ou commande', 'Lumière (Art-Net)'],
+ legend=['Son', 'Ordre : numéro de cue ou commande', 'Lumière (DMX ou Art-Net)'],
  n=dict(who=['Le DJ', 'Sur scène', 'Le groupe'], mix='Table de mixage', box='MaestroDMX', mac='Mac', ipad='iPad', phone='iPhone',
         lights='Projecteurs', ez='EzQuiel', remote='Velvet Remote', prompt='prompteur', line=('entrée', 'ligne'), cue=('joue', 'la cue 7'),
-        sound='le son', band='prise casque', side='Sidecar ou réseau', auto='Lecture auto', mid='ou autre appareil', mid2='MIDI ou OSC', words='paroles', art='Art-Net'),
+        sound='le son', band='prise casque', side='Sidecar ou réseau', auto='Lecture auto', mid='ou autre appareil', mid2='MIDI ou OSC', words='paroles', art='Art-Net', dmx='DMX'),
  notes=[
   "",
   "Le détail des câbles et du routeur n'est pas montré : il dépend de votre installation.",
@@ -62,10 +62,10 @@ TXT = {
  tabs=['DJ', 'Musicians on tracks', 'Live band'],
  titles=['I am a DJ', 'I play along with backing tracks and click tracks', 'I play in a band, with a click track or backing tracks'],
  prev='Previous', play='Play', pause='Pause', next='Add the next brick', again='Start over', word='Brick',
- legend=['Sound', 'Order: cue number or command', 'Light (Art-Net)'],
+ legend=['Sound', 'Order: cue number or command', 'Light (DMX or Art-Net)'],
  n=dict(who=['The DJ', 'On stage', 'The band'], mix='Mixing desk', box='MaestroDMX', mac='Mac', ipad='iPad', phone='iPhone',
         lights='Lights', ez='EzQuiel', remote='Velvet Remote', prompt='teleprompter', line=('line', 'input'), cue=('play', 'cue 7'),
-        sound='sound', band='headphone jack', side='Sidecar or network', auto='Auto play', mid='or other device', mid2='MIDI or OSC', words='lyrics', art='Art-Net'),
+        sound='sound', band='headphone jack', side='Sidecar or network', auto='Auto play', mid='or other device', mid2='MIDI or OSC', words='lyrics', art='Art-Net', dmx='DMX'),
  notes=[
   "",
   "Exact cables and router are not shown: they depend on your setup.",
@@ -192,7 +192,7 @@ def svg(si, L, ttl):
     parts.append(arrow(sid, ART_B, 'M168 366 L276 366', GOLD))
     parts.append(txt(ART_B, 222, 322, '', GOLD, lines=n['line']))
     parts.append(arrow(sid, ART_B, 'M330 316 V36 H346', BLUE))
-    parts.append(txt(ART_B, 340, 240, n['art'], BLUE, anchor='start'))
+    parts.append(txt(ART_B, 340, 240, n['dmx'], BLUE, anchor='start'))
     macb = {0: 0, 1: 1, 2: 2}[si]
     slots = 0
     L_ = L
