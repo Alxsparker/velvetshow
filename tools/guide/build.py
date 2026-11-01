@@ -36,22 +36,22 @@ TXT = {
  bricks=[
  [('Le point de départ', "Le DJ mixe avec djay sur son Mac. Le son part vers la table de mixage."),
   ('Velvet Visualizer', "Avec <b>Velvet Visualizer</b>, vous pouvez aussi voir et préparer votre lumière en 3D sur le Mac, avant la soirée, sans aucun matériel."),
-  ('MaestroDMX', "Avec le boîtier <b>MaestroDMX</b>, vous pouvez aussi avoir de la lumière automatique : il écoute le son de la table, par son entrée « ligne », et joue lui-même ses ambiances sur les projecteurs."),
+  ('MaestroDMX', "Avec le boîtier <b>MaestroDMX</b>, vous pouvez aussi avoir de la lumière automatique : il écoute le son de la table, par son entrée « ligne », et joue lui-même ses ambiances sur les projecteurs. Le boîtier envoie aussi son Art-Net par le réseau : Velvet Visualizer peut le recevoir et montrer la même lumière en 3D, en direct."),
   ('Velvet Light DJ', "Avec <b>Velvet Light DJ</b>, vous pouvez aussi faire suivre la lumière à vos morceaux : l'app lit ce que vous lancez dans djay (ou Serato) et envoie au boîtier le numéro de la cue à jouer, par le réseau. Le Mac et le boîtier sont sur le même réseau.")],
  [('Le point de départ', "Une chanteuse et un chanteur-guitariste jouent sur scène. Leurs voix et leurs instruments partent vers la table de mixage. C'est souvent une table numérique comme la CQ."),
   ('Velvet Show', "Avec <b>Velvet Show</b> sur le Mac, vous pouvez aussi lancer vos backing tracks et vos clics depuis une timeline. Le son sort du Mac par la prise casque, et entre dans la même table que les voix et les instruments. Le Mac peut être sur scène ou en régie."),
   ('iPad prompteur', "Avec un <b>iPad en prompteur</b>, vous pouvez aussi afficher les paroles devant les chanteurs, au rythme de la timeline. L'iPad se relie au Mac en Sidecar (par câble, c'est le plus solide) ou par le réseau."),
   ('Velvet Visualizer', "Avec <b>Velvet Visualizer</b>, vous pouvez aussi préparer votre lumière en 3D avant le concert, sans aucun matériel."),
-  ('Lumière', "Avec Velvet Show, vous pouvez aussi piloter la lumière : avec un boîtier <b>MaestroDMX</b> (l'exemple de ce guide), ou avec tout autre appareil de lumière qui comprend le MIDI ou l'OSC. Le MaestroDMX écoute aussi le son de la table, par son entrée « ligne »."),
+  ('Lumière', "Avec Velvet Show, vous pouvez aussi piloter la lumière : avec un boîtier <b>MaestroDMX</b> (l'exemple de ce guide), ou avec tout autre appareil de lumière qui comprend le MIDI ou l'OSC. Le MaestroDMX écoute aussi le son de la table, par son entrée « ligne ». Le boîtier envoie aussi son Art-Net par le réseau : Velvet Visualizer peut le recevoir et montrer la même lumière en 3D, en direct."),
   ('Cues de la timeline', "Avec les <b>cues de Velvet Show</b>, vous pouvez aussi caler la lumière sur chaque chanson : la timeline envoie à l'appareil de lumière le numéro de la cue, en OSC (par le réseau) ou en MIDI."),
   ('EzQuiel', "Avec <b>EzQuiel</b> sur un iPhone, vous pouvez aussi régler la table de mixage numérique (souvent une table comme la Allen &amp; Heath CQ), sans quitter la scène."),
   ('Velvet Remote', "Avec <b>Velvet Remote</b>, ce même iPhone devient ensuite une télécommande qui pilote Velvet Show. Un second iPhone est possible, mais facultatif."),
   ('Lancer les morceaux', "Avec Velvet Show, vous pouvez aussi lancer un morceau depuis le Mac, depuis l'iPhone, ou laisser la lecture automatique enchaîner les morceaux, avec ou sans fondu (le fondu se règle dans les réglages de Velvet Show).")],
  [('Le point de départ', "Le groupe joue ses instruments en direct, sur une piste clic ou des backing tracks. Le son des instruments part vers la table de mixage."),
   ('MaestroDMX', "Avec le boîtier <b>MaestroDMX</b>, vous pouvez aussi avoir de la lumière automatique : il écoute le son de la table, par son entrée « ligne », et joue ses ambiances sur les projecteurs."),
-  ('Velvet Visualizer', "Avec <b>Velvet Visualizer</b>, vous pouvez aussi préparer votre lumière en 3D avant le concert, sans aucun matériel."),
+  ('Velvet Visualizer', "Avec <b>Velvet Visualizer</b>, vous pouvez aussi préparer votre lumière en 3D avant le concert, sans aucun matériel. Si le boîtier MaestroDMX est branché, le Visualizer reçoit aussi son Art-Net par le réseau et montre la même lumière en direct."),
   ('EzQuiel', "Avec <b>EzQuiel</b> sur un iPhone, vous pouvez aussi régler la table de mixage numérique (tables Allen &amp; Heath CQ)."),
-  ('Velvet Show', "Avec <b>Velvet Show</b> sur le Mac, vous pouvez aussi lancer une piste clic ou des backing tracks, et placer vos cues de lumière sur cette piste : à chaque cue, il envoie au boîtier le numéro de la cue, par le réseau. Le Mac peut être en régie ou sur scène."),
+  ('Velvet Show', "Avec <b>Velvet Show</b> sur le Mac, vous pouvez aussi lancer une piste clic ou des backing tracks, et placer vos cues de lumière sur cette piste : à chaque cue, il envoie au boîtier le numéro de la cue, par le réseau. Le son des backing tracks sort du Mac et va vers la table de mixage. Le Mac peut être en régie ou sur scène."),
   ('iPad prompteur', "Avec un <b>iPad en prompteur</b>, vous pouvez aussi afficher les paroles devant les chanteurs, au rythme de la piste. L'iPad se relie au Mac en Sidecar (par câble, c'est le plus solide) ou par le réseau."),
   ('Velvet Remote', "Avec <b>Velvet Remote</b>, l'iPhone devient une télécommande qui pilote Velvet Show : un membre du groupe lance les morceaux et les cues depuis la scène, ou un technicien depuis le Mac en régie. Vous pouvez aussi laisser la lecture automatique enchaîner les morceaux.")],
  ]),
@@ -73,22 +73,22 @@ TXT = {
  bricks=[
  [('The starting point', "The DJ mixes with djay on a Mac. The sound goes to the mixing desk."),
   ('Velvet Visualizer', "With <b>Velvet Visualizer</b>, you can also see and prepare your lighting in 3D on the Mac, before the night, with no hardware at all."),
-  ('MaestroDMX', "With the <b>MaestroDMX</b> box, you can also get automatic lighting: it listens to the sound from the desk, through its \"line\" input, and plays its own looks on the lights."),
+  ('MaestroDMX', "With the <b>MaestroDMX</b> box, you can also get automatic lighting: it listens to the sound from the desk, through its \"line\" input, and plays its own looks on the lights. The box also sends its Art-Net over the network: Velvet Visualizer can receive it and show the same lighting in 3D, live."),
   ('Velvet Light DJ', "With <b>Velvet Light DJ</b>, you can also make the lights follow your tracks: the app reads what you play in djay (or Serato) and sends the box the number of the cue to play, over the network. The Mac and the box are on the same network.")],
  [('The starting point', "A female singer and a singer-guitarist play on stage. Their voices and instruments go to the mixing desk. It is often a digital desk like the CQ."),
   ('Velvet Show', "With <b>Velvet Show</b> on the Mac, you can also start your backing tracks and click tracks from a timeline. The sound leaves the Mac through the headphone jack and enters the same desk as the voices and instruments. The Mac can be on stage or at the booth."),
   ('iPad teleprompter', "With an <b>iPad as a teleprompter</b>, you can also show the lyrics in front of the singers, in time with the timeline. The iPad connects to the Mac through Sidecar (by cable, the most reliable) or over the network."),
   ('Velvet Visualizer', "With <b>Velvet Visualizer</b>, you can also prepare your lighting in 3D before the show, with no hardware at all."),
-  ('Lighting', "With Velvet Show, you can also control the lighting: with a <b>MaestroDMX</b> box (the example in this guide), or with any other lighting device that understands MIDI or OSC. The MaestroDMX also listens to the sound from the desk, through its \"line\" input."),
+  ('Lighting', "With Velvet Show, you can also control the lighting: with a <b>MaestroDMX</b> box (the example in this guide), or with any other lighting device that understands MIDI or OSC. The MaestroDMX also listens to the sound from the desk, through its \"line\" input. The box also sends its Art-Net over the network: Velvet Visualizer can receive it and show the same lighting in 3D, live."),
   ('Timeline cues', "With <b>Velvet Show cues</b>, you can also time the light to each song: the timeline sends the lighting device the cue number, over OSC (on the network) or MIDI."),
   ('EzQuiel', "With <b>EzQuiel</b> on an iPhone, you can also adjust the digital mixing desk (often a desk like the Allen &amp; Heath CQ) without leaving the stage."),
   ('Velvet Remote', "With <b>Velvet Remote</b>, that same iPhone then becomes a remote control for Velvet Show. A second iPhone is possible, but optional."),
   ('Starting songs', "With Velvet Show, you can also start a song from the Mac, from the iPhone, or let automatic playback chain the songs, with or without a crossfade (the crossfade is set in Velvet Show's settings).")],
  [('The starting point', "The band plays live instruments, along with a click track or backing tracks. The sound of the instruments goes to the mixing desk."),
   ('MaestroDMX', "With the <b>MaestroDMX</b> box, you can also get automatic lighting: it listens to the sound from the desk, through its \"line\" input, and plays its own looks on the lights."),
-  ('Velvet Visualizer', "With <b>Velvet Visualizer</b>, you can also prepare your lighting in 3D before the show, with no hardware at all."),
+  ('Velvet Visualizer', "With <b>Velvet Visualizer</b>, you can also prepare your lighting in 3D before the show, with no hardware at all. If the MaestroDMX box is connected, the Visualizer also receives its Art-Net over the network and shows the same lighting live."),
   ('EzQuiel', "With <b>EzQuiel</b> on an iPhone, you can also adjust the digital mixing desk (Allen &amp; Heath CQ desks)."),
-  ('Velvet Show', "With <b>Velvet Show</b> on the Mac, you can also start a click track or backing tracks, and place your lighting cues on that track: at each cue, it sends the box the cue number, over the network. The Mac can be at the booth or on stage."),
+  ('Velvet Show', "With <b>Velvet Show</b> on the Mac, you can also start a click track or backing tracks, and place your lighting cues on that track: at each cue, it sends the box the cue number, over the network. The sound of the backing tracks leaves the Mac and goes to the mixing desk. The Mac can be at the booth or on stage."),
   ('iPad teleprompter', "With an <b>iPad as a teleprompter</b>, you can also show the lyrics in front of the singers, in time with the track. The iPad connects to the Mac through Sidecar (by cable is the most solid) or over the network."),
   ('Velvet Remote', "With <b>Velvet Remote</b>, the iPhone becomes a remote control for Velvet Show: a band member starts the songs and cues from the stage, or a technician does it from the Mac at the booth. You can also let automatic playback chain the songs.")],
  ]),
@@ -224,10 +224,13 @@ def svg(si, L, ttl):
         parts += [mac, badge(2, slots, 'Velvet Visualizer', BLUE), viz_screen(2)]; slots += 1
         parts.append(phone(20, n['phone'], 'CQ', 3, n, n['ez'])); parts.append(arrow(sid, 3, 'M56 474 L56 448', ROSE, True))
         parts.append(badge(4, slots, 'Velvet Show', GOLD)); parts.append(timeline_screen(4)); slots += 1
+        parts.append(arrow(sid, 4, 'M490 346 H452 V296 H150 V312', GOLD)); parts.append(txt(4, 300, 286, n['sound'], GOLD))
         parts.append(arrow(sid, 4, 'M478 366 L388 366', ROSE)); parts.append(txt(4, 434, 394, '', ROSE, lines=n['cue']))
         parts.append(br(4, f'<rect x="-28" y="-15" width="56" height="30" rx="15" fill="{ROSE}"/><text x="0" y="6" text-anchor="middle" class="bt">cue 7</text>', 'bubble', ROSE))
         parts.append(ipad(5, n)); parts.append(arrow(sid, 5, 'M500 434 L336 522', ROSE, True)); parts.append(txt(5, 420, 548, n['side'], ROSE))
         parts.append(phone(512, n['phone'], 'cue 7', 6, n, n['remote'])); parts.append(arrow(sid, 6, 'M548 474 L548 434', ROSE))
+    LINK_B = {0: 2, 1: 4, 2: 2}[si]      # brique où le boîtier et le Visualizer sont tous deux là
+    parts.append(arrow(sid, LINK_B, 'M388 332 L486 332', BLUE)); parts.append(txt(LINK_B, 410, 320, n['art'], BLUE))
     return f'<svg class="story-svg" viewBox="0 0 640 {460 if si == 0 else 612}" role="img" aria-label="{ttl}" data-b="0"><defs>{markers(sid)}</defs>{"".join(parts)}</svg>'
 
 def section(L):
