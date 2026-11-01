@@ -8,7 +8,7 @@
 <link rel="alternate" hreflang="en" href="https://velvetshow.app/">
 <link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/">
 <link rel="alternate" hreflang="x-default" href="https://velvetshow.app/">
-<meta name="description" content="Velvet Show runs your backing tracks, lyrics and lights in one timeline. Velvet Visualizer previews your DMX setup in 3D. macOS. 30-day free trial.">
+<meta name="description" content="Velvet Show runs your backing tracks, lyrics and lights in one timeline. Velvet Visualizer previews your DMX setup in 3D. Velvet Light DJ makes your lights follow your DJ set. macOS. 30-day free trial.">
 <meta property="og:title" content="Velvet — Show control and 3D lighting for musicians">
 <meta property="og:image" content="https://velvetshow.app/screenshots/og-visualizer.jpg">
 <meta property="og:image:width" content="1200">
@@ -38,6 +38,7 @@ nav a.cta{background:var(--gold);color:#1a1405;padding:6px 14px;border-radius:6p
 .hero__fade{position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(to bottom,transparent,var(--bg));z-index:1;pointer-events:none}
 .hero h1,.hero__sub,.hero__trial,.hero__once,.hero__count,.hero__label,.hero__product__pitch,.hero__duo{text-wrap:balance}
 .hero__sub,.hero__once,.hero__product__pitch{text-wrap:pretty}
+.card p,.card li,.note,.sec-sub,.price .was,details p,details summary{text-wrap:pretty}
 .hero__label{position:relative;z-index:3;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .hero__sep::before{content:'+';color:var(--dim);font-size:26px;font-weight:300;line-height:1}
 .hero__products{position:relative;margin-top:12px;z-index:3;display:flex;align-items:center;gap:0}
@@ -79,8 +80,10 @@ nav a.cta{background:var(--gold);color:#1a1405;padding:6px 14px;border-radius:6p
 .hero__product--ldj .hero__product__price{color:var(--green)}
 @media(max-width:900px){.hero__main{grid-template-columns:1fr;gap:0}.hero__copy{align-items:center;text-align:center}.hero__ctas{justify-content:center}.hero__video{display:none}.hero__sep{margin:0 14px}.hero__product{padding:12px 14px;min-width:150px}.hero__product__pitch{white-space:normal;max-width:150px}.hero__sep{margin:0 8px}}
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:56px 0 20px}
-@media(max-width:700px){.cards{grid-template-columns:1fr}}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:56px 0 20px}
+.tag--ldj{color:var(--green)}
+@media(max-width:980px){.cards{grid-template-columns:1fr 1fr}.cards .card:nth-child(3){grid-column:1/-1;justify-self:center;width:calc(50% - 10px)}}
+@media(max-width:700px){.cards{grid-template-columns:1fr}.cards .card:nth-child(3){width:100%}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px;transition:border-color .3s,transform .3s}
 .card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.15)}
 .card__header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
@@ -103,7 +106,8 @@ nav a.cta{background:var(--gold);color:#1a1405;padding:6px 14px;border-radius:6p
 .sec-title{font-family:Oswald,sans-serif;font-size:36px;text-align:center;margin-bottom:8px}
 .sec-sub{text-align:center;color:var(--mut);margin-bottom:32px;font-size:14px}
 .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-@media(max-width:700px){.prices{grid-template-columns:1fr}}
+.prices--single{grid-template-columns:minmax(0,340px);justify-content:center;margin-top:18px}
+@media(max-width:700px){.prices{grid-template-columns:1fr}.prices--single{grid-template-columns:1fr}}
 .price{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 24px;text-align:center;position:relative;transition:transform .3s}
 .price:hover{transform:translateY(-3px)}
 .price.best{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
@@ -233,9 +237,9 @@ footer a:hover{color:var(--text)}
       <li>MaestroDMX — cue list import, MIDI and OSC control</li>
       <li>AUTO mode — crossfade between tracks automatically</li>
     </ul>
-    <div style="display:flex;gap:10px;margin-top:4px">
-      <a class="btn" href="/velvet-show.html" style="flex:1;text-align:center">Learn more</a>
-      <a class="btn primary" href="https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip" style="flex:1;text-align:center">Free 30-day trial</a>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+      <a class="btn" href="/velvet-show.html" style="flex:1 1 150px;text-align:center;white-space:nowrap">Learn more</a>
+      <a class="btn primary" href="https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip" style="flex:1 1 150px;text-align:center;white-space:nowrap">Free 30-day trial</a>
     </div>
   </div>
   <div class="card reveal d1" id="vis">
@@ -254,9 +258,28 @@ footer a:hover{color:var(--text)}
       <li>PDF export — Client / Technician / Rigger profiles</li>
       <li>DMX patch spreadsheet — CSV export</li>
     </ul>
-    <div style="display:flex;gap:10px;margin-top:4px">
-      <a class="btn" href="/velvet-visualizer.html" style="flex:1;text-align:center">Learn more</a>
-      <a class="btn primary" href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip" style="flex:1;text-align:center">Free 30-day trial</a>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+      <a class="btn" href="/velvet-visualizer.html" style="flex:1 1 150px;text-align:center;white-space:nowrap">Learn more</a>
+      <a class="btn primary" href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip" style="flex:1 1 150px;text-align:center;white-space:nowrap">Free 30-day trial</a>
+    </div>
+  </div>
+
+  <div class="card reveal d2" id="ldj">
+    <div class="card__header">
+      <div class="card__icon"><img src="/assets/light-dj/icon.png" alt="Velvet Light DJ" width="52" height="52"></div>
+      <div><span class="tag tag--ldj">Lights follow the DJ</span><h2>Velvet Light DJ</h2></div>
+    </div>
+    <div class="card__shot"><img src="/assets/light-dj/app-fr.jpg" alt="Velvet Light DJ app window" width="1200" height="881" loading="lazy"></div>
+    <p>Play a song in djay, Serato or VirtualDJ. Velvet Light DJ picks the right light cue on your MaestroDMX and sends it at the right moment.</p>
+    <ul>
+      <li>Reads your DJ software: djay, Serato, VirtualDJ</li>
+      <li>Picks the cue that fits each song, and goes bigger on the drops</li>
+      <li>Works with MaestroDMX only (box sold separately)</li>
+      <li>Free 30-day trial, nothing to enter</li>
+    </ul>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+      <a class="btn" href="/velvet-light-dj.html" style="flex:1 1 150px;text-align:center;white-space:nowrap">Learn more</a>
+      <a class="btn primary" href="https://github.com/Alxsparker/VELVET-LIGHT-DJ-releases/releases/latest/download/VELVET-LIGHT-DJ.zip" style="flex:1 1 150px;text-align:center;white-space:nowrap">Free 30-day trial</a>
     </div>
   </div>
 </div>
@@ -299,6 +322,17 @@ footer a:hover{color:var(--text)}
       <a class="btn" href="https://velvetshow.lemonsqueezy.com/checkout/buy/9d48e0fc-d518-4ebb-9990-a52e0edfdc38?checkout[discount_code]=EXMZU0OA">Buy</a>
     </div>
   </div>
+
+  <div class="prices prices--single">
+    <div class="price reveal d1">
+      <h3>Velvet Light DJ</h3>
+      <p class="was" data-ldj-hide><s>€69</s> Launch price until 31&nbsp;December</p>
+      <div class="amount"><span data-ldj-after="69<small> €</small>">49<small> €</small></span></div>
+      <p class="trial">30-day free trial</p>
+      <a class="btn" href="https://velvetshow.lemonsqueezy.com/checkout/buy/2772dc45-02bb-4e99-a0de-5ddc0fdc129b?checkout[discount_code]=CYNJK2NG">Buy</a>
+      <p class="note" style="margin-top:10px;font-size:12px">Needs a MaestroDMX box, sold separately.</p>
+    </div>
+  </div>
   <p data-launch-countdown hidden class="note" style="color:var(--orange,#ff6b35);font-weight:600"></p>
   <p class="note">One licence works on 2 of your Macs. <span data-launch-hide>Launch pricing until 25 November.</span></p>
 </section>
@@ -307,8 +341,12 @@ footer a:hover{color:var(--text)}
   <h2 class="sec-title reveal">FAQ</h2>
   <div style="max-width:760px;margin:24px auto 0">
     <details class="reveal d1">
-      <summary>Do I need both apps?</summary>
-      <p>No. Each app works on its own. Together, Velvet Show controls the lights and Velvet Visualizer shows them in 3D before the show.</p>
+      <summary>Do I need all the apps?</summary>
+      <p>No. Each app works on its own. Together, Velvet Show controls the lights, Velvet Visualizer shows them in 3D before the show, and Velvet Light DJ makes them follow your DJ set.</p>
+    </details>
+    <details class="reveal d1">
+      <summary>Which lights does Velvet Light DJ work with?</summary>
+      <p>Velvet Light DJ works with MaestroDMX only. It reads what you play in djay, Serato or VirtualDJ and tells your MaestroDMX which cue to play, over the network. The MaestroDMX box is sold separately.</p>
     </details>
     <details class="reveal d2">
       <summary>How do the two apps work together?</summary>
@@ -320,7 +358,7 @@ footer a:hover{color:var(--text)}
     </details>
     <details class="reveal d3">
       <summary>Can I use my licence on another Mac?</summary>
-      <p>Yes — one licence works on 2 Macs simultaneously.</p>
+      <p>Yes — one licence works on 2&nbsp;Macs&nbsp;simultaneously.</p>
     </details>
     <details class="reveal d3">
       <summary>Who handles payments?</summary>
@@ -352,6 +390,7 @@ footer a:hover{color:var(--text)}
     <div>
       <a href="/velvet-show.html">Velvet Show</a>
       <a href="/velvet-visualizer.html" style="margin-left:16px">Velvet Visualizer</a>
+      <a href="/velvet-light-dj.html" style="margin-left:16px">Velvet Light DJ</a>
       <a href="/showbuddy-alternative" style="margin-left:16px">ShowBuddy Alternative</a>
       <a href="/backing-track-software" style="margin-left:16px">Backing Track Software</a>
       <a href="/ezquiel.html" style="margin-left:16px">EzQuiel</a>
@@ -456,7 +495,7 @@ var v=items[n];if(v.tagName==='VIDEO'){var r=v.play();if(r&&r.catch)r.catch(func
 </script>
 <script>
 (function(){var over=Date.now()>=Date.parse('2027-01-01T00:00:00Z');if(!over)return;
-document.querySelectorAll('[data-ldj-after]').forEach(function(el){el.innerHTML=el.getAttribute('data-ldj-after')});})();
+document.querySelectorAll('[data-ldj-after]').forEach(function(el){el.innerHTML=el.getAttribute('data-ldj-after')});document.querySelectorAll('[data-ldj-hide]').forEach(function(el){el.hidden=true});})();
 </script>
 <script src="stats.js"></script>
   <script src="assets/launch-countdown.js" defer></script>
