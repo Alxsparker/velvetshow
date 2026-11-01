@@ -43,4 +43,18 @@
   <url><loc>https://velvetshow.app/ezquiel-privacy.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://velvetshow.app/fr/ezquiel-confidentialite.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 
+
+  <!-- Guide : la lumière de scène en 5 minutes (FR) -->
+  <url><loc>https://velvetshow.app/fr/lumiere-de-scene-en-5-minutes.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/fr/lumiere-1-comprendre.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/fr/lumiere-2-brancher.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/fr/lumiere-3-regler.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/fr/lumiere-4-depanner.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- Guide : stage lighting in 5 minutes (EN) -->
+  <url><loc>https://velvetshow.app/stage-lighting-in-5-minutes.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://velvetshow.app/stage-lighting-1-understand.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/stage-lighting-2-connect.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/stage-lighting-3-setup.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/stage-lighting-4-troubleshoot.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
