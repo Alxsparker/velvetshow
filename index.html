@@ -39,6 +39,14 @@ nav a.cta{background:var(--gold);color:#1a1405;padding:6px 14px;border-radius:6p
 .hero h1,.hero__sub,.hero__trial,.hero__once,.hero__count,.hero__label,.hero__product__pitch,.hero__duo{text-wrap:balance}
 .hero__sub,.hero__once,.hero__product__pitch{text-wrap:pretty}
 .card p,.card li,.note,.sec-sub,.price .was,details p,details summary{text-wrap:pretty}
+.i{white-space:nowrap}
+.hero__veil{position:absolute;left:0;right:0;top:120px;height:520px;z-index:2;pointer-events:none;background:radial-gradient(ellipse 62% 48% at 50% 42%,rgba(13,14,18,.86),rgba(13,14,18,0) 78%)}
+.hero__product__link{display:flex;flex-direction:column;align-items:center;gap:6px}
+.hero__products{align-items:flex-start}
+.hero__sep{align-self:center}
+.hero__product__pitch{min-height:2.8em}
+.hero__product__btn{margin-top:8px;padding:8px 18px;font-size:13px}
+.sec-sub{text-wrap:balance}
 .hero__label{position:relative;z-index:3;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .hero__sep::before{content:'+';color:var(--dim);font-size:26px;font-weight:300;line-height:1}
 .hero__products{position:relative;margin-top:12px;z-index:3;display:flex;align-items:center;gap:0}
@@ -122,6 +130,7 @@ nav a.cta{background:var(--gold);color:#1a1405;padding:6px 14px;border-radius:6p
 .ezp__cell strong{font-family:Oswald,sans-serif;font-size:22px;font-weight:600}
 .ezp__cell em{font-style:normal;font-size:11px;color:var(--green)}
 .ezp__cell small{font-size:11px;color:var(--dim)}
+.s{display:block;text-wrap:balance}
 .ezp__badge{display:inline-block;margin-top:4px}
 @media(max-width:700px){.ezp__grid{grid-template-columns:1fr 1fr}.ezp{grid-template-columns:1fr}}
 @media(max-width:700px){.prices{grid-template-columns:1fr}.prices--single{grid-template-columns:1fr}}
@@ -160,11 +169,16 @@ footer a:hover{color:var(--text)}
   .hero__product{min-width:unset;max-width:none}
   .hero__product{display:grid;grid-template-columns:44px 1fr;column-gap:12px;row-gap:1px;align-items:center;justify-items:start;min-width:unset;width:100%;padding:10px 16px}
   .hero__product__icon{grid-row:1/4}
-  .hero__product__icon{width:44px;height:44px;flex-shrink:0}
+  .hero__product__icon{width:44px;height:44px;flex-shrink:0;grid-row:1/5}
+  .hero__product__link{display:contents}
+  .hero__products{align-items:stretch}
+  .hero__product__pitch{min-height:0}
+  .hero__product__btn{grid-column:2;justify-self:start;margin-top:6px;padding:7px 14px}
   .hero__product__pitch{text-align:left;max-width:none;font-size:11px}
   .hero__product__name{font-size:12px}
   .hero__product__price{font-size:10px}
   .hero__duo{font-size:11px;width:90%;margin-top:10px}
+  .hero__duo a{display:block}
   nav a.cta{display:none}
   nav a.hide-sm{display:none}
   nav a{margin-left:10px;font-size:12px;white-space:nowrap}
@@ -192,13 +206,12 @@ footer a:hover{color:var(--text)}
 <section class="hero">
   <canvas id="stage-canvas"></canvas>
   <div class="hero__fade"></div>
+  <div class="hero__veil"></div>
   <div class="hero__main">
     <div class="hero__copy">
     <h1>You play your songs.<br><span>The lights follow.</span></h1>
-    <p class="hero__sub">Three different Mac apps. Each one stands on its own, and they can work together.</p>
-    <p class="hero__trial">Try free for 30 days:</p>
-    <div class="hero__ctas"><a class="btn primary" href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip">Visualizer</a><a class="btn primary" href="https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip">Show</a><a class="btn primary" href="https://github.com/Alxsparker/VELVET-LIGHT-DJ-releases/releases/latest/download/VELVET-LIGHT-DJ.zip">Light DJ</a></div>
-    <p class="hero__once"><strong>No subscription.</strong> Pay once, it’s yours.</p>
+    <p class="hero__sub">Three different Mac apps that can work together.</p>
+    <p class="hero__once"><span class="i"><strong>No subscription</strong></span> · <span class="i">30-day free trial on every app</span></p>
     <p data-launch-countdown hidden class="hero__count"></p>
   </div>
     <div class="hero__video">
@@ -211,30 +224,29 @@ footer a:hover{color:var(--text)}
       <span class="hero__video__cap">Velvet Visualizer — 3D stage</span>
     </div>
   </div>
-  <p class="hero__label">Use one, or all three together</p>
   <div class="hero__products">
-    <a href="/velvet-visualizer.html" class="hero__product hero__product--viz">
+    <div class="hero__product hero__product--viz"><a href="/velvet-visualizer.html" class="hero__product__link">
       <div class="hero__product__icon"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAAAAMEBQYHAgEI/8QAOBAAAQMDAAUICAYDAAAAAAAAAQACAwQFEQYSITGBBxMyQVFhcbEUIiQzQpHB0SNFUpPh8BVig//EABoBAAIDAQEAAAAAAAAAAAAAAAMEAAEFAgb/xAAiEQACAgIBBQADAAAAAAAAAAAAAQIDBBFBBRIhIjETUYH/2gAMAwEAAhEDEQA/AMLUxbNHpa9pkllbBEN5cMn5KNp2gygnqOz+/NW60ziVuoAPVGNXuR64KT0xnHpVj8iQ0aswGHXGoJ6yIhjzQdG7IPzGo/bH3XtxifS1Gqei8Zae5RElU5pIJXUoKL0yra+x6JJ2j9lH5hP+2Pukn2Ozt3V85/5j7qLdVO7Vy2dziBlc6Qs3ofSWm1gerVz574x90yq7U6BnORSCWPwwQpG3UUldWNiaNg2uPYBvKeXhraKLVxhztjR3Iyx9xchWWWlNQX0qWEJSUeuShLDaewiOHDx+ilLfWei1LH7xnaO0KHedVuR1H6JRkuRkFdQlpjFNjg9o0yttzbtaDzO2ZrdeIj4h2cfNZ7WZDw7t3+Kumh10M1O6m1vxqf12f7M6xwO3im2m9i9FfHcadvslXlwwNjJB0m8d6dtSsrU0bGbRG2hXw/pSC85Tuhj15NYjIbtTTUOstA5PNGxdK11XUs9ho8SSk7nO+FvHyCWph3S0eUzblTW5MsNg0fFrsgmqAG1FQ3nHl3wM3jPn8lnF8rxX3KWRuyIHDB2AblpPKDevQbNzDXYqa/Jx+mIH6nyKx6SXGSSncuxRSrjwZHSqp2OWRZ9fw8ecvPBCTjOtkntQsw9CvCPJvd8fokWuIOwpaf3fFNwqOkTNkuklsucFWzaY3ZLf1DrHELcbdbqPSK1z2WR49GroxLRzH4H72n6HivnuI7Vs3JfcTW0JoC72ijdz0HaWE+sOB28SmarNJpmthXt1ypfJQHaN18d9dan07xWNm5kxY262cYW6RWan0btFLYWPa0RNM9fMNxdjLj4ADA8Fcm6PW6W7x6UOhBrmwau7YXYwHeONizLlOujrXZJKcO9suTiXnrbED9T5I2POKba4PKdWplZqH7ZkOl9+ffL9U1nRiJ1YmfpYNjR8lWXuJO0peodlxTYpSyTb2x2mtQgorgcQdE+KF5T9E+KENBzqf3fFN2sJTmQZy3t3eKQa8sKnJa1yOqejlkcNVpWk8nVtudFf6SshjBDHjWBeAC07CN/Ys5p7hJCQWvI8CrFaNKKuGdg55+AetxKPDs15NLF/Bv2b2fYLIo/RAwe7IzwXz1ynWe73K+1FW6D8HoxgPB1WjYBvV3puUqKPRIOLhz7RqglY9e9Oq+eokDah7WknoOI8kTFjGCbmzF6lTdGaUfJTaygngcQ9hCjnsIO0KVrLtNVOJkkc495yo17y8oVvZv1JV369hSn6J8ULqIYGPmhCQcHjIwknbekM9/WhCpkOMN7HJRkhjOW5/vFCFRabQ8/zFWIea1zqdmP5TN8rpDl2fl/KEK9sjbl9OMDvXTRjcMd6EKihZg1QhCF0Q//Z" alt="Velvet Visualizer"></div>
       <div class="hero__product__name">Velvet Visualizer</div>
       <div class="hero__product__pitch">Prepare your lights in 3D, no hardware needed</div>
-      <div class="hero__product__price"><span style="white-space:nowrap" data-launch-after="€99 (≈ $110) · ·">€69 (≈ $77) ·</span> <span style="white-space:nowrap">one-time</span></div>
-    </a>
+      <div class="hero__product__price"><span style="white-space:nowrap" data-launch-after="€99 (≈ $110) ·">€69 (≈ $77) ·</span> <span style="white-space:nowrap">one-time</span></div>
+    </a><a class="btn primary hero__product__btn" href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip">Try free</a></div>
     <div class="hero__sep"></div>
-    <a href="/velvet-show.html" class="hero__product">
+    <div class="hero__product"><a href="/velvet-show.html" class="hero__product__link">
       <div class="hero__product__icon"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAGwAAAQUBAQAAAAAAAAAAAAAAAAECAwYHBQT/xAA0EAABAwMCAgYJBAMAAAAAAAABAAIDBAUREiExQQYTUWFykQcUIjJCYnGBsUOSwfAjUqH/xAAZAQADAQEBAAAAAAAAAAAAAAABAgQDBQD/xAAlEQACAgEEAQMFAAAAAAAAAAAAAQIRAwQSITFBBROBUZGh0fD/2gAMAwEAAhEDEQA/AMGp6frsve7TE3YkDJJPAAcypaqN9FMYZKJ0DwAdM7TrweGQcfhTW24SWu50FVCGl1PIJQHtyCc53Hkr109pm9IIYL7EcyujAkA7kyjasvwaR5sU5Q7iZv13yR/tSdZ8jPJI5hacFNSkLvyP6z5W+SNfyt8kxCNgH9Z8jPJT0sMtZMIYaR87yCdMLSXYG5wAvO1pccBaF0Hczo22a9POJ2xlsY+qs0mmnqJ0ujLLkUFZQZ4OqIIJLDsCRgg8wR2oXsuVwlulyr6uYND6h5lcGtwAc8h9yhS5ElLjoeLbXJ4n7PZ4QrzZriJ7R6rIcjGFRZfeZ4Aujbqsw7ZQi6Op6fqPZyv6MW60ojncW8MrlEbrt1sglGVyC0ueGtBJJwAOaDMNXGO9uJdorA21ejCS9T2uKpnrpdLZJM5p4jlrXjvLgf8AiogGStU9It+rndCujFPHF6hDW0h6+lj2GGaQ1vbjnjvHYsuYMlT6VyknKXlv9GOak0l4R7qCEGVpIXZudfooRAw4GOS5NO8RtyoKyYyHGV28ef2cLUe2RShunbPOw5L/AAlCSP4/CULmtm6CbizwD8JYn6Skm4s8A/CYClQ91I9plJbxV+9HFqpq6xdJaiDQb02AQ0TnHeLU12XN7Ccac8vus4DtlYuizrnbJZL5A/qLfTkR1Erx7Emf0wPiceQHDicDdY6lSeNqLp/3HybwmnJbuj29LhJH0R6I00rHRyRQThzXjBB6zmqrUUs9DVy0tTGY54nFr2O4ghavHU2jprHTVroDUT0ZcY6aaXSNZxhsm27SQN1mF6mr5r5WzXRjmVz5nOma4YIcTuMLLSZW7i1TV38s9qMajUk7T6+x59eAoHuyUpcmFXSlZLQ+L4/CUIh+PwFCQIs/Fngb+FEppRqjieOBbpP1H9CjDQeYQXQX2KwantbnGTjJWj+kl8cFjsdptzNFuo9bCG85MD2j3n2j9ys+jgjd70zW/Yq0RX0CJkVS1lYxzQ2RjmEtfjgTnG/eCpc974yXi+CnClskn5K9arlVWauZV053Gzmng9vMFajcaS19MrXBdI6Z0t0o48+rDZ1U0DPVO55HEHiRsOIxzGU1ilsZr6WOjttQ12n/ADa5ng9rQSQPruqtS1xs1ZJLTXAzazl2A4Eu/wBsnmsHP3pboKpL8m6xvFGpO0yuO2JGMdyau7eK2juT3VT6WSKrfu57HNa157SN9/pjK4hbjmuhGTkraIJR2uh8P6ngKERezHK/ljSPqf6UI+QPoSOXSCxw1Ru4j+R3oLGH3JBjsdsUIXqPJgGEfGzzUoc4fqM/chCVjLgeZXlmnrWY8ShIOffZ+5CEFwFuxHAu4vZ5pAxgPtyDHY0ZKEJhWEkmoBrRpY3gP5PehCEyVCn/2Q==" alt="Velvet Show"></div>
       <div class="hero__product__name">Velvet Show</div>
       <div class="hero__product__pitch">Run backing tracks, lyrics and light cues</div>
-      <div class="hero__product__price"><span style="white-space:nowrap" data-launch-after="€79 (≈ $88) · ·">€59 (≈ $66) ·</span> <span style="white-space:nowrap">one-time</span></div>
-    </a>
+      <div class="hero__product__price"><span style="white-space:nowrap" data-launch-after="€79 (≈ $88) ·">€59 (≈ $66) ·</span> <span style="white-space:nowrap">one-time</span></div>
+    </a><a class="btn primary hero__product__btn" href="https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip">Try free</a></div>
     <div class="hero__sep"></div>
-    <a href="/velvet-light-dj.html" class="hero__product hero__product--ldj">
+    <div class="hero__product hero__product--ldj"><a href="/velvet-light-dj.html" class="hero__product__link">
       <div class="hero__product__icon"><img src="/assets/light-dj/icon.png" alt="Velvet Light DJ" width="56" height="56"></div>
       <div class="hero__product__name">Velvet Light DJ <em class="hero__new">New</em></div>
       <div class="hero__product__pitch">Lights that follow your DJ set</div>
-      <div class="hero__product__price"><span style="white-space:nowrap" data-ldj-after="€69 · ·">€49 ·</span> <span style="white-space:nowrap">one-time</span></div>
-    </a>
+      <div class="hero__product__price"><span style="white-space:nowrap" data-ldj-after="€69 ·">€49 ·</span> <span style="white-space:nowrap">one-time</span></div>
+    </a><a class="btn primary hero__product__btn" href="https://github.com/Alxsparker/VELVET-LIGHT-DJ-releases/releases/latest/download/VELVET-LIGHT-DJ.zip">Try free</a></div>
   </div>
-  <div class="hero__duo">Show + Visualizer — <strong data-launch-after="Velvet Duo €139 (≈ $155)">Velvet Duo €109 (≈ $122)</strong> · <a href="#pricing">See pricing →</a></div>
+  <div class="hero__duo"><span class="i">Show + Visualizer —</span> <span class="i"><strong data-launch-after="Velvet Duo €139 (≈ $155)">Velvet Duo €109 (≈ $122)</strong></span> · <span class="i"><a href="#pricing">See pricing →</a></span></div>
 </section>
 
 <div class="wrap">
@@ -307,14 +319,14 @@ footer a:hover{color:var(--text)}
   <span style="flex:1;min-width:0">
     <span style="display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#22d3ee">Also for iPhone</span>
     <strong style="display:block;font-family:Oswald,sans-serif;font-size:20px;letter-spacing:.02em">EzQuiel</strong>
-    <span style="display:block;color:var(--mut);font-size:14px">Your room analyzed in 10 seconds: EQ advice tailored to your gear and audience.</span>
+    <span style="display:block;color:var(--mut);font-size:14px;text-wrap:balance">Your room analyzed in 10 seconds: EQ advice tailored to your gear and&nbsp;audience.</span>
   </span>
   <span class="ez-strip-cta" style="color:var(--text);font-size:14px;white-space:nowrap">Discover →</span>
 </a>
 
 <section class="section" id="pricing">
   <h2 class="sec-title reveal">Pricing</h2>
-  <p class="sec-sub reveal d1">One-time purchase · 1.x updates included · 30-day free trial for each app · Prices in euros, $ amounts approximate</p>
+  <p class="sec-sub reveal d1"><span class="i">One-time purchase</span> · <span class="i">1.x updates included</span> · <span class="i">30-day free trial for each app</span> · <span class="i">Prices in euros, $ amounts approximate</span></p>
   <div class="prices">
     <div class="price reveal d1">
       <h3>Velvet Show</h3>
@@ -352,7 +364,7 @@ footer a:hover{color:var(--text)}
   </div>
 
   <p data-launch-countdown hidden class="note" style="color:var(--orange,#ff6b35);font-weight:600"></p>
-  <p class="note">One licence works on 2 of your Macs. <span data-launch-hide>Launch pricing until 25 November.</span></p>
+  <p class="note"><span class="s">One licence works on 2&nbsp;of&nbsp;your&nbsp;Macs.</span><span class="s" data-launch-hide>Launch pricing until 25&nbsp;November.</span></p>
 
   <div class="prices prices--single ezp">
     <div class="price reveal d1">
@@ -360,7 +372,7 @@ footer a:hover{color:var(--text)}
       <p class="was">Only on the App Store</p>
       <div class="ezp__grid"><div class="ezp__cell"><span class="ezp__n">3 analyses</span><strong>Free</strong><em>on first launch</em></div><div class="ezp__cell"><span class="ezp__n">10 analyses</span><strong>€2.99</strong><small>$2.99 in the US</small></div><div class="ezp__cell"><span class="ezp__n">50 analyses</span><strong>€9.99</strong><small>$8.99 in the US</small></div><div class="ezp__cell"><span class="ezp__n">Unlimited</span><strong>€29.99</strong><em>one purchase, forever</em><small>$24.99 in the US</small></div></div>
       <a class="ezp__badge" href="https://apps.apple.com/app/id6745174198" aria-label="Download on the App Store"><img src="/assets/screenshots/appstore-badge-white.svg" alt="Download on the App Store" height="44" loading="lazy"></a>
-      <p class="note" style="margin-top:10px;font-size:12px">Prices are set by Apple and shown here as listed on the App Store; they vary by country. EzQuiel is not sold on this website.</p>
+      <p class="note" style="margin-top:10px;font-size:12px"><span class="s">Prices are set by Apple and vary by country.</span><span class="s">EzQuiel is not sold on this website.</span></p>
     </div>
   </div>
 </section>
