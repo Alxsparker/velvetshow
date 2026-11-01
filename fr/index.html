@@ -37,14 +37,14 @@ nav a:hover{color:var(--text)}
 nav a.cta{background:var(--gold);color:#1a1405;padding:6px 14px;border-radius:6px;font-weight:600}
 
 /* HERO */
-.hero{position:relative;min-height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:200px 0 36px}
+.hero{position:relative;min-height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:170px 0 28px}
 #stage-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .hero__fade{position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(to bottom,transparent,var(--bg));z-index:1;pointer-events:none}
 .hero h1,.hero__sub,.hero__trial,.hero__once,.hero__count,.hero__label,.hero__product__pitch,.hero__duo{text-wrap:balance}
 .hero__sub,.hero__once,.hero__product__pitch{text-wrap:pretty}
 .card p,.card li,.note,.sec-sub,.price .was,details p,details summary{text-wrap:pretty}
 .i{white-space:nowrap}
-.hero__veil{position:absolute;left:0;right:0;top:120px;height:520px;z-index:2;pointer-events:none;background:radial-gradient(ellipse 62% 48% at 50% 42%,rgba(13,14,18,.86),rgba(13,14,18,0) 78%)}
+.hero__veil{position:absolute;left:0;right:0;top:100px;height:520px;z-index:2;pointer-events:none;background:radial-gradient(ellipse 62% 48% at 50% 42%,rgba(13,14,18,.86),rgba(13,14,18,0) 78%)}
 .hero__product__link{display:flex;flex-direction:column;align-items:center;gap:6px}
 .hero__products{align-items:flex-start}
 .hero__sep{align-self:center}
@@ -227,7 +227,7 @@ footer a:hover{color:var(--text)}
   <div class="hero__main">
     <div class="hero__copy">
     <h1>Vous jouez vos morceaux.<br>Vous gérez votre setlist.<br><span>La lumière suit.</span></h1>
-    <p class="hero__sub">Trois apps Mac différentes, qui peuvent travailler ensemble.</p>
+    <p class="hero__sub">En live (groupe, backing tracks) ou en DJ.</p>
     <p class="hero__once"><span class="i"><strong>Pas d’abonnement</strong></span> · <span class="i">30 jours d’essai gratuit pour chaque app</span></p>
     <p data-launch-countdown hidden class="hero__count"></p>
   </div>
@@ -241,6 +241,7 @@ footer a:hover{color:var(--text)}
       <span class="hero__video__cap">Velvet Visualizer — scène 3D</span>
     </div>
   </div>
+  <p class="hero__label">Trois apps différentes, qui peuvent travailler ensemble</p>
   <div class="hero__products">
     <div class="hero__product hero__product--viz"><a href="/fr/velvet-visualizer.html" class="hero__product__link">
       <div class="hero__product__icon"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAAAAMEBQYHAgEI/8QAOBAAAQMDAAUICAYDAAAAAAAAAQACAwQFEQYSITGBBxMyQVFhcbEUIiQzQpHB0SNFUpPh8BVig//EABoBAAIDAQEAAAAAAAAAAAAAAAMEAAEFAgb/xAAiEQACAgIBBQADAAAAAAAAAAAAAQIDBBFBBRIhIjETUYH/2gAMAwEAAhEDEQA/AMLUxbNHpa9pkllbBEN5cMn5KNp2gygnqOz+/NW60ziVuoAPVGNXuR64KT0xnHpVj8iQ0aswGHXGoJ6yIhjzQdG7IPzGo/bH3XtxifS1Gqei8Zae5RElU5pIJXUoKL0yra+x6JJ2j9lH5hP+2Pukn2Ozt3V85/5j7qLdVO7Vy2dziBlc6Qs3ofSWm1gerVz574x90yq7U6BnORSCWPwwQpG3UUldWNiaNg2uPYBvKeXhraKLVxhztjR3Iyx9xchWWWlNQX0qWEJSUeuShLDaewiOHDx+ilLfWei1LH7xnaO0KHedVuR1H6JRkuRkFdQlpjFNjg9o0yttzbtaDzO2ZrdeIj4h2cfNZ7WZDw7t3+Kumh10M1O6m1vxqf12f7M6xwO3im2m9i9FfHcadvslXlwwNjJB0m8d6dtSsrU0bGbRG2hXw/pSC85Tuhj15NYjIbtTTUOstA5PNGxdK11XUs9ho8SSk7nO+FvHyCWph3S0eUzblTW5MsNg0fFrsgmqAG1FQ3nHl3wM3jPn8lnF8rxX3KWRuyIHDB2AblpPKDevQbNzDXYqa/Jx+mIH6nyKx6SXGSSncuxRSrjwZHSqp2OWRZ9fw8ecvPBCTjOtkntQsw9CvCPJvd8fokWuIOwpaf3fFNwqOkTNkuklsucFWzaY3ZLf1DrHELcbdbqPSK1z2WR49GroxLRzH4H72n6HivnuI7Vs3JfcTW0JoC72ijdz0HaWE+sOB28SmarNJpmthXt1ypfJQHaN18d9dan07xWNm5kxY262cYW6RWan0btFLYWPa0RNM9fMNxdjLj4ADA8Fcm6PW6W7x6UOhBrmwau7YXYwHeONizLlOujrXZJKcO9suTiXnrbED9T5I2POKba4PKdWplZqH7ZkOl9+ffL9U1nRiJ1YmfpYNjR8lWXuJO0peodlxTYpSyTb2x2mtQgorgcQdE+KF5T9E+KENBzqf3fFN2sJTmQZy3t3eKQa8sKnJa1yOqejlkcNVpWk8nVtudFf6SshjBDHjWBeAC07CN/Ys5p7hJCQWvI8CrFaNKKuGdg55+AetxKPDs15NLF/Bv2b2fYLIo/RAwe7IzwXz1ynWe73K+1FW6D8HoxgPB1WjYBvV3puUqKPRIOLhz7RqglY9e9Oq+eokDah7WknoOI8kTFjGCbmzF6lTdGaUfJTaygngcQ9hCjnsIO0KVrLtNVOJkkc495yo17y8oVvZv1JV369hSn6J8ULqIYGPmhCQcHjIwknbekM9/WhCpkOMN7HJRkhjOW5/vFCFRabQ8/zFWIea1zqdmP5TN8rpDl2fl/KEK9sjbl9OMDvXTRjcMd6EKihZg1QhCF0Q//Z" alt="Velvet Visualizer"></div>
@@ -479,7 +480,7 @@ footer a:hover{color:var(--text)}
   function draw() {
     const w=canvas.width,h=canvas.height;
     ctx.clearRect(0,0,w,h);
-    const fsize=Math.min(Math.max(w*.14,56),88),cx=w/2,cy=fsize*.5+90,srcY=h*.03,backY=h*.62;
+    const fsize=Math.min(Math.max(w*.14,56),88),cx=w/2,cy=fsize*.5+68,srcY=h*.03,backY=h*.62;
     // Letters
     ctx.save();
     ctx.font=`700 ${fsize}px 'Oswald',sans-serif`;
