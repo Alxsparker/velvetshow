@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Opening checkout…</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0d0e12; color: #e9ebf0; font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; text-align: center; padding: 24px; }
+    main { max-width: 440px; }
+    h1 { font-size: 1.4rem; margin: 0 0 .75rem; }
+    p { color: #9aa1b0; line-height: 1.6; margin: 0 0 1rem; }
+    a.btn { display: inline-block; background: #f2bd57; color: #1a1a1a; font-weight: 600; padding: .7rem 1.2rem; border-radius: 10px; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Opening the checkout…</h1>
+    <p>You are being sent to the secure payment page for Velvet Visualizer (payment handled by Lemon Squeezy).</p>
+    <p><a id="go" class="btn" href="https://velvetshow.lemonsqueezy.com/checkout/buy/9d48e0fc-d518-4ebb-9990-a52e0edfdc38">Continue to checkout</a></p>
+    <p style="font-size:.85rem">Nothing happens? Click the button above.</p>
+  </main>
+  <!-- Page de passage du bouton « Acheter » de l'app : stats.js compte la visite (repère ?s=app-… dans le lien), puis la personne est
+       renvoyée vers la page de paiement. Rien d'autre n'est enregistré. ?code=XXXX transmet un code de réduction (lettres et chiffres seulement). -->
+  <script src="stats.js"></script>
+  <script>
+    (function () {
+      var link = document.getElementById('go');
+      try {
+        var code = (new URLSearchParams(location.search).get('code') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 24);
+        if (code) link.href += '?checkout[discount_code]=' + code;
+      } catch (e) { /* on garde le lien sans code */ }
+      // Court délai pour laisser partir le comptage ; le lien reste cliquable si la redirection échoue.
+      setTimeout(function () { location.replace(link.href); }, 700);
+    })();
+  </script>
+</body>
+</html>
