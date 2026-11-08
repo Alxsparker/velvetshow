@@ -442,6 +442,8 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <li class="rv"><b>Fly Me to the Moon</b><small>Sinatra</small></li>
 <li class="rv"><b>Unforgettable</b><small>Nat King Cole</small></li>
 <li class="rv"><b>L-O-V-E</b><small>Nat King Cole</small></li>
+<li class="rv"><b>Sway</b><small>Dean Martin · Bublé</small></li>
+<li class="rv"><b>Moondance</b><small>Van Morrison · Bublé</small></li>
 <li class="rv"><b>Cry Me a River</b><small>version Bublé</small></li>
 <li class="rv"><b>Feeling Good</b><small>version Bublé</small></li>
 </ul></div><div class="rcol"><h3 class="rv">Ladies</h3><ul class="songs">
@@ -538,7 +540,7 @@ document.querySelectorAll('[data-split]').forEach(function(el){
     sp.style.setProperty('--mx',(mx*100)+'%');sp.style.setProperty('--my',(my*100)+'%');
     img.style.transform='translateY('+(r.top*-.08).toFixed(1)+'px) scale(1.15)'}
   if(!matchMedia('(prefers-reduced-motion:reduce)').matches)requestAnimationFrame(f)})();
-var titles=['My Way','New York, New York','Cry Me a River','Fly Me to the Moon','Fever','Feeling Good','Unforgettable'];
+var titles=['My Way','New York, New York','Sway','Moondance','Cry Me a River','Fly Me to the Moon','Fever','Feeling Good','Unforgettable'];
 var row=titles.map(function(t){return '<span>'+t+'</span><em>✦</em>'}).join('');
 document.getElementById('mq').innerHTML=row+row+row+row;
 // Sève en invité·e : passer GUEST à false pour tout masquer
