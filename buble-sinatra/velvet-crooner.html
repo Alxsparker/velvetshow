@@ -275,6 +275,13 @@ footer{background:rgba(10,7,6,.85)!important}
 .sign .bl.t{top:-6px}.sign .bl.b{bottom:-6px}
 .sign{padding:2rem clamp(2rem,7vw,5rem)!important}
 .others{display:block;margin-top:.6rem;font-size:.7rem;letter-spacing:.2em;opacity:.7}
+.sign .bl{display:none!important}
+.sign{animation:hb 1.7s ease-in-out infinite}
+@keyframes hb{0%,100%{box-shadow:0 0 40px rgba(217,180,95,.14)}12%{box-shadow:0 0 70px rgba(255,200,110,.5)}24%{box-shadow:0 0 44px rgba(217,180,95,.2)}36%{box-shadow:0 0 62px rgba(255,200,110,.42)}52%{box-shadow:0 0 40px rgba(217,180,95,.14)}}
+.ring{position:absolute;inset:0;pointer-events:none}
+.ring i{position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:#54401f;animation:bw 3.4s ease-in-out infinite;animation-delay:var(--dl)}
+@keyframes bw{0%,100%{background:#54401f;box-shadow:none}30%,52%{background:#fff0c0;box-shadow:0 0 14px 5px rgba(255,200,110,.8)}}
+@media(prefers-reduced-motion:reduce){.ring i{background:#e9cf8f}.sign{animation:none}}
 /* SETLIST */
 .set{background:var(--ink2)}
 .songs{list-style:none;margin-top:3rem;border-top:1px solid rgba(217,180,95,.25);counter-reset:s}
@@ -352,7 +359,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 
 <div class="marquee" aria-hidden="true"><div id="mq"></div></div>
 
-<div class="sign-wrap"><div class="sign rv"><i class="bl t"></i><i class="bl b"></i>
+<div class="sign-wrap"><div class="sign rv"><div class="ring" id="ring" aria-hidden="true"></div>
   <p class="s1">Ce soir, à l'affiche</p><p class="s2">Sève <em>&amp;</em> Alex</p><p class="s3">Madison Square Garden<sup>*</sup></p></div>
   <p class="fn rv">* ou presque. Mais la lumière est la même.</p></div>
 
@@ -401,9 +408,9 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   <div class="w car-grid">
     <figure class="rv"><img src="ph-caravane.webp" alt="Notre caravane américaine en aluminium poli devant la façade en briques du Red Barrel" loading="lazy"><span class="opt">En option</span></figure>
     <div>
-      <p class="kicker rv">Dès les beaux jours</p>
+      <p class="kicker rv">Scène &amp; décor</p>
       <h2 class="rv" style="--d:1">La caravane <em>américaine</em></h2>
-      <p class="rv" style="--d:2">Aluminium poli, lumières, plein air. Elle fait scène et décor à elle seule, dès les beaux jours, pour les soirées sous les guirlandes.</p>
+      <p class="rv" style="--d:2">Aluminium poli, lumières, plein air. Elle fait scène et décor à elle seule, pour les soirées sous les guirlandes.</p>
       <ul class="chips2 rv" style="--d:3"><li>Mariages</li><li>Jardins</li><li>Inaugurations</li><li>Fêtes</li></ul>
       <a class="cta2 rv" style="--d:4" href="#contact">Demander la caravane</a>
     </div>
@@ -516,6 +523,12 @@ document.querySelectorAll('[data-split]').forEach(function(el){
     c.fillStyle='rgba(8,5,4,.55)';c.fillRect(0,H-3,W,3)}
   function f(now){requestAnimationFrame(f);var o=Math.max(.08,1-scrollY/(H*1.7));cv.style.opacity=o;if(o>.03)draw(now)}
   if(reduceS){draw(0);addEventListener('scroll',function(){cv.style.opacity=Math.max(.08,1-scrollY/(H*1.7))},{passive:true})}else requestAnimationFrame(f)})();
+// Ampoules tout autour de l'enseigne : une vague douce qui fait le tour, et un battement de coeur
+(function(){var sg=document.querySelector('.sign'),ring=document.getElementById('ring');if(!sg||!ring)return;
+  function build(){var w=sg.offsetWidth,h=sg.offsetHeight;ring.innerHTML='';var nt=Math.max(6,Math.round(w/30)),ns=Math.max(3,Math.round(h/30)),n=2*(nt+ns),k=0;
+    function add(x,y){var b=document.createElement('i');b.style.left=x+'px';b.style.top=y+'px';b.style.setProperty('--dl',(-(k/n)*3.4).toFixed(3)+'s');ring.appendChild(b);k++}
+    for(var i=0;i<nt;i++)add(i*w/nt,0);for(var j=0;j<ns;j++)add(w,j*h/ns);for(var i2=0;i2<nt;i2++)add(w-i2*w/nt,h);for(var j2=0;j2<ns;j2++)add(0,h-j2*h/ns)}
+  build();addEventListener('resize',build);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(build)})();
 // Projecteur mobile dans la bannière + légère parallaxe
 (function(){var b=document.getElementById('lumiere');if(!b)return;var img=b.querySelector('img'),sp=b.querySelector('.spot-m'),hov=false,mx=.7,my=.35,T0=performance.now();
   b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect();hov=true;mx=(e.clientX-r.left)/r.width;my=(e.clientY-r.top)/r.height});
