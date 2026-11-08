@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Love &amp; Live</title>
+<meta name="description" content="Alex et Sève chantent My Way, New York New York, Cry Me a River : un répertoire de crooners et un jeu de lumières écrit morceau par morceau.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,800;1,500&family=IBM+Plex+Mono:wght@400;500&family=Jost:wght@300;400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+/* Mise en page : la scène plein écran en accueil, un pupitre de cues (un titre = une lumière), puis voix, formules, contact. La couleur d'accent suit la lumière du titre choisi. */
+:root{
+  color-scheme:dark;
+  --ink:#05060a; --ink2:#0b0d14; --cream:#efe8d8; --mute:#9a9486; --gold:#d9b45f; --acc:#ffc766;
+  --serif:'Bodoni Moda','Didot',Georgia,serif; --script:'Pinyon Script','Snell Roundhand',cursive;
+  --sans:'Jost','Helvetica Neue',Arial,sans-serif; --mono:'IBM Plex Mono','Courier New',monospace;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--ink)}
+body{background:var(--ink);color:var(--cream);font-family:var(--sans);font-weight:300;line-height:1.65;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.w{max-width:1140px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+nav{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:16px max(16px,4vw);background:linear-gradient(rgba(5,6,10,.85),transparent)}
+.logo{font-family:var(--script);font-size:1.9rem;color:var(--gold)}
+nav ul{display:flex;gap:1.8rem;list-style:none;font-size:.74rem;letter-spacing:.26em;text-transform:uppercase}
+nav ul a:hover{color:var(--acc)}
+@media(max-width:720px){nav ul li:not(:last-child){display:none}}
+.kick{font-family:var(--mono);font-size:.74rem;letter-spacing:.32em;text-transform:uppercase;color:var(--acc);transition:color .8s}
+.rv{opacity:0;transform:translateY(30px);transition:opacity 1s var(--ease),transform 1s var(--ease);transition-delay:calc(var(--d,0)*110ms)}
+.rv.in{opacity:1;transform:none}
+canvas.stage{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* Accueil : la scène */
+.hero{position:relative;min-height:94svh;display:grid;align-items:end;overflow:hidden;isolation:isolate;padding:130px 0 90px}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(5,6,10,.82) 0%,rgba(5,6,10,.45) 55%,rgba(5,6,10,.1)),linear-gradient(transparent 60%,var(--ink))}
+.hero canvas{z-index:-2}
+h1{font-family:var(--serif);font-weight:500;line-height:.98;letter-spacing:-.01em;font-size:clamp(2.6rem,8.2vw,7.4rem);max-width:12ch;margin:1rem 0 1.2rem}
+h1 .l{display:block;overflow:hidden;padding-bottom:.06em}
+h1 .l span{display:block;transform:translateY(105%);animation:up 1.1s var(--ease) forwards;animation-delay:calc(var(--n)*.16s + .3s)}
+h1 em{font-family:var(--script);font-style:normal;font-weight:400;color:var(--acc);font-size:1.2em;transition:color .8s}
+@keyframes up{to{transform:none}}
+.sub{max-width:34rem;font-size:1.12rem;color:#cfc7b4;opacity:0;animation:fade 1s ease 1.4s forwards}
+@keyframes fade{to{opacity:1}}
+.cta{display:inline-block;margin-top:1.8rem;border:1px solid var(--acc);color:var(--acc);padding:.95rem 2rem;font-family:var(--mono);font-size:.78rem;letter-spacing:.24em;text-transform:uppercase;opacity:0;animation:fade 1s ease 1.8s forwards;transition:background .4s,color .4s,border-color .8s}
+.cta:hover{background:var(--acc);color:var(--ink)}
+.cue-tag{position:absolute;right:max(16px,4vw);bottom:28px;font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);text-align:right}
+.cue-tag b{display:block;color:var(--cream);font-weight:500;font-size:.85rem;margin-top:.2rem}
+
+/* Pupitre */
+.desk{padding:clamp(4.5rem,10vw,8rem) 0;background:var(--ink)}
+.desk h2,.sec h2{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,5vw,3.8rem);line-height:1.04;margin:.6rem 0 1rem}
+.desk h2 em,.sec h2 em{font-family:var(--script);font-style:normal;color:var(--acc);font-weight:400;font-size:1.15em;transition:color .8s}
+.desk .intro{max-width:36rem;color:#b4ad9b;margin-bottom:2.4rem}
+.console{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:1.4rem;align-items:stretch}
+@media(max-width:860px){.console{grid-template-columns:1fr}}
+.cues{list-style:none;border-top:1px solid rgba(255,255,255,.14)}
+.cues button{width:100%;display:grid;grid-template-columns:2.6rem 1fr auto;gap:.6rem;align-items:baseline;text-align:left;background:none;border:0;border-bottom:1px solid rgba(255,255,255,.14);color:var(--cream);padding:.95rem .3rem;font:inherit;cursor:pointer;transition:padding .4s var(--ease),color .4s,background .4s}
+.cues button:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.cues .n{font-family:var(--mono);font-size:.78rem;color:var(--mute)}
+.cues b{font-family:var(--serif);font-weight:500;font-size:clamp(1.1rem,2.3vw,1.45rem);line-height:1.2}
+.cues small{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.cues button:hover{padding-left:.9rem}
+.cues button[aria-current="true"]{background:linear-gradient(90deg,rgba(255,255,255,.07),transparent);padding-left:.9rem}
+.cues button[aria-current="true"] .n{color:var(--acc)}
+.screen{position:relative;min-height:380px;border:1px solid rgba(255,255,255,.18);background:#030408;overflow:hidden;isolation:isolate}
+.screen canvas{z-index:-1}
+.info{position:absolute;left:0;right:0;bottom:0;padding:1.4rem 1.4rem 1.2rem;background:linear-gradient(transparent,rgba(3,4,8,.9) 55%)}
+.info .t{font-family:var(--serif);font-size:clamp(1.4rem,3vw,2.1rem);line-height:1.1;margin:.3rem 0 .4rem}
+.info p{color:#cfc7b4;font-size:.98rem;max-width:34rem}
+.sw{display:flex;gap:.45rem;margin-top:.8rem}
+.sw i{width:26px;height:8px;border-radius:2px}
+.badge{position:absolute;top:12px;left:14px;font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:.5rem}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:#e24a3b;animation:rec 1.4s steps(1) infinite}
+@keyframes rec{50%{opacity:.2}}
+
+/* Manifeste */
+.sec{padding:clamp(4.5rem,10vw,8rem) 0;background:var(--ink2)}
+.manifest{font-family:var(--serif);font-weight:500;line-height:1.08;font-size:clamp(1.9rem,5.4vw,4.2rem);max-width:20ch}
+.manifest span{color:var(--mute)}
+.manifest em{font-family:var(--script);font-style:normal;color:var(--acc);font-size:1.15em;transition:color .8s}
+.dim{color:#b4ad9b;max-width:34rem;margin-top:1.4rem}
+
+/* Voix */
+.voices{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.6rem;margin-top:2.6rem;align-items:start}
+.card{background:#e8dfc6;color:#17130e;padding:.8rem .8rem 1rem;box-shadow:0 30px 70px rgba(0,0,0,.55)}
+.card img{display:block;width:100%;height:auto;mix-blend-mode:multiply}
+.card figcaption{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;margin-top:.6rem}
+.card.wide{grid-column:span 2}
+@media(max-width:700px){.card.wide{grid-column:auto}}
+
+/* Formules, contact */
+.ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.14);margin-top:2.4rem}
+.way{background:var(--ink);padding:1.7rem 1.4rem;transition:background .4s}
+.way:hover{background:#10131d}
+.way h3{font-family:var(--serif);font-weight:500;font-size:1.5rem;margin-bottom:.2rem}
+.way .k{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin-bottom:.8rem;transition:color .8s}
+.way ul{list-style:none;color:#b4ad9b;font-size:.97rem}.way li{padding:.2rem 0}
+.contact{text-align:left}
+.mail{font-family:var(--serif);font-size:clamp(1.5rem,4.6vw,3rem);color:var(--acc);border-bottom:1px solid currentColor;display:inline-block;margin:1.2rem 0;user-select:all;transition:color .8s}
+footer{padding:2rem 0;font-family:var(--mono);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:#6f6a5e;background:var(--ink)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}h1 .l span{transform:none}.sub,.cta{opacity:1}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<nav><a class="logo" href="#top">Love &amp; Live</a>
+<ul><li><a href="#lumieres">Les lumières</a></li><li><a href="#voix">Les voix</a></li><li><a href="#formules">Formules</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+
+<header class="hero" id="top">
+  <canvas class="stage" id="cv-hero" aria-hidden="true"></canvas>
+  <div class="w">
+    <p class="kick">Alex &amp; Sève · Love &amp; Live</p>
+    <h1><span class="l"><span style="--n:0">Chaque</span></span><span class="l"><span style="--n:1">morceau a</span></span><span class="l"><span style="--n:2">sa <em>lumière</em></span></span></h1>
+    <p class="sub">My Way. New York, New York. Cry Me a River. Un répertoire de crooners, deux voix live, et un jeu de lumières écrit titre par titre.</p>
+    <a class="cta" href="#lumieres">Voir les lumières</a>
+  </div>
+  <div class="cue-tag" id="hero-tag" aria-hidden="true">Cue 01<b>My Way</b></div>
+</header>
+
+<section class="desk" id="lumieres">
+  <div class="w">
+    <p class="kick rv">Le pupitre</p>
+    <h2 class="rv" style="--d:1">Un titre, une <em>lumière</em></h2>
+    <p class="intro rv" style="--d:2">Chaque morceau a sa palette, son tempo, son moment fort. Choisissez un titre : la scène change.</p>
+    <div class="console">
+      <ul class="cues rv" id="cues" style="--d:2"></ul>
+      <div class="screen rv" style="--d:3">
+        <canvas class="stage" id="cv-desk" aria-hidden="true"></canvas>
+        <span class="badge">Cue en cours</span>
+        <div class="info" aria-live="polite"><span class="kick" id="i-n">Cue 01 / 08</span><p class="t" id="i-t"></p><p id="i-d"></p><div class="sw" id="i-s"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="w">
+    <p class="manifest rv">Peu de groupes jouent ce répertoire. <span>Presque aucun</span> ne l'<em>éclaire</em>.</p>
+    <p class="dim rv" style="--d:2">Les séquences font l'orchestre, les voix sont live, et chaque titre a sa lumière écrite à la main. Une affaire de goût, assumée.</p>
+  </div>
+</section>
+
+<section class="sec" id="voix" style="background:var(--ink)">
+  <div class="w">
+    <p class="kick rv">Les voix</p>
+    <h2 class="rv" style="--d:1">Alex <em>&amp;</em> Sève</h2>
+    <div class="voices">
+      <figure class="card rv"><img src="croquis-alex.webp" alt="Alex au micro, croquis à l'encre"><figcaption>Alex · voix et lumière</figcaption></figure>
+      <figure class="card rv" style="--d:1"><img src="duo-profil.webp" alt="Alex et Sève de profil, croquis à l'encre"><figcaption>Alex &amp; Sève</figcaption></figure>
+      <figure class="card rv" style="--d:2"><img src="duo-micro.webp" alt="Alex et Sève au micro, croquis à l'encre"><figcaption>Deux micros, pas d'instruments</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="formules">
+  <div class="w">
+    <p class="kick rv">Formules</p>
+    <h2 class="rv" style="--d:1">Pour <em>chaque</em> lieu</h2>
+    <div class="ways">
+      <div class="way rv"><h3>Cocktail</h3><p class="k">Vin d'honneur, apéritif</p><ul><li>1 h à 2 h d'ambiance</li><li>Voix douce, lumière basse</li><li>Sono incluse</li></ul></div>
+      <div class="way rv" style="--d:1"><h3>Repas</h3><p class="k">Dîner, banquet, repas associatif</p><ul><li>2 sets de 40 minutes</li><li>Tarif comité des fêtes</li><li>Sono et lumières</li></ul></div>
+      <div class="way rv" style="--d:2"><h3>Duo</h3><p class="k">Alex &amp; Sève</p><ul><li>Deux voix, deux micros</li><li>Cocktail, repas ou lounge</li><li>Tarif sur devis</li></ul></div>
+      <div class="way rv" style="--d:3"><h3>Bar &amp; lounge</h3><p class="k">Pub, hôtel, cave à cocktails</p><ul><li>Soirée club de jazz</li><li>Répertoire à la carte</li><li>Devis personnalisé</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec contact" id="contact" style="background:var(--ink)">
+  <div class="w">
+    <p class="kick rv">Contact</p>
+    <h2 class="rv" style="--d:1">On allume <em>quand</em> ?</h2>
+    <p class="mail rv" style="--d:2">contact@exemple.fr</p>
+    <p class="dim rv" style="--d:3;margin-top:0">Dites-nous le lieu, la date et le nombre de convives.</p>
+  </div>
+</section>
+<footer><div class="w">Love &amp; Live · Alex &amp; Sève</div></footer>
+
+<script>
+// Une scène par titre. Modifier ici les palettes, les noms et les descriptions.
+var SCENES=[
+ {t:'My Way',d:"Ouverture ambre, montée lente, blanc plein sur le dernier refrain.",pal:['#ffc766','#fff1cf','#ff9a3c'],n:6,fan:1.5,speed:.35,amp:.35,build:24,haze:.07},
+ {t:'New York, New York',d:"Bleu nuit et or, balayages rapides, flashs sur les temps forts.",pal:['#3a7bff','#ffd27a','#ffffff','#2a4cff'],n:9,fan:2.0,speed:1.4,amp:.55,pulse:.9,beat:2,haze:.05},
+ {t:'Cry Me a River',v:'version Bublé',d:"Violet profond, un seul faisceau, beaucoup de fumée.",pal:['#7a4bff','#3a4cff','#a07dff'],n:3,fan:.9,speed:.22,amp:.18,breathe:1,haze:.14,gain:.8},
+ {t:'What a Wonderful World',d:"Vert, rouge, bleu et blanc, larges faisceaux, mouvement doux.",pal:['#4aa86a','#d4403f','#4a8fe0','#ffffff'],n:7,fan:1.8,speed:.5,amp:.4,haze:.05},
+ {t:'Fly Me to the Moon',d:"Violet et argent, étoiles, swing.",pal:['#8d6bff','#cfd8ff','#5b7bff'],n:6,fan:1.6,speed:.6,amp:.3,spark:1,haze:.06},
+ {t:'Fever',d:"Rouge, flashs au claquement de doigts.",pal:['#ff2a2a','#ff6a3a','#a80f1c'],n:5,fan:1.2,speed:.5,amp:.2,pulse:1,beat:2,haze:.08},
+ {t:'Feeling Good',v:'version Bublé',d:"Du orange au doré, montée progressive.",pal:['#ff9a3c','#ffd27a','#ff5e3a'],n:7,fan:1.9,speed:.8,amp:.5,build:18,haze:.06},
+ {t:'Cheek to Cheek',d:"Rose et or, balayage de salle de bal.",pal:['#ff7aa8','#ffd9a0','#ffb0c8'],n:6,fan:1.7,speed:.7,amp:.4,haze:.06}
+];
+var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function hexA(h,a){var n=parseInt(h.slice(1),16);return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'}
+function Stage(cv,dim){
+  var c=cv.getContext('2d'),W=0,H=0,sc=SCENES[0],t0=performance.now(),sparks=[],on=true;
+  function size(){var r=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*r;cv.height=H*r;c.setTransform(r,0,0,r,0,0)}
+  size();addEventListener('resize',size);
+  for(var i=0;i<40;i++)sparks.push({x:Math.random(),y:Math.random()*.8,p:Math.random()*6})
+  this.set=function(s){sc=s;t0=performance.now()};
+  this.on=function(v){on=v};
+  function frame(now){
+    requestAnimationFrame(frame);if(!on&&!reduce)return;
+    var t=(now-t0)/1000,fade=Math.min(1,t/.9),k=(sc.gain||1)*fade*(dim||1);
+    if(sc.build){var p=(t%sc.build)/sc.build;k*=.35+.95*Math.pow(p,1.6)}
+    if(sc.breathe)k*=.7+.3*Math.sin(t*.9);
+    if(sc.pulse){k*=1+sc.pulse*Math.pow(Math.max(0,Math.sin(t*sc.beat*Math.PI*2)),6)}
+    c.globalCompositeOperation='source-over';c.fillStyle='#04050a';c.fillRect(0,0,W,H);
+    var fy=H*.9,g=c.createLinearGradient(0,fy-30,0,H);g.addColorStop(0,'#0a0c14');g.addColorStop(1,'#04050a');c.fillStyle=g;c.fillRect(0,fy-30,W,H);
+    c.globalCompositeOperation='lighter';
+    for(var i=0;i<sc.n;i++){
+      var x=(i+.5)/sc.n*W,col=sc.pal[i%sc.pal.length],ph=i*1.3,
+      th=Math.PI/2+((sc.n>1?i/(sc.n-1):.5)-.5)*sc.fan*.6+Math.sin(t*sc.speed+ph)*sc.amp,
+      L=fy/Math.max(.25,Math.sin(th)),ex=x+Math.cos(th)*L,ey=fy,hw=Math.max(W,H)*.045*(sc.n<4?1.5:1);
+      var nx=-Math.sin(th),ny=Math.cos(th),gr=c.createLinearGradient(x,0,ex,ey);
+      gr.addColorStop(0,hexA(col,.55*k));gr.addColorStop(1,hexA(col,.05*k));
+      c.fillStyle=gr;c.beginPath();c.moveTo(x-3,0);c.lineTo(x+3,0);c.lineTo(ex+nx*hw*1.6,ey+ny*hw*.2);c.lineTo(ex-nx*hw*1.6,ey-ny*hw*.2);c.fill();
+      var pg=c.createRadialGradient(ex,ey,0,ex,ey,hw*2.4);pg.addColorStop(0,hexA(col,.5*k));pg.addColorStop(1,hexA(col,0));
+      c.save();c.translate(ex,ey);c.scale(1,.22);c.translate(-ex,-ey);c.fillStyle=pg;c.beginPath();c.arc(ex,ey,hw*2.4,0,7);c.fill();c.restore();
+      var og=c.createRadialGradient(x,0,0,x,0,26);og.addColorStop(0,hexA(col,.9*k));og.addColorStop(1,hexA(col,0));c.fillStyle=og;c.fillRect(x-26,0,52,52)
+    }
+    if(sc.haze){for(var j=0;j<3;j++){var hx=W*(.2+.3*j)+Math.sin(t*.12+j)*W*.1,hy=H*(.45+.12*Math.sin(t*.1+j*2)),hr=Math.max(W,H)*.45,hg=c.createRadialGradient(hx,hy,0,hx,hy,hr);hg.addColorStop(0,'rgba(255,255,255,'+(sc.haze*k)+')');hg.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=hg;c.fillRect(hx-hr,hy-hr,hr*2,hr*2)}}
+    if(sc.spark){for(var s=0;s<sparks.length;s++){var q=sparks[s],a=Math.max(0,Math.sin(t*1.3+q.p))*.9*k;c.fillStyle='rgba(220,230,255,'+a+')';c.fillRect(q.x*W,q.y*H,2,2)}}
+    c.globalCompositeOperation='source-over';c.strokeStyle='rgba(255,255,255,.16)';c.beginPath();c.moveTo(0,1);c.lineTo(W,1);c.stroke()
+  }
+  if(reduce){frame(performance.now()+500)}else requestAnimationFrame(frame)
+}
+var root=document.documentElement;
+function accent(s){root.style.setProperty('--acc',s.pal[0]==='#ffffff'?s.pal[1]:s.pal[0])}
+// Accueil : la scène défile toute seule
+var hero=new Stage(document.getElementById('cv-hero'),.8),ht=document.getElementById('hero-tag'),hi=0;
+function heroNext(){var s=SCENES[hi%4];hero.set(s);ht.innerHTML='Cue 0'+(hi%4+1)+'<b>'+s.t+(s.v?' ('+s.v+')':'')+'</b>';if(!deskTouched)accent(s);hi++}
+var deskTouched=false;heroNext();if(!reduce)setInterval(heroNext,8000);
+// Pupitre
+var desk=new Stage(document.getElementById('cv-desk'),1),list=document.getElementById('cues'),cur=0,auto=null;
+SCENES.forEach(function(s,i){var li=document.createElement('li'),b=document.createElement('button');b.type='button';
+  b.innerHTML='<span class="n">0'+(i+1)+'</span><b>'+s.t+'</b><small>'+(s.v||'')+'</small>';b.onclick=function(){deskTouched=true;clearInterval(auto);pick(i)};li.appendChild(b);list.appendChild(li)});
+function pick(i){cur=i;var s=SCENES[i];desk.set(s);accent(s);
+  [].forEach.call(list.querySelectorAll('button'),function(b,j){b.setAttribute('aria-current',j===i?'true':'false')});
+  document.getElementById('i-n').textContent='Cue 0'+(i+1)+' / 08';
+  document.getElementById('i-t').textContent=s.t+(s.v?' ('+s.v+')':'');
+  document.getElementById('i-d').textContent=s.d;
+  document.getElementById('i-s').innerHTML=s.pal.map(function(p){return '<i style="background:'+p+'"></i>'}).join('')}
+pick(0);
+var screenEl=document.querySelector('.screen'),visDesk=false;
+new IntersectionObserver(function(es){visDesk=es[0].isIntersecting;desk.on(visDesk);if(visDesk&&!deskTouched&&!auto&&!reduce)auto=setInterval(function(){pick((cur+1)%SCENES.length)},7000);if(!visDesk){clearInterval(auto);auto=null}},{threshold:.2}).observe(screenEl);
+new IntersectionObserver(function(es){hero.on(es[0].isIntersecting)},{threshold:0}).observe(document.getElementById('top'));
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+</script>
+</body>
+</html>

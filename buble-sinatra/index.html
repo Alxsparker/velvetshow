@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>New York After Hours — Love &amp; Live</title>
-<meta name="description" content="New York After Hours par Alex : Sinatra, Louis Armstrong, Nat King Cole, en solo. Une soirée club de jazz pour pubs, bars, restaurants et hôtels. Love &amp; Live.">
+<title>Crooners &amp; Ladies — Love &amp; Live</title>
+<meta name="description" content="Crooners &amp; Ladies : un tour de chant soigné en duo, Alex et Sève. Sinatra, Dean Martin, Nat King Cole et les grandes voix du jazz, en lumière. Love &amp; Live.">
 <meta name="theme-color" content="#070a12">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -145,6 +145,16 @@ h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.
 .guestsec{padding-top:clamp(3rem,7vw,6rem)}
 .duos{list-style:none;display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem}
 .duos li{border:1px solid rgba(217,180,95,.35);padding:.45rem 1rem;font-size:.85rem;letter-spacing:.12em;color:var(--gold2)}
+.rcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2.4rem;margin-top:2.6rem}
+.rcol h3{font-family:var(--script);font-weight:400;font-size:2.2rem;color:var(--gold)}
+.rcol .songs{margin-top:.6rem}
+.rcol .songs li{grid-template-columns:2.2rem 1fr;row-gap:0}
+.rcol .songs small{grid-column:2;margin-top:-.3rem}
+.about.solo{grid-template-columns:1fr;max-width:46rem}
+.hero-plate{display:none;position:absolute;z-index:-1;right:6vw;top:13%;height:76%;aspect-ratio:2/3;background:radial-gradient(ellipse at 50% 35%,#f1e7cf,#d8c7a2 95%);padding:.7rem;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(217,180,95,.55)}
+.hero-plate img{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;clip-path:inset(0 0 100% 0);animation:draw 2.4s cubic-bezier(.6,.1,.2,1) .9s forwards}
+@keyframes draw{to{clip-path:inset(0)}}
+@media(min-width:900px){.hero-plate{display:block}}
 /* SETLIST */
 .set{background:var(--ink2)}
 .songs{list-style:none;margin-top:3rem;border-top:1px solid rgba(217,180,95,.25);counter-reset:s}
@@ -156,7 +166,7 @@ h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.
 .songs small{color:var(--muted);letter-spacing:.2em;text-transform:uppercase;font-size:.7rem}
 
 /* FORMULES */
-.deals{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem;margin-top:3.5rem}
+.deals{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1.4rem;margin-top:3.5rem}
 .deal{padding:2.4rem 2rem;border:1px solid rgba(217,180,95,.3);text-align:center;transition:transform .6s var(--ease),box-shadow .6s}
 .deal:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(217,180,95,.12)}
 .deal.hot{border-color:var(--gold);background:linear-gradient(rgba(217,180,95,.1),transparent)}
@@ -191,7 +201,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   <a class="logo" href="#top">Love &amp; Live</a>
   <ul>
     <li><a href="#show">L'ambiance</a></li>
-    <li data-guest><a href="#guest">Invité</a></li>
+    <li><a href="#guest">Le duo</a></li>
     <li><a href="#repertoire">Répertoire</a></li>
     <li><a href="#formules">Infos</a></li>
     <li><a href="#contact">Réserver</a></li>
@@ -200,16 +210,15 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 
 <header class="hero" id="top">
   <div class="beam"></div><div class="beam b2"></div>
-  <img class="hero-sketch" src="croquis-alex-or.webp" alt="Alex au micro">
+  <div class="hero-plate"><img src="duo-profil.webp" alt="Alex et Sève de profil, croquis à l'encre"></div>
   <p class="eyebrow">Love &amp; Live présente</p>
-  <h1 aria-label="New York After Hours">
-    <span class="line" data-split="NEW YORK"></span>
-    <span class="line" data-split="AFTER HOURS" data-off="7"></span>
+  <h1 aria-label="Crooners and Ladies">
+    <span class="line" data-split="CROONERS"></span>
+    <span class="line" data-split="&amp; LADIES" data-off="8"></span>
   </h1>
-  <p class="par">un soir de jazz avec <b>Alex</b></p>
-  <p class="guest" data-guest>en invité·e <b>Sève</b></p>
+  <p class="par">en duo : <b>Alex</b> &amp; <b>Sève</b></p>
   <canvas class="smoke-c" id="smoke" aria-hidden="true"></canvas>
-  <p class="tag">Une voix, un whisky, la lumière basse. Sinatra, Louis Armstrong, Nat King Cole : l'ambiance d'un club de jazz de Manhattan, pour vos cocktails, vos repas et vos soirées.</p>
+  <p class="tag">Sinatra, Dean Martin, Nat King Cole, et les grandes voix du jazz. Un tour de chant soigné, en lumière, smoking de rigueur.</p>
   <a class="cta" href="#contact">Parlons de votre événement</a>
   <div class="scroll"></div>
   
@@ -218,36 +227,33 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <div class="marquee" aria-hidden="true"><div id="mq"></div></div>
 
 <section id="show">
-  <div class="wrap about">
+  <div class="wrap about solo">
     <div>
-      <p class="kicker rv">L'ambiance</p>
-      <h2 class="rv" style="--d:1">Une nuit <em>à Manhattan</em></h2>
-      <p class="rv" style="--d:2">Le New York de Sinatra, de Louis Armstrong et de Nat King Cole : les clubs de jazz, les trottoirs mouillés, le smoking et la cravate dénouée à 2 heures du matin. Des chansons que tout le monde connaît et qu'on écoute, un verre à la main.</p>
-      <p class="rv" style="--d:3">Pas de scène, pas de show : Alex chante en douceur, avec ses backing tracks, dans un coin de la salle. On discute, on trinque, on mange, et la musique accompagne la soirée. Simple, discret, élégant, et un budget adapté aux associations et aux comités des fêtes.</p>
+      <p class="kicker rv">Le tour de chant</p>
+      <h2 class="rv" style="--d:1">Classe, <em>sans en avoir l'air</em></h2>
+      <p class="rv" style="--d:2">Des voix live, un répertoire de crooners et de grandes dames, et une lumière pensée titre par titre. Le smoking, le micro, un verre posé sur un piano imaginaire : la décontraction de Dean Martin, la sobriété d'un agent secret en costume sombre.</p>
+      <p class="rv" style="--d:3">Jamais pressés, jamais en démonstration. Voix live sur séquences, sono et lumières fournies : un format fait pour les bars, les repas, les cocktails et les associations.</p>
     </div>
-    <div class="stage rv" style="--d:2">
-      <div class="spot"></div>
-      <img class="photo sketch" src="croquis-alex-or.webp" alt="Alex au micro" onerror="this.onerror=null;this.className='photo';this.src='stage.jpg'"></div>
   </div>
 
   <div class="wrap pillars">
-    <div class="card rv"><div class="n">I</div><h3>La voix</h3><p>Sinatra, Armstrong, Nat King Cole : l'élégance décontractée, le smoking et le sourire en coin.</p></div>
-    <div class="card rv" style="--d:1"><div class="n">II</div><h3>Manhattan</h3><p>New York, New York, Fever, Cheek to Cheek : les standards qui font lever toute la salle.</p></div>
-    <div class="card rv" style="--d:2"><div class="n">III</div><h3>Clé en main</h3><p>Sono, lumières et bandes orchestrales fournies. Alex s'installe, vous profitez. Un tarif adapté aux associations.</p></div>
+    <div class="card rv"><div class="n">I</div><h3>Crooners &amp; ladies</h3><p>Sinatra, Dean Martin, Nat King Cole, et les grandes voix de femmes du jazz.</p></div>
+    <div class="card rv" style="--d:1"><div class="n">II</div><h3>En duo</h3><p>Deux micros, deux voix, et des duos qui font sourire la salle.</p></div>
+    <div class="card rv" style="--d:2"><div class="n">III</div><h3>Clé en main</h3><p>Sono et lumières fournies, voix live sur séquences. Un tarif adapté aux associations.</p></div>
   </div>
 </section>
 
-<section class="guestsec" id="guest" data-guest>
+<section class="guestsec" id="guest">
   <div class="wrap about">
     <div class="stage paper rv" style="--d:1">
       <img class="photo ink" src="duo-micro.webp" alt="Alex et Sève au micro">
     </div>
     <div>
-      <p class="kicker rv">En invité·e</p>
+      <p class="kicker rv">Le duo</p>
       <h2 class="rv" style="--d:1">Alex <em>&amp; Sève</em></h2>
-      <p class="rv" style="--d:2">Alex et Sève chantent tous les deux. Deux micros, pas d'instruments : juste deux voix sur les backing tracks. Le temps de quelques duos, l'ambiance change, avec plus de complicité et toujours à voix basse.</p>
+      <p class="rv" style="--d:2">Alex et Sève chantent ensemble. Deux micros, pas d'instruments : deux voix, des séquences, et une lumière qui change à chaque titre. Tantôt chacun son tour, tantôt à deux, toujours à voix basse.</p>
       <ul class="duos rv" style="--d:3">
-        <li>Cheek to Cheek</li><li>Dream a Little Dream of Me</li><li>Somethin' Stupid</li><li>Baby, It's Cold Outside</li>
+        <li>Somethin' Stupid</li><li>Baby, It's Cold Outside</li><li>Cheek to Cheek</li><li>Dream a Little Dream of Me</li>
       </ul>
     </div>
   </div>
@@ -262,21 +268,30 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <section class="set" id="repertoire">
   <div class="wrap">
     <p class="kicker rv">Répertoire</p>
-    <h2 class="rv" style="--d:1">Le <em>répertoire</em> d'Alex</h2>
-    <ul class="songs">
-      <li class="rv"><b>New York, New York</b><small>Sinatra</small></li>
-      <li class="rv"><b>Fly Me to the Moon</b><small>Sinatra</small></li>
-      <li class="rv"><b>My Way</b><small>Sinatra</small></li>
-      <li class="rv"><b>Cheek to Cheek</b><small>Sinatra</small></li>
-      <li class="rv"><b>What a Wonderful World</b><small>Louis Armstrong</small></li>
-      <li class="rv"><b>La Vie en rose</b><small>Louis Armstrong</small></li>
-      <li class="rv"><b>Hello, Dolly!</b><small>Louis Armstrong</small></li>
-      <li class="rv"><b>L-O-V-E</b><small>Nat King Cole</small></li>
-      <li class="rv"><b>Unforgettable</b><small>Nat King Cole</small></li>
-      <li class="rv"><b>Smile</b><small>Nat King Cole</small></li>
-      <li class="rv"><b>Fever</b><small>Peggy Lee</small></li>
-      <li class="rv"><b>Feeling Good</b><small>Nina Simone</small></li>
-    </ul>
+    <h2 class="rv" style="--d:1">Crooners <em>&amp; ladies</em></h2>
+    <div class="rcols"><div class="rcol"><h3 class="rv">Crooners</h3><ul class="songs">
+<li class="rv"><b>My Way</b><small>Sinatra</small></li>
+<li class="rv"><b>New York, New York</b><small>Sinatra</small></li>
+<li class="rv"><b>Fly Me to the Moon</b><small>Sinatra</small></li>
+<li class="rv"><b>That's Amore</b><small>Dean Martin</small></li>
+<li class="rv"><b>Everybody Loves Somebody</b><small>Dean Martin</small></li>
+<li class="rv"><b>Unforgettable</b><small>Nat King Cole</small></li>
+<li class="rv"><b>L-O-V-E</b><small>Nat King Cole</small></li>
+<li class="rv"><b>Cry Me a River</b><small>version Bublé</small></li>
+<li class="rv"><b>Feeling Good</b><small>version Bublé</small></li>
+</ul></div><div class="rcol"><h3 class="rv">Ladies</h3><ul class="songs">
+<li class="rv"><b>Fever</b><small>Peggy Lee</small></li>
+<li class="rv"><b>I Put a Spell on You</b><small>Nina Simone</small></li>
+<li class="rv"><b>Feeling Good</b><small>Nina Simone</small></li>
+<li class="rv"><b>At Last</b><small>Etta James</small></li>
+<li class="rv"><b>La Vie en rose</b><small>Édith Piaf</small></li>
+<li class="rv"><b>Summertime</b><small>Ella Fitzgerald</small></li>
+</ul></div><div class="rcol"><h3 class="rv">Duos</h3><ul class="songs">
+<li class="rv"><b>Somethin' Stupid</b><small>Sinatra &amp; Nancy</small></li>
+<li class="rv"><b>Baby, It's Cold Outside</b><small>duo</small></li>
+<li class="rv"><b>Cheek to Cheek</b><small>Ella &amp; Louis</small></li>
+<li class="rv"><b>Dream a Little Dream of Me</b><small>Ella &amp; Louis</small></li>
+</ul></div></div>
   </div>
 </section>
 
@@ -286,8 +301,8 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
     <h2 class="rv" style="--d:1">Pour <em>chaque</em> lieu</h2>
     <div class="deals">
       <div class="deal rv"><h3>Cocktail</h3><p>Vin d'honneur, apéritif, inauguration</p><ul><li>1 h à 2 h d'ambiance</li><li>Voix douce, volume discret</li><li>Sono incluse</li></ul></div>
-      <div class="deal rv" style="--d:1" data-guest><h3>Duo</h3><p>Alex + Sève en invité·e</p><ul><li>Deux voix, deux micros</li><li>Cocktail, repas ou lounge</li><li>Tarif sur devis</li></ul></div>
-      <div class="deal hot rv" style="--d:1"><h3>Repas</h3><p>Dîner, banquet, repas associatif</p><ul><li>2 sets de 40 minutes</li><li>Sinatra, Armstrong, Nat King Cole</li><li>Tarif comité des fêtes</li></ul></div>
+      <div class="deal rv" style="--d:1"><h3>Repas</h3><p>Dîner, banquet, repas associatif</p><ul><li>2 sets de 40 minutes</li><li>Voix douce entre les plats</li><li>Tarif comité des fêtes</li></ul></div>
+      <div class="deal hot rv" style="--d:2"><h3>Tour de chant</h3><p>Alex &amp; Sève, en lumière</p><ul><li>Environ 1 h 15, deux voix</li><li>Lumières écrites titre par titre</li><li>Tarif sur devis</li></ul></div>
       <div class="deal rv" style="--d:2"><h3>Bar &amp; lounge</h3><p>Pub, hôtel, cave à cocktails</p><ul><li>Soirée club de jazz</li><li>Playlist à votre image</li><li>Devis personnalisé</li></ul></div>
     </div>
   </div>
@@ -297,13 +312,13 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   <div class="vinyl"></div>
   <div class="wrap">
     <p class="kicker rv">Réserver</p>
-    <h2 class="rv" style="--d:1">Votre événement, <em>version New York</em> ?</h2>
+    <h2 class="rv" style="--d:1">Votre soirée, <em>version crooner</em> ?</h2>
     <p class="big rv" style="--d:2"><a href="mailto:contact@exemple.fr">contact@exemple.fr</a></p>
     <div class="socials rv" style="--d:3"><a href="#">Instagram</a><a href="#">YouTube</a><a href="#">Facebook</a></div>
   </div>
 </section>
 
-<footer><span class="tick"></span>Love &amp; Live — New York After Hours par Alex</footer>
+<footer><span class="tick"></span>Love &amp; Live — Crooners &amp; Ladies · Alex &amp; Sève</footer>
 
 <script>
 // Lettres du titre
@@ -312,7 +327,7 @@ document.querySelectorAll('[data-split]').forEach(function(el){
   el.innerHTML=[...el.dataset.split].map(function(c,i){return '<span class="ch" style="--i:'+(i+off)+'">'+(c===' '?'\u00a0':c)+'</span>'}).join('');
 });
 // Marquee
-var titles=['New York, New York','What a Wonderful World','Unforgettable','Fly Me to the Moon','La Vie en rose','L-O-V-E','My Way','Smile'];
+var titles=['My Way','New York, New York','Cry Me a River','Fly Me to the Moon','Fever','Feeling Good','Unforgettable','That’s Amore'];
 var row=titles.map(function(t){return '<span>'+t+'</span><em>✦</em>'}).join('');
 document.getElementById('mq').innerHTML=row+row+row+row;
 // Sève en invité·e : passer GUEST à false pour tout masquer
