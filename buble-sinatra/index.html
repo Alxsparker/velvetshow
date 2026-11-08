@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buble Sinatra par Alex — Swing, crooner &amp; grand show</title>
+<meta name="description" content="Buble Sinatra par Alex : le swing de Sinatra et l'élégance de Bublé, en solo, pour vos soirées, mariages et événements.">
+<meta name="theme-color" content="#0b0907">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,800;1,500&family=Italiana&family=Pinyon+Script&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0b0907; --ink2:#14100c; --gold:#d9b45f; --gold2:#f4e2a8; --gold3:#8c6a24;
+  --cream:#efe6d2; --muted:#a89a7f; --red:#8e1b22;
+  --serif:'Bodoni Moda','Didot',Georgia,serif; --deco:'Italiana','Bodoni Moda',serif;
+  --script:'Pinyon Script','Snell Roundhand',cursive; --sans:'Jost','Helvetica Neue',Arial,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--ink)}
+body{background:var(--ink);color:var(--cream);font-family:var(--sans);font-weight:300;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.grain{position:fixed;inset:-50%;pointer-events:none;z-index:50;opacity:.07;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation:grain 1s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+.cursor-light{position:fixed;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;pointer-events:none;z-index:2;
+  background:radial-gradient(circle,rgba(244,226,168,.13),transparent 62%);mix-blend-mode:screen;transition:opacity .4s;opacity:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:18px 5vw;
+  background:linear-gradient(var(--ink),transparent);transition:background .4s}
+nav.solid{background:rgba(11,9,7,.88);backdrop-filter:blur(8px)}
+.logo{font-family:var(--script);font-size:1.9rem;color:var(--gold)}
+nav ul{display:flex;gap:2rem;list-style:none;font-size:.78rem;letter-spacing:.28em;text-transform:uppercase}
+nav ul a{position:relative;padding:4px 0}
+nav ul a::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--gold);transform:scaleX(0);transform-origin:right;transition:transform .5s var(--ease)}
+nav ul a:hover::after{transform:scaleX(1);transform-origin:left}
+@media(max-width:700px){nav ul li:not(:last-child){display:none}}
+
+/* HERO */
+.hero{position:relative;min-height:100svh;display:grid;place-items:center;text-align:center;overflow:hidden;padding:120px 5vw 90px;isolation:isolate}
+.beam{position:absolute;top:-10%;left:50%;width:140vmax;height:140vmax;margin-left:-70vmax;z-index:-1;transform-origin:50% 0;
+  background:conic-gradient(from 180deg at 50% 0,transparent 160deg,rgba(244,226,168,.0) 166deg,rgba(244,226,168,.16) 180deg,rgba(244,226,168,.0) 194deg,transparent 200deg);
+  animation:sweep 9s ease-in-out infinite alternate;filter:blur(6px)}
+.beam.b2{animation-duration:13s;animation-direction:alternate-reverse;opacity:.6}
+@keyframes sweep{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+.vinyl{position:absolute;width:min(92vmin,760px);aspect-ratio:1;left:50%;top:52%;margin:calc(min(92vmin,760px)/-2) 0 0 calc(min(92vmin,760px)/-2);z-index:-2;border-radius:50%;opacity:.3;
+  background:
+   radial-gradient(circle,#4a1216 0 13%,#1b1410 13.5% 15%,transparent 15.5%),
+   repeating-radial-gradient(circle,#0f0c09 0 2px,#1d1712 3px 4px),
+   conic-gradient(from 20deg,transparent,rgba(255,255,255,.09),transparent 25%,transparent 50%,rgba(255,255,255,.09),transparent 75%);
+  box-shadow:0 0 0 2px #2a2018,0 0 120px rgba(217,180,95,.12);animation:spin 14s linear infinite}
+.vinyl::after{content:"";position:absolute;inset:47.5%;border-radius:50%;background:var(--ink)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.eyebrow{font-size:.8rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);display:flex;gap:1.2rem;align-items:center;justify-content:center}
+.eyebrow::before,.eyebrow::after{content:"";width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.eyebrow::after{transform:scaleX(-1)}
+h1{font-family:var(--serif);font-weight:500;line-height:.95;letter-spacing:.08em;margin:1.4rem 0 0;text-transform:uppercase;font-size:clamp(2.6rem,11.5vw,9rem)}
+h1 .line{display:block;overflow:hidden;padding:.06em .1em}
+h1 .ch{display:inline-block;transform:translateY(110%) rotate(8deg);opacity:0;
+  background:linear-gradient(100deg,var(--gold3) 10%,var(--gold2) 35%,var(--gold) 50%,var(--gold2) 65%,var(--gold3) 90%);background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:rise 1.1s var(--ease) forwards,shine 5s linear 1.8s infinite;animation-delay:calc(var(--i)*70ms + .3s),calc(var(--i)*70ms + 1.8s)}
+@keyframes rise{to{transform:none;opacity:1}}
+@keyframes shine{from{background-position:200% 0}to{background-position:-50% 0}}
+.par{padding:0 .3em;font-family:var(--script);font-size:clamp(2.4rem,7vw,5rem);color:var(--cream);margin-top:-.3em;position:relative;
+  clip-path:inset(0 100% 0 0);animation:write 1.8s var(--ease) 1.6s forwards}
+.par b{color:var(--gold);font-weight:400}
+@keyframes write{to{clip-path:inset(0 0 0 0)}}
+.tag{margin:1.6rem auto 2.4rem;max-width:34rem;color:var(--muted);font-size:1.05rem;opacity:0;animation:fade 1.2s ease 2.5s forwards}
+@keyframes fade{to{opacity:1}}
+.cta{display:inline-flex;gap:.8rem;align-items:center;padding:1rem 2.4rem;border:1px solid var(--gold);color:var(--gold);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem;position:relative;overflow:hidden;opacity:0;animation:fade 1s ease 2.9s forwards;transition:color .5s}
+.cta::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateY(101%);transition:transform .5s var(--ease);z-index:-1}
+.cta:hover{color:var(--ink)}.cta:hover::before{transform:none}
+.eq{position:absolute;bottom:0;left:0;right:0;height:90px;display:flex;align-items:flex-end;justify-content:center;gap:5px;opacity:.5;z-index:-1}
+.eq i{width:min(1.1vw,10px);height:100%;background:linear-gradient(var(--gold),var(--gold3));transform-origin:bottom;transform:scaleY(.1);animation:eq 1.2s ease-in-out infinite alternate;animation-delay:calc(var(--d)*-1s);animation-duration:calc(.7s + var(--s)*.9s)}
+@keyframes eq{to{transform:scaleY(1)}}
+.scroll{position:absolute;bottom:110px;left:50%;width:1px;height:50px;background:linear-gradient(var(--gold),transparent);animation:drip 2s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* MARQUEE */
+.marquee{border-block:1px solid rgba(217,180,95,.25);overflow:hidden;padding:1.1rem 0;background:var(--ink2);white-space:nowrap}
+.marquee div{display:inline-block;font-family:var(--deco);font-size:1.5rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);animation:mq 38s linear infinite}
+.marquee span{margin:0 1.6rem;color:var(--cream)}.marquee em{font-style:normal;color:var(--red)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+section{padding:clamp(5rem,12vw,10rem) 5vw;position:relative}
+.wrap{max-width:1100px;margin:auto}
+h2{font-family:var(--serif);font-weight:500;font-size:clamp(2.2rem,6vw,4.4rem);line-height:1.05;margin:.6rem 0 1.4rem}
+h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.15em;font-weight:400}
+.kicker{font-size:.75rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold)}
+.rv{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease),transform 1s var(--ease);transition-delay:calc(var(--d,0)*120ms)}
+.rv.in{opacity:1;transform:none}
+
+/* ABOUT */
+.about{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}
+@media(max-width:800px){.about{grid-template-columns:1fr}}
+.about p{color:#cfc4ab;margin-bottom:1rem;font-size:1.08rem}
+.stage{position:relative;aspect-ratio:4/5;border:1px solid rgba(217,180,95,.35);overflow:hidden;background:radial-gradient(ellipse at 50% 15%,#3a2b17,#0e0b08 70%)}
+.stage::before{content:"";position:absolute;inset:8px;border:1px solid rgba(217,180,95,.2);z-index:2;pointer-events:none}
+.stage svg{position:absolute;inset:0;width:100%;height:100%}
+.spot{position:absolute;top:-5%;left:50%;width:80%;height:110%;margin-left:-40%;background:linear-gradient(rgba(244,226,168,.35),transparent 85%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);animation:flick 6s ease-in-out infinite}
+@keyframes flick{0%,100%{opacity:.9}45%{opacity:.7}50%{opacity:1}}
+.smoke{position:absolute;bottom:-10%;left:-20%;width:140%;height:50%;background:radial-gradient(ellipse,rgba(239,230,210,.12),transparent 65%);filter:blur(18px);animation:drift 12s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translateX(12%) scale(1.15)}}
+.note{position:absolute;color:var(--gold);font-size:1.8rem;opacity:0;animation:note 6s ease-in infinite;animation-delay:calc(var(--n)*1.5s)}
+@keyframes note{0%{transform:translate(0,0) rotate(0);opacity:0}15%{opacity:.9}100%{transform:translate(40px,-200px) rotate(25deg);opacity:0}}
+
+/* PILLARS */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.4rem;margin-top:3.5rem}
+.card{padding:2.2rem 1.8rem;border:1px solid rgba(217,180,95,.25);background:linear-gradient(160deg,rgba(217,180,95,.07),transparent);position:relative;overflow:hidden;transition:transform .6s var(--ease),border-color .4s}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,0),rgba(244,226,168,.18),transparent 55%);opacity:0;transition:opacity .4s}
+.card:hover{transform:translateY(-8px);border-color:var(--gold)}.card:hover::after{opacity:1}
+.card .n{font-family:var(--deco);font-size:3.2rem;color:var(--gold);line-height:1}
+.card h3{font-family:var(--serif);font-weight:500;font-size:1.5rem;margin:.6rem 0}
+.card p{color:var(--muted);font-size:.98rem}
+
+.sig{padding:clamp(4rem,9vw,7rem) 5vw;text-align:center;border-block:1px solid rgba(217,180,95,.2);background:radial-gradient(ellipse at 50% 0,rgba(217,180,95,.08),transparent 70%)}
+.sig p{font-family:var(--serif);font-style:italic;font-size:clamp(1.5rem,4vw,2.6rem);max-width:34ch;margin:auto;color:var(--cream)}
+.sig svg{width:200px;display:block;margin:1.4rem auto 0;fill:none;stroke:var(--gold);stroke-width:2.4;stroke-linecap:round}
+.sig .ink{stroke-dasharray:700;stroke-dashoffset:700}
+.sig svg.in .ink{animation:draw 2.6s ease .3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.sig span{font-family:var(--script);color:var(--gold);font-size:1.8rem}
+/* SETLIST */
+.set{background:var(--ink2)}
+.songs{list-style:none;margin-top:3rem;border-top:1px solid rgba(217,180,95,.25);counter-reset:s}
+.songs li{counter-increment:s;display:grid;grid-template-columns:3rem 1fr auto;gap:1rem;align-items:baseline;padding:1.15rem .5rem;border-bottom:1px solid rgba(217,180,95,.25);position:relative;cursor:default;transition:padding .5s var(--ease),color .4s}
+.songs li::before{content:counter(s,decimal-leading-zero);font-family:var(--deco);color:var(--gold3);font-size:1.1rem}
+.songs li::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:100%;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .7s var(--ease)}
+.songs li:hover{padding-left:1.4rem;color:var(--gold2)}.songs li:hover::after{transform:scaleX(1)}
+.songs b{font-family:var(--serif);font-weight:500;font-size:clamp(1.2rem,3vw,1.8rem)}
+.songs small{color:var(--muted);letter-spacing:.2em;text-transform:uppercase;font-size:.7rem}
+
+/* FORMULES */
+.deals{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem;margin-top:3.5rem}
+.deal{padding:2.4rem 2rem;border:1px solid rgba(217,180,95,.3);text-align:center;transition:transform .6s var(--ease),box-shadow .6s}
+.deal:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(217,180,95,.12)}
+.deal.hot{border-color:var(--gold);background:linear-gradient(rgba(217,180,95,.1),transparent)}
+.deal h3{font-family:var(--script);font-size:2.6rem;color:var(--gold);font-weight:400}
+.deal p{color:var(--muted);margin:.8rem 0}.deal ul{list-style:none;color:#cfc4ab;font-size:.95rem}
+.deal li{padding:.35rem 0;border-top:1px solid rgba(217,180,95,.15)}
+
+/* CONTACT */
+.contact{text-align:center;overflow:hidden;isolation:isolate}
+.contact .vinyl{opacity:.25;top:50%}
+.big{font-family:var(--serif);font-size:clamp(1.6rem,5vw,3.2rem);margin:2rem 0}
+.big a{color:var(--gold);border-bottom:1px solid var(--gold3);transition:color .3s}.big a:hover{color:var(--gold2)}
+.socials{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;letter-spacing:.3em;text-transform:uppercase;font-size:.8rem;color:var(--muted)}
+.socials a:hover{color:var(--gold)}
+footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);border-top:1px solid rgba(217,180,95,.2)}
+.tick{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);margin-right:.7em;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.8);opacity:.4}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
+  h1 .ch,.par,.tag,.cta{opacity:1!important;transform:none!important;clip-path:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="cursor-light" id="cl"></div>
+
+<nav id="nav">
+  <a class="logo" href="#top">Alex</a>
+  <ul>
+    <li><a href="#show">Le show</a></li>
+    <li><a href="#repertoire">Répertoire</a></li>
+    <li><a href="#formules">Formules</a></li>
+    <li><a href="#contact">Réserver</a></li>
+  </ul>
+</nav>
+
+<header class="hero" id="top">
+  <div class="beam"></div><div class="beam b2"></div>
+  <div class="vinyl"></div>
+  <p class="eyebrow">Black tie · Décontracté · Swing</p>
+  <h1 aria-label="Buble Sinatra">
+    <span class="line" data-split="BUBLE"></span>
+    <span class="line" data-split="SINATRA" data-off="5"></span>
+  </h1>
+  <p class="par">par <b>Alex</b></p>
+  <p class="tag">Smoking, sourire en coin, un verre à la main. L'aisance de Dean Martin, le charme de George Clooney, et la patte d'Alex.</p>
+  <a class="cta" href="#contact">Réserver la soirée</a>
+  <div class="scroll"></div>
+  <div class="eq" id="eq" aria-hidden="true"></div>
+</header>
+
+<div class="marquee" aria-hidden="true"><div id="mq"></div></div>
+
+<section id="show">
+  <div class="wrap about">
+    <div>
+      <p class="kicker rv">Le show</p>
+      <h2 class="rv" style="--d:1">Le smoking, le micro, <em>et l'air de rien</em></h2>
+      <p class="rv" style="--d:2">Le swing à la Dean Martin : décontracté, drôle, jamais pressé. L'allure à la George Clooney : le noeud papillon défait, le sourire qui dit tout. Alex chante Sinatra et Bublé comme on raconte une bonne histoire.</p>
+      <p class="rv" style="--d:3">Seul sur scène, il joue avec la salle, lance une vanne, fait danser les tables. Pas de décor inutile : l'ambiance d'un lounge de Las Vegas, chez vous.</p>
+    </div>
+    <div class="stage rv" style="--d:2">
+      <div class="spot"></div>
+      <svg viewBox="0 0 400 500" aria-label="Silhouette d'un crooner au micro" role="img">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a130c"/><stop offset="1" stop-color="#050403"/></linearGradient></defs>
+        <!-- pied de micro -->
+        <g stroke="#d9b45f" stroke-width="3" fill="none" opacity=".9"><path d="M300 500V300"/><path d="M300 300q0-30-30-40"/><ellipse cx="262" cy="256" rx="9" ry="14" fill="#d9b45f" transform="rotate(-30 262 256)"/></g>
+        <!-- corps -->
+        <path d="M60 500c0-110 40-170 110-190h60c70 20 110 80 110 190z" fill="url(#g)"/>
+        <path d="M170 310l30 70 30-70" fill="#efe6d2" opacity=".9"/>
+        <path d="M200 334l-26-12v24zM200 334l26-12v24z" fill="#050403" stroke="#d9b45f" stroke-width="1"/><circle cx="200" cy="334" r="4" fill="#d9b45f"/><path d="M176 322l24 14 24-14" stroke="#050403" stroke-width="0" fill="none"/>
+        <!-- tête -->
+        <rect x="182" y="262" width="36" height="52" rx="14" fill="#0c0906"/>
+        <ellipse cx="200" cy="232" rx="42" ry="52" fill="#0c0906"/>
+        <!-- chapeau -->
+        <ellipse cx="200" cy="196" rx="86" ry="14" fill="#050403" stroke="#d9b45f" stroke-width="1.5"/>
+        <path d="M148 196c0-48 14-82 38-86 8 10 20 10 28 0 24 4 38 38 38 86z" fill="#0a0705" stroke="#d9b45f" stroke-width="1.5"/>
+        <path d="M149 184h102" stroke="#3a2b17" stroke-width="9"/>
+      </svg>
+      <span class="note" style="--n:0;left:18%;bottom:30%">♪</span>
+      <span class="note" style="--n:1;left:72%;bottom:40%">♫</span>
+      <span class="note" style="--n:2;left:30%;bottom:15%">♩</span>
+      <span class="note" style="--n:3;left:55%;bottom:22%">♬</span>
+      <div class="smoke"></div>
+    </div>
+  </div>
+
+  <div class="wrap pillars">
+    <div class="card rv"><div class="n">I</div><h3>La voix</h3><p>Un timbre chaud, des nuances de crooner et une vraie présence : on écoute, puis on chante avec lui.</p></div>
+    <div class="card rv" style="--d:1"><div class="n">II</div><h3>Le swing</h3><p>Des arrangements vivants qui donnent envie de se lever, des slows pour les couples, des tubes pour tous.</p></div>
+    <div class="card rv" style="--d:2"><div class="n">III</div><h3>L'allure</h3><p>Costume impeccable, humour, nonchalance étudiée : un moment élégant, sans aucune prise de tête pour vous.</p></div>
+  </div>
+</section>
+
+<div class="sig">
+  <p class="rv">« Le secret, c'est de ne jamais avoir l'air d'y penser. »</p>
+  <svg class="rv" viewBox="0 0 260 80" aria-hidden="true"><path class="ink" d="M10 55c20-50 40-50 30-10s20 20 40-20c-10 30 0 30 20 5 10-12 22-12 14 8s16 14 36-12c-6 22 4 26 24 6 18-14 36-18 56-6"/></svg>
+  <span class="rv">Alex</span>
+</div>
+
+<section class="set" id="repertoire">
+  <div class="wrap">
+    <p class="kicker rv">Répertoire</p>
+    <h2 class="rv" style="--d:1">Les <em>standards</em> qu'on adore</h2>
+    <ul class="songs">
+      <li class="rv"><b>Fly Me to the Moon</b><small>Sinatra</small></li>
+      <li class="rv"><b>New York, New York</b><small>Sinatra</small></li>
+      <li class="rv"><b>My Way</b><small>Sinatra</small></li>
+      <li class="rv"><b>I've Got You Under My Skin</b><small>Sinatra</small></li>
+      <li class="rv"><b>Come Fly With Me</b><small>Sinatra · Bublé</small></li>
+      <li class="rv"><b>Feeling Good</b><small>Bublé</small></li>
+      <li class="rv"><b>Haven't Met You Yet</b><small>Bublé</small></li>
+      <li class="rv"><b>Sway</b><small>Bublé</small></li>
+      <li class="rv"><b>Everything</b><small>Bublé</small></li>
+      <li class="rv"><b>Que Sera, Sera</b><small>Classique</small></li>
+    </ul>
+  </div>
+</section>
+
+<section id="formules">
+  <div class="wrap">
+    <p class="kicker rv">Formules</p>
+    <h2 class="rv" style="--d:1">Pour <em>chaque</em> soirée</h2>
+    <div class="deals">
+      <div class="deal rv"><h3>Cocktail</h3><p>L'ambiance jazz-lounge</p><ul><li>2 × 30 minutes</li><li>Répertoire doux &amp; swing</li><li>Idéal vin d'honneur</li></ul></div>
+      <div class="deal hot rv" style="--d:1"><h3>Grand show</h3><p>La soirée complète</p><ul><li>1 h 30 de spectacle</li><li>Interaction avec le public</li><li>Sono &amp; lumières</li></ul></div>
+      <div class="deal rv" style="--d:2"><h3>Sur mesure</h3><p>Mariage, entreprise, gala</p><ul><li>Chanson dédicacée</li><li>Playlist à votre image</li><li>Devis personnalisé</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="vinyl"></div>
+  <div class="wrap">
+    <p class="kicker rv">Réserver</p>
+    <h2 class="rv" style="--d:1">Et si on <em>swinguait</em> ?</h2>
+    <p class="big rv" style="--d:2"><a href="mailto:contact@exemple.fr">contact@exemple.fr</a></p>
+    <div class="socials rv" style="--d:3"><a href="#">Instagram</a><a href="#">YouTube</a><a href="#">Facebook</a></div>
+  </div>
+</section>
+
+<footer><span class="tick"></span>Buble Sinatra par Alex — Tous droits réservés</footer>
+
+<script>
+// Lettres du titre
+document.querySelectorAll('[data-split]').forEach(function(el){
+  var off=+(el.dataset.off||0);
+  el.innerHTML=[...el.dataset.split].map(function(c,i){return '<span class="ch" style="--i:'+(i+off)+'">'+c+'</span>'}).join('');
+});
+// Equalizer
+var eq=document.getElementById('eq');
+for(var i=0;i<80;i++){var b=document.createElement('i');b.style.setProperty('--d',Math.random().toFixed(2));b.style.setProperty('--s',Math.random().toFixed(2));eq.appendChild(b)}
+// Marquee
+var titles=['Fly Me to the Moon','New York, New York','My Way','Feeling Good','Sway','Haven’t Met You Yet','Come Fly With Me','Everything'];
+var row=titles.map(function(t){return '<span>'+t+'</span><em>✦</em>'}).join('');
+document.getElementById('mq').innerHTML=row+row+row+row;
+// Reveal
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+// Nav
+var nav=document.getElementById('nav');
+addEventListener('scroll',function(){nav.classList.toggle('solid',scrollY>40)},{passive:true});
+// Lumière curseur + parallax vinyle + reflet des cartes
+var cl=document.getElementById('cl'),fine=matchMedia('(pointer:fine)').matches;
+if(fine){
+  addEventListener('mousemove',function(e){cl.style.opacity=1;cl.style.transform='translate('+e.clientX+'px,'+e.clientY+'px)'});
+  document.querySelectorAll('.card').forEach(function(c){c.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')})});
+}
+</script>
+</body>
+</html>
