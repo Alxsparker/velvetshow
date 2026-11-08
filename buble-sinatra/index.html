@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Buble Sinatra par Alex — Swing, crooner &amp; grand show</title>
-<meta name="description" content="Buble Sinatra par Alex : le swing de Sinatra et l'élégance de Bublé, en solo, pour vos soirées, mariages et événements.">
+<title>Rat Pack &amp; Far West — Love &amp; Live</title>
+<meta name="description" content="Soirée américaine par Alex : Sinatra, Dean Martin, Johnny Cash et le Far West, en solo. Idéal comités des fêtes, thés dansants, repas dansants. Love &amp; Live.">
 <meta name="theme-color" content="#0b0907">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +40,7 @@ nav ul a:hover::after{transform:scaleX(1);transform-origin:left}
 @media(max-width:700px){nav ul li:not(:last-child){display:none}}
 
 /* HERO */
-.hero{position:relative;min-height:100svh;display:grid;place-items:center;text-align:center;overflow:hidden;padding:120px 5vw 90px;isolation:isolate}
+.hero{position:relative;min-height:100svh;display:grid;place-items:center;text-align:center;overflow:hidden;padding:110px 5vw 110px;isolation:isolate}
 .beam{position:absolute;top:-10%;left:50%;width:140vmax;height:140vmax;margin-left:-70vmax;z-index:-1;transform-origin:50% 0;
   background:conic-gradient(from 180deg at 50% 0,transparent 160deg,rgba(244,226,168,.0) 166deg,rgba(244,226,168,.16) 180deg,rgba(244,226,168,.0) 194deg,transparent 200deg);
   animation:sweep 9s ease-in-out infinite alternate;filter:blur(6px)}
@@ -74,10 +74,7 @@ h1 .ch{display:inline-block;transform:translateY(110%) rotate(8deg);opacity:0;
 .cta{display:inline-flex;gap:.8rem;align-items:center;padding:1rem 2.4rem;border:1px solid var(--gold);color:var(--gold);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem;position:relative;overflow:hidden;opacity:0;animation:fade 1s ease 2.9s forwards;transition:color .5s}
 .cta::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateY(101%);transition:transform .5s var(--ease);z-index:-1}
 .cta:hover{color:var(--ink)}.cta:hover::before{transform:none}
-.eq{position:absolute;bottom:0;left:0;right:0;height:90px;display:flex;align-items:flex-end;justify-content:center;gap:5px;opacity:.5;z-index:-1}
-.eq i{width:min(1.1vw,10px);height:100%;background:linear-gradient(var(--gold),var(--gold3));transform-origin:bottom;transform:scaleY(.1);animation:eq 1.2s ease-in-out infinite alternate;animation-delay:calc(var(--d)*-1s);animation-duration:calc(.7s + var(--s)*.9s)}
-@keyframes eq{to{transform:scaleY(1)}}
-.scroll{position:absolute;bottom:110px;left:50%;width:1px;height:50px;background:linear-gradient(var(--gold),transparent);animation:drip 2s ease-in-out infinite}
+.scroll{display:none;position:absolute;bottom:110px;left:50%;width:1px;height:50px;background:linear-gradient(var(--gold),transparent);animation:drip 2s ease-in-out infinite}
 @keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
 /* MARQUEE */
@@ -101,7 +98,7 @@ h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.
 .about p{color:#cfc4ab;margin-bottom:1rem;font-size:1.08rem}
 .stage{position:relative;aspect-ratio:4/5;border:1px solid rgba(217,180,95,.35);overflow:hidden;background:radial-gradient(ellipse at 50% 15%,#3a2b17,#0e0b08 70%)}
 .stage::before{content:"";position:absolute;inset:8px;border:1px solid rgba(217,180,95,.2);z-index:2;pointer-events:none}
-.stage svg{position:absolute;inset:0;width:100%;height:100%}
+.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:scale(1.9);transform-origin:50% 45%}.photo.sketch{object-fit:contain;transform:none;filter:invert(1) sepia(.9) saturate(2.6) brightness(.95);mix-blend-mode:screen;padding:6%}.ph{display:grid;place-items:center;color:var(--muted);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem}
 .spot{position:absolute;top:-5%;left:50%;width:80%;height:110%;margin-left:-40%;background:linear-gradient(rgba(244,226,168,.35),transparent 85%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);animation:flick 6s ease-in-out infinite}
 @keyframes flick{0%,100%{opacity:.9}45%{opacity:.7}50%{opacity:1}}
 .smoke{position:absolute;bottom:-10%;left:-20%;width:140%;height:50%;background:radial-gradient(ellipse,rgba(239,230,210,.12),transparent 65%);filter:blur(18px);animation:drift 12s ease-in-out infinite alternate}
@@ -167,11 +164,11 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <div class="cursor-light" id="cl"></div>
 
 <nav id="nav">
-  <a class="logo" href="#top">Alex</a>
+  <a class="logo" href="#top">Love &amp; Live</a>
   <ul>
     <li><a href="#show">Le show</a></li>
     <li><a href="#repertoire">Répertoire</a></li>
-    <li><a href="#formules">Formules</a></li>
+    <li><a href="#formules">Infos</a></li>
     <li><a href="#contact">Réserver</a></li>
   </ul>
 </nav>
@@ -179,16 +176,16 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <header class="hero" id="top">
   <div class="beam"></div><div class="beam b2"></div>
   <div class="vinyl"></div>
-  <p class="eyebrow">Black tie · Décontracté · Swing</p>
-  <h1 aria-label="Buble Sinatra">
-    <span class="line" data-split="BUBLE"></span>
-    <span class="line" data-split="SINATRA" data-off="5"></span>
+  <p class="eyebrow">Love &amp; Live présente</p>
+  <h1 aria-label="Rat Pack et Far West">
+    <span class="line" data-split="RAT PACK"></span>
+    <span class="line" data-split="&amp; FAR WEST" data-off="8"></span>
   </h1>
-  <p class="par">par <b>Alex</b></p>
-  <p class="tag">Smoking, sourire en coin, un verre à la main. L'aisance de Dean Martin, le charme de George Clooney, et la patte d'Alex.</p>
-  <a class="cta" href="#contact">Réserver la soirée</a>
+  <p class="par">la soirée américaine par <b>Alex</b></p>
+  <p class="tag">Vegas 1960 et grandes plaines : Sinatra, Dean Martin, Johnny Cash, Elvis. Un chanteur, une sono, des lumières, et toute la salle qui danse.</p>
+  <a class="cta" href="#contact">Réserver ma place</a>
   <div class="scroll"></div>
-  <div class="eq" id="eq" aria-hidden="true"></div>
+  
 </header>
 
 <div class="marquee" aria-hidden="true"><div id="mq"></div></div>
@@ -197,40 +194,19 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   <div class="wrap about">
     <div>
       <p class="kicker rv">Le show</p>
-      <h2 class="rv" style="--d:1">Le smoking, le micro, <em>et l'air de rien</em></h2>
-      <p class="rv" style="--d:2">Le swing à la Dean Martin : décontracté, drôle, jamais pressé. L'allure à la George Clooney : le noeud papillon défait, le sourire qui dit tout. Alex chante Sinatra et Bublé comme on raconte une bonne histoire.</p>
-      <p class="rv" style="--d:3">Seul sur scène, il joue avec la salle, lance une vanne, fait danser les tables. Pas de décor inutile : l'ambiance d'un lounge de Las Vegas, chez vous.</p>
+      <h2 class="rv" style="--d:1">Du Rat Pack <em>au Far West</em></h2>
+      <p class="rv" style="--d:2">Sinatra, Dean Martin et Sammy Davis Jr. pour l'élégance de Las Vegas, Johnny Cash, Elvis et les grands classiques country pour la poussière du Far West. Un voyage dans l'Amérique que tout le monde connaît et que les anciens adorent retrouver.</p>
+      <p class="rv" style="--d:3">Pas d'orchestre à payer : Alex arrive seul avec sa sono, ses lumières et ses bandes orchestrales, lancées en direct. Le son d'un grand show, au prix d'un budget de comité des fêtes.</p>
     </div>
     <div class="stage rv" style="--d:2">
       <div class="spot"></div>
-      <svg viewBox="0 0 400 500" aria-label="Silhouette d'un crooner au micro" role="img">
-        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a130c"/><stop offset="1" stop-color="#050403"/></linearGradient></defs>
-        <!-- pied de micro -->
-        <g stroke="#d9b45f" stroke-width="3" fill="none" opacity=".9"><path d="M300 500V300"/><path d="M300 300q0-30-30-40"/><ellipse cx="262" cy="256" rx="9" ry="14" fill="#d9b45f" transform="rotate(-30 262 256)"/></g>
-        <!-- corps -->
-        <path d="M60 500c0-110 40-170 110-190h60c70 20 110 80 110 190z" fill="url(#g)"/>
-        <path d="M170 310l30 70 30-70" fill="#efe6d2" opacity=".9"/>
-        <path d="M200 334l-26-12v24zM200 334l26-12v24z" fill="#050403" stroke="#d9b45f" stroke-width="1"/><circle cx="200" cy="334" r="4" fill="#d9b45f"/><path d="M176 322l24 14 24-14" stroke="#050403" stroke-width="0" fill="none"/>
-        <!-- tête -->
-        <rect x="182" y="262" width="36" height="52" rx="14" fill="#0c0906"/>
-        <ellipse cx="200" cy="232" rx="42" ry="52" fill="#0c0906"/>
-        <!-- chapeau -->
-        <ellipse cx="200" cy="196" rx="86" ry="14" fill="#050403" stroke="#d9b45f" stroke-width="1.5"/>
-        <path d="M148 196c0-48 14-82 38-86 8 10 20 10 28 0 24 4 38 38 38 86z" fill="#0a0705" stroke="#d9b45f" stroke-width="1.5"/>
-        <path d="M149 184h102" stroke="#3a2b17" stroke-width="9"/>
-      </svg>
-      <span class="note" style="--n:0;left:18%;bottom:30%">♪</span>
-      <span class="note" style="--n:1;left:72%;bottom:40%">♫</span>
-      <span class="note" style="--n:2;left:30%;bottom:15%">♩</span>
-      <span class="note" style="--n:3;left:55%;bottom:22%">♬</span>
-      <div class="smoke"></div>
-    </div>
+      <img class="photo sketch" src="croquis.png" alt="Alex au micro" onerror="this.onerror=null;this.className='photo';this.src='stage.jpg'"></div>
   </div>
 
   <div class="wrap pillars">
-    <div class="card rv"><div class="n">I</div><h3>La voix</h3><p>Un timbre chaud, des nuances de crooner et une vraie présence : on écoute, puis on chante avec lui.</p></div>
-    <div class="card rv" style="--d:1"><div class="n">II</div><h3>Le swing</h3><p>Des arrangements vivants qui donnent envie de se lever, des slows pour les couples, des tubes pour tous.</p></div>
-    <div class="card rv" style="--d:2"><div class="n">III</div><h3>L'allure</h3><p>Costume impeccable, humour, nonchalance étudiée : un moment élégant, sans aucune prise de tête pour vous.</p></div>
+    <div class="card rv"><div class="n">I</div><h3>Le Rat Pack</h3><p>Sinatra, Dean Martin, Sammy Davis Jr. : le swing, le smoking et le sourire en coin.</p></div>
+    <div class="card rv" style="--d:1"><div class="n">II</div><h3>Le Far West</h3><p>Johnny Cash, Elvis, les classiques country : bottes, chapeaux et tapage de talons sur la piste.</p></div>
+    <div class="card rv" style="--d:2"><div class="n">III</div><h3>Clé en main</h3><p>Sono, lumières et bandes orchestrales fournies. Alex s'installe, vous profitez. Un tarif adapté aux associations.</p></div>
   </div>
 </section>
 
@@ -243,18 +219,20 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <section class="set" id="repertoire">
   <div class="wrap">
     <p class="kicker rv">Répertoire</p>
-    <h2 class="rv" style="--d:1">Les <em>standards</em> qu'on adore</h2>
+    <h2 class="rv" style="--d:1">Le <em>répertoire</em> d'Alex</h2>
     <ul class="songs">
-      <li class="rv"><b>Fly Me to the Moon</b><small>Sinatra</small></li>
-      <li class="rv"><b>New York, New York</b><small>Sinatra</small></li>
-      <li class="rv"><b>My Way</b><small>Sinatra</small></li>
-      <li class="rv"><b>I've Got You Under My Skin</b><small>Sinatra</small></li>
-      <li class="rv"><b>Come Fly With Me</b><small>Sinatra · Bublé</small></li>
+      <li class="rv"><b>Fever</b><small>Peggy Lee · Sinatra</small></li>
+      <li class="rv"><b>Cheek to Cheek</b><small>Sinatra</small></li>
       <li class="rv"><b>Feeling Good</b><small>Bublé</small></li>
-      <li class="rv"><b>Haven't Met You Yet</b><small>Bublé</small></li>
-      <li class="rv"><b>Sway</b><small>Bublé</small></li>
-      <li class="rv"><b>Everything</b><small>Bublé</small></li>
-      <li class="rv"><b>Que Sera, Sera</b><small>Classique</small></li>
+      <li class="rv"><b>What a Wonderful World</b><small>Louis Armstrong</small></li>
+      <li class="rv"><b>Georgia on My Mind</b><small>Ray Charles</small></li>
+      <li class="rv"><b>Me and Mrs Jones</b><small>Billy Paul</small></li>
+      <li class="rv"><b>These Boots Are Made for Walkin'</b><small>Nancy Sinatra</small></li>
+      <li class="rv"><b>Cry to Me</b><small>Solomon Burke</small></li>
+      <li class="rv"><b>Have You Ever Seen the Rain</b><small>Creedence</small></li>
+      <li class="rv"><b>Lonestar</b><small>Norah Jones</small></li>
+      <li class="rv"><b>Ring of Fire</b><small>Johnny Cash</small></li>
+      <li class="rv"><b>Fly Me to the Moon</b><small>Sinatra</small></li>
     </ul>
   </div>
 </section>
@@ -262,11 +240,11 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <section id="formules">
   <div class="wrap">
     <p class="kicker rv">Formules</p>
-    <h2 class="rv" style="--d:1">Pour <em>chaque</em> soirée</h2>
+    <h2 class="rv" style="--d:1">Pour <em>chaque</em> fête</h2>
     <div class="deals">
-      <div class="deal rv"><h3>Cocktail</h3><p>L'ambiance jazz-lounge</p><ul><li>2 × 30 minutes</li><li>Répertoire doux &amp; swing</li><li>Idéal vin d'honneur</li></ul></div>
-      <div class="deal hot rv" style="--d:1"><h3>Grand show</h3><p>La soirée complète</p><ul><li>1 h 30 de spectacle</li><li>Interaction avec le public</li><li>Sono &amp; lumières</li></ul></div>
-      <div class="deal rv" style="--d:2"><h3>Sur mesure</h3><p>Mariage, entreprise, gala</p><ul><li>Chanson dédicacée</li><li>Playlist à votre image</li><li>Devis personnalisé</li></ul></div>
+      <div class="deal rv"><h3>Thé dansant</h3><p>Après-midi, résidences, clubs seniors</p><ul><li>2 × 45 minutes</li><li>Swing, valses, chansons à danser</li><li>Sono &amp; lumières incluses</li></ul></div>
+      <div class="deal hot rv" style="--d:1"><h3>Soirée Rat Pack</h3><p>Repas dansant, fête du village</p><ul><li>Show d'environ 2 h</li><li>Sinatra, Dean Martin, Elvis</li><li>Tarif comité des fêtes</li></ul></div>
+      <div class="deal rv" style="--d:2"><h3>Western night</h3><p>Bal country, thème cowboy</p><ul><li>Johnny Cash &amp; classiques country</li><li>Public en tenue western</li><li>Pour kermesses &amp; festivals</li></ul></div>
     </div>
   </div>
 </section>
@@ -275,13 +253,13 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   <div class="vinyl"></div>
   <div class="wrap">
     <p class="kicker rv">Réserver</p>
-    <h2 class="rv" style="--d:1">Et si on <em>swinguait</em> ?</h2>
+    <h2 class="rv" style="--d:1">Votre prochaine fête, <em>version américaine</em> ?</h2>
     <p class="big rv" style="--d:2"><a href="mailto:contact@exemple.fr">contact@exemple.fr</a></p>
     <div class="socials rv" style="--d:3"><a href="#">Instagram</a><a href="#">YouTube</a><a href="#">Facebook</a></div>
   </div>
 </section>
 
-<footer><span class="tick"></span>Buble Sinatra par Alex — Tous droits réservés</footer>
+<footer><span class="tick"></span>Love &amp; Live — La soirée américaine par Alex</footer>
 
 <script>
 // Lettres du titre
@@ -289,11 +267,8 @@ document.querySelectorAll('[data-split]').forEach(function(el){
   var off=+(el.dataset.off||0);
   el.innerHTML=[...el.dataset.split].map(function(c,i){return '<span class="ch" style="--i:'+(i+off)+'">'+c+'</span>'}).join('');
 });
-// Equalizer
-var eq=document.getElementById('eq');
-for(var i=0;i<80;i++){var b=document.createElement('i');b.style.setProperty('--d',Math.random().toFixed(2));b.style.setProperty('--s',Math.random().toFixed(2));eq.appendChild(b)}
 // Marquee
-var titles=['Fly Me to the Moon','New York, New York','My Way','Feeling Good','Sway','Haven’t Met You Yet','Come Fly With Me','Everything'];
+var titles=['Fever','Cheek to Cheek','Feeling Good','What a Wonderful World','Georgia on My Mind','These Boots Are Made for Walkin’','Ring of Fire','Fly Me to the Moon'];
 var row=titles.map(function(t){return '<span>'+t+'</span><em>✦</em>'}).join('');
 document.getElementById('mq').innerHTML=row+row+row+row;
 // Reveal
