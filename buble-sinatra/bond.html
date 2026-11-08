@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crooners &amp; Ladies — Love &amp; Live</title>
+<meta name="description" content="Crooners &amp; Ladies : un tour de chant soigné en duo, Sève et Alex. Sinatra, Dean Martin, Nat King Cole et les grandes voix du jazz, en lumière. Love &amp; Live.">
+<meta name="theme-color" content="#05070b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,800;1,500&family=Italiana&family=Pinyon+Script&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05070b; --ink2:#0b0f16; --steel:#9fb4d0; --gold:#d9b45f; --gold2:#f4e2a8; --gold3:#8c6a24;
+  --cream:#efe6d2; --muted:#a89a7f; --red:#8e1b22;
+  --serif:'Bodoni Moda','Didot',Georgia,serif; --deco:'Italiana','Bodoni Moda',serif;
+  --script:'Pinyon Script','Snell Roundhand',cursive; --sans:'Jost','Helvetica Neue',Arial,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--ink)}
+body{background:var(--ink);color:var(--cream);font-family:var(--sans);font-weight:300;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.grain{position:fixed;inset:-50%;pointer-events:none;z-index:50;opacity:.07;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation:grain 1s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+.cursor-light{position:fixed;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;pointer-events:none;z-index:2;
+  background:radial-gradient(circle,rgba(244,226,168,.13),transparent 62%);mix-blend-mode:screen;transition:opacity .4s;opacity:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:18px 5vw;
+  background:linear-gradient(var(--ink),transparent);transition:background .4s}
+nav.solid{background:rgba(7,10,18,.88);backdrop-filter:blur(8px)}
+.logo{font-family:var(--script);font-size:1.9rem;color:var(--gold)}
+nav ul{display:flex;gap:2rem;list-style:none;font-size:.78rem;letter-spacing:.28em;text-transform:uppercase}
+nav ul a{position:relative;padding:4px 0}
+nav ul a::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--gold);transform:scaleX(0);transform-origin:right;transition:transform .5s var(--ease)}
+nav ul a:hover::after{transform:scaleX(1);transform-origin:left}
+@media(max-width:700px){nav ul li:not(:last-child){display:none}}
+
+/* HERO */
+.hero{position:relative;min-height:100svh;display:grid;place-items:center;text-align:center;overflow:hidden;padding:110px 5vw 110px;isolation:isolate}
+.beam{position:absolute;top:-10%;left:50%;width:140vmax;height:140vmax;margin-left:-70vmax;z-index:-1;transform-origin:50% 0;
+  background:conic-gradient(from 180deg at 50% 0,transparent 160deg,rgba(244,226,168,.0) 166deg,rgba(244,226,168,.16) 180deg,rgba(244,226,168,.0) 194deg,transparent 200deg);
+  animation:sweep 9s ease-in-out infinite alternate;filter:blur(6px)}
+.beam.b2{animation-duration:13s;animation-direction:alternate-reverse;opacity:.6}
+@keyframes sweep{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+.vinyl{position:absolute;width:min(92vmin,760px);aspect-ratio:1;left:50%;top:52%;margin:calc(min(92vmin,760px)/-2) 0 0 calc(min(92vmin,760px)/-2);z-index:-2;border-radius:50%;opacity:.3;
+  background:
+   radial-gradient(circle,#4a1216 0 13%,#1b1410 13.5% 15%,transparent 15.5%),
+   repeating-radial-gradient(circle,#0f0c09 0 2px,#1d1712 3px 4px),
+   conic-gradient(from 20deg,transparent,rgba(255,255,255,.09),transparent 25%,transparent 50%,rgba(255,255,255,.09),transparent 75%);
+  box-shadow:0 0 0 2px #2a2018,0 0 120px rgba(217,180,95,.12);animation:spin 14s linear infinite}
+.vinyl::after{content:"";position:absolute;inset:47.5%;border-radius:50%;background:var(--ink)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.eyebrow{font-size:.8rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);display:flex;gap:1.2rem;align-items:center;justify-content:center}
+.eyebrow::before,.eyebrow::after{content:"";width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.eyebrow::after{transform:scaleX(-1)}
+h1{font-family:var(--serif);font-weight:500;line-height:.95;letter-spacing:.08em;margin:1.4rem 0 0;text-transform:uppercase;font-size:clamp(2rem,9vw,7.4rem);white-space:nowrap}
+h1 .line{display:block;overflow:hidden;padding:.06em .1em}
+h1 .ch{display:inline-block;transform:translateY(110%) rotate(8deg);opacity:0;
+  background:linear-gradient(100deg,var(--gold3) 10%,var(--gold2) 35%,var(--gold) 50%,var(--gold2) 65%,var(--gold3) 90%);background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:rise 1.1s var(--ease) forwards,shine 5s linear 1.8s infinite;animation-delay:calc(var(--i)*70ms + .3s),calc(var(--i)*70ms + 1.8s)}
+@keyframes rise{to{transform:none;opacity:1}}
+@keyframes shine{from{background-position:200% 0}to{background-position:-50% 0}}
+.par{padding:0 .3em;font-family:var(--script);font-size:clamp(2.4rem,7vw,5rem);color:var(--cream);margin-top:-.3em;position:relative;
+  clip-path:inset(0 100% 0 0);animation:write 1.8s var(--ease) 1.6s forwards}
+.par b{color:var(--gold);font-weight:400}
+@keyframes write{to{clip-path:inset(0 0 0 0)}}
+.tag{margin:1.6rem auto 2.4rem;max-width:34rem;color:var(--muted);font-size:1.05rem;opacity:0;animation:fade 1.2s ease 2.5s forwards}
+@keyframes fade{to{opacity:1}}
+.cta{display:inline-flex;gap:.8rem;align-items:center;padding:1rem 2.4rem;border:1px solid var(--gold);color:var(--gold);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem;position:relative;overflow:hidden;opacity:0;animation:fade 1s ease 2.9s forwards;transition:color .5s}
+.cta::before{content:"";position:absolute;inset:0;background:var(--gold);transform:translateY(101%);transition:transform .5s var(--ease);z-index:-1}
+.cta:hover{color:var(--ink)}.cta:hover::before{transform:none}
+.scroll{display:none;position:absolute;bottom:110px;left:50%;width:1px;height:50px;background:linear-gradient(var(--gold),transparent);animation:drip 2s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+.hero-sketch{position:absolute;z-index:-1;height:92%;bottom:0;left:50%;transform:translateX(-50%);opacity:.16;pointer-events:none;animation:skin 2s ease .8s backwards}
+@keyframes skin{from{opacity:0}}
+@media(min-width:900px){
+  .hero{text-align:left;place-items:center start;padding-left:7vw;padding-right:40vw}
+  .hero>*{max-width:100%}
+  h1{font-size:clamp(2rem,5.6vw,6.2rem)}
+  .eyebrow{justify-content:flex-start}.eyebrow::before{display:none}
+  .tag{margin-left:0}
+  .par{font-size:clamp(2rem,4.4vw,4rem)}
+  .hero-sketch{left:auto;right:4vw;transform:none;opacity:.5;height:88%;bottom:3%}
+  .hero .vinyl{display:none}
+}
+.amber{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 65% 55% at 0 100%,rgba(205,120,40,.16),transparent 70%),radial-gradient(ellipse 45% 40% at 100% 0,rgba(205,120,40,.08),transparent 70%)}
+.smoke-c{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+/* MARQUEE */
+.marquee{border-block:1px solid rgba(217,180,95,.25);overflow:hidden;padding:1.1rem 0;background:var(--ink2);white-space:nowrap}
+.marquee div{display:inline-block;font-family:var(--deco);font-size:1.5rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);animation:mq 38s linear infinite}
+.marquee span{margin:0 1.6rem;color:var(--cream)}.marquee em{font-style:normal;color:var(--red)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+section{padding:clamp(5rem,12vw,10rem) 5vw;position:relative}
+.wrap{max-width:1100px;margin:auto}
+h2{font-family:var(--serif);font-weight:500;font-size:clamp(2.2rem,6vw,4.4rem);line-height:1.05;margin:.6rem 0 1.4rem}
+h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.15em;font-weight:400}
+.kicker{font-size:.75rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold)}
+.rv{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease),transform 1s var(--ease);transition-delay:calc(var(--d,0)*120ms)}
+.rv.in{opacity:1;transform:none}
+
+/* ABOUT */
+.about{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}
+@media(max-width:800px){.about{grid-template-columns:1fr}}
+.about p{color:#cfc4ab;margin-bottom:1rem;font-size:1.08rem}
+.stage{position:relative;aspect-ratio:4/5;border:1px solid rgba(217,180,95,.35);overflow:hidden;background:radial-gradient(ellipse at 50% 15%,#1b2c4a,#070a12 70%)}
+.stage::before{content:"";position:absolute;inset:8px;border:1px solid rgba(217,180,95,.2);z-index:2;pointer-events:none}
+.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:scale(1.9);transform-origin:50% 45%}.stage:has(.sketch) .spot{opacity:.35;animation:none}
+.stage.paper{background:radial-gradient(ellipse at 50% 35%,#f1e7cf,#d8c7a2 95%);border-color:rgba(217,180,95,.6)}
+.stage.paper::before{border-color:rgba(60,40,15,.25)}
+.photo.ink{object-fit:contain;transform:none;mix-blend-mode:multiply;padding:4%}
+.photo.sketch{object-fit:contain;transform:none;padding:6%;opacity:.6}.ph{display:grid;place-items:center;color:var(--muted);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem}
+.spot{position:absolute;top:-5%;left:50%;width:80%;height:110%;margin-left:-40%;background:linear-gradient(rgba(244,226,168,.35),transparent 85%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);animation:flick 6s ease-in-out infinite}
+@keyframes flick{0%,100%{opacity:.9}45%{opacity:.7}50%{opacity:1}}
+.smoke{position:absolute;bottom:-10%;left:-20%;width:140%;height:50%;background:radial-gradient(ellipse,rgba(239,230,210,.12),transparent 65%);filter:blur(18px);animation:drift 12s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translateX(12%) scale(1.15)}}
+.note{position:absolute;color:var(--gold);font-size:1.8rem;opacity:0;animation:note 6s ease-in infinite;animation-delay:calc(var(--n)*1.5s)}
+@keyframes note{0%{transform:translate(0,0) rotate(0);opacity:0}15%{opacity:.9}100%{transform:translate(40px,-200px) rotate(25deg);opacity:0}}
+
+/* PILLARS */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.4rem;margin-top:3.5rem}
+.card{padding:2.2rem 1.8rem;border:1px solid rgba(217,180,95,.25);background:linear-gradient(160deg,rgba(217,180,95,.07),transparent);position:relative;overflow:hidden;transition:transform .6s var(--ease),border-color .4s}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,0),rgba(244,226,168,.18),transparent 55%);opacity:0;transition:opacity .4s}
+.card:hover{transform:translateY(-8px);border-color:var(--gold)}.card:hover::after{opacity:1}
+.card .n{font-family:var(--deco);font-size:3.2rem;color:var(--gold);line-height:1}
+.card h3{font-family:var(--serif);font-weight:500;font-size:1.5rem;margin:.6rem 0}
+.card p{color:var(--muted);font-size:.98rem}
+
+.sig{padding:clamp(4rem,9vw,7rem) 5vw;text-align:center;border-block:1px solid rgba(217,180,95,.2);background:radial-gradient(ellipse at 50% 0,rgba(217,180,95,.08),transparent 70%)}
+.sig p{font-family:var(--serif);font-style:italic;font-size:clamp(1.5rem,4vw,2.6rem);max-width:34ch;margin:auto;color:var(--cream)}
+.sig svg{width:200px;display:block;margin:1.4rem auto 0;fill:none;stroke:var(--gold);stroke-width:2.4;stroke-linecap:round}
+.sig .ink{stroke-dasharray:700;stroke-dashoffset:700}
+.sig svg.in .ink{animation:draw 2.6s ease .3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.sig span{font-family:var(--script);color:var(--gold);font-size:1.8rem}
+.guest{font-family:var(--script);font-size:clamp(1.5rem,3.4vw,2.2rem);color:var(--muted);margin-top:.4rem;opacity:0;animation:fade 1.2s ease 2.3s forwards}
+.guest b{color:var(--gold);font-weight:400}
+.guestsec{padding-top:clamp(3rem,7vw,6rem)}
+.duos{list-style:none;display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem}
+.duos li{border:1px solid rgba(217,180,95,.35);padding:.45rem 1rem;font-size:.85rem;letter-spacing:.12em;color:var(--gold2)}
+.rcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2.4rem;margin-top:2.6rem}
+.rcol h3{font-family:var(--script);font-weight:400;font-size:2.2rem;color:var(--gold)}
+.rcol .songs{margin-top:.6rem}
+.rcol .songs li{grid-template-columns:2.2rem 1fr;row-gap:0}
+.rcol .songs small{grid-column:2;margin-top:-.3rem}
+.about.solo{grid-template-columns:1fr;max-width:46rem}
+.hero-plate{display:none;position:absolute;z-index:-1;right:6vw;top:13%;height:76%;aspect-ratio:2/3;background:radial-gradient(ellipse at 50% 35%,#f1e7cf,#d8c7a2 95%);padding:.7rem;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(217,180,95,.55)}
+.hero-plate img{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;clip-path:inset(0 0 100% 0);animation:draw 2.4s cubic-bezier(.6,.1,.2,1) .9s forwards}
+@keyframes draw{to{clip-path:inset(0)}}
+@media(min-width:900px){.hero-plate{display:none}}
+.wm{position:absolute;z-index:-1;pointer-events:none;height:112%;width:auto;max-width:none;top:-6%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent)}
+.wm1{right:-3%;opacity:calc(.12 + var(--k,0)*.05)}
+.wm2{right:-4%;opacity:.1;height:130%;top:-15%}
+.guestsec{position:relative;overflow:hidden;isolation:isolate}
+.guestsec .about{grid-template-columns:1fr;max-width:46rem}
+@media(max-width:900px){.wm1{right:-30%;opacity:.07}.wm2{right:-35%;opacity:.08}}
+/* CINÉMA */
+.hero{--k:0}
+.bar{position:absolute;left:0;right:0;height:var(--bar,22vh);background:#000;z-index:3;pointer-events:none;animation:bars 1.8s cubic-bezier(.7,0,.2,1) .2s forwards}
+.bar.t{top:0}.bar.b{bottom:0}
+@keyframes bars{to{height:7vh}}
+.flare{position:absolute;left:-5%;right:-5%;top:var(--fy,40%);height:2px;z-index:2;pointer-events:none;background:linear-gradient(90deg,transparent,var(--steel) 25%,#fff 50%,var(--steel) 75%,transparent);box-shadow:0 0 22px 4px rgba(159,180,208,.5);transform:scaleX(0);opacity:0;animation:fl 1.6s cubic-bezier(.2,.8,.2,1) 1.1s forwards}
+@keyframes fl{0%{transform:scaleX(0);opacity:0}30%{opacity:1}100%{transform:scaleX(1);opacity:calc(.35 + var(--k)*.65)}}
+.hero .flare{opacity:calc(.3 + var(--k)*.7)}
+.hero h1 .ch{filter:brightness(calc(1 + var(--k)*.35)) drop-shadow(0 0 calc(var(--k)*12px) rgba(255,240,200,.5))}
+.eyebrow{color:var(--steel)}.eyebrow::before,.eyebrow::after{background:linear-gradient(90deg,transparent,var(--steel))}
+/* SETLIST */
+.set{background:var(--ink2)}
+.songs{list-style:none;margin-top:3rem;border-top:1px solid rgba(217,180,95,.25);counter-reset:s}
+.songs li{counter-increment:s;display:grid;grid-template-columns:3rem 1fr auto;gap:1rem;align-items:baseline;padding:1.15rem .5rem;border-bottom:1px solid rgba(217,180,95,.25);position:relative;cursor:default;transition:padding .5s var(--ease),color .4s}
+.songs li::before{content:counter(s,decimal-leading-zero);font-family:var(--deco);color:var(--gold3);font-size:1.1rem}
+.songs li::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:100%;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .7s var(--ease)}
+.songs li:hover{padding-left:1.4rem;color:var(--gold2)}.songs li:hover::after{transform:scaleX(1)}
+.songs b{font-family:var(--serif);font-weight:500;font-size:clamp(1.2rem,3vw,1.8rem)}
+.songs small{color:var(--muted);letter-spacing:.2em;text-transform:uppercase;font-size:.7rem}
+
+/* FORMULES */
+.deals{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1.4rem;margin-top:3.5rem}
+.deal{padding:2.4rem 2rem;border:1px solid rgba(217,180,95,.3);text-align:center;transition:transform .6s var(--ease),box-shadow .6s}
+.deal:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(217,180,95,.12)}
+.deal.hot{border-color:var(--gold);background:linear-gradient(rgba(217,180,95,.1),transparent)}
+.deal h3{font-family:var(--script);font-size:2.6rem;color:var(--gold);font-weight:400}
+.deal p{color:var(--muted);margin:.8rem 0}.deal ul{list-style:none;color:#cfc4ab;font-size:.95rem}
+.deal li{padding:.35rem 0;border-top:1px solid rgba(217,180,95,.15)}
+
+/* CONTACT */
+.contact{text-align:center;overflow:hidden;isolation:isolate}
+.contact .vinyl{opacity:.25;top:50%}
+.big{font-family:var(--serif);font-size:clamp(1.6rem,5vw,3.2rem);margin:2rem 0}
+.big a{color:var(--gold);border-bottom:1px solid var(--gold3);transition:color .3s}.big a:hover{color:var(--gold2)}
+.socials{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;letter-spacing:.3em;text-transform:uppercase;font-size:.8rem;color:var(--muted)}
+.socials a:hover{color:var(--gold)}
+footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);border-top:1px solid rgba(217,180,95,.2)}
+.tick{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);margin-right:.7em;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.8);opacity:.4}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
+  h1 .ch,.par,.tag,.cta{opacity:1!important;transform:none!important;clip-path:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="cursor-light" id="cl"></div>
+<div class="amber"></div>
+
+<nav id="nav">
+  <a class="logo" href="#top">Love &amp; Live</a>
+  <ul>
+    <li><a href="#show">L'ambiance</a></li>
+    <li><a href="#guest">Le duo</a></li>
+    <li><a href="#repertoire">Répertoire</a></li>
+    <li><a href="#formules">Infos</a></li>
+    <li><a href="#contact">Réserver</a></li>
+  </ul>
+</nav>
+
+<header class="hero" id="top">
+  <div class="beam"></div><div class="beam b2"></div>
+  <div class="bar t" aria-hidden="true"></div><div class="bar b" aria-hidden="true"></div><div class="flare" id="flare" aria-hidden="true"></div>
+  <img class="wm wm1" src="duo-profil-or.webp" alt="" aria-hidden="true">
+  <p class="eyebrow">Love &amp; Live présente</p>
+  <h1 aria-label="Crooners and Ladies">
+    <span class="line" data-split="CROONERS"></span>
+    <span class="line" data-split="&amp; LADIES" data-off="8"></span>
+  </h1>
+  <p class="par">en duo : <b>Sève</b> &amp; <b>Alex</b></p>
+  <canvas class="smoke-c" id="smoke" aria-hidden="true"></canvas>
+  <p class="tag">Sinatra, Dean Martin, Nat King Cole, et les grandes voix du jazz. Un tour de chant soigné, en lumière, en smoking et robe du soir.</p>
+  <a class="cta" href="#contact">Parlons de votre événement</a>
+  <div class="scroll"></div>
+  
+</header>
+
+<div class="marquee" aria-hidden="true"><div id="mq"></div></div>
+
+<section id="show">
+  <div class="wrap about solo">
+    <div>
+      <p class="kicker rv">Le tour de chant</p>
+      <h2 class="rv" style="--d:1">Classe, <em>sans en avoir l'air</em></h2>
+      <p class="rv" style="--d:2">Des voix live, un répertoire de crooners et de grandes dames, et une lumière pensée titre par titre. Le smoking, le micro, un verre posé sur un piano imaginaire : la décontraction de Dean Martin, la sobriété d'un agent secret en costume sombre.</p>
+      <p class="rv" style="--d:3">Un tempo tranquille, du charme, une vraie présence. Voix live, sono et lumières fournies : un format fait pour les bars, les repas, les cocktails et les associations.</p>
+    </div>
+  </div>
+
+  <div class="wrap pillars">
+    <div class="card rv"><div class="n">I</div><h3>Crooners &amp; ladies</h3><p>Sinatra, Dean Martin, Nat King Cole, et les grandes voix de femmes du jazz.</p></div>
+    <div class="card rv" style="--d:1"><div class="n">II</div><h3>En duo</h3><p>Deux micros, deux voix, et des duos qui font sourire la salle.</p></div>
+    <div class="card rv" style="--d:2"><div class="n">III</div><h3>Clé en main</h3><p>Sono et lumières fournies, voix live. Un tarif adapté aux associations.</p></div>
+  </div>
+</section>
+
+<section class="guestsec" id="guest">
+  <div class="wrap about">
+    <img class="wm wm2" src="duo-micro-or.webp" alt="" aria-hidden="true">
+    <div>
+      <p class="kicker rv">Le duo</p>
+      <h2 class="rv" style="--d:1">Sève <em>&amp; Alex</em></h2>
+      <p class="rv" style="--d:2">Sève et Alex chantent ensemble. Deux micros, deux voix, et une lumière qui change à chaque titre. Tantôt chacun son tour, tantôt à deux, toujours à voix basse.</p>
+      <ul class="duos rv" style="--d:3">
+        <li>Somethin' Stupid</li><li>Baby, It's Cold Outside</li><li>Cheek to Cheek</li><li>Dream a Little Dream of Me</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="sig">
+  <p class="rv">« Le secret, c'est de ne jamais avoir l'air d'y penser. »</p>
+  <svg class="rv" viewBox="0 0 260 80" aria-hidden="true"><path class="ink" d="M10 55c20-50 40-50 30-10s20 20 40-20c-10 30 0 30 20 5 10-12 22-12 14 8s16 14 36-12c-6 22 4 26 24 6 18-14 36-18 56-6"/></svg>
+  <span class="rv">Sève &amp; Alex</span>
+</div>
+
+<section class="set" id="repertoire">
+  <div class="wrap">
+    <p class="kicker rv">Répertoire</p>
+    <h2 class="rv" style="--d:1">Crooners <em>&amp; ladies</em></h2>
+    <div class="rcols"><div class="rcol"><h3 class="rv">Crooners</h3><ul class="songs">
+<li class="rv"><b>My Way</b><small>Sinatra</small></li>
+<li class="rv"><b>New York, New York</b><small>Sinatra</small></li>
+<li class="rv"><b>Fly Me to the Moon</b><small>Sinatra</small></li>
+<li class="rv"><b>That's Amore</b><small>Dean Martin</small></li>
+<li class="rv"><b>Everybody Loves Somebody</b><small>Dean Martin</small></li>
+<li class="rv"><b>Unforgettable</b><small>Nat King Cole</small></li>
+<li class="rv"><b>L-O-V-E</b><small>Nat King Cole</small></li>
+<li class="rv"><b>Cry Me a River</b><small>version Bublé</small></li>
+<li class="rv"><b>Feeling Good</b><small>version Bublé</small></li>
+</ul></div><div class="rcol"><h3 class="rv">Ladies</h3><ul class="songs">
+<li class="rv"><b>Fever</b><small>Peggy Lee</small></li>
+<li class="rv"><b>I Put a Spell on You</b><small>Nina Simone</small></li>
+<li class="rv"><b>Feeling Good</b><small>Nina Simone</small></li>
+<li class="rv"><b>At Last</b><small>Etta James</small></li>
+<li class="rv"><b>La Vie en rose</b><small>Édith Piaf</small></li>
+<li class="rv"><b>Summertime</b><small>Ella Fitzgerald</small></li>
+</ul></div><div class="rcol"><h3 class="rv">Duos</h3><ul class="songs">
+<li class="rv"><b>Somethin' Stupid</b><small>Sinatra &amp; Nancy</small></li>
+<li class="rv"><b>Baby, It's Cold Outside</b><small>duo</small></li>
+<li class="rv"><b>Cheek to Cheek</b><small>Ella &amp; Louis</small></li>
+<li class="rv"><b>Dream a Little Dream of Me</b><small>Ella &amp; Louis</small></li>
+</ul></div></div>
+  </div>
+</section>
+
+<section id="formules">
+  <div class="wrap">
+    <p class="kicker rv">Formules</p>
+    <h2 class="rv" style="--d:1">Pour <em>chaque</em> lieu</h2>
+    <div class="deals">
+      <div class="deal rv"><h3>Cocktail</h3><p>Vin d'honneur, apéritif, inauguration</p><ul><li>1 h à 2 h d'ambiance</li><li>Voix douce, volume discret</li><li>Sono incluse</li></ul></div>
+      <div class="deal rv" style="--d:1"><h3>Repas</h3><p>Dîner, banquet, repas associatif</p><ul><li>2 sets de 40 minutes</li><li>Voix douce entre les plats</li><li>Tarif comité des fêtes</li></ul></div>
+      <div class="deal hot rv" style="--d:2"><h3>Tour de chant</h3><p>Sève &amp; Alex, en lumière</p><ul><li>Environ 1 h 15, deux voix</li><li>Lumières écrites titre par titre</li><li>Tarif sur devis</li></ul></div>
+      <div class="deal rv" style="--d:2"><h3>Bar &amp; lounge</h3><p>Pub, hôtel, cave à cocktails</p><ul><li>Soirée club de jazz</li><li>Playlist à votre image</li><li>Devis personnalisé</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="vinyl"></div>
+  <div class="wrap">
+    <p class="kicker rv">Réserver</p>
+    <h2 class="rv" style="--d:1">Votre soirée, <em>version crooner</em> ?</h2>
+    <p class="big rv" style="--d:2"><a href="mailto:contact@exemple.fr">contact@exemple.fr</a></p>
+    <div class="socials rv" style="--d:3"><a href="#">Instagram</a><a href="#">YouTube</a><a href="#">Facebook</a></div>
+  </div>
+</section>
+
+<footer><span class="tick"></span>Love &amp; Live — Crooners &amp; Ladies · Sève &amp; Alex</footer>
+
+<script>
+// Lettres du titre
+document.querySelectorAll('[data-split]').forEach(function(el){
+  var off=+(el.dataset.off||0);
+  el.innerHTML=[...el.dataset.split].map(function(c,i){return '<span class="ch" style="--i:'+(i+off)+'">'+(c===' '?'\u00a0':c)+'</span>'}).join('');
+});
+// Marquee
+// Une seule horloge : le trait de lumière et le titre battent ensemble
+(function(){var h=document.querySelector('.hero'),T0=performance.now(),on=true,reduceM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  new IntersectionObserver(function(e){on=e[0].isIntersecting}).observe(h);
+  function pos(){var t=h.querySelector('h1');if(t){var r=t.getBoundingClientRect(),hr=h.getBoundingClientRect();h.style.setProperty('--fy',(r.top-hr.top+r.height*.52)+'px')}}
+  pos();addEventListener('resize',pos);setTimeout(pos,1500);
+  function f(now){requestAnimationFrame(f);if(!on)return;var t=(now-T0)/1000,b=t*116/60,k=t<2.2?0:Math.exp(-(b%1)*5.5)*(Math.floor(b)%4===0?1:.5);h.style.setProperty('--k',k.toFixed(3))}
+  if(!reduceM)requestAnimationFrame(f)})();
+var titles=['My Way','New York, New York','Cry Me a River','Fly Me to the Moon','Fever','Feeling Good','Unforgettable','That’s Amore'];
+var row=titles.map(function(t){return '<span>'+t+'</span><em>✦</em>'}).join('');
+document.getElementById('mq').innerHTML=row+row+row+row;
+// Sève en invité·e : passer GUEST à false pour tout masquer
+var GUEST=true;
+if(!GUEST)document.querySelectorAll('[data-guest]').forEach(function(e){e.remove()});
+// Fumée de cigare / whisky ambré
+(function(){
+  var cv=document.getElementById('smoke');if(!cv)return;var ctx=cv.getContext('2d'),W,H,P=[];
+  function size(){W=cv.width=cv.clientWidth;H=cv.height=cv.clientHeight}size();addEventListener('resize',size);
+  function spawn(){P.push({x:Math.random()*W,y:H+60,r:60+Math.random()*90,vx:(Math.random()-.5)*.25,vy:-.25-Math.random()*.35,a:0,life:0,max:900+Math.random()*700,amber:Math.random()<.22})}
+  for(var i=0;i<14;i++){spawn();P[i].y=Math.random()*H;P[i].life=Math.random()*400}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    if(P.length<26&&Math.random()<.08)spawn();
+    for(var i=P.length-1;i>=0;i--){var p=P[i];p.life++;p.x+=p.vx+Math.sin(p.life/90+i)*.18;p.y+=p.vy;p.r+=.12;
+      var t=p.life/p.max;p.a=(t<.2?t/.2:(1-t)/.8)*.075;
+      if(t>=1||p.y<-p.r){P.splice(i,1);continue}
+      var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r),c=p.amber?'225,150,70':'225,215,200';
+      g.addColorStop(0,'rgba('+c+','+p.a+')');g.addColorStop(1,'rgba('+c+',0)');ctx.fillStyle=g;ctx.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2)}
+    if(!matchMedia('(prefers-reduced-motion:reduce)').matches)requestAnimationFrame(draw)}
+  draw();
+})();
+// Reveal
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+// Nav
+var nav=document.getElementById('nav');
+addEventListener('scroll',function(){nav.classList.toggle('solid',scrollY>40)},{passive:true});
+// Lumière curseur + parallax vinyle + reflet des cartes
+var cl=document.getElementById('cl'),fine=matchMedia('(pointer:fine)').matches;
+if(fine){
+  addEventListener('mousemove',function(e){cl.style.opacity=1;cl.style.transform='translate('+e.clientX+'px,'+e.clientY+'px)'});
+  document.querySelectorAll('.card').forEach(function(c){c.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')})});
+}
+</script>
+</body>
+</html>
