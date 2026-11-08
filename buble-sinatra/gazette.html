@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>After Hours Gazette</title>
+<meta name="description" content="Alex chante Sinatra, Louis Armstrong et Nat King Cole : une soirée new-yorkaise en forme de gazette de 1929. Love & Live.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Special+Elite&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<style>
+/* Mise en page : une de journal 1929, bandeau de titre, colonnes, annonces encadrées, télégramme. */
+:root{
+  color-scheme:light;
+  --paper:#e8dfc8; --paper2:#ddd2b6; --ink:#17130e; --soft:#4a4235; --rule:#2b251c; --red:#9a2b1d;
+  --mast:'UnifrakturMaguntia','Old English Text MT',serif;
+  --head:'Playfair Display','Didot',Georgia,serif;
+  --body:'Old Standard TT','Times New Roman',Georgia,serif;
+  --type:'Special Elite','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:1.06rem;line-height:1.55;overflow-x:hidden;
+  background-image:radial-gradient(ellipse at 50% 0,rgba(255,255,255,.35),transparent 60%),radial-gradient(ellipse at 50% 100%,rgba(120,80,30,.22),transparent 70%)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .27  0 0 0 0 .15  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:49;box-shadow:inset 0 0 160px rgba(90,55,15,.38)}
+a{color:inherit}
+.page{max-width:1180px;margin:0 auto;padding-block:1rem 3rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* Bandeau */
+.strip{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-family:var(--type);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;border-top:3px double var(--rule);border-bottom:1px solid var(--rule);padding:.45rem 0}
+.mast{display:grid;grid-template-columns:150px 1fr 150px;gap:1.2rem;align-items:center;padding:1.2rem 0 .8rem}
+.ear{border:1px solid var(--rule);padding:.6rem .7rem;text-align:center;font-family:var(--type);font-size:.78rem;line-height:1.35;text-transform:uppercase;letter-spacing:.06em}
+.ear b{display:block;font-family:var(--head);font-size:1.15rem;letter-spacing:0;text-transform:none;margin-bottom:.2rem}
+.title{font-family:var(--mast);font-weight:400;text-align:center;line-height:.95;font-size:clamp(2.6rem,9.2vw,6.6rem);letter-spacing:.01em;animation:ink 1.6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes ink{from{opacity:0;letter-spacing:.18em;filter:blur(6px)}to{opacity:1;letter-spacing:.01em;filter:blur(0)}}
+.sections{display:flex;justify-content:center;gap:clamp(.8rem,3vw,2.4rem);flex-wrap:wrap;border-top:1px solid var(--rule);border-bottom:3px double var(--rule);padding:.5rem 0;font-family:var(--type);font-size:.82rem;letter-spacing:.2em;text-transform:uppercase}
+.sections a{text-decoration:none;position:relative}
+.sections a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:2px;background:var(--red);transform:scaleX(0);transition:transform .4s}
+.sections a:hover::after{transform:scaleX(1)}
+@media(max-width:760px){.mast{grid-template-columns:1fr}.ear{display:none}}
+
+/* Ticker */
+.ticker{overflow:hidden;white-space:nowrap;background:var(--ink);color:var(--paper);margin:1rem 0;padding:.5rem 0;font-family:var(--type);letter-spacing:.18em;font-size:.9rem}
+.ticker div{display:inline-block;animation:tick 45s linear infinite}
+.ticker span{margin:0 1.2rem}.ticker em{font-style:normal;color:#d87a68}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* Une */
+.banner{font-family:var(--head);font-weight:900;text-transform:uppercase;text-align:center;line-height:.98;letter-spacing:-.01em;font-size:clamp(2.1rem,6.6vw,5.2rem);margin:1.4rem 0 .6rem;text-wrap:balance}
+.banner span{display:block;overflow:hidden}
+.banner span i{display:block;font-style:normal;transform:translateY(105%);animation:up 1s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--n)*.18s + .5s)}
+@keyframes up{to{transform:none}}
+.deck{font-family:var(--head);font-style:italic;font-weight:700;text-align:center;font-size:clamp(1.1rem,2.3vw,1.6rem);max-width:46rem;margin:0 auto 1.2rem;border-block:1px solid var(--rule);padding:.6rem 0;text-wrap:balance}
+.front{display:grid;grid-template-columns:1.1fr 1fr .8fr;gap:0;border-top:1px solid var(--rule)}
+.col{padding:1rem 1.3rem;border-right:1px solid var(--rule)}
+.col:last-child{border-right:0;padding-right:0}.col:first-child{padding-left:0}
+.col h3{font-family:var(--head);font-weight:900;font-size:1.5rem;line-height:1.1;margin-bottom:.6rem;text-transform:uppercase}
+.col p+p{margin-top:.8rem}
+.col p{text-align:justify;hyphens:auto}
+.drop::first-letter{font-family:var(--head);font-weight:900;float:left;font-size:4.6rem;line-height:.82;padding:.28rem .5rem 0 0;color:var(--red)}
+figure{position:relative}
+figure .img{background:var(--paper2);padding:.5rem;border:1px solid var(--rule);overflow:hidden}
+figure img{display:block;width:100%;height:auto;mix-blend-mode:multiply;clip-path:inset(0 0 100% 0);animation:draw 2.4s cubic-bezier(.6,.1,.2,1) .8s forwards}
+@keyframes draw{to{clip-path:inset(0 0 0 0)}}
+figcaption{font-family:var(--type);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-top:.4rem;color:var(--soft)}
+.stamp{position:absolute;right:-.4rem;top:-.8rem;transform:rotate(-9deg);border:3px solid var(--red);color:var(--red);padding:.3rem .7rem;font-family:var(--type);text-transform:uppercase;letter-spacing:.14em;font-size:.95rem;text-align:center;line-height:1.15;mix-blend-mode:multiply;animation:thump .6s cubic-bezier(.3,1.6,.5,1) 2.3s both;background:rgba(232,223,200,.55)}
+@keyframes thump{from{opacity:0;transform:rotate(-20deg) scale(2.4)}to{opacity:.92;transform:rotate(-9deg) scale(1)}}
+.box{border:3px double var(--rule);padding:.9rem 1rem}
+.box h4{font-family:var(--type);text-transform:uppercase;letter-spacing:.14em;font-size:.85rem;border-bottom:1px solid var(--rule);padding-bottom:.4rem;margin-bottom:.5rem}
+.box ul{list-style:none;font-size:.98rem}.box li{padding:.25rem 0;border-bottom:1px dotted var(--soft)}
+@media(max-width:900px){.front{grid-template-columns:1fr}.col{border-right:0;padding:1rem 0;border-bottom:1px solid var(--rule)}}
+
+/* Rubriques */
+.head{display:flex;align-items:center;gap:1rem;margin:3rem 0 1rem}
+.head::before,.head::after{content:"";flex:1;border-top:3px double var(--rule)}
+.head h2{font-family:var(--head);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:clamp(1.3rem,3.2vw,2.2rem);text-align:center}
+.prog{columns:2;column-gap:3rem;column-rule:1px solid var(--rule);list-style:none}
+@media(max-width:700px){.prog{columns:1}}
+.prog li{display:flex;gap:.5rem;align-items:baseline;padding:.45rem 0;break-inside:avoid}
+.prog b{font-family:var(--head);font-size:1.18rem;font-weight:700}
+.prog i{flex:1;border-bottom:2px dotted var(--soft);transform:translateY(-.3em)}
+.prog small{font-family:var(--type);text-transform:uppercase;font-size:.74rem;letter-spacing:.08em;color:var(--soft)}
+.feature{display:grid;grid-template-columns:.9fr 1.1fr;gap:2rem;align-items:start}
+@media(max-width:800px){.feature{grid-template-columns:1fr}}
+.feature h3{font-family:var(--head);font-weight:900;font-size:clamp(1.7rem,4vw,2.8rem);line-height:1.02;text-transform:uppercase;margin-bottom:.8rem;text-wrap:balance}
+.duos{margin-top:1rem}
+.ads{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.2rem}
+.ad{border:3px double var(--rule);padding:1rem 1.1rem;text-align:center;transition:transform .4s,background .4s}
+.ad:hover{transform:rotate(-1deg) translateY(-4px);background:var(--paper2)}
+.ad h3{font-family:var(--head);font-weight:900;text-transform:uppercase;font-size:1.5rem;line-height:1.05}
+.ad .kick{font-family:var(--type);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin:.2rem 0 .5rem}
+.ad ul{list-style:none;border-top:1px solid var(--rule);padding-top:.5rem;font-size:.98rem}
+.ad li{padding:.15rem 0}
+.wire{max-width:760px;margin:0 auto;border:2px solid var(--rule);padding:1.4rem 1.6rem;font-family:var(--type);font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase;line-height:1.8;background:var(--paper2);position:relative}
+.wire::before{content:"WESTERN UNION · TÉLÉGRAMME";display:block;border-bottom:2px dashed var(--rule);padding-bottom:.5rem;margin-bottom:.8rem;font-size:.85rem;letter-spacing:.2em}
+.wire b{background:var(--ink);color:var(--paper);padding:0 .35rem;letter-spacing:.04em;user-select:all}
+footer{margin-top:3rem;border-top:3px double var(--rule);padding-top:.8rem;text-align:center;font-family:var(--type);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .9s ease,transform .9s ease;transition-delay:calc(var(--d,0)*100ms)}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}.rv{opacity:1;transform:none}.banner span i{transform:none}figure img{clip-path:none}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="strip"><span>Vol. XXIX · N° 1</span><span>New York · Édition du soir · 1929</span><span>Prix : un cent</span></div>
+
+<header class="mast">
+  <div class="ear"><b>Love &amp; Live</b>présente</div>
+  <h1 class="title">The After Hours Gazette</h1>
+  <div class="ear"><b>Ce soir</b>lumière basse, whisky ambré, voix chaude</div>
+</header>
+
+<nav class="sections">
+  <a href="#une">À la une</a><a href="#programme">Le programme</a><a href="#vedette" data-guest>En vedette</a><a href="#annonces">Annonces</a><a href="#telegramme">Télégramme</a>
+</nav>
+
+<div class="ticker" aria-hidden="true"><div id="tk"></div></div>
+
+<main id="une">
+  <h2 class="banner">
+    <span><i style="--n:0">Alex chante Sinatra,</i></span>
+    <span><i style="--n:1">Armstrong &amp; Nat King Cole</i></span>
+  </h2>
+  <p class="deck">Une voix, un whisky, la lumière basse : l'ambiance d'un club de jazz de Manhattan, pour vos cocktails, vos repas et vos soirées.</p>
+
+  <section class="front">
+    <div class="col">
+      <h3 class="rv">Manhattan à votre table</h3>
+      <p class="drop rv" style="--d:1">Le New York de Sinatra, de Louis Armstrong et de Nat King Cole : les clubs de jazz, les trottoirs mouillés, le smoking et la cravate dénouée à 2 heures du matin. Des chansons que tout le monde connaît et qu'on écoute, un verre à la main.</p>
+      <p class="rv" style="--d:2">Pas de scène, pas de show. Alex arrive seul, avec sa voix et ses backing tracks lancés en direct, et s'installe dans un coin de la salle. On discute, on trinque, on mange, et la musique accompagne la soirée.</p>
+      <p class="rv" style="--d:3">Un format simple, discret et élégant, à un budget adapté aux associations et aux comités des fêtes.</p>
+    </div>
+    <div class="col">
+      <figure class="rv">
+        <div class="img"><img src="croquis-alex.webp" alt="Alex au micro, croquis à l'encre"></div>
+        <figcaption>Alex au micro. Croquis à l'encre.</figcaption>
+        <div class="stamp">Édition<br>spéciale</div>
+      </figure>
+    </div>
+    <div class="col">
+      <div class="box rv">
+        <h4>Au programme ce soir</h4>
+        <ul><li>New York, New York</li><li>Fly Me to the Moon</li><li>What a Wonderful World</li><li>Unforgettable</li><li>La Vie en rose</li></ul>
+      </div>
+      <p class="rv" style="--d:2;margin-top:1rem;font-style:italic">Renseignements et réservations en dernière page.</p>
+    </div>
+  </section>
+
+  <div class="head"><h2 id="programme">Le programme du soir</h2></div>
+  <ul class="prog rv">
+    <li><b>New York, New York</b><i></i><small>Sinatra</small></li>
+    <li><b>Fly Me to the Moon</b><i></i><small>Sinatra</small></li>
+    <li><b>My Way</b><i></i><small>Sinatra</small></li>
+    <li><b>Cheek to Cheek</b><i></i><small>Sinatra</small></li>
+    <li><b>What a Wonderful World</b><i></i><small>Louis Armstrong</small></li>
+    <li><b>La Vie en rose</b><i></i><small>Louis Armstrong</small></li>
+    <li><b>Hello, Dolly!</b><i></i><small>Louis Armstrong</small></li>
+    <li><b>L-O-V-E</b><i></i><small>Nat King Cole</small></li>
+    <li><b>Unforgettable</b><i></i><small>Nat King Cole</small></li>
+    <li><b>Smile</b><i></i><small>Nat King Cole</small></li>
+    <li><b>Fever</b><i></i><small>Peggy Lee</small></li>
+    <li><b>Feeling Good</b><i></i><small>Nina Simone</small></li>
+  </ul>
+
+  <div data-guest>
+    <div class="head"><h2 id="vedette">En vedette ce soir</h2></div>
+    <section class="feature">
+      <figure class="rv"><div class="img"><img src="duo-micro.webp" alt="Alex et Sève au micro, croquis à l'encre"></div><figcaption>Alex et Sève, deux micros.</figcaption></figure>
+      <div>
+        <h3 class="rv">Sève rejoint Alex au micro</h3>
+        <p class="drop rv" style="--d:1">Alex et Sève chantent tous les deux. Deux micros, pas d'instruments : juste deux voix sur les backing tracks. Le temps de quelques duos, l'ambiance change, avec plus de complicité et toujours à voix basse.</p>
+        <div class="box duos rv" style="--d:2"><h4>Duos annoncés</h4><ul><li>Cheek to Cheek</li><li>Dream a Little Dream of Me</li><li>Somethin' Stupid</li><li>Baby, It's Cold Outside</li></ul></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="head"><h2 id="annonces">Petites annonces</h2></div>
+  <section class="ads">
+    <article class="ad rv"><h3>Cocktail</h3><p class="kick">Vin d'honneur, apéritif</p><ul><li>1 h à 2 h d'ambiance</li><li>Voix douce, volume discret</li><li>Sono incluse</li></ul></article>
+    <article class="ad rv" style="--d:1"><h3>Repas</h3><p class="kick">Dîner, banquet, repas associatif</p><ul><li>2 sets de 40 minutes</li><li>Sinatra, Armstrong, Nat King Cole</li><li>Tarif comité des fêtes</li></ul></article>
+    <article class="ad rv" style="--d:2" data-guest><h3>Duo</h3><p class="kick">Alex &amp; Sève</p><ul><li>Deux voix, deux micros</li><li>Cocktail, repas ou lounge</li><li>Tarif sur devis</li></ul></article>
+    <article class="ad rv" style="--d:3"><h3>Bar &amp; lounge</h3><p class="kick">Pub, hôtel, cave à cocktails</p><ul><li>Soirée club de jazz</li><li>Playlist à votre image</li><li>Devis personnalisé</li></ul></article>
+  </section>
+
+  <div class="head"><h2 id="telegramme">Télégramme</h2></div>
+  <div class="wire rv">
+    Votre événement ? Écrivez à <b>contact@exemple.fr</b> stop réponse sous 48 heures stop lumière basse et whisky fournis par vos soins stop
+  </div>
+</main>
+
+<footer>Love &amp; Live · The After Hours Gazette · Imprimé à New York, ou presque</footer>
+</div>
+
+<script>
+// Sève en invité·e : passer GUEST à false pour tout masquer
+var GUEST=true;
+if(!GUEST)document.querySelectorAll('[data-guest]').forEach(function(e){e.remove()});
+var t=['New York, New York','Fly Me to the Moon','What a Wonderful World','Unforgettable','La Vie en rose','L-O-V-E','My Way','Smile','Cheek to Cheek'];
+var row=t.map(function(x){return '<span>'+x+'</span><em>✦</em>'}).join('');
+document.getElementById('tk').innerHTML=row+row+row+row;
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+</script>
+</body>
+</html>
