@@ -134,6 +134,11 @@ h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.
 .sig svg.in .ink{animation:draw 2.6s ease .3s forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
 .sig span{font-family:var(--script);color:var(--gold);font-size:1.8rem}
+.guest{font-family:var(--script);font-size:clamp(1.5rem,3.4vw,2.2rem);color:var(--muted);margin-top:.4rem;opacity:0;animation:fade 1.2s ease 2.3s forwards}
+.guest b{color:var(--gold);font-weight:400}
+.guestsec{padding-top:clamp(3rem,7vw,6rem)}
+.duos{list-style:none;display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem}
+.duos li{border:1px solid rgba(217,180,95,.35);padding:.45rem 1rem;font-size:.85rem;letter-spacing:.12em;color:var(--gold2)}
 /* SETLIST */
 .set{background:var(--ink2)}
 .songs{list-style:none;margin-top:3rem;border-top:1px solid rgba(217,180,95,.25);counter-reset:s}
@@ -179,6 +184,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   <a class="logo" href="#top">Love &amp; Live</a>
   <ul>
     <li><a href="#show">L'ambiance</a></li>
+    <li data-guest><a href="#guest">Invité</a></li>
     <li><a href="#repertoire">Répertoire</a></li>
     <li><a href="#formules">Infos</a></li>
     <li><a href="#contact">Réserver</a></li>
@@ -194,6 +200,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
     <span class="line" data-split="AFTER HOURS" data-off="7"></span>
   </h1>
   <p class="par">un soir de jazz avec <b>Alex</b></p>
+  <p class="guest" data-guest>en invité·e <b>Sève</b></p>
   <p class="tag">Une voix, un verre, la lumière basse. Sinatra, Louis Armstrong, Nat King Cole : l'ambiance d'un club de jazz de Manhattan, pour vos cocktails, vos repas et vos soirées.</p>
   <a class="cta" href="#contact">Parlons de votre événement</a>
   <div class="scroll"></div>
@@ -219,6 +226,23 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
     <div class="card rv"><div class="n">I</div><h3>La voix</h3><p>Sinatra, Armstrong, Nat King Cole : l'élégance décontractée, le smoking et le sourire en coin.</p></div>
     <div class="card rv" style="--d:1"><div class="n">II</div><h3>Manhattan</h3><p>New York, New York, Fever, Cheek to Cheek : les standards qui font lever toute la salle.</p></div>
     <div class="card rv" style="--d:2"><div class="n">III</div><h3>Clé en main</h3><p>Sono, lumières et bandes orchestrales fournies. Alex s'installe, vous profitez. Un tarif adapté aux associations.</p></div>
+  </div>
+</section>
+
+<section class="guestsec" id="guest" data-guest>
+  <div class="wrap about">
+    <div class="stage rv" style="--d:1">
+      <div class="spot"></div>
+      <img class="photo" style="transform:none" src="seve.jpg" alt="Sève" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'photo ph',textContent:'Photo de Sève ici'}))">
+    </div>
+    <div>
+      <p class="kicker rv">En invité·e</p>
+      <h2 class="rv" style="--d:1">Alex <em>&amp; Sève</em></h2>
+      <p class="rv" style="--d:2">Le temps de quelques morceaux, Sève rejoint Alex. Deux voix, les mêmes standards, et l'ambiance change : plus de complicité, plus de relief, toujours à voix basse.</p>
+      <ul class="duos rv" style="--d:3">
+        <li>Cheek to Cheek</li><li>Dream a Little Dream of Me</li><li>Somethin' Stupid</li><li>Baby, It's Cold Outside</li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -255,6 +279,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
     <h2 class="rv" style="--d:1">Pour <em>chaque</em> lieu</h2>
     <div class="deals">
       <div class="deal rv"><h3>Cocktail</h3><p>Vin d'honneur, apéritif, inauguration</p><ul><li>1 h à 2 h d'ambiance</li><li>Voix douce, volume discret</li><li>Sono incluse</li></ul></div>
+      <div class="deal rv" style="--d:1" data-guest><h3>Duo</h3><p>Alex + Sève en invité·e</p><ul><li>Quelques duos au programme</li><li>Cocktail, repas ou lounge</li><li>Tarif sur devis</li></ul></div>
       <div class="deal hot rv" style="--d:1"><h3>Repas</h3><p>Dîner, banquet, repas associatif</p><ul><li>2 sets de 40 minutes</li><li>Sinatra, Armstrong, Nat King Cole</li><li>Tarif comité des fêtes</li></ul></div>
       <div class="deal rv" style="--d:2"><h3>Bar &amp; lounge</h3><p>Pub, hôtel, cave à cocktails</p><ul><li>Soirée club de jazz</li><li>Playlist à votre image</li><li>Devis personnalisé</li></ul></div>
     </div>
@@ -283,6 +308,9 @@ document.querySelectorAll('[data-split]').forEach(function(el){
 var titles=['New York, New York','What a Wonderful World','Unforgettable','Fly Me to the Moon','La Vie en rose','L-O-V-E','My Way','Smile'];
 var row=titles.map(function(t){return '<span>'+t+'</span><em>✦</em>'}).join('');
 document.getElementById('mq').innerHTML=row+row+row+row;
+// Sève en invité·e : passer GUEST à false pour tout masquer
+var GUEST=true;
+if(!GUEST)document.querySelectorAll('[data-guest]').forEach(function(e){e.remove()});
 // Reveal
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
 document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
