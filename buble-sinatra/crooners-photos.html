@@ -255,6 +255,14 @@ header.hero{display:flex!important;align-items:flex-end;place-items:unset!import
 .sign .bl.t{top:-6px}.sign .bl.b{bottom:-6px;animation-delay:-.6s}
 @keyframes blink{50%{opacity:.25}}
 .fn{margin-top:1rem;font-size:.8rem;letter-spacing:.14em;color:var(--mute)}
+.lift{position:fixed;right:max(10px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);z-index:40;width:178px;padding:.4rem .4rem .5rem;text-align:center;background:linear-gradient(160deg,#241a12,#0b0705);border:2px solid var(--gold);border-radius:70px 70px 8px 8px;box-shadow:0 10px 34px rgba(0,0,0,.65),inset 0 0 16px rgba(230,189,92,.12);pointer-events:none;opacity:0;transition:opacity .6s}
+.lift.on{opacity:1}
+.lift .dial{display:block;width:100%;height:auto}
+#needle{transition:transform .9s cubic-bezier(.3,1.5,.5,1)}
+.lift .lf-b{display:block;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cream);line-height:1.2;min-height:1.5em;margin-top:.1rem}
+.lift .lf-a{display:block;font-size:.55rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.lift .lf-a b{font-family:var(--serif);font-weight:500;font-size:.95rem;letter-spacing:.04em;color:#ffd9a0;text-shadow:0 0 10px rgba(255,170,70,.6);font-variant-numeric:tabular-nums}
+@media(max-width:700px){.lift{width:120px;top:auto;bottom:12px;transform:none;border-radius:50px 50px 6px 6px}.lift .lf-b{display:none}}
 /* SETLIST */
 .set{background:var(--ink2)}
 .songs{list-style:none;margin-top:3rem;border-top:1px solid rgba(217,180,95,.25);counter-reset:s}
@@ -458,6 +466,17 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 
 <footer><span class="tick"></span>Love &amp; Live — Crooners &amp; Ladies · Sève &amp; Alex</footer>
 
+<aside class="lift" id="lift" aria-label="Indicateur d'étage">
+  <svg class="dial" viewBox="0 0 140 92" aria-hidden="true">
+    <defs><linearGradient id="dg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2118"/><stop offset="1" stop-color="#0c0806"/></linearGradient></defs>
+    <path d="M8,86 A62,62 0 0 1 132,86 Z" fill="url(#dg)" stroke="#e6bd5c" stroke-width="2"/>
+    <path d="M14,78 A56,56 0 0 1 126,78" fill="none" stroke="#b08a3e" stroke-width="1"/>
+    <line x1="70" y1="78" x2="124.1" y2="63.5" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="118.5" y2="50.0" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="109.6" y2="38.4" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="98.0" y2="29.5" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="84.5" y2="23.9" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="70.0" y2="22.0" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="55.5" y2="23.9" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="42.0" y2="29.5" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="30.4" y2="38.4" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="21.5" y2="50.0" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="70" y1="78" x2="15.9" y2="63.5" stroke="rgba(230,189,92,.07)" stroke-width="5"/><line x1="15.0" y1="78.0" x2="22.0" y2="78.0" stroke="#e6bd5c" stroke-width="1.6"/><line x1="20.4" y1="54.1" x2="26.8" y2="57.2" stroke="#e6bd5c" stroke-width="1.6"/><line x1="35.7" y1="35.0" x2="40.1" y2="40.5" stroke="#e6bd5c" stroke-width="1.6"/><line x1="57.8" y1="24.4" x2="59.3" y2="31.2" stroke="#e6bd5c" stroke-width="1.6"/><line x1="82.2" y1="24.4" x2="80.7" y2="31.2" stroke="#e6bd5c" stroke-width="1.6"/><line x1="104.3" y1="35.0" x2="99.9" y2="40.5" stroke="#e6bd5c" stroke-width="1.6"/><line x1="119.6" y1="54.1" x2="113.2" y2="57.2" stroke="#e6bd5c" stroke-width="1.6"/><line x1="125.0" y1="78.0" x2="118.0" y2="78.0" stroke="#e6bd5c" stroke-width="1.6"/><line x1="15.3" y1="72.6" x2="18.3" y2="72.9" stroke="#b08a3e" stroke-width=".8"/><line x1="16.1" y1="67.3" x2="19.0" y2="67.9" stroke="#b08a3e" stroke-width=".8"/><line x1="17.4" y1="62.0" x2="20.2" y2="62.9" stroke="#b08a3e" stroke-width=".8"/><line x1="21.5" y1="52.1" x2="24.1" y2="53.5" stroke="#b08a3e" stroke-width=".8"/><line x1="24.3" y1="47.4" x2="26.8" y2="49.1" stroke="#b08a3e" stroke-width=".8"/><line x1="27.5" y1="43.1" x2="29.8" y2="45.0" stroke="#b08a3e" stroke-width=".8"/><line x1="35.1" y1="35.5" x2="37.0" y2="37.8" stroke="#b08a3e" stroke-width=".8"/><line x1="39.4" y1="32.3" x2="41.1" y2="34.8" stroke="#b08a3e" stroke-width=".8"/><line x1="44.1" y1="29.5" x2="45.5" y2="32.1" stroke="#b08a3e" stroke-width=".8"/><line x1="54.0" y1="25.4" x2="54.9" y2="28.2" stroke="#b08a3e" stroke-width=".8"/><line x1="59.3" y1="24.1" x2="59.9" y2="27.0" stroke="#b08a3e" stroke-width=".8"/><line x1="64.6" y1="23.3" x2="64.9" y2="26.3" stroke="#b08a3e" stroke-width=".8"/><line x1="75.4" y1="23.3" x2="75.1" y2="26.3" stroke="#b08a3e" stroke-width=".8"/><line x1="80.7" y1="24.1" x2="80.1" y2="27.0" stroke="#b08a3e" stroke-width=".8"/><line x1="86.0" y1="25.4" x2="85.1" y2="28.2" stroke="#b08a3e" stroke-width=".8"/><line x1="95.9" y1="29.5" x2="94.5" y2="32.1" stroke="#b08a3e" stroke-width=".8"/><line x1="100.6" y1="32.3" x2="98.9" y2="34.8" stroke="#b08a3e" stroke-width=".8"/><line x1="104.9" y1="35.5" x2="103.0" y2="37.8" stroke="#b08a3e" stroke-width=".8"/><line x1="112.5" y1="43.1" x2="110.2" y2="45.0" stroke="#b08a3e" stroke-width=".8"/><line x1="115.7" y1="47.4" x2="113.2" y2="49.1" stroke="#b08a3e" stroke-width=".8"/><line x1="118.5" y1="52.1" x2="115.9" y2="53.5" stroke="#b08a3e" stroke-width=".8"/><line x1="122.6" y1="62.0" x2="119.8" y2="62.9" stroke="#b08a3e" stroke-width=".8"/><line x1="123.9" y1="67.3" x2="121.0" y2="67.9" stroke="#b08a3e" stroke-width=".8"/><line x1="124.7" y1="72.6" x2="121.7" y2="72.9" stroke="#b08a3e" stroke-width=".8"/><text x="31.0" y="80.4" text-anchor="middle" font-size="7.4" fill="#fbe7a8" font-family="Bodoni Moda,serif">77</text><text x="34.9" y="63.5" text-anchor="middle" font-size="7.4" fill="#fbe7a8" font-family="Bodoni Moda,serif">66</text><text x="45.7" y="49.9" text-anchor="middle" font-size="7.4" fill="#fbe7a8" font-family="Bodoni Moda,serif">55</text><text x="61.3" y="42.4" text-anchor="middle" font-size="7.4" fill="#fbe7a8" font-family="Bodoni Moda,serif">44</text><text x="78.7" y="42.4" text-anchor="middle" font-size="7.4" fill="#fbe7a8" font-family="Bodoni Moda,serif">33</text><text x="94.3" y="49.9" text-anchor="middle" font-size="7.4" fill="#fbe7a8" font-family="Bodoni Moda,serif">22</text><text x="105.1" y="63.5" text-anchor="middle" font-size="7.4" fill="#fbe7a8" font-family="Bodoni Moda,serif">11</text><text x="109.0" y="80.4" text-anchor="middle" font-size="7.4" fill="#fbe7a8" font-family="Bodoni Moda,serif">RC</text>
+    <g id="needle" style="transform-origin:70px 78px"><line x1="70" y1="78" x2="21" y2="78" stroke="#fbe7a8" stroke-width="2.2" stroke-linecap="round"/><polygon points="17,78 25,75.4 25,80.6" fill="#c0232f"/></g>
+    <circle cx="70" cy="78" r="5" fill="#e6bd5c" stroke="#0c0806" stroke-width="1.4"/><circle cx="70" cy="78" r="1.8" fill="#0c0806"/>
+  </svg>
+  <span class="lf-b" id="fn">Sommet</span><span class="lf-a">Étage <b id="fl">77</b></span>
+</aside>
 <script>
 // Lettres du titre
 document.querySelectorAll('[data-split]').forEach(function(el){
@@ -480,22 +499,34 @@ document.querySelectorAll('[data-split]').forEach(function(el){
     spec.forEach(function(sp,li){var bs=[],x=-40;while(x<W+60){var bw=sp.w[0]+rnd()*(sp.w[1]-sp.w[0]),bh=H*(sp.h*.3+rnd()*sp.v);if(li===2&&x>W*.66&&x<W*.78)bh=H*(.5+.1*rnd());var b={x:x,w:bw,h:bh,win:[]};
         var cols=Math.floor(bw/9),rows=Math.floor(bh/13);for(var i=0;i<cols;i++)for(var j=0;j<rows;j++)if(rnd()<sp.win)b.win.push({x:x+4+i*9,y:j*13+6,on:rnd()<.55,s:rnd()<.4});
         bs.push(b);x+=bw+rnd()*5}L.push({sp:sp,bs:bs})});
-    L.es={x:W*.72,h:H*.74}}
+    L.es={x:W*.72,h:H*.62}}
   build();addEventListener('resize',build);
   new IntersectionObserver(function(e){on=e[0].isIntersecting}).observe(hero);
   addEventListener('pointermove',function(e){mx=(e.clientX/innerWidth-.5)});
   function draw(t){var k=parseFloat(hero.style.getPropertyValue('--k'))||0,g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#08050a');g.addColorStop(.55,'#241109');g.addColorStop(.9,'rgba(140,72,26,'+(.9+k*.1)+')');g.addColorStop(1,'#a8601f');c.fillStyle=g;c.fillRect(0,0,W,H);
     var hg=c.createRadialGradient(W*.5,H,0,W*.5,H,H*.9);hg.addColorStop(0,'rgba(255,170,70,'+(.28+k*.18)+')');hg.addColorStop(1,'rgba(255,170,70,0)');c.fillStyle=hg;c.fillRect(0,0,W,H);
     var mg=c.createRadialGradient(W*.84,H*.2,0,W*.84,H*.2,H*.12);mg.addColorStop(0,'rgba(255,236,196,.9)');mg.addColorStop(.18,'rgba(255,226,170,.5)');mg.addColorStop(1,'rgba(255,226,170,0)');c.fillStyle=mg;c.fillRect(0,0,W,H);
-    L.forEach(function(ly,li){var off=mx*ly.sp.par*-60;c.save();c.translate(off,0);
+    L.forEach(function(ly,li){var off=mx*ly.sp.par*-60,sy=Math.min(scrollY,H*1.1)*(.04+li*.16);c.save();c.translate(off,-sy);
       ly.bs.forEach(function(b){var top=H-b.h;c.fillStyle=ly.sp.col;c.fillRect(b.x,top,b.w+1,b.h+2);
         if(ly.sp.win){b.win.forEach(function(w){if(w.s&&!reduceS&&Math.random()<.0006)w.on=!w.on;if(w.on){c.fillStyle=li===1?'rgba(255,190,100,.5)':'rgba(255,205,120,'+(.7+k*.25)+')';c.fillRect(w.x,top+w.y,4,6)}})}});
-      if(li===1){var e=L.es,ex=e.x,top=H-e.h,wd=44;c.fillStyle='#120c0a';c.fillRect(ex-wd/2,top+e.h*.22,wd,e.h);c.fillRect(ex-wd*.36,top+e.h*.12,wd*.72,e.h);c.fillRect(ex-wd*.24,top+e.h*.05,wd*.48,e.h);c.fillRect(ex-wd*.12,top,wd*.24,e.h);c.fillRect(ex-1.5,top-H*.1,3,H*.1);
-        var sg=c.createRadialGradient(ex,top-H*.1,0,ex,top-H*.1,26+k*20);sg.addColorStop(0,'rgba(255,230,160,'+(.55+k*.45)+')');sg.addColorStop(1,'rgba(255,230,160,0)');c.fillStyle=sg;c.fillRect(ex-50,top-H*.1-50,100,100)}
+      if(li===1){var e=L.es,ex=e.x,top=H-e.h,wd=44;var cw=Math.max(70,H*.13),bt=top+e.h*.3;c.fillStyle='#120c0a';c.fillRect(ex-cw/2,bt,cw,e.h);
+        c.beginPath();c.moveTo(ex-cw/2,bt);c.lineTo(ex-cw/2,bt-H*.02);c.lineTo(ex+cw/2,bt-H*.02);c.lineTo(ex+cw/2,bt);c.fill();
+        for(var a=0;a<6;a++){var rr=cw/2*(1-a*.15),cy=bt-H*.02-a*H*.04;c.fillStyle='#120c0a';c.strokeStyle='rgba(235,200,130,'+(.55+k*.35)+')';c.lineWidth=1.6;c.beginPath();c.moveTo(ex-rr,cy);c.arc(ex,cy,rr,Math.PI,0,false);c.lineTo(ex+rr,cy+H*.04);c.lineTo(ex-rr,cy+H*.04);c.closePath();c.fill();c.stroke();
+          for(var q=-2;q<=2;q++){var tx=ex+q*rr*.34;if(Math.abs(q*.34)<.95){c.fillStyle='rgba(255,215,140,'+(.35+k*.4)+')';c.beginPath();c.moveTo(tx,cy-rr*.28);c.lineTo(tx-3,cy+4);c.lineTo(tx+3,cy+4);c.fill()}}}
+        var tipY=bt-H*.02-6*H*.04;c.strokeStyle='#120c0a';c.lineWidth=3;c.beginPath();c.moveTo(ex,tipY);c.lineTo(ex,tipY-H*.12);c.stroke();
+        var sg=c.createRadialGradient(ex,tipY-H*.12,0,ex,tipY-H*.12,30+k*24);sg.addColorStop(0,'rgba(255,235,170,'+(.6+k*.4)+')');sg.addColorStop(1,'rgba(255,235,170,0)');c.fillStyle=sg;c.fillRect(ex-70,tipY-H*.12-70,140,140)}
       c.restore()});
     c.fillStyle='rgba(8,5,4,.55)';c.fillRect(0,H-3,W,3)}
   function f(now){requestAnimationFrame(f);if(on)draw(now)}
   if(reduceS)draw(0);else requestAnimationFrame(f)})();
+// Ascenseur : l'étage descend de 77 (sommet du Chrysler) à RC en bas de page
+(function(){var lift=document.getElementById('lift'),needle=document.getElementById('needle'),fl=document.getElementById('fl'),fn=document.getElementById('fn'),
+  marks=[['top','Sommet'],['show','Le tour de chant'],['lumiere','Nous voir'],['lieux','Où on joue'],['caravane','La caravane'],['guest','Le duo'],['repertoire','Le répertoire'],['formules','Formules'],['contact','Contact']],last=null;
+  function upd(){var max=document.documentElement.scrollHeight-innerHeight,p=max>0?Math.min(1,scrollY/max):0,f=Math.round(77*(1-p)),txt=f===0?'RC':String(f);
+    lift.classList.toggle('on',scrollY>80);lift.classList.toggle('arrived',f===0);
+    if(txt!==last){fl.textContent=txt;last=txt;needle.style.transform='rotate('+(180*(1-f/77)).toFixed(1)+'deg)'}
+    var cur=marks[0][1];marks.forEach(function(m){var e=document.getElementById(m[0]);if(e&&e.getBoundingClientRect().top<innerHeight*.5)cur=m[1]});fn.textContent=f===0?'Rez-de-chaussée':cur}
+  addEventListener('scroll',upd,{passive:true});addEventListener('resize',upd);upd()})();
 // Projecteur mobile dans la bannière + légère parallaxe
 (function(){var b=document.getElementById('lumiere');if(!b)return;var img=b.querySelector('img'),sp=b.querySelector('.spot-m'),hov=false,mx=.7,my=.35,T0=performance.now();
   b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect();hov=true;mx=(e.clientX-r.left)/r.width;my=(e.clientY-r.top)/r.height});
