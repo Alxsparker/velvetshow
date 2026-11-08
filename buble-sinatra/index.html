@@ -77,6 +77,18 @@ h1 .ch{display:inline-block;transform:translateY(110%) rotate(8deg);opacity:0;
 .scroll{display:none;position:absolute;bottom:110px;left:50%;width:1px;height:50px;background:linear-gradient(var(--gold),transparent);animation:drip 2s ease-in-out infinite}
 @keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
+.hero-sketch{position:absolute;z-index:-1;height:92%;bottom:0;left:50%;transform:translateX(-50%);opacity:.2;pointer-events:none;animation:skin 2s ease .8s backwards}
+@keyframes skin{from{opacity:0}}
+@media(min-width:900px){
+  .hero{text-align:left;place-items:center start;padding-left:7vw;padding-right:40vw}
+  .hero>*{max-width:100%}
+  h1{font-size:clamp(2rem,5.6vw,6.2rem)}
+  .eyebrow{justify-content:flex-start}.eyebrow::before{display:none}
+  .tag{margin-left:0}
+  .par{font-size:clamp(2rem,4.4vw,4rem)}
+  .hero-sketch{left:auto;right:4vw;transform:none;opacity:.95;height:88%;bottom:3%}
+  .hero .vinyl{display:none}
+}
 /* MARQUEE */
 .marquee{border-block:1px solid rgba(217,180,95,.25);overflow:hidden;padding:1.1rem 0;background:var(--ink2);white-space:nowrap}
 .marquee div{display:inline-block;font-family:var(--deco);font-size:1.5rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);animation:mq 38s linear infinite}
@@ -98,7 +110,7 @@ h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.
 .about p{color:#cfc4ab;margin-bottom:1rem;font-size:1.08rem}
 .stage{position:relative;aspect-ratio:4/5;border:1px solid rgba(217,180,95,.35);overflow:hidden;background:radial-gradient(ellipse at 50% 15%,#1b2c4a,#070a12 70%)}
 .stage::before{content:"";position:absolute;inset:8px;border:1px solid rgba(217,180,95,.2);z-index:2;pointer-events:none}
-.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:scale(1.9);transform-origin:50% 45%}.photo.sketch{object-fit:contain;transform:none;filter:invert(1) sepia(.9) saturate(2.6) brightness(.95);mix-blend-mode:screen;padding:6%}.ph{display:grid;place-items:center;color:var(--muted);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem}
+.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:scale(1.9);transform-origin:50% 45%}.photo.sketch{object-fit:contain;transform:none;padding:6%}.ph{display:grid;place-items:center;color:var(--muted);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem}
 .spot{position:absolute;top:-5%;left:50%;width:80%;height:110%;margin-left:-40%;background:linear-gradient(rgba(244,226,168,.35),transparent 85%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);animation:flick 6s ease-in-out infinite}
 @keyframes flick{0%,100%{opacity:.9}45%{opacity:.7}50%{opacity:1}}
 .smoke{position:absolute;bottom:-10%;left:-20%;width:140%;height:50%;background:radial-gradient(ellipse,rgba(239,230,210,.12),transparent 65%);filter:blur(18px);animation:drift 12s ease-in-out infinite alternate}
@@ -175,7 +187,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 
 <header class="hero" id="top">
   <div class="beam"></div><div class="beam b2"></div>
-  <div class="vinyl"></div>
+  <img class="hero-sketch" src="croquis-alex-or.png" alt="Alex au micro">
   <p class="eyebrow">Love &amp; Live présente</p>
   <h1 aria-label="New York After Hours">
     <span class="line" data-split="NEW YORK"></span>
@@ -200,7 +212,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
     </div>
     <div class="stage rv" style="--d:2">
       <div class="spot"></div>
-      <img class="photo sketch" src="croquis-alex.png" alt="Alex au micro" onerror="this.onerror=null;this.className='photo';this.src='stage.jpg'"></div>
+      <img class="photo sketch" src="croquis-alex-or.png" alt="Alex au micro" onerror="this.onerror=null;this.className='photo';this.src='stage.jpg'"></div>
   </div>
 
   <div class="wrap pillars">
