@@ -113,6 +113,9 @@ h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.
 .stage{position:relative;aspect-ratio:4/5;border:1px solid rgba(217,180,95,.35);overflow:hidden;background:radial-gradient(ellipse at 50% 15%,#1b2c4a,#070a12 70%)}
 .stage::before{content:"";position:absolute;inset:8px;border:1px solid rgba(217,180,95,.2);z-index:2;pointer-events:none}
 .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:scale(1.9);transform-origin:50% 45%}.stage:has(.sketch) .spot{opacity:.35;animation:none}
+.stage.paper{background:radial-gradient(ellipse at 50% 35%,#f1e7cf,#d8c7a2 95%);border-color:rgba(217,180,95,.6)}
+.stage.paper::before{border-color:rgba(60,40,15,.25)}
+.photo.ink{object-fit:contain;transform:none;mix-blend-mode:multiply;padding:4%}
 .photo.sketch{object-fit:contain;transform:none;padding:6%;opacity:.6}.ph{display:grid;place-items:center;color:var(--muted);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem}
 .spot{position:absolute;top:-5%;left:50%;width:80%;height:110%;margin-left:-40%;background:linear-gradient(rgba(244,226,168,.35),transparent 85%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);animation:flick 6s ease-in-out infinite}
 @keyframes flick{0%,100%{opacity:.9}45%{opacity:.7}50%{opacity:1}}
@@ -236,9 +239,8 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 
 <section class="guestsec" id="guest" data-guest>
   <div class="wrap about">
-    <div class="stage rv" style="--d:1">
-      <div class="spot"></div>
-      <img class="photo sketch" src="duo-micro-or.webp" alt="Alex et Sève au micro">
+    <div class="stage paper rv" style="--d:1">
+      <img class="photo ink" src="duo-micro.webp" alt="Alex et Sève au micro">
     </div>
     <div>
       <p class="kicker rv">En invité·e</p>
