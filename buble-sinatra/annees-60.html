@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crooners &amp; Ladies</title>
+<meta name="description" content="Crooners & Ladies : Alex et Sève chantent Sinatra, Dean Martin, Nat King Cole et les grandes dames du jazz, en lumière, sur petite scène, au sol près des gens ou dans la caravane américaine. Love & Live.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Josefin+Sans:wght@400;600;700&family=Libre+Franklin:wght@300;400;500&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+/* Mise en page : pochette d'album et affiche des années 50-60. Aplats crème, rouge cerise, bleu canard, moutarde, marine. Les croquis sont posés sur une feuille crème bordée d'encre avec une ombre franche, devant un champ de couleur qui change au rythme de la lumière. */
+:root{
+  color-scheme:light;
+  --cream:#f3e9d2; --paper:#fbf5e6; --ink:#16120f; --red:#c7372b; --teal:#1f7b7a; --mustard:#e9a93a; --navy:#1d2a48;
+  --disp:'Abril Fatface','Didot',Georgia,serif; --script:'Yellowtail','Snell Roundhand',cursive;
+  --lab:'Josefin Sans','Century Gothic',Arial,sans-serif; --body:'Libre Franklin','Franklin Gothic Medium',Arial,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1); --bg:var(--mustard);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:var(--body);font-weight:400;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.w{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.lab{font-family:var(--lab);font-weight:700;font-size:.78rem;letter-spacing:.3em;text-transform:uppercase}
+nav{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:3px solid var(--ink);display:flex;justify-content:space-between;align-items:center;padding:10px max(16px,3vw)}
+.logo{font-family:var(--script);font-size:1.9rem;color:var(--red);line-height:1}
+nav ul{display:flex;gap:1.6rem;list-style:none;font-family:var(--lab);font-weight:600;font-size:.76rem;letter-spacing:.22em;text-transform:uppercase}
+nav ul a{border-bottom:2px solid transparent;padding-bottom:2px;transition:border-color .3s}
+nav ul a:hover{border-color:var(--red)}
+@media(max-width:720px){nav ul li:not(:last-child){display:none}}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:calc(var(--d,0)*100ms)}
+.rv.in{opacity:1;transform:none}
+
+/* Accueil : la pochette */
+.hero{--k:0;display:grid;grid-template-columns:1.05fr 1fr;min-height:calc(100svh - 56px);border-bottom:3px solid var(--ink)}
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
+.art{position:relative;background:var(--bg);transition:background .14s linear;display:grid;place-items:center;padding:clamp(1.5rem,4vw,3.5rem);overflow:hidden;border-right:3px solid var(--ink);min-height:62vh}
+@media(max-width:860px){.art{border-right:0;border-bottom:3px solid var(--ink)}}
+.art::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(rgba(0,0,0,.2) 1.1px,transparent 1.5px) 0 0/7px 7px;mix-blend-mode:multiply}
+.sun{position:absolute;width:78%;aspect-ratio:1;border-radius:50%;background:var(--cream);opacity:.9;transform:scale(calc(.94 + var(--k)*.08))}
+.sun::after{content:"";position:absolute;inset:-9%;border-radius:50%;border:3px solid var(--ink);opacity:.9}
+.sheet{position:relative;z-index:1;background:var(--paper);border:4px solid var(--ink);box-shadow:12px 12px 0 var(--ink);padding:.6rem;width:min(360px,70%);transform:rotate(-2deg) scale(calc(1 + var(--k)*.014))}
+.sheet img{display:block;width:100%;height:auto;mix-blend-mode:multiply;clip-path:inset(0 0 100% 0);animation:draw 2s cubic-bezier(.6,.1,.2,1) .5s forwards}
+@keyframes draw{to{clip-path:inset(0)}}
+.sheet .cap{font-family:var(--lab);font-weight:700;font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;margin-top:.4rem;text-align:center}
+.copy{padding:clamp(2rem,5vw,4.5rem);display:flex;flex-direction:column;justify-content:center;gap:1.1rem;background:var(--cream)}
+.copy .lab{color:var(--red)}
+h1{font-family:var(--disp);font-weight:400;line-height:.92;font-size:clamp(3rem,8vw,7.2rem);letter-spacing:-.01em}
+h1 span{display:block;overflow:hidden;padding-bottom:.08em}
+h1 span b{display:block;font-weight:400;transform:translateY(105%);animation:up .9s var(--ease) forwards;animation-delay:calc(var(--n)*.14s + .2s)}
+h1 i{font-family:var(--script);font-style:normal;color:var(--red);font-size:.9em;margin-right:.1em}
+@keyframes up{to{transform:none}}
+.names{font-family:var(--script);font-size:clamp(2.2rem,5vw,3.6rem);line-height:1;color:var(--teal)}
+.lead{font-size:1.15rem;max-width:30rem;font-weight:300}
+.cta{align-self:flex-start;background:var(--ink);color:var(--cream);font-family:var(--lab);font-weight:700;font-size:.8rem;letter-spacing:.24em;text-transform:uppercase;padding:1rem 1.8rem;box-shadow:6px 6px 0 var(--red);transition:transform .25s,box-shadow .25s}
+.cta:hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--red)}
+
+/* bandeau défilant */
+.ticker{background:var(--ink);color:var(--cream);overflow:hidden;white-space:nowrap;padding:.7rem 0;border-bottom:3px solid var(--ink)}
+.ticker div{display:inline-block;animation:tick 40s linear infinite;font-family:var(--lab);font-weight:700;letter-spacing:.3em;text-transform:uppercase;font-size:.9rem}
+.ticker span{margin:0 1.4rem}.ticker em{font-style:normal;color:var(--mustard)}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* trois affiches */
+.blocks{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:3px solid var(--ink)}
+@media(max-width:860px){.blocks{grid-template-columns:1fr}}
+.blk{padding:clamp(2rem,5vw,3.6rem) clamp(1.4rem,3vw,2.4rem);border-right:3px solid var(--ink);min-height:300px;display:flex;flex-direction:column;justify-content:space-between;gap:1.2rem}
+.blk:last-child{border-right:0}
+@media(max-width:860px){.blk{border-right:0;border-bottom:3px solid var(--ink);min-height:0}.blk:last-child{border-bottom:0}}
+.blk h2{font-family:var(--disp);font-weight:400;font-size:clamp(2.2rem,4.4vw,3.6rem);line-height:.98}
+.blk p{font-size:1.05rem;max-width:22rem}
+.b1{background:var(--red);color:var(--cream)}.b2{background:var(--teal);color:var(--cream)}.b3{background:var(--mustard);color:var(--ink)}
+
+/* où */
+.sec{padding:clamp(4rem,9vw,7rem) 0}
+.sec h2.t{font-family:var(--disp);font-weight:400;font-size:clamp(2.2rem,5.6vw,4.4rem);line-height:1;margin:.6rem 0 2.4rem}
+.sec h2.t em{font-family:var(--script);font-style:normal;color:var(--red);font-size:1.1em}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem}
+.card{background:var(--paper);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:1.8rem 1.5rem;transition:transform .4s var(--ease)}
+.card:nth-child(1){transform:rotate(-1deg)}.card:nth-child(2){transform:rotate(.8deg)}.card:nth-child(3){transform:rotate(-.5deg)}
+.card:hover{transform:rotate(0) translateY(-6px)}
+.card .n{font-family:var(--disp);font-size:3.2rem;line-height:1;color:var(--red)}
+.card h3{font-family:var(--disp);font-weight:400;font-size:1.7rem;line-height:1.1;margin:.5rem 0}
+.card p{font-weight:300}
+
+/* répertoire : le dos de la pochette */
+.back{background:var(--navy);color:var(--cream);border-block:3px solid var(--ink)}
+.back h2.t em{color:var(--mustard)}
+.sides{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2.4rem}
+.side h3{font-family:var(--lab);font-weight:700;letter-spacing:.3em;text-transform:uppercase;font-size:.8rem;color:var(--mustard);border-bottom:2px solid var(--mustard);padding-bottom:.5rem}
+.side h3 span{font-family:var(--script);font-weight:400;letter-spacing:0;text-transform:none;font-size:1.9rem;color:var(--cream);margin-left:.6rem}
+.side ol{list-style:none;counter-reset:t}
+.side li{counter-increment:t;display:grid;grid-template-columns:2rem 1fr;padding:.62rem 0;border-bottom:1px dotted rgba(243,233,210,.35);transition:padding .35s var(--ease),color .3s}
+.side li::before{content:counter(t);font-family:var(--lab);font-weight:700;color:var(--mustard)}
+.side li:hover{padding-left:.6rem;color:var(--mustard)}
+.side b{font-family:var(--disp);font-weight:400;font-size:1.28rem;line-height:1.2}
+.side small{grid-column:2;font-family:var(--lab);font-weight:600;letter-spacing:.2em;text-transform:uppercase;font-size:.66rem;opacity:.7}
+
+/* duo */
+.duo{background:var(--teal);border-bottom:3px solid var(--ink)}
+.duo .w{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(2rem,6vw,5rem);align-items:center}
+@media(max-width:820px){.duo .w{grid-template-columns:1fr}}
+.duo .sheet{margin:auto;width:min(400px,100%);transform:rotate(1.5deg)}
+.duo h2.t{color:var(--cream)}.duo h2.t em{color:var(--mustard)}
+.duo p{color:var(--cream);font-size:1.12rem;max-width:30rem;margin-bottom:1rem;font-weight:300}
+.chips{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.3rem;list-style:none}
+.chips li{background:var(--cream);color:var(--ink);border:2px solid var(--ink);padding:.35rem .9rem;font-family:var(--lab);font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase}
+
+/* contact */
+.contact{background:var(--red);color:var(--cream);text-align:center;border-bottom:3px solid var(--ink)}
+.contact h2.t{margin-bottom:1.4rem}.contact h2.t em{color:var(--mustard)}
+.mail{display:inline-block;background:var(--cream);color:var(--ink);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:.8rem 1.6rem;font-family:var(--disp);font-size:clamp(1.3rem,4vw,2.4rem);user-select:all;margin:.4rem 0 1.6rem}
+footer{background:var(--ink);color:var(--cream);text-align:center;padding:1.6rem 16px;font-family:var(--lab);font-weight:600;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}h1 span b{transform:none}.sheet img{clip-path:none}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<nav><a class="logo" href="#top">Love &amp; Live</a>
+<ul><li><a href="#soiree">La soirée</a></li><li><a href="#lieux">Où</a></li><li><a href="#repertoire">Répertoire</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+
+<header class="hero" id="top">
+  <div class="art" id="art">
+    <div class="sun" aria-hidden="true"></div>
+    <figure class="sheet"><img src="duo-profil.webp" alt="Alex et Sève de profil, croquis à l'encre"><figcaption class="cap">Alex &amp; Sève</figcaption></figure>
+  </div>
+  <div class="copy">
+    <p class="lab">Love &amp; Live présente</p>
+    <h1 aria-label="Crooners and Ladies"><span><b style="--n:0">Crooners</b></span><span><b style="--n:1"><i>&amp;</i>Ladies</b></span></h1>
+    <p class="names">Alex &amp; Sève</p>
+    <p class="lead">Un tour de chant qui a de la classe et de la bonne humeur, avec une lumière qui bat à chaque titre. Chez vous, au plus près de vous.</p>
+    <a class="cta" href="#contact">Parlons de votre soirée</a>
+  </div>
+</header>
+
+<div class="ticker" aria-hidden="true"><div id="tk"></div></div>
+
+<section class="blocks" id="soiree">
+  <div class="blk b1 rv"><h2>Pas un grand spectacle.</h2><p>Un tour de chant à portée de verre, sans grande estrade ni chichi.</p></div>
+  <div class="blk b2 rv" style="--d:1"><h2>Mais ça envoie.</h2><p>La lumière suit chaque titre, au battement près. On ne l'explique pas, on la voit.</p></div>
+  <div class="blk b3 rv" style="--d:2"><h2>Et on retient.</h2><p>Du swing, du sourire, zéro prise de tête. Le genre de soirée où l'on dit : ah, c'est trop classe.</p></div>
+</section>
+
+<section class="sec" id="lieux">
+  <div class="w">
+    <p class="lab rv" style="color:var(--red)">Où on joue</p>
+    <h2 class="t rv" style="--d:1">Là où <em>vous</em> êtes</h2>
+    <div class="cards">
+      <div class="card rv"><span class="n">1</span><h3>Petite scène</h3><p>Un coin de bar, de salon ou de restaurant. Un micro, un peu de lumière, et la salle est dedans.</p></div>
+      <div class="card rv" style="--d:1"><span class="n">2</span><h3>Au sol, tout près</h3><p>Pas de scène du tout : on chante à deux mètres, au milieu de vos invités.</p></div>
+      <div class="card rv" style="--d:2"><span class="n">3</span><h3>La caravane américaine</h3><p>Aluminium poli, lumières, plein air. Elle fait scène et décor à elle seule.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec back" id="repertoire">
+  <div class="w">
+    <p class="lab rv" style="color:var(--mustard)">Au dos de la pochette</p>
+    <h2 class="t rv" style="--d:1">Crooners <em>&amp; ladies</em></h2>
+    <div class="sides">
+      <div class="side"><h3 class="rv">Face A<span>Crooners</span></h3><ol>
+        <li class="rv"><b>My Way</b><small>Sinatra</small></li><li class="rv"><b>New York, New York</b><small>Sinatra</small></li><li class="rv"><b>Fly Me to the Moon</b><small>Sinatra</small></li><li class="rv"><b>That's Amore</b><small>Dean Martin</small></li><li class="rv"><b>Everybody Loves Somebody</b><small>Dean Martin</small></li><li class="rv"><b>Unforgettable</b><small>Nat King Cole</small></li><li class="rv"><b>L-O-V-E</b><small>Nat King Cole</small></li><li class="rv"><b>Cry Me a River</b><small>version Bublé</small></li><li class="rv"><b>Feeling Good</b><small>version Bublé</small></li></ol></div>
+      <div class="side"><h3 class="rv">Face B<span>Ladies</span></h3><ol>
+        <li class="rv"><b>All That Jazz</b><small>Chicago</small></li><li class="rv"><b>Sooner or Later</b><small>Dick Tracy</small></li><li class="rv"><b>Fever</b><small>Peggy Lee</small></li><li class="rv"><b>I Put a Spell on You</b><small>Nina Simone</small></li><li class="rv"><b>Feeling Good</b><small>Nina Simone</small></li><li class="rv"><b>At Last</b><small>Etta James</small></li><li class="rv"><b>La Vie en rose</b><small>Édith Piaf</small></li><li class="rv"><b>Summertime</b><small>Ella Fitzgerald</small></li></ol></div>
+      <div class="side"><h3 class="rv">Bonus<span>Duos</span></h3><ol>
+        <li class="rv"><b>Somethin' Stupid</b><small>Sinatra &amp; Nancy</small></li><li class="rv"><b>Baby, It's Cold Outside</b><small>Duo</small></li><li class="rv"><b>Cheek to Cheek</b><small>Ella &amp; Louis</small></li><li class="rv"><b>Dream a Little Dream of Me</b><small>Ella &amp; Louis</small></li></ol></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec duo" id="duo">
+  <div class="w">
+    <figure class="sheet rv"><img src="duo-micro.webp" alt="Alex et Sève au micro, croquis à l'encre"><figcaption class="cap">Deux micros, une scène partagée</figcaption></figure>
+    <div>
+      <p class="lab rv" style="color:var(--mustard)">Le duo</p>
+      <h2 class="t rv" style="--d:1;margin-bottom:1.2rem">Alex <em>&amp;</em> Sève</h2>
+      <p class="rv" style="--d:2">Deux micros, deux personnalités, une scène partagée à égalité. Tantôt chacun son tour, tantôt ensemble, avec le sourire et du caractère, pour des duos qui font sourire la salle.</p>
+      <p class="rv" style="--d:3">Pour les mariages, les anniversaires, les repas associatifs, les bars, les hôtels et toutes les soirées qui méritent un peu de classe.</p>
+      <ul class="chips rv" style="--d:4"><li>Mariages</li><li>Repas associatifs</li><li>Comités des fêtes</li><li>Bars &amp; hôtels</li><li>Cocktails</li><li>Entreprises</li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec contact" id="contact">
+  <div class="w">
+    <p class="lab rv">Contact</p>
+    <h2 class="t rv" style="--d:1">Votre soirée, <em>version crooner</em> ?</h2>
+    <p class="mail rv" style="--d:2">contact@exemple.fr</p>
+    <p class="rv" style="--d:3">Dites-nous le lieu, la date et le nombre de convives. On s'adapte à votre budget.</p>
+  </div>
+</section>
+<footer>Love &amp; Live · Crooners &amp; Ladies</footer>
+
+<script>
+var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+var t=['My Way','New York, New York','Cry Me a River','Fever','All That Jazz','Fly Me to the Moon','Unforgettable','Sooner or Later'];
+var row=t.map(function(x){return '<span>'+x+'</span><em>★</em>'}).join('');document.getElementById('tk').innerHTML=row+row+row+row;
+// Une seule horloge : le champ de couleur, le soleil et la feuille battent ensemble
+var BPM=116,hero=document.querySelector('.hero'),art=document.getElementById('art'),T0=performance.now(),on=true,
+COL=['#e9a93a','#c7372b','#1f7b7a'],last=-1;
+new IntersectionObserver(function(e){on=e[0].isIntersecting}).observe(hero);
+function frame(now){requestAnimationFrame(frame);if(!on)return;
+  var t=(now-T0)/1000,beat=t*BPM/60,ph=beat%1,bar=Math.floor(beat/4),kick=Math.exp(-ph*5.5)*(Math.floor(beat)%4===0?1:.5);
+  hero.style.setProperty('--k',kick.toFixed(3));
+  if(bar!==last){last=bar;document.documentElement.style.setProperty('--bg',COL[bar%3])}}
+if(!reduce)requestAnimationFrame(frame);
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+</script>
+</body>
+</html>
