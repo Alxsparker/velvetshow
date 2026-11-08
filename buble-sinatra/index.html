@@ -77,7 +77,7 @@ h1 .ch{display:inline-block;transform:translateY(110%) rotate(8deg);opacity:0;
 .scroll{display:none;position:absolute;bottom:110px;left:50%;width:1px;height:50px;background:linear-gradient(var(--gold),transparent);animation:drip 2s ease-in-out infinite}
 @keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
-.hero-sketch{position:absolute;z-index:-1;height:92%;bottom:0;left:50%;transform:translateX(-50%);opacity:.2;pointer-events:none;animation:skin 2s ease .8s backwards}
+.hero-sketch{position:absolute;z-index:-1;height:92%;bottom:0;left:50%;transform:translateX(-50%);opacity:.16;pointer-events:none;animation:skin 2s ease .8s backwards}
 @keyframes skin{from{opacity:0}}
 @media(min-width:900px){
   .hero{text-align:left;place-items:center start;padding-left:7vw;padding-right:40vw}
@@ -86,9 +86,11 @@ h1 .ch{display:inline-block;transform:translateY(110%) rotate(8deg);opacity:0;
   .eyebrow{justify-content:flex-start}.eyebrow::before{display:none}
   .tag{margin-left:0}
   .par{font-size:clamp(2rem,4.4vw,4rem)}
-  .hero-sketch{left:auto;right:4vw;transform:none;opacity:.95;height:88%;bottom:3%}
+  .hero-sketch{left:auto;right:4vw;transform:none;opacity:.5;height:88%;bottom:3%}
   .hero .vinyl{display:none}
 }
+.amber{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 65% 55% at 0 100%,rgba(205,120,40,.16),transparent 70%),radial-gradient(ellipse 45% 40% at 100% 0,rgba(205,120,40,.08),transparent 70%)}
+.smoke-c{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 /* MARQUEE */
 .marquee{border-block:1px solid rgba(217,180,95,.25);overflow:hidden;padding:1.1rem 0;background:var(--ink2);white-space:nowrap}
 .marquee div{display:inline-block;font-family:var(--deco);font-size:1.5rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);animation:mq 38s linear infinite}
@@ -110,7 +112,7 @@ h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.
 .about p{color:#cfc4ab;margin-bottom:1rem;font-size:1.08rem}
 .stage{position:relative;aspect-ratio:4/5;border:1px solid rgba(217,180,95,.35);overflow:hidden;background:radial-gradient(ellipse at 50% 15%,#1b2c4a,#070a12 70%)}
 .stage::before{content:"";position:absolute;inset:8px;border:1px solid rgba(217,180,95,.2);z-index:2;pointer-events:none}
-.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:scale(1.9);transform-origin:50% 45%}.photo.sketch{object-fit:contain;transform:none;padding:6%}.ph{display:grid;place-items:center;color:var(--muted);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem}
+.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:scale(1.9);transform-origin:50% 45%}.photo.sketch{object-fit:contain;transform:none;padding:6%;opacity:.6}.ph{display:grid;place-items:center;color:var(--muted);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem}
 .spot{position:absolute;top:-5%;left:50%;width:80%;height:110%;margin-left:-40%;background:linear-gradient(rgba(244,226,168,.35),transparent 85%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);animation:flick 6s ease-in-out infinite}
 @keyframes flick{0%,100%{opacity:.9}45%{opacity:.7}50%{opacity:1}}
 .smoke{position:absolute;bottom:-10%;left:-20%;width:140%;height:50%;background:radial-gradient(ellipse,rgba(239,230,210,.12),transparent 65%);filter:blur(18px);animation:drift 12s ease-in-out infinite alternate}
@@ -179,6 +181,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <body>
 <div class="grain"></div>
 <div class="cursor-light" id="cl"></div>
+<div class="amber"></div>
 
 <nav id="nav">
   <a class="logo" href="#top">Love &amp; Live</a>
@@ -201,7 +204,8 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   </h1>
   <p class="par">un soir de jazz avec <b>Alex</b></p>
   <p class="guest" data-guest>en invité·e <b>Sève</b></p>
-  <p class="tag">Une voix, un verre, la lumière basse. Sinatra, Louis Armstrong, Nat King Cole : l'ambiance d'un club de jazz de Manhattan, pour vos cocktails, vos repas et vos soirées.</p>
+  <canvas class="smoke-c" id="smoke" aria-hidden="true"></canvas>
+  <p class="tag">Une voix, un whisky, la lumière basse. Sinatra, Louis Armstrong, Nat King Cole : l'ambiance d'un club de jazz de Manhattan, pour vos cocktails, vos repas et vos soirées.</p>
   <a class="cta" href="#contact">Parlons de votre événement</a>
   <div class="scroll"></div>
   
@@ -311,6 +315,23 @@ document.getElementById('mq').innerHTML=row+row+row+row;
 // Sève en invité·e : passer GUEST à false pour tout masquer
 var GUEST=true;
 if(!GUEST)document.querySelectorAll('[data-guest]').forEach(function(e){e.remove()});
+// Fumée de cigare / whisky ambré
+(function(){
+  var cv=document.getElementById('smoke');if(!cv)return;var ctx=cv.getContext('2d'),W,H,P=[];
+  function size(){W=cv.width=cv.clientWidth;H=cv.height=cv.clientHeight}size();addEventListener('resize',size);
+  function spawn(){P.push({x:Math.random()*W,y:H+60,r:60+Math.random()*90,vx:(Math.random()-.5)*.25,vy:-.25-Math.random()*.35,a:0,life:0,max:900+Math.random()*700,amber:Math.random()<.22})}
+  for(var i=0;i<14;i++){spawn();P[i].y=Math.random()*H;P[i].life=Math.random()*400}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    if(P.length<26&&Math.random()<.08)spawn();
+    for(var i=P.length-1;i>=0;i--){var p=P[i];p.life++;p.x+=p.vx+Math.sin(p.life/90+i)*.18;p.y+=p.vy;p.r+=.12;
+      var t=p.life/p.max;p.a=(t<.2?t/.2:(1-t)/.8)*.075;
+      if(t>=1||p.y<-p.r){P.splice(i,1);continue}
+      var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r),c=p.amber?'225,150,70':'225,215,200';
+      g.addColorStop(0,'rgba('+c+','+p.a+')');g.addColorStop(1,'rgba('+c+',0)');ctx.fillStyle=g;ctx.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2)}
+    if(!matchMedia('(prefers-reduced-motion:reduce)').matches)requestAnimationFrame(draw)}
+  draw();
+})();
 // Reveal
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
 document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
