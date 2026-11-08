@@ -428,7 +428,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
       <p class="kicker rv">Le duo</p>
       <h2 class="rv" style="--d:1">Sève <em>&amp; Alex</em></h2>
       <p class="rv" style="--d:2">Sève et Alex chantent à égalité. Deux micros, deux voix qui se répondent, une lumière qui change à chaque titre. Il joue la nonchalance, elle ne baisse jamais les yeux.</p>
-      <ul class="duos rv" style="--d:3"><li>Somethin' Stupid</li><li>Baby, It's Cold Outside</li><li>Cheek to Cheek</li><li>Dream a Little Dream of Me</li></ul>
+      <ul class="duos rv" style="--d:3"><li>Somethin' Stupid</li><li>Cheek to Cheek</li><li>Dream a Little Dream of Me</li></ul>
     </div>
   </div>
 </section>
@@ -441,8 +441,6 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <li class="rv"><b>My Way</b><small>Sinatra</small></li>
 <li class="rv"><b>New York, New York</b><small>Sinatra</small></li>
 <li class="rv"><b>Fly Me to the Moon</b><small>Sinatra</small></li>
-<li class="rv"><b>That's Amore</b><small>Dean Martin</small></li>
-<li class="rv"><b>Everybody Loves Somebody</b><small>Dean Martin</small></li>
 <li class="rv"><b>Unforgettable</b><small>Nat King Cole</small></li>
 <li class="rv"><b>L-O-V-E</b><small>Nat King Cole</small></li>
 <li class="rv"><b>Cry Me a River</b><small>version Bublé</small></li>
@@ -456,7 +454,6 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <li class="rv"><b>Summertime</b><small>Ella Fitzgerald</small></li>
 </ul></div><div class="rcol"><h3 class="rv">Duos</h3><ul class="songs">
 <li class="rv"><b>Somethin' Stupid</b><small>Sinatra &amp; Nancy</small></li>
-<li class="rv"><b>Baby, It's Cold Outside</b><small>duo</small></li>
 <li class="rv"><b>Cheek to Cheek</b><small>Ella &amp; Louis</small></li>
 <li class="rv"><b>Dream a Little Dream of Me</b><small>Ella &amp; Louis</small></li>
 </ul></div></div>
@@ -542,7 +539,7 @@ document.querySelectorAll('[data-split]').forEach(function(el){
     sp.style.setProperty('--mx',(mx*100)+'%');sp.style.setProperty('--my',(my*100)+'%');
     img.style.transform='translateY('+(r.top*-.08).toFixed(1)+'px) scale(1.15)'}
   if(!matchMedia('(prefers-reduced-motion:reduce)').matches)requestAnimationFrame(f)})();
-var titles=['My Way','New York, New York','Cry Me a River','Fly Me to the Moon','Fever','Feeling Good','Unforgettable','That’s Amore'];
+var titles=['My Way','New York, New York','Cry Me a River','Fly Me to the Moon','Fever','Feeling Good','Unforgettable'];
 var row=titles.map(function(t){return '<span>'+t+'</span><em>✦</em>'}).join('');
 document.getElementById('mq').innerHTML=row+row+row+row;
 // Sève en invité·e : passer GUEST à false pour tout masquer
