@@ -282,6 +282,8 @@ footer{background:rgba(10,7,6,.85)!important}
 .ring i{position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:#54401f;animation:bw 3.4s ease-in-out infinite;animation-delay:var(--dl)}
 @keyframes bw{0%,100%{background:#54401f;box-shadow:none}30%,52%{background:#fff0c0;box-shadow:0 0 14px 5px rgba(255,200,110,.8)}}
 @media(prefers-reduced-motion:reduce){.ring i{background:#e9cf8f}.sign{animation:none}}
+@media(max-width:899px){.banner{display:block;min-height:0;overflow:hidden}.banner>img{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;aspect-ratio:1600/604;object-fit:cover;object-position:50% 50%;transform:none!important;z-index:0;display:block}.banner::after,.banner .spot-m{display:none}.banner .w{padding-top:1.8rem!important;padding-bottom:3rem!important}}
+.banner>img{transform:none!important;object-position:50% 35%}
 /* SETLIST */
 .set{background:var(--ink2)}
 .songs{list-style:none;margin-top:3rem;border-top:1px solid rgba(217,180,95,.25);counter-reset:s}
