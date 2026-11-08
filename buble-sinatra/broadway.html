@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crooners &amp; Ladies</title>
+<meta name="description" content="Crooners & Ladies : Sève et Alex chantent Sinatra, Dean Martin, Nat King Cole et les grandes dames de Broadway et du jazz. Un tour de chant en lumière, à l'affiche chez vous. Love & Live.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Josefin+Sans:wght@400;600;700&family=Limelight&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+/* Mise en page : affiche de Broadway. Noir, or, rouge velours, ampoules de marquee qui courent au battement, projecteurs, programme façon Playbill. Les croquis sont encadrés d'or sur feuille ivoire pour ressortir. */
+:root{
+  color-scheme:dark;
+  --night:#0b0a0c; --night2:#131013; --velvet:#8e1623; --velvet2:#b01a2b; --gold:#e6bd5c; --gold2:#fbe7a8; --ivory:#f4ecd9; --mute:#a59c8b;
+  --disp:'Limelight','Didot',Georgia,serif; --lab:'Josefin Sans','Century Gothic',Arial,sans-serif; --body:'Jost','Helvetica Neue',Arial,sans-serif; --script:'Pinyon Script','Snell Roundhand',cursive;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--night)}
+body{background:var(--night);color:var(--ivory);font-family:var(--body);font-weight:300;line-height:1.65;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.w{max-width:1140px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.lab{font-family:var(--lab);font-weight:600;font-size:.76rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gold)}
+nav{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:14px max(16px,4vw);background:linear-gradient(rgba(11,10,12,.92),transparent)}
+.logo{font-family:var(--script);font-size:1.9rem;color:var(--gold)}
+nav ul{display:flex;gap:1.8rem;list-style:none;font-family:var(--lab);font-weight:600;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase}
+nav ul a{border-bottom:1px solid transparent;padding-bottom:2px;transition:border-color .3s,color .3s}
+nav ul a:hover{color:var(--gold);border-color:var(--gold)}
+@media(max-width:720px){nav ul li:not(:last-child){display:none}}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:calc(var(--d,0)*110ms)}
+.rv.in{opacity:1;transform:none}
+
+/* Accueil : l'affiche */
+.hero{--k:0;position:relative;overflow:hidden;isolation:isolate;padding:120px 0 90px;background:radial-gradient(ellipse 70% 60% at 50% 30%,#241216,var(--night) 70%)}
+.curtain{position:absolute;top:0;bottom:0;width:min(15vw,190px);z-index:-1;background:repeating-linear-gradient(90deg,#5c0d17 0 14px,#8e1623 14px 30px,#6a0f1b 30px 44px);opacity:.9}
+.curtain.l{left:0;box-shadow:inset -40px 0 50px rgba(0,0,0,.6)}.curtain.r{right:0;box-shadow:inset 40px 0 50px rgba(0,0,0,.6)}
+@media(max-width:700px){.curtain{width:8vw}}
+.beam{position:absolute;top:-8%;width:70%;height:130%;z-index:-1;background:linear-gradient(rgba(251,231,168,calc(.1 + var(--k)*.12)),transparent 80%);clip-path:polygon(46% 0,54% 0,100% 100%,0 100%);transform-origin:50% 0;mix-blend-mode:screen}
+.beam.a{left:-12%;animation:sw 9s ease-in-out infinite alternate}.beam.b{right:-12%;animation:sw 11s ease-in-out infinite alternate-reverse}
+@keyframes sw{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+.stage{max-width:820px;margin:0 auto;text-align:center}
+.marquee{max-width:760px;margin-left:auto;margin-right:auto}
+.lead{margin-left:auto;margin-right:auto}
+.wm{position:absolute;z-index:-1;pointer-events:none;height:112%;width:auto;max-width:none;top:-6%;opacity:.15;-webkit-mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent)}
+.wm1{right:-4%;opacity:calc(.12 + var(--k)*.05)}
+@media(max-width:900px){.wm1{right:-30%;opacity:.1}}
+.playing{display:inline-block;background:var(--velvet2);color:var(--ivory);font-family:var(--lab);font-weight:700;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;padding:.4rem 1rem;margin:.9rem 0 1.2rem;opacity:0;animation:fade 1s ease 1.6s forwards}
+.marquee{position:relative;border:3px solid var(--gold);padding:clamp(1.6rem,3.4vw,2.8rem) clamp(1.6rem,3vw,2.6rem);background:linear-gradient(#17090c,#0d0709);box-shadow:0 0 calc(30px + var(--k)*40px) rgba(230,189,92,calc(.15 + var(--k)*.25));text-align:center}
+.bulbs{position:absolute;display:flex;justify-content:space-between;pointer-events:none}
+.bulbs.t,.bulbs.b{left:-3px;right:-3px;height:0}.bulbs.t{top:-3px}.bulbs.b{bottom:-3px}
+.bulbs.l,.bulbs.r{top:-3px;bottom:-3px;width:0;flex-direction:column}.bulbs.l{left:-3px}.bulbs.r{right:-3px}
+.bulbs i{width:11px;height:11px;margin:-5.5px;border-radius:50%;background:#4a3a1c;transition:background .08s,box-shadow .08s}
+.bulbs i.on{background:var(--gold2);box-shadow:0 0 10px 3px rgba(251,231,168,.8)}
+.bulbs.l i,.bulbs.r i{margin:-5.5px 0 -5.5px -5.5px}
+h1{font-family:var(--disp);font-weight:400;line-height:.98;text-transform:uppercase;font-size:clamp(2.6rem,6.8vw,6rem);letter-spacing:.02em;color:var(--gold2);text-shadow:0 0 calc(10px + var(--k)*26px) rgba(230,189,92,.6)}
+h1 span{display:block;overflow:hidden;padding:.04em 0}
+h1 b{display:block;font-weight:400;transform:translateY(106%);animation:up 1s var(--ease) forwards;animation-delay:calc(var(--n)*.16s + .3s)}
+@keyframes up{to{transform:none}}
+.starring{font-family:var(--script);font-size:clamp(2.2rem,5vw,3.6rem);color:var(--ivory);margin-top:.6rem;opacity:0;animation:fade 1s ease 1.2s forwards}
+.starring b{font-weight:400;color:var(--gold)}
+@keyframes fade{to{opacity:1}}
+.lead{font-size:1.14rem;max-width:32rem;margin:1.4rem 0 0;color:#d6cfbf;opacity:0;animation:fade 1s ease 1.9s forwards}
+.cta{display:inline-block;margin-top:1.6rem;background:var(--gold);color:var(--night);font-family:var(--lab);font-weight:700;font-size:.8rem;letter-spacing:.26em;text-transform:uppercase;padding:1rem 2rem;opacity:0;animation:fade 1s ease 2.2s forwards;transition:background .3s,transform .3s}
+.cta:hover{background:var(--gold2);transform:translateY(-3px)}
+.frame{position:relative;border:3px solid var(--gold);background:var(--ivory);padding:.7rem;box-shadow:0 0 calc(40px + var(--k)*40px) rgba(230,189,92,calc(.18 + var(--k)*.22)),0 30px 70px rgba(0,0,0,.7);transform:rotate(1.5deg) scale(calc(1 + var(--k)*.012));max-width:420px;margin:auto;width:100%}
+.frame img{display:block;width:100%;height:auto;mix-blend-mode:multiply;clip-path:inset(0 0 100% 0);animation:draw 2.2s cubic-bezier(.6,.1,.2,1) .8s forwards}
+@keyframes draw{to{clip-path:inset(0)}}
+.frame .cap{font-family:var(--lab);font-weight:700;font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;text-align:center;color:#3a2a14;margin-top:.45rem}
+
+/* Actes */
+.sec{padding:clamp(4.5rem,10vw,8rem) 0}
+.sec h2.t{font-family:var(--disp);font-weight:400;font-size:clamp(2rem,5vw,3.8rem);line-height:1.04;margin:.6rem 0 2.4rem;color:var(--gold2)}
+.sec h2.t em{font-family:var(--script);font-style:normal;color:var(--ivory);font-size:1.12em}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(230,189,92,.5);border-bottom:1px solid rgba(230,189,92,.5)}
+@media(max-width:860px){.acts{grid-template-columns:1fr}}
+.act{padding:2.4rem clamp(1.2rem,2.4vw,2rem);border-right:1px solid rgba(230,189,92,.3)}
+.act:last-child{border-right:0}
+@media(max-width:860px){.act{border-right:0;border-bottom:1px solid rgba(230,189,92,.3)}.act:last-child{border-bottom:0}}
+.act .n{font-family:var(--disp);font-size:.95rem;letter-spacing:.3em;color:var(--velvet2);text-transform:uppercase}
+.act h3{font-family:var(--disp);font-weight:400;font-size:clamp(1.6rem,2.8vw,2.2rem);line-height:1.1;margin:.6rem 0 .8rem;color:var(--ivory)}
+.act p{color:#c3bcad;font-size:1.02rem}
+
+/* Billets */
+.alt{background:var(--night2)}
+.tickets{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.6rem}
+.ticket{position:relative;background:var(--ivory);color:#1b1410;padding:1.6rem 1.5rem 1.4rem 2.2rem;border-radius:6px;transition:transform .4s var(--ease)}
+.ticket::before,.ticket::after{content:"";position:absolute;left:-10px;width:20px;height:20px;border-radius:50%;background:var(--night2)}
+.ticket::before{top:30%}.ticket::after{top:62%}
+.ticket:hover{transform:rotate(-1deg) translateY(-6px)}
+.ticket .k{font-family:var(--lab);font-weight:700;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--velvet2)}
+.ticket h3{font-family:var(--disp);font-weight:400;font-size:1.6rem;line-height:1.1;margin:.4rem 0 .6rem}
+.ticket p{font-size:1rem}
+.ticket hr{border:0;border-top:2px dashed rgba(27,20,16,.35);margin:.9rem 0 .6rem}
+.ticket small{font-family:var(--lab);font-weight:600;letter-spacing:.2em;text-transform:uppercase;font-size:.66rem;color:#5a4c3b}
+
+/* Programme */
+.prog{background:var(--night)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:2.6rem}
+.cols h3{font-family:var(--lab);font-weight:700;font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--gold);padding-bottom:.55rem}
+.cols h3 span{font-family:var(--script);font-weight:400;font-size:1.9rem;letter-spacing:0;text-transform:none;color:var(--ivory);margin-left:.5rem}
+.cols ul{list-style:none}
+.cols li{display:flex;align-items:baseline;gap:.5rem;padding:.55rem 0;transition:color .3s,padding .35s var(--ease)}
+.cols li:hover{padding-left:.5rem;color:var(--gold2)}
+.cols li b{font-family:var(--disp);font-weight:400;font-size:1.15rem;line-height:1.25}
+.cols li i{flex:1;border-bottom:1px dotted rgba(244,236,217,.35);transform:translateY(-.3em)}
+.cols li small{font-family:var(--lab);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.64rem;color:var(--mute);text-align:right}
+
+/* Distribution */
+.cast{position:relative;overflow:hidden;isolation:isolate}
+.cast .w{max-width:760px}
+.wm2{right:-2%;opacity:.11;height:130%;top:-15%}
+@media(max-width:900px){.wm2{right:-35%;opacity:.08}}
+.cast p{color:#d0c9b9;font-size:1.1rem;max-width:30rem;margin-bottom:1rem}
+.roles{list-style:none;margin-top:1.4rem;border-top:1px solid rgba(230,189,92,.4)}
+.roles li{display:flex;justify-content:space-between;gap:1rem;padding:.8rem 0;border-bottom:1px solid rgba(230,189,92,.25)}
+.roles b{font-family:var(--disp);font-weight:400;font-size:1.5rem;color:var(--gold2)}
+.roles span{font-family:var(--lab);font-weight:600;letter-spacing:.18em;text-transform:uppercase;font-size:.7rem;color:var(--mute);align-self:center;text-align:right}
+.chips{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem;list-style:none}
+.chips li{border:1px solid rgba(230,189,92,.5);padding:.35rem .9rem;font-family:var(--lab);font-weight:600;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+
+/* Réservations */
+.book{background:linear-gradient(#2a0a10,var(--velvet) 130%);text-align:center;border-top:3px solid var(--gold)}
+.book h2.t{margin-bottom:1.4rem}
+.mail{display:inline-block;background:var(--ivory);color:#1b1410;font-family:var(--disp);font-size:clamp(1.3rem,4vw,2.4rem);padding:.8rem 1.6rem;border:3px solid var(--gold);user-select:all;margin:.4rem 0 1.4rem}
+footer{background:var(--night);text-align:center;padding:1.6rem 16px;font-family:var(--lab);font-weight:600;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:#7b7366}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}h1 b{transform:none}.starring,.lead,.cta,.playing{opacity:1}.frame img{clip-path:none}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<nav><a class="logo" href="#top">Love &amp; Live</a>
+<ul><li><a href="#actes">La soirée</a></li><li><a href="#lieux">Où</a></li><li><a href="#programme">Programme</a></li><li><a href="#reserver">Réserver</a></li></ul></nav>
+
+<header class="hero" id="top">
+  <div class="curtain l" aria-hidden="true"></div><div class="curtain r" aria-hidden="true"></div>
+  <img class="wm wm1" src="duo-profil-or.webp" alt="" aria-hidden="true"><div class="beam a" aria-hidden="true"></div><div class="beam b" aria-hidden="true"></div>
+  <div class="w stage">
+    <div>
+      <p class="lab">Love &amp; Live présente</p>
+      <span class="playing">À l'affiche · partout où vous êtes</span>
+      <div class="marquee" id="mq">
+        <div class="bulbs t"></div><div class="bulbs b"></div><div class="bulbs l"></div><div class="bulbs r"></div>
+        <h1 aria-label="Crooners and Ladies"><span><b style="--n:0">Crooners</b></span><span><b style="--n:1">&amp; Ladies</b></span></h1>
+        <p class="starring">avec <b>Sève</b> &amp; <b>Alex</b></p>
+      </div>
+      <p class="lead">Sinatra, Dean Martin, Nat King Cole, et les grandes dames de Broadway et du jazz. Un tour de chant en lumière, au plus près de vous.</p>
+      <a class="cta" href="#reserver">Réserver une date</a>
+    </div>
+  </div>
+</header>
+
+<section class="sec" id="actes">
+  <div class="w">
+    <p class="lab rv">La soirée en trois actes</p>
+    <h2 class="t rv" style="--d:1">Du <em>rideau</em> au rappel</h2>
+    <div class="acts">
+      <div class="act rv"><span class="n">Acte I</span><h3>Au plus près de vous</h3><p>Petite scène, ou carrément au sol, au milieu de vos invités. On chante à deux mètres, on sourit, la salle est dedans.</p></div>
+      <div class="act rv" style="--d:1"><span class="n">Acte II</span><h3>La lumière bat avec chaque titre</h3><p>Chaque morceau a sa couleur et son tempo. Elle frappe sur les temps forts, et on sent la salle se redresser.</p></div>
+      <div class="act rv" style="--d:2"><span class="n">Acte III</span><h3>Une soirée dont on parle</h3><p>Du swing, du sourire, une classe naturelle. Le genre de soirée où l'on dit : ah, c'est trop classe.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="lieux">
+  <div class="w">
+    <p class="lab rv">Lieux de représentation</p>
+    <h2 class="t rv" style="--d:1">Là où <em>vous</em> êtes</h2>
+    <div class="tickets">
+      <div class="ticket rv"><span class="k">Place n° 1</span><h3>Petite scène</h3><p>Un coin de bar, de salon ou de restaurant. Un micro, de la lumière, et la salle est dedans.</p><hr><small>Bars · restaurants · salons</small></div>
+      <div class="ticket rv" style="--d:1"><span class="k">Place n° 2</span><h3>Au sol, tout près</h3><p>Au milieu de vos invités, à deux mètres. Impossible de ne pas être embarqué.</p><hr><small>Repas · cocktails · mariages</small></div>
+      <div class="ticket rv" style="--d:2"><span class="k">Place n° 3</span><h3>La caravane américaine</h3><p>Aluminium poli, lumières, plein air. Elle fait scène et décor à elle seule.</p><hr><small>Jardins · fêtes · inaugurations</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec prog" id="programme">
+  <div class="w">
+    <p class="lab rv">Au programme</p>
+    <h2 class="t rv" style="--d:1">Crooners <em>&amp; ladies</em></h2>
+    <div class="cols">
+      <div><h3 class="rv">Premier acte<span>Crooners</span></h3><ul>
+        <li class="rv"><b>My Way</b><i></i><small>Sinatra</small></li><li class="rv"><b>New York, New York</b><i></i><small>Sinatra</small></li><li class="rv"><b>Fly Me to the Moon</b><i></i><small>Sinatra</small></li><li class="rv"><b>That's Amore</b><i></i><small>Dean Martin</small></li><li class="rv"><b>Everybody Loves Somebody</b><i></i><small>Dean Martin</small></li><li class="rv"><b>Unforgettable</b><i></i><small>Nat King Cole</small></li><li class="rv"><b>L-O-V-E</b><i></i><small>Nat King Cole</small></li><li class="rv"><b>Cry Me a River</b><i></i><small>version Bublé</small></li><li class="rv"><b>Feeling Good</b><i></i><small>version Bublé</small></li></ul></div>
+      <div><h3 class="rv">Second acte<span>Ladies</span></h3><ul>
+        <li class="rv"><b>All That Jazz</b><i></i><small>Chicago</small></li><li class="rv"><b>Sooner or Later</b><i></i><small>Dick Tracy</small></li><li class="rv"><b>Fever</b><i></i><small>Peggy Lee</small></li><li class="rv"><b>I Put a Spell on You</b><i></i><small>Nina Simone</small></li><li class="rv"><b>Feeling Good</b><i></i><small>Nina Simone</small></li><li class="rv"><b>At Last</b><i></i><small>Etta James</small></li><li class="rv"><b>La Vie en rose</b><i></i><small>Édith Piaf</small></li><li class="rv"><b>Summertime</b><i></i><small>Ella Fitzgerald</small></li></ul></div>
+      <div><h3 class="rv">Rappel<span>Duos</span></h3><ul>
+        <li class="rv"><b>Somethin' Stupid</b><i></i><small>Sinatra &amp; Nancy</small></li><li class="rv"><b>Baby, It's Cold Outside</b><i></i><small>Duo</small></li><li class="rv"><b>Cheek to Cheek</b><i></i><small>Ella &amp; Louis</small></li><li class="rv"><b>Dream a Little Dream of Me</b><i></i><small>Ella &amp; Louis</small></li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt cast" id="distribution">
+  <img class="wm wm2" src="duo-micro-or.webp" alt="" aria-hidden="true">
+  <div class="w">
+    <div>
+      <p class="lab rv">La distribution</p>
+      <h2 class="t rv" style="--d:1;margin-bottom:1.2rem">Sève <em>&amp;</em> Alex</h2>
+      <p class="rv" style="--d:2">Deux personnalités, une affiche partagée à égalité. Tantôt chacun son tour, tantôt ensemble, avec le sourire et du caractère, pour des duos qui font sourire la salle.</p>
+      <ul class="roles rv" style="--d:3"><li><b>Sève</b><span>Chant</span></li><li><b>Alex</b><span>Chant · Lumières</span></li></ul>
+      <ul class="chips rv" style="--d:4"><li>Mariages</li><li>Repas associatifs</li><li>Comités des fêtes</li><li>Bars &amp; hôtels</li><li>Cocktails</li><li>Entreprises</li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec book" id="reserver">
+  <div class="w">
+    <p class="lab rv" style="color:var(--gold2)">Réservations</p>
+    <h2 class="t rv" style="--d:1">Votre soirée, <em>à l'affiche</em> ?</h2>
+    <p class="mail rv" style="--d:2">contact@exemple.fr</p>
+    <p class="rv" style="--d:3">Dites-nous le lieu, la date et le nombre de convives. On s'adapte à votre budget.</p>
+  </div>
+</section>
+<footer>Love &amp; Live · Crooners &amp; Ladies · Sève &amp; Alex</footer>
+
+<script>
+var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+// Ampoules du marquee
+var mq=document.getElementById('mq'),all=[];
+[['t',22],['b',22],['l',9],['r',9]].forEach(function(s){var el=mq.querySelector('.bulbs.'+s[0]);for(var i=0;i<s[1];i++){var b=document.createElement('i');el.appendChild(b);all.push({el:b,s:s[0],i:i,n:s[1]})}});
+function order(o){switch(o.s){case 't':return o.i;case 'r':return 22+o.i;case 'b':return 22+9+(21-o.i);default:return 22+9+22+(8-o.i)}}
+all.forEach(function(o){o.o=order(o)});
+// Une seule horloge : ampoules, halo du titre, cadre et projecteurs battent ensemble
+var BPM=116,hero=document.querySelector('.hero'),T0=performance.now(),on=true,lastStep=-1;
+new IntersectionObserver(function(e){on=e[0].isIntersecting}).observe(hero);
+function frame(now){requestAnimationFrame(frame);if(!on)return;
+  var t=(now-T0)/1000,beat=t*BPM/60,ph=beat%1,kick=Math.exp(-ph*5.5)*(Math.floor(beat)%4===0?1:.5),step=Math.floor(beat*2);
+  hero.style.setProperty('--k',kick.toFixed(3));
+  if(step!==lastStep){lastStep=step;for(var i=0;i<all.length;i++)all[i].el.classList.toggle('on',(all[i].o+step)%3===0)}}
+if(reduce){all.forEach(function(o,i){if(i%3===0)o.el.classList.add('on')})}else requestAnimationFrame(frame);
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+</script>
+</body>
+</html>
