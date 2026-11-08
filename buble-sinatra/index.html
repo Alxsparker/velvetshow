@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>New York Swing Night — Love &amp; Live</title>
-<meta name="description" content="New York Swing Night par Alex : Sinatra, Louis Armstrong, Nat King Cole, en solo. Idéal comités des fêtes, thés dansants, repas dansants. Love &amp; Live.">
-<meta name="theme-color" content="#0b0907">
+<title>New York After Hours — Love &amp; Live</title>
+<meta name="description" content="New York After Hours par Alex : Sinatra, Louis Armstrong, Nat King Cole, en solo. Une soirée club de jazz pour pubs, bars, restaurants et hôtels. Love &amp; Live.">
+<meta name="theme-color" content="#070a12">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,800;1,500&family=Italiana&family=Pinyon+Script&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#0b0907; --ink2:#14100c; --gold:#d9b45f; --gold2:#f4e2a8; --gold3:#8c6a24;
+  --ink:#070a12; --ink2:#0d121d; --gold:#d9b45f; --gold2:#f4e2a8; --gold3:#8c6a24;
   --cream:#efe6d2; --muted:#a89a7f; --red:#8e1b22;
   --serif:'Bodoni Moda','Didot',Georgia,serif; --deco:'Italiana','Bodoni Moda',serif;
   --script:'Pinyon Script','Snell Roundhand',cursive; --sans:'Jost','Helvetica Neue',Arial,sans-serif;
@@ -31,7 +31,7 @@ a{color:inherit;text-decoration:none}
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:18px 5vw;
   background:linear-gradient(var(--ink),transparent);transition:background .4s}
-nav.solid{background:rgba(11,9,7,.88);backdrop-filter:blur(8px)}
+nav.solid{background:rgba(7,10,18,.88);backdrop-filter:blur(8px)}
 .logo{font-family:var(--script);font-size:1.9rem;color:var(--gold)}
 nav ul{display:flex;gap:2rem;list-style:none;font-size:.78rem;letter-spacing:.28em;text-transform:uppercase}
 nav ul a{position:relative;padding:4px 0}
@@ -96,7 +96,7 @@ h2 em{font-family:var(--script);font-style:normal;color:var(--gold);font-size:1.
 .about{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}
 @media(max-width:800px){.about{grid-template-columns:1fr}}
 .about p{color:#cfc4ab;margin-bottom:1rem;font-size:1.08rem}
-.stage{position:relative;aspect-ratio:4/5;border:1px solid rgba(217,180,95,.35);overflow:hidden;background:radial-gradient(ellipse at 50% 15%,#3a2b17,#0e0b08 70%)}
+.stage{position:relative;aspect-ratio:4/5;border:1px solid rgba(217,180,95,.35);overflow:hidden;background:radial-gradient(ellipse at 50% 15%,#1b2c4a,#070a12 70%)}
 .stage::before{content:"";position:absolute;inset:8px;border:1px solid rgba(217,180,95,.2);z-index:2;pointer-events:none}
 .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:scale(1.9);transform-origin:50% 45%}.photo.sketch{object-fit:contain;transform:none;filter:invert(1) sepia(.9) saturate(2.6) brightness(.95);mix-blend-mode:screen;padding:6%}.ph{display:grid;place-items:center;color:var(--muted);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem}
 .spot{position:absolute;top:-5%;left:50%;width:80%;height:110%;margin-left:-40%;background:linear-gradient(rgba(244,226,168,.35),transparent 85%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);animation:flick 6s ease-in-out infinite}
@@ -177,13 +177,13 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   <div class="beam"></div><div class="beam b2"></div>
   <div class="vinyl"></div>
   <p class="eyebrow">Love &amp; Live présente</p>
-  <h1 aria-label="New York Swing Night">
+  <h1 aria-label="New York After Hours">
     <span class="line" data-split="NEW YORK"></span>
-    <span class="line" data-split="SWING NIGHT" data-off="7"></span>
+    <span class="line" data-split="AFTER HOURS" data-off="7"></span>
   </h1>
-  <p class="par">une soirée new-yorkaise avec <b>Alex</b></p>
-  <p class="tag">Manhattan, minuit, un club de jazz : Sinatra, Louis Armstrong, Nat King Cole. Un chanteur, ses backing tracks, et toute la salle qui danse.</p>
-  <a class="cta" href="#contact">Réserver ma place</a>
+  <p class="par">un soir de jazz avec <b>Alex</b></p>
+  <p class="tag">Une voix, un verre, la lumière basse. Sinatra, Louis Armstrong, Nat King Cole, comme dans un club de jazz de Manhattan après minuit.</p>
+  <a class="cta" href="#contact">Réserver une soirée</a>
   <div class="scroll"></div>
   
 </header>
@@ -195,8 +195,8 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
     <div>
       <p class="kicker rv">Le show</p>
       <h2 class="rv" style="--d:1">Une nuit <em>à Manhattan</em></h2>
-      <p class="rv" style="--d:2">Le New York de Sinatra, de Louis Armstrong et de Nat King Cole : les clubs de jazz, les trottoirs mouillés, le smoking et la cravate dénouée à 2 heures du matin. Des chansons que tout le monde connaît et que les anciens adorent retrouver.</p>
-      <p class="rv" style="--d:3">Pas d'orchestre à payer : Alex arrive seul, avec sa voix et ses backing tracks lancés en direct. Un son de grand show, au prix d'un budget de comité des fêtes.</p>
+      <p class="rv" style="--d:2">Le New York de Sinatra, de Louis Armstrong et de Nat King Cole : les clubs de jazz, les trottoirs mouillés, le smoking et la cravate dénouée à 2 heures du matin. Des chansons que tout le monde connaît et qu'on écoute, un verre à la main.</p>
+      <p class="rv" style="--d:3">Pas d'orchestre à loger : Alex arrive seul, avec sa voix et ses backing tracks lancés en direct. Un format simple, discret et élégant, qui s'installe dans un coin de salle.</p>
     </div>
     <div class="stage rv" style="--d:2">
       <div class="spot"></div>
@@ -204,7 +204,7 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   </div>
 
   <div class="wrap pillars">
-    <div class="card rv"><div class="n">I</div><h3>Le swing</h3><p>Sinatra, Armstrong, Nat King Cole : l'élégance décontractée, le smoking et le sourire en coin.</p></div>
+    <div class="card rv"><div class="n">I</div><h3>La voix</h3><p>Sinatra, Armstrong, Nat King Cole : l'élégance décontractée, le smoking et le sourire en coin.</p></div>
     <div class="card rv" style="--d:1"><div class="n">II</div><h3>Manhattan</h3><p>New York, New York, Fever, Cheek to Cheek : les standards qui font lever toute la salle.</p></div>
     <div class="card rv" style="--d:2"><div class="n">III</div><h3>Clé en main</h3><p>Sono, lumières et bandes orchestrales fournies. Alex s'installe, vous profitez. Un tarif adapté aux associations.</p></div>
   </div>
@@ -240,11 +240,11 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
 <section id="formules">
   <div class="wrap">
     <p class="kicker rv">Formules</p>
-    <h2 class="rv" style="--d:1">Pour <em>chaque</em> fête</h2>
+    <h2 class="rv" style="--d:1">Pour <em>chaque</em> lieu</h2>
     <div class="deals">
-      <div class="deal rv"><h3>Thé dansant</h3><p>Après-midi, résidences, clubs seniors</p><ul><li>2 × 45 minutes</li><li>Swing, valses, chansons à danser</li><li>Sono incluse</li></ul></div>
-      <div class="deal hot rv" style="--d:1"><h3>Swing Night</h3><p>Repas dansant, fête du village</p><ul><li>Show d'environ 2 h</li><li>Sinatra, Armstrong, Nat King Cole</li><li>Tarif comité des fêtes</li></ul></div>
-      <div class="deal rv" style="--d:2"><h3>Gala</h3><p>Entreprise, mariage, anniversaire</p><ul><li>Chanson dédicacée</li><li>Playlist à votre image</li><li>Devis personnalisé</li></ul></div>
+      <div class="deal rv"><h3>Pub &amp; bar</h3><p>Soirée jazz, ambiance club</p><ul><li>2 × 40 minutes</li><li>Standards, voix et backing tracks</li><li>Sono incluse</li></ul></div>
+      <div class="deal hot rv" style="--d:1"><h3>After Hours</h3><p>Restaurant, hôtel, cave à cocktails</p><ul><li>Concert d'environ 1 h 30</li><li>Sinatra, Armstrong, Nat King Cole</li><li>Tarif sur devis</li></ul></div>
+      <div class="deal rv" style="--d:2"><h3>Privé</h3><p>Anniversaire, gala, entreprise</p><ul><li>Chanson dédicacée</li><li>Playlist à votre image</li><li>Devis personnalisé</li></ul></div>
     </div>
   </div>
 </section>
@@ -253,13 +253,13 @@ footer{padding:2rem 5vw;text-align:center;font-size:.72rem;letter-spacing:.3em;t
   <div class="vinyl"></div>
   <div class="wrap">
     <p class="kicker rv">Réserver</p>
-    <h2 class="rv" style="--d:1">Votre prochaine fête, <em>version New York</em> ?</h2>
+    <h2 class="rv" style="--d:1">Votre bar, <em>version club de jazz</em> ?</h2>
     <p class="big rv" style="--d:2"><a href="mailto:contact@exemple.fr">contact@exemple.fr</a></p>
     <div class="socials rv" style="--d:3"><a href="#">Instagram</a><a href="#">YouTube</a><a href="#">Facebook</a></div>
   </div>
 </section>
 
-<footer><span class="tick"></span>Love &amp; Live — New York Swing Night par Alex</footer>
+<footer><span class="tick"></span>Love &amp; Live — New York After Hours par Alex</footer>
 
 <script>
 // Lettres du titre
