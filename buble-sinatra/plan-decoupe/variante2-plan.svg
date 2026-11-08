@@ -68,6 +68,8 @@
 <line x1="1000" y1="0" x2="1000" y2="2500" stroke="#06c" stroke-width="3" stroke-dasharray="40 25"/>
 <line x1="2000" y1="0" x2="2000" y2="2500" stroke="#06c" stroke-width="3" stroke-dasharray="40 25"/>
 <line x1="3000" y1="0" x2="3000" y2="2500" stroke="#06c" stroke-width="3" stroke-dasharray="40 25"/>
+<line x1="0" y1="1330" x2="4000" y2="1330" stroke="#c0c" stroke-width="3" stroke-dasharray="20 20"/>
+<text x="20" y="1315" font-size="45" fill="#c0c">pli / charnieres (y=1170)</text>
 <text x="500" y="2530" font-size="60" text-anchor="middle" fill="#06c">M1</text>
 <text x="1500" y="2530" font-size="60" text-anchor="middle" fill="#06c">M2</text>
 <text x="2500" y="2530" font-size="60" text-anchor="middle" fill="#06c">M3</text>
