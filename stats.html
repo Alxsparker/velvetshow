@@ -121,7 +121,8 @@
       const parts = raw.split('?s=');
       const page = parts[0] || '/';
       pageCount[page] = (pageCount[page] || 0) + n;
-      if (parts.length > 1 && parts[1]) sourceCount[parts[1]] = (sourceCount[parts[1]] || 0) + n;
+      // Les clics « Acheter » (/buy-click/…) ne sont pas des visites : ils restent dans la liste des pages, pas dans les sources.
+      if (parts.length > 1 && parts[1] && page.indexOf('/buy-click/') !== 0) sourceCount[parts[1]] = (sourceCount[parts[1]] || 0) + n;
     });
 
     const paths = Object.keys(pageCount).sort((a,b) => pageCount[b] - pageCount[a]);
@@ -259,7 +260,7 @@
     // Une visite repérée s'appelle « /page?s=source » : on additionne les pages d'une même source.
     Object.keys(sum.byPath || {}).forEach(function(raw){
       const p = raw.split('?s=');
-      if (p.length > 1 && p[1]) visits[p[1]] = (visits[p[1]] || 0) + sum.byPath[raw];
+      if (p.length > 1 && p[1] && p[0].indexOf('/buy-click/') !== 0) visits[p[1]] = (visits[p[1]] || 0) + sum.byPath[raw];
     });
     (dl.rows || []).forEach(function(x){ if (x.src) clicks[x.src] = (clicks[x.src] || 0) + 1; });
 

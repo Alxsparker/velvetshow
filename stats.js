@@ -73,6 +73,9 @@
 
   track(location.pathname + (source ? '?s=' + source : ''));
 
+  // Début des numéros de page de paiement Lemon Squeezy → produit (les 8 premiers caractères suffisent).
+  var BUY_PRODUCTS = { 'dc45e379': 'show', '9d48e0fc': 'visualizer', '39998983': 'duo', '2772dc45': 'light-dj' };
+
   // Clic sur un bouton de téléchargement (essai gratuit) : on compte le clic, rien d'autre.
   document.addEventListener('click', function (e) {
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
@@ -81,5 +84,12 @@
     var suffix = downloadSource ? '?s=' + downloadSource : '';
     if (href.indexOf('velvetshow/releases/latest/download/VELVET.SHOW.zip') !== -1) track('/download/show' + suffix);
     else if (href.indexOf('VELVET-VISUALIZER-releases') !== -1) track('/download/visualizer' + suffix);
+    else {
+      // Clic sur un bouton « Acheter » : on compte le clic et le produit, rien d'autre. Le lien n'est pas modifié et la personne
+      // part tout de suite vers la page de paiement (le comptage ne peut jamais empêcher d'acheter).
+      var m = href.match(/lemonsqueezy\.com\/checkout\/buy\/([0-9a-f]{8})/i);
+      var product = m && BUY_PRODUCTS[m[1].toLowerCase()];
+      if (product) track('/buy-click/' + product + suffix);
+    }
   });
 })();
