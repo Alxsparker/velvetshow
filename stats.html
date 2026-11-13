@@ -61,21 +61,22 @@
       <div class="stat-grid">
         <div class="stat-card"><div class="num" id="dl-gh-show">–</div><div class="lbl">Velvet Show — total GitHub</div></div>
         <div class="stat-card"><div class="num" id="dl-gh-vis">–</div><div class="lbl">Velvet Visualizer — total GitHub</div></div>
+        <div class="stat-card"><div class="num" id="dl-gh-dj">–</div><div class="lbl">Velvet Light DJ — total GitHub</div></div>
         <div class="stat-card"><div class="num" id="dl-today">–</div><div class="lbl">Clics « Télécharger » aujourd'hui</div></div>
         <div class="stat-card"><div class="num" id="dl-7d">–</div><div class="lbl">Clics sur 7 jours</div></div>
         <div class="stat-card"><div class="num" id="dl-30d">–</div><div class="lbl">Clics sur 30 jours</div></div>
       </div>
 
       <h2>Clics par jour (14 derniers jours)</h2>
-      <table id="dl-days"><thead><tr><th>Jour</th><th>Show</th><th>Visualizer</th><th>Total</th></tr></thead><tbody></tbody></table>
+      <table id="dl-days"><thead><tr><th>Jour</th><th>Show</th><th>Visualizer</th><th>Light DJ</th><th>Total</th></tr></thead><tbody></tbody></table>
       <h2>Clics par semaine (8 dernières)</h2>
-      <table id="dl-weeks"><thead><tr><th>Semaine du</th><th>Show</th><th>Visualizer</th><th>Total</th></tr></thead><tbody></tbody></table>
+      <table id="dl-weeks"><thead><tr><th>Semaine du</th><th>Show</th><th>Visualizer</th><th>Light DJ</th><th>Total</th></tr></thead><tbody></tbody></table>
       <h2>Clics par mois</h2>
-      <table id="dl-months"><thead><tr><th>Mois</th><th>Show</th><th>Visualizer</th><th>Total</th></tr></thead><tbody></tbody></table>
+      <table id="dl-months"><thead><tr><th>Mois</th><th>Show</th><th>Visualizer</th><th>Light DJ</th><th>Total</th></tr></thead><tbody></tbody></table>
 
       <h2>Clics par source</h2>
       <p class="stats-updated">D'où venait la personne qui a cliqué sur « Télécharger » (repère <code>?s=</code> du lien). « ref-… » : site d'origine deviné automatiquement. « sans repère » : arrivée directe, ou application qui ne transmet pas d'où vient la personne (c'est fréquent sur téléphone). Les clics d'avant ce changement restent « sans repère ».</p>
-      <table id="dl-sources"><thead><tr><th>Source</th><th>Show</th><th>Visualizer</th><th>Total</th></tr></thead><tbody></tbody></table>
+      <table id="dl-sources"><thead><tr><th>Source</th><th>Show</th><th>Visualizer</th><th>Light DJ</th><th>Total</th></tr></thead><tbody></tbody></table>
 
       <h2>Détail GitHub par version</h2>
       <table id="dl-versions"><thead><tr><th>Version</th><th>Application</th><th>Téléchargements</th></tr></thead><tbody></tbody></table>
@@ -147,7 +148,8 @@
   const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ3FwZGp6cHRyeWVnamZoc3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzg2OTUsImV4cCI6MjA5ODgxNDY5NX0.efAsSxWcpzq6oWX3KfgV-6xcjxppX8Z_3WWi8kmBqqI';
   const REPOS = [
     { app: 'Velvet Show', repo: 'Alxsparker/velvetshow', ghId: 'dl-gh-show' },
-    { app: 'Velvet Visualizer', repo: 'Alxsparker/VELVET-VISUALIZER-releases', ghId: 'dl-gh-vis' }
+    { app: 'Velvet Visualizer', repo: 'Alxsparker/VELVET-VISUALIZER-releases', ghId: 'dl-gh-vis' },
+    { app: 'Velvet Light DJ', repo: 'Alxsparker/VELVET-LIGHT-DJ-releases', ghId: 'dl-gh-dj' }
   ];
 
   function esc(s){ const d=document.createElement('div'); d.textContent=String(s); return d.innerHTML; }
@@ -156,11 +158,15 @@
   function mondayOf(d){ const x=new Date(d.getFullYear(), d.getMonth(), d.getDate()); const wd=(x.getDay()+6)%7; x.setDate(x.getDate()-wd); return x; }
   function monthKey(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1); }
 
+  const APPS = ['show', 'visualizer', 'light-dj'];
+  function emptyCount(){ return {show:0, visualizer:0, 'light-dj':0}; }
+  function totalOf(c){ return c.show + c.visualizer + c['light-dj']; }
+
   function fillTable(id, keys, counts){
     const body = document.querySelector('#'+id+' tbody');
     body.innerHTML = keys.map(k => {
-      const c = counts[k] || {show:0, visualizer:0};
-      return '<tr><td>'+esc(k)+'</td><td>'+c.show+'</td><td>'+c.visualizer+'</td><td>'+(c.show+c.visualizer)+'</td></tr>';
+      const c = counts[k] || emptyCount();
+      return '<tr><td>'+esc(k)+'</td><td>'+c.show+'</td><td>'+c.visualizer+'</td><td>'+c['light-dj']+'</td><td>'+totalOf(c)+'</td></tr>';
     }).join('');
   }
 
@@ -173,9 +179,9 @@
     const data = await r.json();
     const rows = (data.rows || []).map(x => ({app: x.app, src: x.src || '', d: new Date(x.t)}));
     const byDay={}, byWeek={}, byMonth={}, bySource={};
-    function add(map,key,app){ (map[key] = map[key] || {show:0, visualizer:0})[app]++; }
+    function add(map,key,app){ (map[key] = map[key] || emptyCount())[app]++; }
     rows.forEach(x => {
-      if (x.app !== 'show' && x.app !== 'visualizer') return;
+      if (APPS.indexOf(x.app) === -1) return;
       add(byDay, dayKey(x.d), x.app);
       add(byWeek, dayKey(mondayOf(x.d)), x.app);
       add(byMonth, monthKey(x.d), x.app);
@@ -195,12 +201,12 @@
     fillTable('dl-weeks', weeks, byWeek);
     fillTable('dl-months', months, byMonth);
     const sources = Object.keys(bySource).sort((a,b) => {
-      const ta = bySource[a].show + bySource[a].visualizer, tb = bySource[b].show + bySource[b].visualizer;
+      const ta = totalOf(bySource[a]), tb = totalOf(bySource[b]);
       return tb - ta;
     });
     fillTable('dl-sources', sources, bySource);
 
-    const sum = k => { const c = byDay[k] || {show:0,visualizer:0}; return c.show + c.visualizer; };
+    const sum = k => totalOf(byDay[k] || emptyCount());
     document.getElementById('dl-today').textContent = sum(days[0]);
     document.getElementById('dl-7d').textContent = days.slice(0,7).reduce((a,k)=>a+sum(k),0);
     const d30 = []; for (let i=0;i<30;i++){ d30.push(dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate()-i))); }

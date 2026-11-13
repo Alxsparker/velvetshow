@@ -84,6 +84,7 @@
     var suffix = downloadSource ? '?s=' + downloadSource : '';
     if (href.indexOf('velvetshow/releases/latest/download/VELVET.SHOW.zip') !== -1) track('/download/show' + suffix);
     else if (href.indexOf('VELVET-VISUALIZER-releases') !== -1) track('/download/visualizer' + suffix);
+    else if (href.indexOf('VELVET-LIGHT-DJ-releases') !== -1) track('/download/light-dj' + suffix);
     else {
       // Clic sur un bouton « Acheter » : on compte le clic et le produit, rien d'autre. Le lien n'est pas modifié et la personne
       // part tout de suite vers la page de paiement (le comptage ne peut jamais empêcher d'acheter).
