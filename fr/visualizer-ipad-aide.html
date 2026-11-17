@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aide — Velvet Visualizer pour iPad</title>
+  <meta name="description" content="Aide pour Velvet Visualizer pour iPad : démarrer, recevoir l'Art-Net et le sACN, version gratuite et déblocage.">
+  <link rel="canonical" href="https://velvetshow.app/fr/visualizer-ipad-aide.html">
+  <link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad-support.html">
+  <link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad-aide.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .privacy {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 120px 24px 100px;
+    }
+    .privacy h1 {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin: 0 0 12px;
+    }
+    .privacy .updated {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin: 0 0 56px;
+    }
+    .privacy h2 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 48px 0 12px;
+    }
+    .privacy p, .privacy li {
+      font-size: 16px;
+      color: var(--text-soft);
+      line-height: 1.7;
+    }
+    .privacy ul {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+    .privacy a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+    .privacy a:hover { text-decoration: underline; }
+    .privacy .highlight {
+      background: var(--card);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-md);
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 16px;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="menubar__title"><a href="/" style="text-decoration:none;color:inherit;">VELVET SHOW</a></span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/">Accueil</a>
+        <a href="/visualizer-ipad-support.html" hreflang="en">English</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="privacy">
+    <h1>Aide — Velvet Visualizer pour iPad</h1>
+    <p class="updated">Dernière mise à jour : 17 novembre 2026</p>
+
+    <div class="highlight">Besoin d'un coup de main ? Commence par les rubriques ci-dessous, ou écris-nous : nous répondons par e-mail.</div>
+
+    <h2>Pour démarrer</h2>
+    <ul>
+      <li>Ouvre l'app : au premier lancement, tu arrives sur une scène de démonstration avec le spectacle de lumière en marche. Touche le bouton « lecture » à gauche pour lancer ou arrêter le spectacle, le bouton « lune » pour passer de la vue de jour à la vue de nuit.</li>
+      <li>Touche <strong>Ajouter un projecteur</strong> dans le panneau pour poser une lumière. Glisse-la pour la déplacer, glisse la boule verte pour la monter ou la descendre, utilise deux doigts près d'elle pour la tourner.</li>
+      <li>Le menu <strong>…</strong> du panneau permet de créer une nouvelle scène, d'ouvrir un fichier .velvet fait avec Velvet Visualizer sur Mac, d'importer une fiche de projecteur (.gdtf) et d'envoyer une scène.</li>
+    </ul>
+
+    <h2>Recevoir le signal de ta console</h2>
+    <ul>
+      <li>Mets l'iPad et ta console ou ton ordinateur sur le <strong>même réseau Wi-Fi ou filaire</strong>.</li>
+      <li><strong>Art-Net :</strong> envoie vers l'adresse IP de l'iPad (ou en diffusion), sur le port UDP <strong>6454</strong>. L'univers Art-Net 0 correspond à l'univers 1 dans l'app.</li>
+      <li><strong>sACN (E1.31) :</strong> envoie vers l'adresse IP de l'iPad (envoi direct), sur le port UDP <strong>5568</strong>. L'app écoute les univers 1 à 8. L'envoi direct est le plus fiable ; le multicast dépend de ton réseau.</li>
+      <li>L'adresse de l'iPad se trouve dans <em>Réglages → Wi-Fi → (i) à côté de ton réseau</em>.</li>
+      <li>La ligne d'état en haut à gauche indique <em>flux reçu</em> quand des données arrivent.</li>
+      <li>Vérifie que l'<strong>univers, l'adresse DMX et le mode</strong> de chaque projecteur dans l'app correspondent au patch de ta console.</li>
+      <li>Si iPadOS t'a demandé l'accès au réseau local et que tu as refusé, active-le dans <em>Réglages → Velvet Visualizer → Réseau local</em>.</li>
+    </ul>
+
+    <h2>Version gratuite et déblocage</h2>
+    <ul>
+      <li>La version gratuite permet de construire des scènes jusqu'à 6 projecteurs par scène et de garder 3 scènes. Un achat unique supprime les limites et ajoute le catalogue en ligne (plus de 10 000 projecteurs), l'import de fiches de projecteur et l'envoi de fichiers. Pas d'abonnement.</li>
+      <li><strong>Restaurer mes achats :</strong> si tu as déjà acheté sur un autre iPad avec le même identifiant Apple, ouvre le menu <strong>…</strong> et choisis <em>Restaurer mes achats</em>.</li>
+    </ul>
+
+    <h2>Fichiers et catalogue en ligne</h2>
+    <ul>
+      <li>Tes scènes sont des fichiers .velvet, le même format que Velvet Visualizer sur Mac. Elles sont dans le dossier de l'app, visible dans l'app Fichiers.</li>
+      <li>Les projecteurs du catalogue en ligne sont téléchargés une fois, puis restent sur l'iPad et fonctionnent sans connexion.</li>
+      <li>Si un téléchargement échoue, vérifie ta connexion internet et réessaie.</li>
+    </ul>
+
+    <h2>Configuration requise</h2>
+    <p>iPad sous iPadOS 17 ou plus récent. Une console, un ordinateur ou une interface qui envoie de l'Art-Net ou du sACN n'est nécessaire que pour piloter les lumières en direct ; l'app fonctionne sans.</p>
+
+    <h2>Contact</h2>
+    <p>Une question, un bug, une idée ? Écris à :</p>
+    <p><a href="mailto:alexandre.chalon@gmail.com">alexandre.chalon@gmail.com</a></p>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="footer__name">Velvet Show</span>
+      </div>
+      <p class="footer__credit">Créé par Alexandre Chalon</p>
+      <p class="footer__copy">© 2026 Velvet Show. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

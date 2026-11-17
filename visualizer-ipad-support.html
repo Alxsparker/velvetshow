@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support — Velvet Visualizer for iPad</title>
+  <meta name="description" content="Help for Velvet Visualizer for iPad: getting started, receiving Art-Net and sACN, free version and unlock.">
+  <link rel="canonical" href="https://velvetshow.app/visualizer-ipad-support.html">
+  <link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad-support.html">
+  <link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad-aide.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .privacy {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 120px 24px 100px;
+    }
+    .privacy h1 {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin: 0 0 12px;
+    }
+    .privacy .updated {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin: 0 0 56px;
+    }
+    .privacy h2 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 48px 0 12px;
+    }
+    .privacy p, .privacy li {
+      font-size: 16px;
+      color: var(--text-soft);
+      line-height: 1.7;
+    }
+    .privacy ul {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+    .privacy a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+    .privacy a:hover { text-decoration: underline; }
+    .privacy .highlight {
+      background: var(--card);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-md);
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 16px;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="menubar__title"><a href="/" style="text-decoration:none;color:inherit;">VELVET SHOW</a></span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/fr/visualizer-ipad-aide.html" hreflang="fr">Français</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="privacy">
+    <h1>Support — Velvet Visualizer for iPad</h1>
+    <p class="updated">Last updated: November 17, 2026</p>
+
+    <div class="highlight">Need a hand? Start with the sections below, or write to us: we answer by email.</div>
+
+    <h2>Getting started</h2>
+    <ul>
+      <li>Open the app: on first launch you land on a demo stage with the light show running. Tap the play button on the left to start or stop the show, the moon button to switch between day and night view.</li>
+      <li>Tap <strong>Add a fixture</strong> in the side panel to place a light. Drag it to move it, drag the green ball to raise or lower it, use two fingers near it to rotate it.</li>
+      <li>The <strong>…</strong> menu in the side panel lets you create a new scene, open a .velvet file made on Velvet Visualizer for Mac, import a fixture file (.gdtf) and send a scene.</li>
+    </ul>
+
+    <h2>Receive the signal from your console</h2>
+    <ul>
+      <li>Put the iPad and your console or computer on the <strong>same Wi-Fi or wired network</strong>.</li>
+      <li><strong>Art-Net:</strong> send to the iPad's IP address (or broadcast) on UDP port <strong>6454</strong>. Art-Net universe 0 is universe 1 in the app.</li>
+      <li><strong>sACN (E1.31):</strong> send to the iPad's IP address (unicast) on UDP port <strong>5568</strong>. The app listens to universes 1 to 8. Unicast is the most reliable; multicast depends on your network.</li>
+      <li>Find the iPad's address in <em>Settings → Wi-Fi → (i) next to your network</em>.</li>
+      <li>The status line at the top left shows <em>signal received</em> when data arrives.</li>
+      <li>Make sure each fixture's <strong>universe, DMX address and mode</strong> in the app match your console's patch.</li>
+      <li>If iPadOS asked for access to the local network and you refused, enable it in <em>Settings → Velvet Visualizer → Local Network</em>.</li>
+    </ul>
+
+    <h2>Free version and unlock</h2>
+    <ul>
+      <li>The free version lets you build scenes with up to 6 fixtures per scene and keep 3 scenes. A one-time purchase removes the limits and adds the online catalogue (over 10,000 fixtures), fixture file import and file sending. No subscription.</li>
+      <li><strong>Restore Purchases:</strong> if you already bought on another iPad with the same Apple Account, open the <strong>…</strong> menu and choose <em>Restore Purchases</em>.</li>
+    </ul>
+
+    <h2>Files and the online catalogue</h2>
+    <ul>
+      <li>Your scenes are .velvet files, the same format as Velvet Visualizer for Mac. They are in the app's folder, visible in the Files app.</li>
+      <li>Fixtures from the online catalogue are downloaded once, then stay on the iPad and work without a connection.</li>
+      <li>If a download fails, check your Internet connection and try again.</li>
+    </ul>
+
+    <h2>Requirements</h2>
+    <p>iPad with iPadOS 17 or later. A lighting console, a computer or an interface that sends Art-Net or sACN is needed only to drive the lights live; the app works without one.</p>
+
+    <h2>Contact</h2>
+    <p>Questions, bug reports or ideas? Write to:</p>
+    <p><a href="mailto:alexandre.chalon@gmail.com">alexandre.chalon@gmail.com</a></p>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="footer__name">Velvet Show</span>
+      </div>
+      <p class="footer__credit">Created by Alexandre Chalon</p>
+      <p class="footer__copy">© 2026 Velvet Show. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
