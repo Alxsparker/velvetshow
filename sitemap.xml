@@ -500,4 +500,72 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz-website.html"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad-del-sitio.html"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/privacy-del-sito.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+
+  <!-- Versions allemande, espagnole, italienne + page iPad -->
+  <url><loc>https://velvetshow.app/de/visualizer-ipad.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/es/visualizer-ipad.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/it/visualizer-ipad.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/de/visualizer-ipad-datenschutz.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad-confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad-datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad-privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/visualizer-ipad-privacidad.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad-confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad-datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad-privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/visualizer-ipad-privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad-confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad-datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad-privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/visualizer-ipad-hilfe.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad-support.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad-aide.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad-hilfe.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad-ayuda.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad-assistenza.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/visualizer-ipad-ayuda.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad-support.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad-aide.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad-hilfe.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad-ayuda.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad-assistenza.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/visualizer-ipad-assistenza.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad-support.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad-aide.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad-hilfe.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad-ayuda.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad-assistenza.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/fr/visualizer-ipad.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/visualizer-ipad.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>

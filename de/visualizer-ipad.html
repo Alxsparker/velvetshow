@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lichtsimulation iPad — Velvet Visualizer, DMX &amp; Art-Net</title>
+<link rel="canonical" href="https://velvetshow.app/de/visualizer-ipad.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad.html">
+<link rel="alternate" hreflang="de" href="https://velvetshow.app/de/visualizer-ipad.html">
+<link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizer-ipad.html">
+<link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-ipad.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/visualizer-ipad.html">
+<meta name="description" content="Lichtsimulation für iPad: Bühnenlicht in 3D, DMX Visualizer mit Art-Net und sACN, Mac-Szenen öffnen. Bis zu 6 Scheinwerfer gratis, einmal freischalten.">
+<meta property="og:title" content="Velvet Visualizer für iPad — Sieh die Show, bevor es sie gibt">
+<meta property="og:image" content="https://velvetshow.app/assets/screenshots/ipad/en-nuit.jpg">
+<meta property="og:image:width" content="825">
+<meta property="og:image:height" content="1100">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://velvetshow.app/assets/screenshots/ipad/en-nuit.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://velvetshow.app/de/visualizer-ipad.html">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d0e12;--panel:#15171d;--line:#262a33;--text:#eceef3;--mut:#9aa1b0;--dim:#565c6e;--gold:#f0bd57;--blue:#4d8fff;--purple:#9b6bff;--green:#34d17a;--orange:#ff6b35}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;background:rgba(13,14,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:100}
+.nav{max-width:1080px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav__brand{font-family:Oswald,sans-serif;font-size:15px;font-weight:700;letter-spacing:.1em;display:flex;align-items:center;gap:10px}
+.nav__brand img{width:28px;height:28px;border-radius:6px}
+.nav__links{display:flex;align-items:center;gap:18px}
+.nav__links a{font-size:13px;color:var(--mut);transition:color .2s}
+.nav__links a:hover{color:var(--text)}
+.btn{display:inline-block;padding:10px 20px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid var(--line);transition:all .2s}
+.btn-p{background:var(--gold);color:#1a1405;border-color:var(--gold)}
+.btn-p:hover{opacity:.88;transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.05);color:var(--text)}
+.btn-g:hover{background:rgba(255,255,255,.1);transform:translateY(-1px)}
+.hero{background:linear-gradient(180deg,#080a0f 0%,var(--bg) 100%);padding:80px 20px 60px;text-align:center;border-bottom:1px solid var(--line)}
+.hero__inner{max-width:780px;margin:0 auto}
+.hero__icon{width:80px;height:80px;border-radius:18px;margin:0 auto 24px;display:block;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.hero h1{font-family:Oswald,sans-serif;font-size:clamp(2.2rem,5.5vw,4rem);font-weight:700;line-height:1.08;margin-bottom:20px}
+.hero p{font-size:1rem;color:var(--mut);max-width:560px;margin:0 auto 32px;font-weight:300;line-height:1.7}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.08em}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
+.reveal.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.lbl-gold{color:var(--gold)}.lbl-blue{color:var(--blue)}.lbl-purple{color:var(--purple)}.lbl-green{color:var(--green)}.lbl-orange{color:var(--orange)}
+.sec-title{font-family:Oswald,sans-serif;font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:700;line-height:1.1;margin-bottom:12px}
+.sec-sub{font-size:.93rem;color:var(--mut);line-height:1.7;font-weight:300;max-width:520px}
+.feature{padding:72px 0;border-top:1px solid var(--line)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.fg-r{direction:rtl}.fg-r>*{direction:ltr}
+@media(max-width:760px){.fg{grid-template-columns:1fr;gap:32px}.fg-r{direction:ltr}}
+.fcopy{display:flex;flex-direction:column;gap:14px}
+.flist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.flist li{font-size:.84rem;color:var(--mut);line-height:1.6;padding-left:16px;position:relative}
+.flist li::before{content:'—';color:var(--dim);position:absolute;left:0;top:0}
+.flist li strong{color:var(--text)}
+.frame{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5);transition:transform .4s;min-width:0;max-width:100%}
+.frame:hover{transform:translateY(-4px) scale(1.02)}
+.frame-bar{height:36px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 12px;gap:6px}
+.d{width:10px;height:10px;border-radius:50%}
+.dr{background:#ff5f57}.dy{background:#ffbd2e}.dg{background:#28c840}
+.flabel{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--dim);margin-left:6px;letter-spacing:.08em}
+.frame img{display:block;width:100%;height:auto}
+.pipeline{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:20px}
+.prow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pc{font-size:.75rem;padding:5px 12px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--mut)}
+.pc-s{background:rgba(240,189,87,.1);border-color:rgba(240,189,87,.25);color:var(--gold)}
+.pc-m{background:rgba(232,160,32,.1);border-color:rgba(232,160,32,.25);color:#e8a020}
+.pa{color:var(--dim);font-size:.8rem}
+.panic{display:inline-flex;align-items:center;gap:8px;background:rgba(229,72,77,.1);border:1px solid rgba(229,72,77,.28);border-radius:7px;padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:.73rem;color:#e5484d;letter-spacing:.06em;margin-top:10px}
+.pcard{background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:36px 28px;max-width:380px;margin:36px auto 0;box-shadow:0 0 0 1px var(--gold),0 0 50px rgba(240,189,87,.07);text-align:center}
+.pamount{font-family:Oswald,sans-serif;font-size:58px;font-weight:700;line-height:1;margin:14px 0 4px}
+.pperiod{font-size:.8rem;color:var(--mut);margin-bottom:24px}
+.pfeats{list-style:none;text-align:left;display:flex;flex-direction:column;gap:9px;margin-bottom:24px}
+.pfeats li{font-size:.84rem;color:var(--mut);display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.pfeats li::before{content:'✓';color:var(--green);flex-shrink:0;font-weight:700}
+.pricing{padding:72px 0;border-top:1px solid var(--line);text-align:center}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mut);font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
+
+.badge-trial{display:inline-flex;align-items:center;gap:8px;border-radius:100px;padding:6px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;margin-bottom:20px;background:rgba(52,209,122,.1);border:1px solid rgba(52,209,122,.3);color:var(--green)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+@media(max-width:700px){.grid3{grid-template-columns:1fr}}
+.card3{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card3__icon{font-size:1.3rem;margin-bottom:8px}
+.card3__title{font-family:Oswald,sans-serif;font-size:.9rem;font-weight:600;letter-spacing:.04em;margin-bottom:5px}
+.card3__body{font-size:.78rem;color:var(--mut);line-height:1.5}
+.views-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ai-block{background:linear-gradient(135deg,rgba(155,107,255,.08),rgba(255,107,53,.06));border:1px solid rgba(155,107,255,.2);border-radius:12px;padding:20px;margin-top:18px}
+.ai-prompt{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--mut);line-height:1.6;margin-bottom:8px}
+.ai-prompt span{color:var(--purple)}
+
+.ipadshot{max-width:340px;margin:0 auto}
+.ipadvideo{max-width:820px;margin:44px auto 0}
+.ipadvideo__frame{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.ipadvideo video{display:block;width:100%;height:auto;aspect-ratio:4/3}
+.ipadvideo figcaption{font-size:.8rem;color:var(--dim);text-align:center;margin-top:12px}
+.ipadshot .frame{border-radius:18px}
+.shots2{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:700px;margin:0 auto}
+@media(max-width:560px){.shots2{grid-template-columns:1fr}}
+.faq{max-width:760px;margin:0 auto;text-align:left}
+.faq details{border-bottom:1px solid var(--line);padding:16px 0}
+.faq summary{cursor:pointer;font-family:Oswald,sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:.02em}
+.faq p{color:var(--mut);font-size:.9rem;line-height:1.7;margin-top:10px}
+.stores{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.stores img{height:48px;width:auto;display:block}
+.pcard--ipad{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange),0 0 50px rgba(255,107,53,.07)}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Velvet Visualizer",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "3D DMX lighting visualizer",
+  "operatingSystem": "iPadOS 17 or later",
+  "description": "3D-Lichtsimulation für das iPad. Empfängt Art-Net und sACN, öffnet Mac-Szenen, importiert GDTF-Scheinwerfer. Bis zu 6 Scheinwerfer gratis, einmal freischalten.",
+  "url": "https://velvetshow.app/de/visualizer-ipad.html",
+  "image": "https://velvetshow.app/assets/screenshots/ipad/en-nuit.jpg",
+  "inLanguage": "de",
+  "downloadUrl": "https://apps.apple.com/app/id6835656438",
+  "installUrl": "https://apps.apple.com/app/id6835656438",
+  "author": {
+    "@type": "Person",
+    "name": "Alexandre Chalon"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "availability": "https://schema.org/InStock",
+    "url": "https://apps.apple.com/app/id6835656438",
+    "description": "Kostenlos laden, mit einem einmaligen In-App-Kauf von 14,99 EUR, der alles freischaltet."
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Ist Velvet Visualizer für iPad kostenlos?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja, zum Einstieg: Du kannst die App ohne Zeitlimit gratis nutzen, mit bis zu 6 Scheinwerfern pro Szene und 3 Szenen. Ein einmaliger In-App-Kauf von 14,99 € schaltet unbegrenzt viele Scheinwerfer und Szenen, den Online-Katalog, den GDTF-Import und den Szenen-Export frei. Es gibt kein Abo."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Funktioniert es mit meinem Lichtpult?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. Velvet Visualizer empfängt Art-Net und sACN über dein lokales Netzwerk. Jedes Lichtpult und jede Software, die Art-Net oder sACN ausgibt (MaestroDMX, SoundSwitch, QLC+, QLab und andere), kann die 3D-Bühne live ansteuern."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kann ich meine Mac-Szenen auf dem iPad öffnen?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. Die iPad-App öffnet und speichert dieselben .velvet-Dateien wie Velvet Visualizer für Mac. Schick eine Szene per AirDrop, über die Dateien-App oder per Mail."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Welche iPads werden unterstützt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "iPadOS 17 oder neuer. Getestet wurde auf einem iPad der 6. Generation; aktuelle iPads mit mehr Arbeitsspeicher sollten größere Szenen flüssiger darstellen."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Brauche ich eine Internetverbindung?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nein. Szenen und Scheinwerfer, die schon auf deinem iPad liegen, funktionieren offline. Der Online-Katalog mit über 10.000 Scheinwerfern braucht eine Verbindung, um neue Scheinwerfer zu laden."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ist die iPad-Version dasselbe Produkt wie die Mac-Version?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nein. Die iPad-App ist ein eigener Kauf im App Store, und Velvet Visualizer für Mac wird separat auf dieser Website verkauft."
+      }
+    }
+  ]
+}
+</script>
+<meta property="og:locale" content="de_DE"><meta property="og:locale:alternate" content="en_US"><meta property="og:locale:alternate" content="fr_FR"><meta property="og:locale:alternate" content="es_ES"><meta property="og:locale:alternate" content="it_IT">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/de/" class="nav__brand">
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAAAAMEBQYHAgEI/8QAOBAAAQMDAAUICAYDAAAAAAAAAQACAwQFEQYSITGBBxMyQVFhcbEUIiQzQpHB0SNFUpPh8BVig//EABoBAAIDAQEAAAAAAAAAAAAAAAMEAAEFAgb/xAAiEQACAgIBBQADAAAAAAAAAAAAAQIDBBFBBRIhIjETUYH/2gAMAwEAAhEDEQA/AMLUxbNHpa9pkllbBEN5cMn5KNp2gygnqOz+/NW60ziVuoAPVGNXuR64KT0xnHpVj8iQ0aswGHXGoJ6yIhjzQdG7IPzGo/bH3XtxifS1Gqei8Zae5RElU5pIJXUoKL0yra+x6JJ2j9lH5hP+2Pukn2Ozt3V85/5j7qLdVO7Vy2dziBlc6Qs3ofSWm1gerVz574x90yq7U6BnORSCWPwwQpG3UUldWNiaNg2uPYBvKeXhraKLVxhztjR3Iyx9xchWWWlNQX0qWEJSUeuShLDaewiOHDx+ilLfWei1LH7xnaO0KHedVuR1H6JRkuRkFdQlpjFNjg9o0yttzbtaDzO2ZrdeIj4h2cfNZ7WZDw7t3+Kumh10M1O6m1vxqf12f7M6xwO3im2m9i9FfHcadvslXlwwNjJB0m8d6dtSsrU0bGbRG2hXw/pSC85Tuhj15NYjIbtTTUOstA5PNGxdK11XUs9ho8SSk7nO+FvHyCWph3S0eUzblTW5MsNg0fFrsgmqAG1FQ3nHl3wM3jPn8lnF8rxX3KWRuyIHDB2AblpPKDevQbNzDXYqa/Jx+mIH6nyKx6SXGSSncuxRSrjwZHSqp2OWRZ9fw8ecvPBCTjOtkntQsw9CvCPJvd8fokWuIOwpaf3fFNwqOkTNkuklsucFWzaY3ZLf1DrHELcbdbqPSK1z2WR49GroxLRzH4H72n6HivnuI7Vs3JfcTW0JoC72ijdz0HaWE+sOB28SmarNJpmthXt1ypfJQHaN18d9dan07xWNm5kxY262cYW6RWan0btFLYWPa0RNM9fMNxdjLj4ADA8Fcm6PW6W7x6UOhBrmwau7YXYwHeONizLlOujrXZJKcO9suTiXnrbED9T5I2POKba4PKdWplZqH7ZkOl9+ffL9U1nRiJ1YmfpYNjR8lWXuJO0peodlxTYpSyTb2x2mtQgorgcQdE+KF5T9E+KENBzqf3fFN2sJTmQZy3t3eKQa8sKnJa1yOqejlkcNVpWk8nVtudFf6SshjBDHjWBeAC07CN/Ys5p7hJCQWvI8CrFaNKKuGdg55+AetxKPDs15NLF/Bv2b2fYLIo/RAwe7IzwXz1ynWe73K+1FW6D8HoxgPB1WjYBvV3puUqKPRIOLhz7RqglY9e9Oq+eokDah7WknoOI8kTFjGCbmzF6lTdGaUfJTaygngcQ9hCjnsIO0KVrLtNVOJkkc495yo17y8oVvZv1JV369hSn6J8ULqIYGPmhCQcHjIwknbekM9/WhCpkOMN7HJRkhjOW5/vFCFRabQ8/zFWIea1zqdmP5TN8rpDl2fl/KEK9sjbl9OMDvXTRjcMd6EKihZg1QhCF0Q//Z" alt="Velvet Visualizer">
+      VELVET VISUALIZER
+    </a>
+    <div class="nav__links">
+      <a href="#scene">3D-Bühne</a><a href="#artnet">Art-Net</a><a href="#library">Scheinwerfer</a><a href="#pricing">Preise</a><a href="#faq">FAQ</a><a href="/de/velvet-visualizer.html">Mac-Version</a>
+    
+      <details class="langs" style="position:relative;display:inline-block;order:-1"><summary aria-label="Language" style="cursor:pointer;list-style:none;font-size:13px;font-weight:600;color:var(--text,#fff);white-space:nowrap">DE &#9662;</summary><div style="position:absolute;left:0;top:100%;margin-top:8px;background:#15171d;border:1px solid #262a33;border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;gap:8px;z-index:300;font-size:13px"><a href="/visualizer-ipad.html" hreflang="en" lang="en" style="color:#9aa1b0;white-space:nowrap">English</a><a href="/fr/visualizer-ipad.html" hreflang="fr" lang="fr" style="color:#9aa1b0;white-space:nowrap">Français</a><a href="/es/visualizer-ipad.html" hreflang="es" lang="es" style="color:#9aa1b0;white-space:nowrap">Español</a><a href="/it/visualizer-ipad.html" hreflang="it" lang="it" style="color:#9aa1b0;white-space:nowrap">Italiano</a></div></details>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero__inner">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAAAAMEBQYHAgEI/8QAOBAAAQMDAAUICAYDAAAAAAAAAQACAwQFEQYSITGBBxMyQVFhcbEUIiQzQpHB0SNFUpPh8BVig//EABoBAAIDAQEAAAAAAAAAAAAAAAMEAAEFAgb/xAAiEQACAgIBBQADAAAAAAAAAAAAAQIDBBFBBRIhIjETUYH/2gAMAwEAAhEDEQA/AMLUxbNHpa9pkllbBEN5cMn5KNp2gygnqOz+/NW60ziVuoAPVGNXuR64KT0xnHpVj8iQ0aswGHXGoJ6yIhjzQdG7IPzGo/bH3XtxifS1Gqei8Zae5RElU5pIJXUoKL0yra+x6JJ2j9lH5hP+2Pukn2Ozt3V85/5j7qLdVO7Vy2dziBlc6Qs3ofSWm1gerVz574x90yq7U6BnORSCWPwwQpG3UUldWNiaNg2uPYBvKeXhraKLVxhztjR3Iyx9xchWWWlNQX0qWEJSUeuShLDaewiOHDx+ilLfWei1LH7xnaO0KHedVuR1H6JRkuRkFdQlpjFNjg9o0yttzbtaDzO2ZrdeIj4h2cfNZ7WZDw7t3+Kumh10M1O6m1vxqf12f7M6xwO3im2m9i9FfHcadvslXlwwNjJB0m8d6dtSsrU0bGbRG2hXw/pSC85Tuhj15NYjIbtTTUOstA5PNGxdK11XUs9ho8SSk7nO+FvHyCWph3S0eUzblTW5MsNg0fFrsgmqAG1FQ3nHl3wM3jPn8lnF8rxX3KWRuyIHDB2AblpPKDevQbNzDXYqa/Jx+mIH6nyKx6SXGSSncuxRSrjwZHSqp2OWRZ9fw8ecvPBCTjOtkntQsw9CvCPJvd8fokWuIOwpaf3fFNwqOkTNkuklsucFWzaY3ZLf1DrHELcbdbqPSK1z2WR49GroxLRzH4H72n6HivnuI7Vs3JfcTW0JoC72ijdz0HaWE+sOB28SmarNJpmthXt1ypfJQHaN18d9dan07xWNm5kxY262cYW6RWan0btFLYWPa0RNM9fMNxdjLj4ADA8Fcm6PW6W7x6UOhBrmwau7YXYwHeONizLlOujrXZJKcO9suTiXnrbED9T5I2POKba4PKdWplZqH7ZkOl9+ffL9U1nRiJ1YmfpYNjR8lWXuJO0peodlxTYpSyTb2x2mtQgorgcQdE+KF5T9E+KENBzqf3fFN2sJTmQZy3t3eKQa8sKnJa1yOqejlkcNVpWk8nVtudFf6SshjBDHjWBeAC07CN/Ys5p7hJCQWvI8CrFaNKKuGdg55+AetxKPDs15NLF/Bv2b2fYLIo/RAwe7IzwXz1ynWe73K+1FW6D8HoxgPB1WjYBvV3puUqKPRIOLhz7RqglY9e9Oq+eokDah7WknoOI8kTFjGCbmzF6lTdGaUfJTaygngcQ9hCjnsIO0KVrLtNVOJkkc495yo17y8oVvZv1JV369hSn6J8ULqIYGPmhCQcHjIwknbekM9/WhCpkOMN7HJRkhjOW5/vFCFRabQ8/zFWIea1zqdmP5TN8rpDl2fl/KEK9sjbl9OMDvXTRjcMd6EKihZg1QhCF0Q//Z" class="hero__icon" alt="Velvet Visualizer">
+    <div class="badge-trial">● Gratis starten · einmal freischalten</div>
+    <p class="eyebrow" style="color:var(--orange)">iPadOS · 3D-DMX-Visualizer</p>
+    <h1>3D-Lichtsimulation<br>auf dem iPad.</h1>
+    <p>Velvet Visualizer für iPad ist dein DMX Visualizer für unterwegs: Zeichne deine Bühne in 3D, platziere die Scheinwerfer mit dem Finger und sieh zu, wie dein Lichtpult sie per Art-Net oder sACN zum Leuchten bringt. Ganz ohne Mac.</p>
+    <div class="stores">
+      <a href="https://apps.apple.com/app/id6835656438" rel="noopener"><img src="/screenshots/appstore-badge-black.svg" alt="Laden im App Store" width="144" height="48"></a>
+      <a href="/de/velvet-visualizer.html" class="btn btn-g">Velvet Visualizer für Mac →</a>
+    </div>
+    <p class="meta">iPadOS 17+ · bis zu 6 Scheinwerfer pro Szene gratis · 14,99 € (≈ 12,99 $) einmal freischalten</p>
+    <figure class="ipadvideo">
+      <div class="ipadvideo__frame"><video id="ipad-demo" muted loop playsinline controls preload="none" poster="/assets/video/velvet-visualizer-ipad-poster.jpg" aria-label="Live-Demo — ein Konzertabend, auf dem iPad aufgenommen"><source src="/assets/video/velvet-visualizer-ipad-demo.webm" type="video/webm"><source src="/assets/video/velvet-visualizer-ipad-demo.mp4" type="video/mp4"></video></div>
+      <figcaption>Live-Demo — ein Konzertabend, auf dem iPad aufgenommen</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="feature" id="scene">
+  <div class="wrap">
+    <div class="fg">
+      <div class="fcopy reveal">
+        <p class="lbl lbl-orange">Das Herzstück</p>
+        <h2 class="sec-title">3D-Bühne,<br>unter deinen Fingern.</h2>
+        <p class="sec-sub">Tippen, ziehen, drehen: Verschiebe einen Scheinwerfer mit einem Finger, stelle Höhe und Ausrichtung ein, mach Schritte mit drei Fingern rückgängig oder stelle sie wieder her. Die Bühne wird bei Tag oder Nacht dargestellt, mit echten Lichtstrahlen.</p>
+        <ul class="flist"><li><strong>Über 10.000 Scheinwerfer online</strong> — über 6.000 davon mit ihrer echten 3D-Form</li><li><strong>Echte Bühnenelemente</strong> — Traverse, Totems, Stative, Podest, LED-Wand, Lautsprecher, DJ-Pult, Spiegelkugel, Flammen</li><li><strong>Musiker auf der Bühne</strong> — eine komplette Band, auf deiner Bühne platziert und in Pose</li><li><strong>Eingebaute Demo-Show</strong> — ein komplettes Konzert-Rig, das leuchtet, sobald du die App öffnest</li><li><strong>Schnellansichten</strong> — Publikum, Seite, Draufsicht, Nahaufnahme, Tag und Nacht</li></ul>
+      </div>
+      <div class="reveal d1">
+        <div class="views-grid">
+          <div class="frame"><img src="/assets/screenshots/ipad/en-jour.jpg" alt="Velvet Visualizer on iPad: the same stage in daylight" width="825" height="1100" loading="lazy" decoding="async"></div>
+          <div class="frame"><img src="/assets/screenshots/ipad/en-dessus.jpg" alt="Velvet Visualizer on iPad: top view of the stage" width="825" height="1100" loading="lazy" decoding="async"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="artnet">
+  <div class="wrap">
+    <div class="fg fg-r">
+      <div class="fcopy reveal">
+        <p class="lbl lbl-blue">Mit echter Hardware verbunden</p>
+        <h2 class="sec-title">Was das Lichtpult sendet,<br>erscheint in 3D.</h2>
+        <p class="sec-sub">Empfange Art-Net oder sACN per WLAN und sieh zu, wie deine Lichtsteuerung die virtuelle Bühne ansteuert, Scheinwerfer für Scheinwerfer. Dieselben .velvet-Szenendateien öffnen sich auf Mac und iPad.</p>
+        <ul class="flist"><li><strong>Art-Net und sACN</strong> — von deinem Lichtpult oder deinem Laptop</li><li>Funktioniert mit <strong>MaestroDMX, SoundSwitch, QLC+, QLab</strong> und jeder Art-Net- oder sACN-Software</li><li><strong>.velvet-Dateien öffnen und speichern</strong> — teile Szenen mit Velvet Visualizer auf dem Mac per AirDrop, Dateien-App oder Mail</li><li><strong>Eigene GDTF-Scheinwerferdateien importieren</strong></li><li>Powered by GDTF: Scheinwerferbeschreibungen, die von den Herstellern veröffentlicht werden</li></ul>
+      </div>
+      <div class="reveal d1"><div class="ipadshot"><div class="frame"><img src="/assets/screenshots/ipad/en-panneau.jpg" alt="Velvet Visualizer on iPad: fixture panel with DMX address and settings" width="825" height="1100" loading="lazy" decoding="async"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="library">
+  <div class="wrap">
+    <div class="fg">
+      <div class="fcopy reveal">
+        <p class="lbl lbl-green">Gratis starten</p>
+        <h2 class="sec-title">Kostenlos ausprobieren.<br>Einmal kaufen, alles freischalten.</h2>
+        <p class="sec-sub">Die kostenlose Version hat kein Zeitlimit. Ein einziger In-App-Kauf schaltet unbegrenzt viele Scheinwerfer und Szenen, den Online-Katalog, den GDTF-Import und den Szenen-Export frei.</p>
+      </div>
+      <div class="reveal d1"><div class="ipadshot"><div class="frame"><img src="/assets/screenshots/ipad/en-catalogue.jpg" alt="Velvet Visualizer on iPad: online fixture catalogue" width="825" height="1100" loading="lazy" decoding="async"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <p class="lbl lbl-orange reveal" style="text-align:center">Preise</p>
+    <h2 class="sec-title reveal d1" style="text-align:center">Gratis starten.<br>Einmal freischalten.</h2>
+    <p class="sec-sub reveal d2" style="margin:0 auto;text-align:center">Kein Abo, kein Konto, keine Werbung, kein Tracking.</p>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:36px">
+      <div class="pcard reveal d2" style="margin:0;border-color:var(--line);box-shadow:none">
+        <p class="eyebrow" style="color:var(--mut)">Gratis</p>
+        <div class="pamount">0 <span style="font-size:26px;color:var(--mut)">€</span></div>
+        <ul class="pfeats" style="margin-top:20px"><li>Bis zu 6 Scheinwerfer pro Szene</li><li>Bis zu 3 Szenen</li><li>Demo-Show und Bühnenelemente</li><li>Empfang von Art-Net und sACN</li></ul>
+      </div>
+      <div class="pcard pcard--ipad reveal d2" style="margin:0">
+        <p class="eyebrow" style="color:var(--orange)">Alles freischalten</p>
+        <div class="pamount">14.99 <span style="font-size:26px;color:var(--mut)">€ (≈ $12.99)</span></div>
+        <p class="pperiod">Einmaliger In-App-Kauf</p>
+        <ul class="pfeats"><li>Unbegrenzt viele Scheinwerfer und Szenen</li><li>Online-Katalog mit über 10.000 Scheinwerfern</li><li>Eigene GDTF-Dateien importieren</li><li>Szenen senden (AirDrop, Dateien, Mail)</li></ul>
+        <a href="https://apps.apple.com/app/id6835656438" class="btn btn-p" rel="noopener" style="background:var(--orange);border-color:var(--orange);width:100%;display:block;text-align:center">Im App Store laden</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="faq">
+  <div class="wrap">
+    <h2 class="sec-title reveal" style="text-align:center;margin-bottom:28px">Fragen</h2>
+    <div class="faq">
+      <details><summary>Ist Velvet Visualizer für iPad kostenlos?</summary><p>Ja, zum Einstieg: Du kannst die App ohne Zeitlimit gratis nutzen, mit bis zu 6 Scheinwerfern pro Szene und 3 Szenen. Ein einmaliger In-App-Kauf von 14,99 € schaltet unbegrenzt viele Scheinwerfer und Szenen, den Online-Katalog, den GDTF-Import und den Szenen-Export frei. Es gibt kein Abo.</p></details><details><summary>Funktioniert es mit meinem Lichtpult?</summary><p>Ja. Velvet Visualizer empfängt Art-Net und sACN über dein lokales Netzwerk. Jedes Lichtpult und jede Software, die Art-Net oder sACN ausgibt (MaestroDMX, SoundSwitch, QLC+, QLab und andere), kann die 3D-Bühne live ansteuern.</p></details><details><summary>Kann ich meine Mac-Szenen auf dem iPad öffnen?</summary><p>Ja. Die iPad-App öffnet und speichert dieselben .velvet-Dateien wie Velvet Visualizer für Mac. Schick eine Szene per AirDrop, über die Dateien-App oder per Mail.</p></details><details><summary>Welche iPads werden unterstützt?</summary><p>iPadOS 17 oder neuer. Getestet wurde auf einem iPad der 6. Generation; aktuelle iPads mit mehr Arbeitsspeicher sollten größere Szenen flüssiger darstellen.</p></details><details><summary>Brauche ich eine Internetverbindung?</summary><p>Nein. Szenen und Scheinwerfer, die schon auf deinem iPad liegen, funktionieren offline. Der Online-Katalog mit über 10.000 Scheinwerfern braucht eine Verbindung, um neue Scheinwerfer zu laden.</p></details><details><summary>Ist die iPad-Version dasselbe Produkt wie die Mac-Version?</summary><p>Nein. Die iPad-App ist ein eigener Kauf im App Store, und Velvet Visualizer für Mac wird separat auf dieser Website verkauft.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a href="/de/">← Startseite</a>
+      <a href="/de/velvet-visualizer.html" style="margin-left:20px">Velvet Visualizer für Mac →</a>
+      <a href="/de/visualizer-ipad-datenschutz.html" style="margin-left:20px">Datenschutz</a>
+      <a href="/de/visualizer-ipad-hilfe.html" style="margin-left:20px">Support</a>
+    </div>
+    <p><a href="https://gdtf-share.com" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;color:inherit;text-decoration:none"><img src="/assets/gdtf-logo.svg" alt="GDTF" width="28" height="21" style="display:block"><span>Powered by GDTF</span></a></p>
+    <p>© Alexandre Chalon · Velvet · contact@loveandlive.fr</p>
+  </div>
+<p data-legal style="text-align:center;font-size:12px;margin:14px 0 0;opacity:.85"><a href="/de/impressum.html">Impressum</a> · <a href="/de/datenschutz-website.html">Datenschutz (Website)</a></p>
+</footer>
+<script>
+(function(){
+  const els=document.querySelectorAll('.reveal');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}});
+  },{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(el=>obs.observe(el));
+})();
+(function(){
+  const v=document.getElementById('ipad-demo'); if(!v||!('IntersectionObserver' in window)) return;
+  let manual=false; v.addEventListener('pause',()=>{ if(!v.ended && document.visibilityState==='visible' && v.dataset.auto!=='1') manual=true; });
+  new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ if(!manual){ v.dataset.auto='0'; v.play().catch(()=>{}); } } else { v.dataset.auto='1'; v.pause(); } }),{threshold:.35}).observe(v);
+})();
+</script>
+  <script src="/stats.js"></script>
+</body>
+</html>
