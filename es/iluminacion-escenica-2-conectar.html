@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://velvetshow.app/es/iluminacion-escenica-2-conectar.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-2-connect.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-2-brancher.html">
+<link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-2-anschliessen.html">
+<link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-2-conectar.html">
+<link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-2-collegare.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/stage-lighting-2-connect.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Velvet"><meta property="og:locale" content="en_US"><meta property="og:url" content="https://velvetshow.app/es/iluminacion-escenica-2-conectar.html"><meta property="og:title" content="Conectar luces DMX y Art-Net: esquemas paso a paso"><meta property="og:description" content="Cómo conectar la iluminación escénica: DJ con Mac, banda con backing tracks, instalación fija. Sonido, órdenes y DMX, con esquemas paso a paso.">
+<title>Conectar luces DMX y Art-Net: esquemas paso a paso</title>
+<meta name="description" content="Cómo conectar la iluminación escénica: DJ con Mac, banda con backing tracks, instalación fija. Sonido, órdenes y DMX, con esquemas paso a paso.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/guide-lumiere.css">
+<link rel="stylesheet" href="/assets/guide-motion.css">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/es/iluminacion-escenica-en-5-minutos.html" class="nav__brand">GUÍA <span>LUCES</span></a>
+    <div class="nav__links"><a href="/es/iluminacion-escenica-1-entender.html">1&nbsp;· Entender</a><a href="/es/iluminacion-escenica-2-conectar.html" class="on">2&nbsp;· Conectar</a><a href="/es/iluminacion-escenica-3-configurar.html">3&nbsp;· Configurar</a><a href="/es/iluminacion-escenica-4-solucionar-problemas.html">4&nbsp;· Solucionar</a><span class="langs" style="display:inline-flex;gap:10px;align-items:center"><a href="/stage-lighting-2-connect.html" hreflang="en" lang="en" title="English">EN</a> <a href="/fr/lumiere-2-brancher.html" hreflang="fr" lang="fr" title="Français">FR</a> <a href="/de/buehnenbeleuchtung-2-anschliessen.html" hreflang="de" lang="de" title="Deutsch">DE</a> <span aria-current="true" style="font-size:13px;font-weight:600;color:var(--text,#fff)">ES</span> <a href="/it/luci-di-scena-2-collegare.html" hreflang="it" lang="it" title="Italiano">IT</a></span></div>
+  </nav>
+</header>
+<section class="hero hero--small"><div class="hero__inner">
+<p class="soon">Primera&nbsp;versión</p><p class="eyebrow">Parte&nbsp;2&nbsp;de&nbsp;4</p>
+<h1>Conectar</h1>
+<p class="lead">Qué se conecta con qué. Un esquema por&nbsp;situación.</p>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-pink">Cómo&nbsp;leer&nbsp;un&nbsp;esquema</p>
+<h2 class="sec-title">Dos tipos&nbsp;de&nbsp;cables</h2>
+<p class="sec-sub">Cada flecha tiene un&nbsp;color. Indica lo&nbsp;que viaja: sonido, una&nbsp;orden o&nbsp;luz.</p>
+<ul class="legend"><li><i class="a"></i>Sonido (cable&nbsp;de&nbsp;audio)</li><li><i class="o"></i>Orden: número de&nbsp;cue&nbsp;(OSC)</li><li><i class="n"></i>Luz&nbsp;(DMX&nbsp;o&nbsp;Art-Net)</li></ul>
+<div class="steps s3" style="margin-top:22px"><a class="step" href="#dj"><span class="state ok">Esquema completo</span><h3>Soy&nbsp;DJ&nbsp;y&nbsp;uso&nbsp;un&nbsp;Mac</h3><span class="go">Ver →</span></a><a class="step" href="#band"><span class="state ok">Pasos y animación</span><h3>Soy&nbsp;una&nbsp;banda con backing&nbsp;tracks</h3><span class="go">Ver →</span></a><a class="step" href="#install"><span class="state ok">Pasos</span><h3>Voy&nbsp;a&nbsp;preparar&nbsp;una&nbsp;instalación</h3><span class="go">Ver →</span></a></div>
+</div></section>
+
+<section class="feature" id="dj"><div class="wrap narrow">
+<p class="lbl lbl-green">Situación&nbsp;1</p>
+<h2 class="sec-title">Soy&nbsp;DJ&nbsp;y&nbsp;uso&nbsp;un&nbsp;Mac</h2>
+<p class="sec-sub">Mezclas con djay en&nbsp;un&nbsp;Mac. Quieres que las&nbsp;luces sigan tus&nbsp;temas sin&nbsp;que nadie tenga que&nbsp;pulsar un&nbsp;botón.</p>
+<figure class="fig"><svg viewBox="0 0 360 520" role="img" aria-labelledby="djt djd">
+<title id="djt">Diagram: DJ with a Mac</title>
+<desc id="djd">The Mac plays music with djay. The sound goes to the mixer, then to the line input of the MaestroDMX box. Velvet Light DJ sends a cue number to the box over the network. The box sends the light as DMX to the fixtures and as Art-Net to the Mac.</desc>
+<defs>
+<marker id="mg" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f0bd57"/></marker>
+<marker id="mp" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff5fa8"/></marker>
+<marker id="mb" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4d8fff"/></marker>
+</defs>
+<rect class="bx" x="20" y="10" width="320" height="96" rx="12"/>
+<text class="sm m" x="34" y="30">YOUR MAC</text>
+<rect class="chip" x="34" y="42" width="128" height="52" rx="8"/>
+<text class="b" x="98" y="64" text-anchor="middle">djay</text><text class="sm m" x="98" y="82" text-anchor="middle">the music</text>
+<rect class="chip" x="178" y="42" width="148" height="52" rx="8"/>
+<text class="b tp" x="252" y="64" text-anchor="middle">Velvet Light DJ</text><text class="sm m" x="252" y="82" text-anchor="middle">picks the cues</text>
+
+<line class="ln" x1="70" y1="106" x2="70" y2="154" stroke="#f0bd57" marker-end="url(#mg)"/>
+<text class="sm tg" x="80" y="124">Sound</text><text class="sm m" x="80" y="140">via the controller</text>
+<line class="ln" x1="290" y1="106" x2="290" y2="154" stroke="#ff5fa8" marker-end="url(#mp)"/>
+<text class="sm tp" x="282" y="124" text-anchor="end">Cue number</text><text class="sm m" x="282" y="139" text-anchor="end">(OSC message)</text>
+
+<rect class="bx" x="20" y="158" width="140" height="56" rx="10"/>
+<text class="b" x="90" y="182" text-anchor="middle">Mixer</text><text class="sm m" x="90" y="200" text-anchor="middle">(the console)</text>
+<rect class="bx" x="200" y="158" width="140" height="56" rx="10"/>
+<text class="b" x="270" y="182" text-anchor="middle">Network</text><text class="sm m" x="270" y="201" text-anchor="middle">the router</text>
+
+<line class="ln" x1="70" y1="214" x2="70" y2="286" stroke="#f0bd57" marker-end="url(#mg)"/>
+<text class="sm tg" x="80" y="240">Sound to</text><text class="sm tg" x="80" y="255">the line input</text><text class="sm m" x="80" y="272">audio cable</text>
+<line class="ln" x1="290" y1="214" x2="290" y2="286" stroke="#ff5fa8" marker-end="url(#mp)"/>
+<text class="sm tp" x="282" y="244" text-anchor="end">same network</text><text class="sm m" x="282" y="259" text-anchor="end">as the Mac</text>
+
+<rect class="bx" x="20" y="290" width="320" height="68" rx="12" style="stroke:#e8a020"/>
+<text class="big tm" x="180" y="314" text-anchor="middle">MAESTRODMX BOX</text>
+<text class="sm m" x="180" y="333" text-anchor="middle">creates and plays the cues itself</text>
+<text class="sm m" x="180" y="348" text-anchor="middle">listens only to its line input</text>
+
+<line class="ln" x1="100" y1="358" x2="100" y2="436" stroke="#4d8fff" marker-end="url(#mb)"/>
+<line class="ln" x1="260" y1="358" x2="260" y2="436" stroke="#4d8fff" marker-end="url(#mb)"/>
+<text class="sm tb" x="110" y="392">DMX</text><text class="sm tb" x="270" y="392">Art-Net</text><text class="sm m" x="270" y="408">over the network</text>
+
+<rect class="bx" x="20" y="440" width="160" height="66" rx="10"/>
+<text class="b" x="100" y="463" text-anchor="middle">Fixtures</text><text class="sm m" x="100" y="480" text-anchor="middle">the lights</text><text class="sm m" x="100" y="496" text-anchor="middle">wired with DMX</text>
+<rect class="bx" x="200" y="440" width="140" height="66" rx="10"/>
+<text class="b" x="270" y="460" text-anchor="middle">The same Mac</text><text class="sm m" x="270" y="477" text-anchor="middle">Visualizer : 3D preview</text><text class="sm m" x="270" y="493" text-anchor="middle">Light DJ : colours</text>
+</svg><figcaption>DJ&nbsp;con Mac: el&nbsp;sonido va a&nbsp;la&nbsp;mesa de&nbsp;mezclas y&nbsp;de&nbsp;ahí a&nbsp;la&nbsp;caja; las&nbsp;órdenes viajan por&nbsp;la&nbsp;red; la&nbsp;caja devuelve la&nbsp;luz a&nbsp;los&nbsp;focos y&nbsp;al&nbsp;Mac.</figcaption></figure>
+<h3 class="sec-title" style="font-size:1.3rem;margin-top:30px">El&nbsp;esquema, de&nbsp;arriba abajo</h3>
+<ol class="olist"><li><strong>El Mac reproduce la&nbsp;música</strong> con djay. Está conectado a&nbsp;una <strong>controladora DJ</strong>, y&nbsp;la&nbsp;controladora envía el&nbsp;sonido a&nbsp;la&nbsp;mesa de&nbsp;mezclas.</li><li><strong>La mesa de&nbsp;mezclas envía el&nbsp;sonido a&nbsp;la&nbsp;entrada de&nbsp;línea de&nbsp;la&nbsp;caja</strong>. Así es&nbsp;como la&nbsp;caja «oye».</li><li><strong>Velvet Light DJ&nbsp;ve el&nbsp;tema</strong> que pones en&nbsp;djay, elige uno de&nbsp;tus cues y&nbsp;<strong>envía su&nbsp;número a&nbsp;la&nbsp;caja por&nbsp;la&nbsp;red</strong> (mensaje OSC).</li><li><strong>La caja reproduce el&nbsp;cue</strong> y&nbsp;envía la&nbsp;luz como DMX a&nbsp;los&nbsp;focos y&nbsp;como Art-Net, por&nbsp;la&nbsp;red, al&nbsp;Mac.</li><li><strong>Velvet Visualizer</strong> muestra esa&nbsp;luz en&nbsp;3D si&nbsp;el&nbsp;interruptor <strong>Live DMX</strong> está activado (luz verde). Velvet Light DJ&nbsp;también recibe los&nbsp;colores.</li></ol>
+<div class="need">
+<div class="box yes"><h3>Lo&nbsp;que&nbsp;necesitas</h3><ul><li>Un&nbsp;Mac, con djay y&nbsp;Velvet Light&nbsp;DJ, conectado a&nbsp;una controladora DJ.</li><li>Una caja MaestroDMX, con tus&nbsp;cues ya&nbsp;creados dentro.</li><li>Una mesa de&nbsp;mezclas <strong>encendida</strong> que envíe sonido a&nbsp;la&nbsp;caja.</li><li>El&nbsp;Mac y&nbsp;la&nbsp;caja en&nbsp;la&nbsp;<strong>misma red</strong>.</li></ul></div>
+<div class="box no"><h3>Lo&nbsp;que este esquema no&nbsp;dice</h3><ul><li>No&nbsp;funciona con otra caja: Velvet Light DJ&nbsp;está hecho solo para&nbsp;MaestroDMX.</li><li>No&nbsp;se&nbsp;inventa la&nbsp;música: sin&nbsp;sonido en&nbsp;la&nbsp;entrada de&nbsp;línea, los&nbsp;haces se&nbsp;quedan congelados.</li></ul></div>
+</div>
+<div class="box dot" style="margin-top:16px"><h3>Lo&nbsp;que depende de&nbsp;tu&nbsp;equipo</h3><ul><li>Los&nbsp;<strong>cables de&nbsp;audio</strong>: de&nbsp;la&nbsp;controladora a&nbsp;la&nbsp;mesa de&nbsp;mezclas y&nbsp;de&nbsp;la&nbsp;mesa a&nbsp;la&nbsp;entrada de&nbsp;línea de&nbsp;la&nbsp;caja. Dependen de&nbsp;las&nbsp;tomas de&nbsp;tu&nbsp;equipo.</li><li>El&nbsp;<strong>router</strong>: el&nbsp;Mac y&nbsp;la&nbsp;caja tienen que&nbsp;estar en&nbsp;la&nbsp;misma red.</li><li>Los&nbsp;<strong>focos</strong> reciben la&nbsp;luz de&nbsp;la&nbsp;caja como DMX y&nbsp;tienen su&nbsp;propia alimentación eléctrica.</li></ul></div>
+</div></section>
+
+<section class="feature" id="band"><div class="wrap narrow">
+<p class="lbl lbl-gold">Situación&nbsp;2</p>
+<h2 class="sec-title">Soy&nbsp;una&nbsp;banda con backing&nbsp;tracks</h2>
+<div class="box"><h3>La&nbsp;idea</h3>
+<p>La&nbsp;banda toca instrumentos en&nbsp;directo, con un&nbsp;click o&nbsp;con backing tracks que arranca Velvet Show en&nbsp;el&nbsp;Mac. Colocas tus&nbsp;cues de&nbsp;luz sobre esa&nbsp;pista: en&nbsp;cada cue, Velvet Show envía su&nbsp;número a&nbsp;la&nbsp;caja (MIDI u&nbsp;OSC).</p>
+<ol class="olist"><li><strong>Los instrumentos y&nbsp;las&nbsp;voces</strong> van a&nbsp;la&nbsp;mesa de&nbsp;mezclas.</li><li><strong>El sonido de&nbsp;los&nbsp;backing tracks</strong> sale del&nbsp;Mac y&nbsp;va a&nbsp;la&nbsp;mesa de&nbsp;mezclas.</li><li><strong>La mesa de&nbsp;mezclas envía el&nbsp;sonido a&nbsp;la&nbsp;entrada de&nbsp;línea de&nbsp;la&nbsp;caja</strong>: es&nbsp;la&nbsp;única entrada que escucha la&nbsp;caja.</li><li><strong>Velvet Show</strong> envía el&nbsp;número de&nbsp;cada cue a&nbsp;la&nbsp;caja, por&nbsp;la&nbsp;red.</li><li><strong>Arrancar las&nbsp;canciones</strong>: un&nbsp;miembro de&nbsp;la&nbsp;banda con Velvet Remote (iPhone), un&nbsp;técnico en&nbsp;el&nbsp;Mac, en&nbsp;cabina, o&nbsp;la&nbsp;reproducción automática que encadena los&nbsp;temas.</li></ol>
+<p>El&nbsp;Mac puede estar en&nbsp;cabina o&nbsp;en&nbsp;el&nbsp;escenario. En&nbsp;este ejemplo, los&nbsp;músicos no&nbsp;llevan monitores in-ear. <a href="/es/iluminacion-escenica-en-5-minutos.html#histoire">Ver la&nbsp;animación, pestaña «Banda en&nbsp;directo»</a>.</p></div>
+</div></section>
+
+<section class="feature" id="install"><div class="wrap narrow">
+<p class="lbl lbl-purple">Situación&nbsp;3</p>
+<h2 class="sec-title">Voy&nbsp;a&nbsp;preparar&nbsp;una&nbsp;instalación</h2>
+<div class="box"><h3>El&nbsp;plan típico</h3>
+<p>Estás preparando una&nbsp;sala o&nbsp;un&nbsp;show antes de&nbsp;ir&nbsp;al&nbsp;sitio. Velvet Visualizer muestra tu&nbsp;iluminación en&nbsp;3D, sin&nbsp;ningún equipo: con&nbsp;un&nbsp;Mac basta para la&nbsp;vista previa.</p>
+<p>Para una&nbsp;instalación fija, con las&nbsp;luces reales, necesitas:</p>
+<ul><li>un&nbsp;<strong>Mac</strong> (Velvet Visualizer, y&nbsp;Velvet Show o&nbsp;Velvet Light&nbsp;DJ según el&nbsp;uso);</li><li>una&nbsp;<strong>caja MaestroDMX</strong>;</li><li>una&nbsp;<strong>mesa de&nbsp;mezclas</strong> (o&nbsp;un&nbsp;reproductor de&nbsp;música) que envíe el&nbsp;sonido a&nbsp;la&nbsp;entrada de&nbsp;línea de&nbsp;la&nbsp;caja;</li><li>un&nbsp;<strong>router</strong>, para que el&nbsp;Mac y&nbsp;la&nbsp;caja estén en&nbsp;la&nbsp;misma red;</li><li>los&nbsp;<strong>focos</strong>, conectados a&nbsp;la&nbsp;caja por&nbsp;DMX.</li></ul>
+<p>Para ver la&nbsp;luz real en&nbsp;el&nbsp;Visualizer, activa el&nbsp;interruptor <strong>Live DMX</strong> (luz verde).</p></div>
+<div class="pager"><a class="btn" href="/es/iluminacion-escenica-1-entender.html">← 1&nbsp;· Entender</a><a class="btn btn-p" href="/es/iluminacion-escenica-3-configurar.html">3&nbsp;· Configurar&nbsp;→</a></div>
+</div></section>
+<footer>
+  <div class="wrap">
+    <p>Primera versión de&nbsp;la&nbsp;guía. ¿Un&nbsp;error, una idea?<br><a href="mailto:contact@loveandlive.fr">contact@loveandlive.fr</a></p>
+    <p>© Alexandre Chalon ·&nbsp;Velvet</p>
+  </div>
+</footer>
+<script src="/assets/guide-motion.js" defer></script>
+</body>
+</html>

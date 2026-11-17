@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Velvet Visualizer Anleitung — DMX Visualizer für Mac</title>
+<link rel="canonical" href="https://velvetshow.app/de/dmx-visualizer-anleitung.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-guide.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/guide-visualizer.html">
+<link rel="alternate" hreflang="de" href="https://velvetshow.app/de/dmx-visualizer-anleitung.html">
+<link rel="alternate" hreflang="es" href="https://velvetshow.app/es/guia-visualizador-dmx.html">
+<link rel="alternate" hreflang="it" href="https://velvetshow.app/it/guida-visualizer-dmx.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/visualizer-guide.html">
+<meta name="description" content="Anleitung für Velvet Visualizer, den DMX Visualizer für Mac: Szene bauen, Scheinwerfer-Bibliothek, Art-Net/sACN, MaestroDMX-Import, Export, KI, Lizenz.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d0e12;--panel:#15171d;--line:#262a33;--text:#eceef3;--mut:#9aa1b0;--dim:#565c6e;--gold:#f0bd57;--blue:#4d8fff}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+header{position:sticky;top:0;background:rgba(13,14,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:100}
+.nav{max-width:1180px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav__brand{font-family:Oswald,sans-serif;font-size:15px;font-weight:700;letter-spacing:.1em;color:var(--text)}
+.nav__links{display:flex;align-items:center;gap:18px}
+.nav__links a{font-size:13px;color:var(--mut)}
+.nav__links a:hover{color:var(--text)}
+.btn-p{background:var(--gold);color:#1a1405;padding:7px 16px;border-radius:8px;font-weight:600;font-size:13px}
+.btn-p:hover{opacity:.88;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.layout{display:grid;grid-template-columns:260px 1fr;gap:48px;padding:48px 0 100px;align-items:start}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.toc{position:sticky;top:76px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.toc-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.toc ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.toc a{color:var(--mut);font-size:13px;line-height:1.4}
+.toc a:hover{color:var(--text)}
+.article h1{font-family:Oswald,sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;line-height:1.15;margin-bottom:8px}
+.tagline{color:var(--mut);font-size:1rem;margin-bottom:32px;font-weight:300}
+.article h2{font-family:Oswald,sans-serif;font-size:1.5rem;font-weight:600;margin:44px 0 14px;padding-top:8px;border-top:1px solid var(--line)}
+.article h2:first-of-type{border-top:none;margin-top:0}
+.article h3{font-family:Oswald,sans-serif;font-size:1.1rem;font-weight:600;margin:24px 0 10px;color:var(--gold)}
+.article p{margin-bottom:14px;color:#d5d9e2;font-size:.95rem}
+.article ul,.article ol{margin:0 0 14px 22px;color:#d5d9e2;font-size:.95rem}
+.article li{margin-bottom:6px}
+.article strong{color:var(--text)}
+.article code{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono',monospace;font-size:.85em}
+footer{border-top:1px solid var(--line);padding:24px 0}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--mut)}
+</style>
+<meta property="og:locale" content="de_DE"><meta property="og:locale:alternate" content="en_US"><meta property="og:locale:alternate" content="fr_FR"><meta property="og:locale:alternate" content="es_ES"><meta property="og:locale:alternate" content="it_IT">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/de/velvet-visualizer.html" class="nav__brand">VELVET VISUALIZER</a>
+    <div class="nav__links">
+      <span class="langs" style="display:inline-flex;gap:10px;align-items:center"><a href="/visualizer-guide.html" hreflang="en" lang="en" title="English">EN</a> <a href="/fr/guide-visualizer.html" hreflang="fr" lang="fr" title="Français">FR</a> <span aria-current="true" style="font-size:13px;font-weight:600;color:var(--text,#fff)">DE</span> <a href="/es/guia-visualizador-dmx.html" hreflang="es" lang="es" title="Español">ES</a> <a href="/it/guida-visualizer-dmx.html" hreflang="it" lang="it" title="Italiano">IT</a></span>
+      <a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest" class="btn-p">Auf dieser Seite</a>
+    </div>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="layout">
+    <nav class="toc">
+      <div class="toc-title">Auf dieser Seite</div>
+      <ul>
+<li><a href="#1-welcome-to-velvet-visualizer">1. Willkommen bei Velvet Visualizer</a></li>
+<li><a href="#2-installation">2. Installation</a></li>
+<li><a href="#3-first-launch-and-getting-started">3. Erster Start und Einstieg</a></li>
+<li><a href="#4-building-your-scene">4. Deine Szene aufbauen</a></li>
+<li><a href="#5-the-fixture-library">5. Die Scheinwerfer-Bibliothek</a></li>
+<li><a href="#6-dmx-patch">6. DMX-Patch</a></li>
+<li><a href="#7-connecting-your-console">7. Dein Lichtpult anschließen</a></li>
+<li><a href="#8-importing-from-maestrodmx">8. Import aus MaestroDMX</a></li>
+<li><a href="#9-dmx-monitor-and-recording">9. DMX-Monitor und Aufnahme</a></li>
+<li><a href="#10-working-in-3d">10. Arbeiten in 3D</a></li>
+<li><a href="#11-plans-multiple-layouts-per-project">11. Pläne — mehrere Layouts pro Projekt</a></li>
+<li><a href="#12-exporting">12. Exportieren</a></li>
+<li><a href="#13-setup-assistant-ai">13. Einrichtungsassistent (KI)</a></li>
+<li><a href="#14-licensing-and-trial">14. Lizenz und Testversion</a></li>
+<li><a href="#15-preferences-and-settings">15. Einstellungen</a></li>
+<li><a href="#16-keyboard-shortcuts">16. Tastenkürzel</a></li>
+<li><a href="#17-reporting-a-bug">17. Einen Fehler melden</a></li>
+<li><a href="#18-credits">18. Danksagungen</a></li>
+<li><a href="#19-frequently-asked-questions">19. Häufige Fragen</a></li>
+      </ul>
+    </nav>
+    <article class="article">
+      <h1>Velvet Visualizer Anleitung</h1>
+<p class="tagline">Sieh deine Show in 3D, bevor du sie spielst.</p>
+<h2 id="1-welcome-to-velvet-visualizer">1. Willkommen bei Velvet Visualizer</h2>
+<p>Velvet Visualizer ist eine macOS-App, die dein echtes Lichtrig in 3D zeigt, live, vor und während der Show. Verbinde sie per Art-Net oder sACN mit deinem Lichtpult — oder importiere direkt eine MaestroDMX-Datei — und sie bildet genau ab, was dein Lichtpult sendet, Scheinwerfer für Scheinwerfer.</p>
+<p><strong>Wofür Velvet Visualizer gedacht ist:</strong></p>
+<ul>
+<li>Ein Lichtrig in einem virtuellen Raum mit deinen echten Maßen planen und platzieren</li>
+<li>Deinen DMX-Patch auf Konflikte prüfen, bevor du echte Kabel anfasst</li>
+<li>Deine tatsächliche Show live ansehen, gesteuert von deinem echten Lichtpult</li>
+<li>Pläne und Equipmentlisten (PDF, CSV) für dich oder deine Crew erstellen</li>
+</ul>
+<p><strong>Wofür Velvet Visualizer nicht gedacht ist:</strong></p>
+<ul>
+<li>Ein Lichtpult — es sendet kein DMX aus, es empfängt es nur (außer wenn du eine Szene von Hand aufbaust, bevor du ein Lichtpult anschließt)</li>
+<li>Ein Ersatz für MaestroDMX oder eine andere Steuersoftware</li>
+</ul>
+<h2 id="2-installation">2. Installation</h2>
+<p>Velvet Visualizer wird als <code>.zip</code>-Datei mit der App ausgeliefert.</p>
+<ol>
+<li>Entpacke die Datei und zieh <strong>Velvet Visualizer</strong> in deinen Ordner „Programme“ (Applications).</li>
+<li>Starte die App aus dem Ordner „Programme“ oder über Spotlight.</li>
+<li>Beim ersten Start fragt macOS eventuell, ob du das Öffnen bestätigen willst. Klicke auf <strong>Öffnen</strong>.</li>
+</ol>
+<p><strong>Systemvoraussetzungen:</strong> macOS 14 oder neuer.</p>
+<h2 id="3-first-launch-and-getting-started">3. Erster Start und Einstieg</h2>
+<p>Die Anleitung <strong>Getting Started</strong> (Menü „Help“) führt dich durch sechs Schritte, jeweils mit einer Schaltfläche, die die Aktion direkt ausführt:</p>
+<ol>
+<li>Eine Startvorlage wählen oder eine MaestroDMX-Datei importieren</li>
+<li>Dein Equipment hinzufügen (aus der Bibliothek, per Online-Suche oder durch einen eigenen Scheinwerfer)</li>
+<li>Es platzieren und anpassen (Inspector)</li>
+<li>Deine DMX-Adressen prüfen (Patch)</li>
+<li>Dein Lichtpult verbinden (Art-Net-Einrichtungsassistent)</li>
+<li>Zeigen, speichern und exportieren</li>
+</ol>
+<p>Du musst sie nicht der Reihe nach durchgehen — sie ist da, wenn du eine Erinnerung brauchst.</p>
+<p><strong>Schnellstart-Vorlagen</strong>: Beim Anlegen eines neuen Projekts kannst du statt mit einer leeren Bühne mit einem fertigen Rig beginnen — Empty stage, DJ, DJ + screen + audience, Band, Truss + 2 totems oder Wedding/private party.</p>
+<p><strong>Demo-Shows</strong>: Zwei eingebaute Demo-Tracks (Electro und Rock) bauen automatisch ein Rig auf und spielen eine synchrone Show aus Audio und Licht ab, damit du die App in Aktion siehst, ohne echte Geräte anzuschließen. Du startest sie im Bereich „Demo“ der Library.</p>
+<h2 id="4-building-your-scene">4. Deine Szene aufbauen</h2>
+<h3>Das Library-Fenster (⌘L)</h3>
+<p>Die Library ist der Ausgangspunkt für alles. Sie ist in Bereiche gegliedert:</p>
+<ul>
+<li><strong>Quick starts</strong> — die oben genannten Vorlagen</li>
+<li><strong>Demo</strong> — die beiden Demo-Shows</li>
+<li><strong>Structures &amp; Supports</strong> — Traverse, Totem, Stativ, Lichtbalken, T-Bar, Bodenhalterung</li>
+<li><strong>Decor</strong> — Hintergrund</li>
+<li><strong>Musicians</strong> — DJ, DJ-Pult, Sänger, Gitarrist, Bassist, Pianist, Schlagzeug (nützlich als visuelle Bezugspunkte auf der Bühne)</li>
+<li><strong>Real fixtures</strong> — eine durchsuchbare Liste echter Scheinwerferprofile, dazu Schaltflächen, um einen eigenen zu erstellen oder einen zu importieren</li>
+</ul>
+<h3>Scheinwerfer platzieren</h3>
+<p>Scheinwerfer, die du hinzufügst, liegen zunächst „unplatziert“ in einer Ablage. Du kannst:</p>
+<ul>
+<li>Einen selbst auf die Bühne ziehen</li>
+<li>Doppelklicken oder <strong>Auto-place</strong> nutzen, damit er automatisch einen freien Befestigungspunkt an einer Traverse oder einem Balken belegt</li>
+</ul>
+<h3>Positionieren</h3>
+<p>Zum Auswählen klicken, zum Verschieben ziehen. Für präzise Kontrolle öffne den <strong>Inspector</strong> (⌘I):</p>
+<ul>
+<li>Numerische Position und Rotation in X / Y / Z, mit Rotationsvorgaben</li>
+<li>Vorgaben für die physische Ausrichtung: Normal, Vertical 90°, Vertical -90°, Flipped, Uplight</li>
+<li>Montageart, Ausrichtung und Balkenseite</li>
+<li>An einem Träger (Traverse, Balken, Stativ) an einem bestimmten Befestigungspunkt anbringen oder lösen</li>
+<li>Mehrere ausgewählte Objekte ausrichten und verteilen (links/Mitte/rechts, hinten/Mitte/vorn, gleichmäßig verteilen)</li>
+<li>Gruppieren / Gruppierung aufheben, sperren, ausblenden, duplizieren, löschen, verschieben in kleinen Schritten</li>
+<li>Die Schnellaktionen „Center“ und „Set down“</li>
+<li>Felder für Gewicht und Leistung — automatisch aus dem Profil des Scheinwerfers gefüllt, editierbar und später für deine Equipment-Summen verwendet</li>
+</ul>
+<p>Mit Rechtsklick auf ein beliebiges Objekt öffnest du ein Kontextmenü (duplizieren, kopieren/einfügen, umbenennen, einrahmen, sperren, ausblenden, gruppieren, löschen, alles auswählen, alles einblenden, diese Kameraansicht speichern). Bei einem Scheinwerfer kannst du dort außerdem seine DMX-Kanäle ansehen, ihn an einem Träger anbringen oder lösen oder ihn direkt auf das Publikum oder auf die Bühnenrückseite ausrichten.</p>
+<h3>Den Raum einrichten</h3>
+<p>Im Bereich <strong>Room</strong> wählst du eine Bühnengrößen-Vorgabe oder gibst deine eigene Breite, Tiefe und Deckenhöhe ein. Velvet Visualizer warnt dich, wenn etwas, das du platziert hast, über die Decke hinausragt.</p>
+<h2 id="5-the-fixture-library">5. Die Scheinwerfer-Bibliothek</h2>
+<p>Über die eingebaute Bibliothek hinaus hast du drei Wege, genau den Scheinwerfer zu bekommen, den du besitzt:</p>
+<p><strong>GDTF-Dateien</strong> — importiere eine <code>.gdtf</code>-Datei (das Branchenstandard-Format zur Beschreibung von Scheinwerfern, mit vollständiger 3D-Geometrie und Bewegung der Moving Heads) über das Menü „File“ oder die Schaltfläche „Import“ der Library. Wenn du ein <strong>GDTF Share</strong>-Konto hast (gdtf-share.com), kann sich Velvet Visualizer dort anmelden und es im Hintergrund nutzen, um bei einem MaestroDMX-Import automatisch das passende Profil für unbekannte Scheinwerfer zu finden.</p>
+<p><strong>Open Fixture Library</strong> — eine kostenlose Online-Suche, ohne Konto. Suche nach dem Namen, wähle das passende Ergebnis und importiere es direkt. Eine lokale <code>.json</code>-Datei aus demselben Projekt kann auch von Hand importiert werden.</p>
+<p><strong>Custom Fixture Builder</strong> — für einen Scheinwerfer, der sonst nirgends aufgeführt ist. Klicke in der Library auf „Create…“, gib ihm einen Namen, wähle einen Scheinwerfertyp und baue seine DMX-Kanalliste selbst auf (oder starte mit einer gängigen Vorlage wie „PAR LED 7ch“ und passe sie an). Er wird auf deinem Mac gespeichert und steht in jedem künftigen Projekt zur Verfügung.</p>
+<p>Du kannst auch einen beliebigen Scheinwerfer mit der rechten Maustaste anklicken und „View DMX channels…“ wählen, um seinen Modus, seine vollständige Kanalliste und — wenn er Live-Daten empfängt — den aktuellen Wert jedes Kanals zu sehen.</p>
+<h2 id="6-dmx-patch">6. DMX-Patch</h2>
+<p>Öffne die Patch-Tabelle mit ⇧⌘P. Sie listet jeden Scheinwerfer mit Universum, Adresse und Modus auf und lässt dich:</p>
+<ul>
+<li>Scheinwerfer direkt in der Tabelle umbenennen</li>
+<li>Adressen mit Schaltflächen ändern</li>
+<li>Konflikte und Überläufe automatisch hervorgehoben sehen</li>
+<li>Mehrere Scheinwerfer gleichzeitig auswählen, um ihre Adressen zu verschieben, sie mit festem Abstand neu zu nummerieren oder in ein anderes Universum zu legen</li>
+<li>Den gesamten Patch in die Zwischenablage kopieren oder als CSV-Tabelle exportieren</li>
+<li>Jede Änderung rückgängig machen</li>
+</ul>
+<h2 id="7-connecting-your-console">7. Dein Lichtpult anschließen</h2>
+<p>Velvet Visualizer lauscht in deinem Netzwerk auf <strong>Art-Net</strong> und <strong>sACN (E1.31)</strong> — es braucht kein direktes Kabel, nur dasselbe Netzwerk wie dein Lichtpult.</p>
+<p>Schalte den Schalter <strong>Live DMX</strong> ein, damit das eingehende Signal den Visualizer steuert. Solange er an ist, sind die manuellen Lichtsteuerungen in der App gesperrt — dein Lichtpult hat das Sagen.</p>
+<p>Der <strong>Art-Net Setup Assistant</strong> (Menü „Tools“) führt dich live in vier Schritten durch die Einrichtung:</p>
+<ol>
+<li>Zeigt die IP-Adresse(n) dieses Mac — trage eine davon als Ziel an deinem Lichtpult ein</li>
+<li>Bestätigt, dass die App lauscht</li>
+<li>Eine Checkliste für die Ausgangseinstellungen deines Lichtpults (Protokoll, Ziel, Universum, Adressen)</li>
+<li>Ein Live-Test: Kommen Pakete an? Ist es gültiges Art-Net oder sACN? Welche Universen, und stimmen sie mit deiner Erwartung überein? Es gibt außerdem einen Schalter für die Art-Net-Universum-Nummerierung (bei 0 oder bei 1 beginnend), falls dein Lichtpult anders zählt, und eine Schaltfläche, die einen Diagnosebericht erzeugt, den du kopieren oder per E-Mail schicken kannst, wenn etwas nicht funktioniert.</li>
+</ol>
+<h2 id="8-importing-from-maestrodmx">8. Import aus MaestroDMX</h2>
+<p>Statt alles von Hand zu patchen, kannst du deine Show direkt aus MaestroDMX importieren.</p>
+<p><strong>File ▸ Import MaestroDMX File… (⇧⌘I)</strong> liest die aus Maestro exportierte JSON-Datei. Es ordnet jeden Scheinwerfer einem echten Profil zu (mit Rückgriff auf eine Online-Suche bei GDTF Share, dann auf ein generisches Profil, wenn nichts gefunden wird), platziert sie automatisch und meldet, was importiert wurde, was ignoriert wurde und welche Konflikte oder Warnungen es gab.</p>
+<p>Eine vollständige <strong>MaestroDMX Guide</strong> ist in die App eingebaut (Schaltfläche „MaestroDMX Guide“ in der Library) und führt dich in neun Schritten durch den ganzen Ablauf: deine Scheinwerfer in Maestro duplizieren, damit du eine eigene Art-Net-Kopie hast, verstehen, was Art-Net ist, die IP-Adresse deines Mac finden, die Kopien auf Art-Net stellen, noch einmal prüfen, dass dein echter DMX-Ausgang unberührt bleibt, die richtige JSON-Datei exportieren, sie in Velvet Visualizer ziehen, prüfen, dass das Signal ankommt, und was zu tun ist, wenn ein Scheinwerfer nicht erkannt wird. Sie enthält denselben Live-Signaltest wie der Setup Assistant sowie einen Diagnosebericht, den du kopieren oder per E-Mail schicken kannst.</p>
+<h2 id="9-dmx-monitor-and-recording">9. DMX-Monitor und Aufnahme</h2>
+<p>Öffne den <strong>DMX Monitor</strong> mit ⇧⌘D für ein Live-Raster aller Kanäle in allen Universen, mit hervorgehobenen letzten Änderungen. Du kannst nur auf Kanäle ungleich null oder nur auf den ausgewählten Scheinwerfer filtern und Paket- und Universum-Statistiken auf einen Blick sehen.</p>
+<p>Dazu gehören auch <strong>Aufnahme und Wiedergabe</strong>: Nimm eingehendes DMX in eine Datei auf und spiel es später wieder ab — mit Schleife und Zeitleiste — auch ohne angeschlossenes Lichtpult. Praktisch zum Testen oder um eine Demo zu bauen.</p>
+<h2 id="10-working-in-3d">10. Arbeiten in 3D</h2>
+<h3>Kamera</h3>
+<p>Springe im Kameramenü zu einer Vorgabeansicht — Audience, Control desk, Stage → Audience, Top, Stage left (jardin), Stage right (cour). Speichere eigene Ansichten unter einem Namen und kehre jederzeit dorthin zurück. Drehe die Kamera frei (Rechtsklick und ziehen, oder zwei Finger + ⇧ auf dem Trackpad), verschiebe sie (zwei Finger), zoome (Pinch oder Scrollen) oder bewege sie mit den Pfeiltasten in kleinen Schritten; mit der Leertaste zentrierst du neu.</p>
+<h3>Darstellungsmodi</h3>
+<ul>
+<li><strong>Installation</strong> — eine normale, gut beleuchtete Tagesansicht zum Aufbauen und Anpassen deines Rigs</li>
+<li><strong>Spectacle / Show</strong> — dimmt den Raum, damit du das Licht wirklich siehst, mit einem Haze-Regler (Inspector, Bereich Render), der bestimmt, wie sichtbar die Lichtstrahlen sind</li>
+</ul>
+<h3>Lichtsteuerung</h3>
+<p>Für jeden Scheinwerfer: Farbe, Intensität, Abstrahlwinkel, Pan/Tilt (oder eine einfache Ausrichtung bei Scheinwerfern, die sich nicht bewegen), Gobo (offen oder ein Muster), Prisma (aus oder 3 bis 8 Facetten) und ein „Mirror“-Schalter, der ein symmetrisches Links-/Rechts-Verhalten bei Moving Heads erzwingt.</p>
+<h3>Ausrichten</h3>
+<p>Klicke auf „Aim at a point…“ und dann irgendwo in die Szene — die ausgewählten Scheinwerfer drehen sich dorthin, und du bekommst einen kurzen Bericht, worauf sie jetzt ausgerichtet sind. Mit Rechtsklick auf einen Scheinwerfer erreichst du Kurzbefehle: „Light the audience“ oder „Light the back of the stage“.</p>
+<h3>Präsentieren</h3>
+<p>Die Show-Leiste lässt dich eine Demo-Show abspielen oder stoppen, die Präsentation beenden und direkt aus der aktuellen Kameraansicht ein PNG oder Video exportieren.</p>
+<h2 id="11-plans-multiple-layouts-per-project">11. Pläne — mehrere Layouts pro Projekt</h2>
+<p>Ein einzelnes Projekt kann mehrere <strong>Pläne</strong> enthalten: verschiedene Kombinationen aus Scheinwerferplatzierung, Patch und Kameraansichten, alle in derselben Datei. Wechsle zwischen ihnen, dupliziere einen, um eine Variante zu starten, lege einen leeren an, benenne sie um oder lösche sie — über das Menü „Plans“ in der Symbolleiste. Praktisch, um zwei Rig-Ideen zu vergleichen oder ein Layout für den Aufbau und ein Layout für die Show nebeneinander zu halten.</p>
+<h2 id="12-exporting">12. Exportieren</h2>
+<h3>PDF</h3>
+<p>„Export PDF“ (Symbolleiste oder Menü „File“) öffnet ein Optionsfenster mit drei fertigen Zielgruppen:</p>
+<ul>
+<li><strong>Client</strong> — Titelseite, Plan, 3D-Ansichten und Equipmentliste. Keine DMX-Liste Scheinwerfer für Scheinwerfer, keine Notizen, keine Details zu Gewicht und Leistung.</li>
+<li><strong>Technician / crew</strong> — alles, auch die vollständige Scheinwerferliste mit DMX-Adressen sowie Gewicht und Leistung.</li>
+<li><strong>Loader / transport</strong> — Titelseite und eine Equipmentliste nur mit Gewicht und Leistung.</li>
+</ul>
+<p>Jede Seite lässt sich einzeln ein- oder ausschalten (Titelseite, Plan, 3D-Ansichten, Scheinwerferliste, Equipmentliste, eine Seite mit freiem Notiztext), und der Plan kann optional DMX-Beschriftungen und Maße zeigen. Du kannst deine eigenen Kontaktdaten und dein Logo hinzufügen, die auf dem Dokument gedruckt werden.</p>
+<h3>DMX-Patch als CSV</h3>
+<p>Eine Tabelle mit einer Zeile pro Scheinwerfer: Name, Typ, Hersteller/Modell, Universum, Adressbereich, Modus, Kanalanzahl, sein Träger und jede Konflikt- oder Überlauf-Warnung. (Symbolleiste: „Export patch“.)</p>
+<h3>Bilder und Video</h3>
+<p>Exportiere ein PNG der aktuellen Ansicht (⇧⌘E) — Standard oder 4K — oder ein Drehteller-Video, das die ganze Szene über eine von dir gewählte Dauer um 360° dreht, über die Show-Leiste.</p>
+<h2 id="13-setup-assistant-ai">13. Einrichtungsassistent (KI)</h2>
+<p>Der <strong>Setup Assistant</strong> (⇧⌘A, oder das Funkel-Symbol in der Symbolleiste) hilft dir, aus einer einfachen Beschreibung deines Equipments ein Rig aufzubauen, statt alles von Hand hinzuzufügen.</p>
+<p>Beim ersten Mal siehst du einen kurzen Bildschirm, der erklärt, was gesendet wird (deine getippte Beschreibung und die Namen der Scheinwerfer/Halterungen, die schon in deiner Szene sind — nie deine Projektdatei, und in dieser Version keine Fotos), dass er <strong>deinen eigenen Anthropic-API-Schlüssel</strong> verwendet (sicher auf deinem Mac gespeichert, nie in der Projektdatei, und direkt über dich abgerechnet) und dass die Vorschläge ein Ausgangspunkt zum Prüfen sind, keine Garantie.</p>
+<p>Beschreibe dein Equipment mit eigenen Worten — getippt oder diktiert — und der Assistent schlägt eine strukturierte Liste vor, abgeglichen mit echten Scheinwerferprofilen. Sieh dir jeden Vorschlag als Karte an: Nimm ihn an, bitte um einen anderen, wähle ein bestimmtes Modell, wähle „Generic“, such online oder importiere stattdessen eine GDTF-Datei. Du kannst auch einfach weiterreden, um frühere Antworten zu korrigieren — das Gespräch wird gespeichert, und du kannst es später fortsetzen. Platzierungshinweise (auf dem Boden, auf einem Stativ, an einem Balken, an einer Traverse, oben oder unten, links/Mitte/rechts, auf die Bühne oder das Publikum ausgerichtet) werden automatisch berücksichtigt, sodass angenommene Scheinwerfer ungefähr dort landen, wo sie hingehören, statt sich an einer Stelle zu stapeln. Jede Anfrage zeigt dir vorab die geschätzten Kosten, bevor du dich entscheidest.</p>
+<h2 id="14-licensing-and-trial">14. Lizenz und Testversion</h2>
+<p>Velvet Visualizer enthält eine <strong>kostenlose 30-Tage-Testversion</strong>, gezählt ab dem Moment, in dem du die App zum ersten Mal startest. Ein Badge in der Symbolleiste zeigt, wie viele Tage übrig sind.</p>
+<p>Sobald die Testversion ohne Lizenz abläuft, sperrt sich die ganze App — nicht nur der Export —, bis du einen Schlüssel eingibst oder kaufst. Es geht nichts verloren: Deine Projekte bleiben genau so, wie sie waren, und sind sofort wieder da, sobald du aktivierst.</p>
+<p>Ein Lizenzschlüssel gilt für <strong>2 Macs</strong>. Nach der Aktivierung läuft die App <strong>unbegrenzt offline</strong> weiter — der Verlust deiner Internetverbindung sperrt dich nie aus; nur eine ausdrückliche Antwort „Schlüssel ungültig“ tut das. Um eine Lizenz auf einen neuen Mac zu übertragen, deaktiviere sie zuerst auf dem aktuellen.</p>
+<h2 id="15-preferences-and-settings">15. Einstellungen</h2>
+<ul>
+<li><strong>Language</strong> — Französisch oder Englisch, über das Globus-Symbol</li>
+<li><strong>Units</strong> — metrisch oder imperial (Fuß/Zoll), über das Lineal-Symbol</li>
+<li><strong>Grid snap</strong> — ein oder aus beim Verschieben von Objekten</li>
+<li><strong>Active tool</strong> — Select, Move oder Rotate (auch V / M / R)</li>
+<li><strong>Array</strong> — ein Objekt in einer Reihe duplizieren</li>
+<li><strong>Mirror selection</strong> — links/rechts oder vorn/hinten</li>
+<li><strong>Updates</strong> — Velvet Visualizer sucht automatisch nach einer neuen Version (höchstens alle 6 Stunden) und zeigt ein Badge, wenn eine verfügbar ist; ein Klick darauf öffnet die Release-Seite in deinem Browser. Es wird nichts automatisch installiert.</li>
+</ul>
+<h2 id="16-keyboard-shortcuts">16. Tastenkürzel</h2>
+<p>Die vollständige Liste findest du jederzeit unter <strong>Help ▸ Keyboard Shortcuts (⌘/)</strong>, gruppiert nach Project, Editing, Objects, Tools &amp; movement, Camera und Windows. So schlägst du am schnellsten eines nach, ohne die App zu verlassen.</p>
+<h2 id="17-reporting-a-bug">17. Einen Fehler melden</h2>
+<p><strong>Help ▸ Report a Bug…</strong> (und die Schaltflächen für den Diagnosebericht im Art-Net Setup Assistant und im MaestroDMX Guide) stellen eine kurze technische Zusammenfassung zusammen — Anzahl der Projekte und Scheinwerfer, Zustand des Art-Net-/sACN-Listeners, dein letztes MaestroDMX-Importergebnis —, die du kopieren oder per E-Mail schicken kannst. So lässt sich viel schneller klären, was schiefgelaufen ist, ohne Rückfragen.</p>
+<h2 id="18-credits">18. Danksagungen</h2>
+<p>Velvet Visualizer verwendet kostenlose 3D-Modelle (einzeln genannt, CC-BY-Lizenz, über Sketchfab) und Open-Source-Bibliotheken (GLTFKit2/cgltf, MIT-Lizenz; KTX-Software, Apache-2.0-Lizenz). Es steht in keiner Verbindung zu MaestroDMX, Chauvet, ADJ, Martin, Cameo oder BeamZ — Markennamen werden nur verwendet, um die Kompatibilität zu beschreiben. Alle Danksagungen: Help ▸ Credits.</p>
+<h2 id="19-frequently-asked-questions">19. Häufige Fragen</h2>
+<p><strong>Brauche ich außer meinem Mac und meinem Maestro (oder einem anderen Lichtpult) noch etwas?</strong></p>
+<p>Keine zusätzliche Hardware — nur dein Mac und dein Lichtpult im selben Netzwerk, mit eingeschaltetem Art-Net oder sACN.</p>
+<p><strong>Zeigt es genau das, was auf der Bühne passiert?</strong></p>
+<p>Ja — es zeigt das Live-Signal, das dein Lichtpult tatsächlich sendet, daher stimmt das Bild immer mit dem überein, was wirklich ausgegeben wird.</p>
+<p><strong>Muss ich meine Scheinwerfer noch einmal von Hand patchen, wenn ich sie schon in MaestroDMX habe?</strong></p>
+<p>Nein — importiere den JSON-Export deines Maestro, und er bringt deine Scheinwerfer, Adressen und Gruppen automatisch mit.</p>
+<p><strong>Was passiert nach der Testversion?</strong></p>
+<p>Deine Projekte bleiben erhalten. Gib einen Lizenzschlüssel ein, um die App wieder freizuschalten.</p>
+<p><strong>Kann ich meine Lizenz auf einem anderen Mac nutzen?</strong></p>
+<p>Ja — eine Lizenz gilt für 2 Macs. Deaktiviere sie auf einem, bevor du sie auf einem dritten aktivierst.</p>
+<p><strong>Gibt es eine Windows-Version?</strong></p>
+<p>Noch nicht — Velvet Visualizer läuft nur auf dem Mac (macOS 14 oder neuer).</p>
+
+    </article>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a href="/de/velvet-visualizer.html">← Zurück zu Velvet Visualizer</a>
+    </div>
+    <p>© Alexandre Chalon · Velvet · contact@loveandlive.fr</p>
+  </div>
+</footer>
+</body>
+</html>

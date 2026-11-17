@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Software MIDI Show Control per musicisti — Velvet Show</title>
+  <meta name="description" content="Software MIDI Show Control per musicisti dal vivo su macOS: metti le cue MIDI su una timeline e comanda le luci in automatico. MaestroDMX e OSC inclusi.">
+  <meta name="keywords" content="software MIDI Show Control, software cue MIDI Mac, automazione luci musicisti, controllo MaestroDMX, OSC show control, MIDI esibizioni dal vivo">
+  <link rel="canonical" href="https://velvetshow.app/it/software-midi-show-control.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/midi-show-control-software">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/logiciel-show-control-midi">
+<link rel="alternate" hreflang="de" href="https://velvetshow.app/de/midi-show-control-software.html">
+<link rel="alternate" hreflang="es" href="https://velvetshow.app/es/software-midi-show-control.html">
+<link rel="alternate" hreflang="it" href="https://velvetshow.app/it/software-midi-show-control.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/midi-show-control-software">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .lp { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .lp h1 { font-family: 'Oswald', sans-serif; font-size: clamp(2rem,5vw,3rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; }
+    .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 .75rem; text-transform: uppercase; letter-spacing: .04em; }
+    .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: .95rem; }
+    .lp ul { color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem; font-size: .95rem; }
+    .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+  </style>
+<meta property="og:locale" content="it_IT"><meta property="og:locale:alternate" content="en_US"><meta property="og:locale:alternate" content="fr_FR"><meta property="og:locale:alternate" content="de_DE"><meta property="og:locale:alternate" content="es_ES">
+</head>
+<body>
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--red"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span>
+        <span class="menubar__title">VELVET SHOW</span>
+      </div>
+      <nav class="menubar__nav" aria-label="Principale">
+        <a href="/it/">Home</a>
+        <a href="/it/#remote">Velvet Remote</a>
+        <a href="/it/#maestrodmx">MaestroDMX</a>
+        <a href="/it/#beta" id="dl-nav">Scarica</a>
+      <span class="langs" style="display:inline-flex;gap:10px;align-items:center"><a href="/midi-show-control-software" hreflang="en" lang="en" title="English">EN</a> <a href="/fr/logiciel-show-control-midi" hreflang="fr" lang="fr" title="Français">FR</a> <a href="/de/midi-show-control-software.html" hreflang="de" lang="de" title="Deutsch">DE</a> <a href="/es/software-midi-show-control.html" hreflang="es" lang="es" title="Español">ES</a> <span aria-current="true" style="font-size:13px;font-weight:600;color:var(--text,#fff)">IT</span></span></nav>
+    </div>
+  </header>
+  <div class="lp">
+    <p class="eyebrow">MIDI Show Control</p>
+    <h1>Software MIDI Show Control per musicisti dal vivo su macOS</h1>
+    <p>Velvet Show mette il MIDI Show Control direttamente sulla timeline delle tue basi musicali. Posizioni le cue in punti precisi e partono in automatico durante la riproduzione — scene luci, avvio di video, cambi DMX, tutto ciò che il tuo impianto comanda via MIDI o OSC.</p>
+    <h2>Come funziona</h2>
+    <p>Apri un brano in Velvet Show. Sulla timeline con la forma d’onda vedi il tuo audio e due tracce di cue — una per il MIDI, una per l’OSC. Posiziona una cue nel punto esatto in cui vuoi un cambio di luci. Quando la traccia parte, la cue scatta in automatico. Niente comandi manuali, nessun secondo operatore.</p>
+    <ul>
+      <li>Cue MIDI sulla timeline — posizionabili ovunque sulla forma d’onda</li>
+      <li>Program Change, Control Change, Note On/Off — specifica MIDI completa</li>
+      <li>Cue OSC sulla timeline — messaggi inviati sulla rete locale</li>
+      <li>MIDI e OSC manuali — invia messaggi a richiesta tra un brano e l’altro</li>
+      <li>Importa la lista cue di MaestroDMX direttamente sulla timeline</li>
+      <li>Controllo della Master Brightness per MaestroDMX</li>
+      <li>MIDI + OSC in contemporanea sulla stessa timeline</li>
+      <li>OSC Events Library — salva e riutilizza i preset di cue</li>
+    </ul>
+    <h2>Funziona con il tuo sistema luci attuale</h2>
+    <p>Velvet Show invia MIDI e OSC: non sostituisce il tuo software luci. <strong>MaestroDMX</strong> resta il motore DMX. Velvet Show gli dice cosa fare e quando. Vale lo stesso per qualsiasi altro apparecchio compatibile con MIDI o OSC nel tuo impianto. Vuoi vedere il risultato in 3D prima della serata? <a href="/it/maestrodmx-visualizer.html">Visualizza in anteprima il tuo show MaestroDMX sul Mac</a>.</p>
+    <h2>Rispetto a QLab</h2>
+    <p>QLab è potente ma complesso, costoso e ottimizzato per le produzioni teatrali. Velvet Show è pensato per i musicisti che lavorano e vogliono l’automazione MIDI senza gestire un intero sistema di produzione. Se suoni 3 sere a settimana e vuoi che le luci seguano la musica in automatico, Velvet Show è lo strumento giusto.</p>
+    <div class="cta-row">
+      <a href="/it/#beta" id="dl-hero" class="btn btn--primary" target="_blank" rel="noopener">Scarica Velvet Show — Gratis</a>
+      <a href="/it/" class="btn btn--ghost">Scopri tutte le funzioni</a>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand"><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="footer__name">Velvet Show</span></div>
+      <p class="footer__copy">&copy; 2026 Velvet Show &middot; <a href="/it/">velvetshow.app</a></p>
+    </div>
+  </footer>
+  <script>
+    const url = 'https://github.com/Alxsparker/velvetshow/releases/latest/download/VELVET.SHOW.zip';
+    ['dl-nav','dl-hero'].forEach(id => { const el = document.getElementById(id); if(el) el.href = url; });
+  </script>
+  <script src="/stats.js"></script>
+</body>
+</html>

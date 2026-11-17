@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://velvetshow.app/it/luci-di-scena-4-risolvere-problemi.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-4-depanner.html">
+<link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-4-fehlersuche.html">
+<link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-4-solucionar-problemas.html">
+<link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-4-risolvere-problemi.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Velvet"><meta property="og:locale" content="en_US"><meta property="og:url" content="https://velvetshow.app/it/luci-di-scena-4-risolvere-problemi.html"><meta property="og:title" content="Luci DMX che non si muovono? Risolvere i problemi"><meta property="og:description" content="Le luci DMX non si muovono? Le cause da controllare in ordine: audio, rete, Art-Net, OSC, con la soluzione per ognuna.">
+<title>Luci DMX che non si muovono? Risolvere i problemi</title>
+<meta name="description" content="Le luci DMX non si muovono? Le cause da controllare in ordine: audio, rete, Art-Net, OSC, con la soluzione per ognuna.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/guide-lumiere.css">
+<link rel="stylesheet" href="/assets/guide-motion.css">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/it/luci-di-scena-in-5-minuti.html" class="nav__brand">GUIDA <span>LUCI</span></a>
+    <div class="nav__links"><a href="/it/luci-di-scena-1-capire.html">1&nbsp;· Capire</a><a href="/it/luci-di-scena-2-collegare.html">2&nbsp;· Collegare</a><a href="/it/luci-di-scena-3-configurare.html">3&nbsp;· Impostare</a><a href="/it/luci-di-scena-4-risolvere-problemi.html" class="on">4&nbsp;· Risolvere i problemi</a><span class="langs" style="display:inline-flex;gap:10px;align-items:center"><a href="/stage-lighting-4-troubleshoot.html" hreflang="en" lang="en" title="English">EN</a> <a href="/fr/lumiere-4-depanner.html" hreflang="fr" lang="fr" title="Français">FR</a> <a href="/de/buehnenbeleuchtung-4-fehlersuche.html" hreflang="de" lang="de" title="Deutsch">DE</a> <a href="/es/iluminacion-escenica-4-solucionar-problemas.html" hreflang="es" lang="es" title="Español">ES</a> <span aria-current="true" style="font-size:13px;font-weight:600;color:var(--text,#fff)">IT</span></span></div>
+  </nav>
+</header>
+<section class="hero hero--small"><div class="hero__inner">
+<p class="soon">Prima&nbsp;versione</p><p class="eyebrow">Parte&nbsp;4&nbsp;di&nbsp;4</p>
+<h1>Risolvere i problemi</h1>
+<p class="lead">«&nbsp;Perché le mie luci non si muovono?&nbsp;» Le cause da controllare,&nbsp;in&nbsp;ordine.</p>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-orange">Prima&nbsp;di&nbsp;tutto</p>
+<h2 class="sec-title">Tre domande per dimezzare il&nbsp;problema</h2>
+<p class="sec-sub">Ogni domanda controlla un tratto dello schema. Rispondi&nbsp;in&nbsp;ordine.</p>
+<ol class="olist"><li><strong>La centralina sente la musica?</strong> Il mixer è acceso e manda l’audio all’ingresso&nbsp;line?</li><li><strong>Gli ordini arrivano?</strong> Il Mac e la centralina sono sulla stessa&nbsp;rete?</li><li><strong>Vedi la luce nel Visualizer?</strong> L’interruttore Live DMX è attivo (spia&nbsp;verde)?</li></ol>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-pink">Le&nbsp;cause</p>
+<h2 class="sec-title">Le cause vere, una&nbsp;per&nbsp;una</h2>
+<div class="cause"><h3>I fasci restano fermi mentre la musica&nbsp;suona</h3><p>La centralina ascolta solo il suo ingresso line. Se il mixer è spento, o non le manda audio, smette di muoversi, <strong>anche se le cue sono giuste</strong>.</p><p class="fix"><strong>Cosa fare:</strong> accendi il mixer e controlla che mandi l’audio all’ingresso line della centralina.</p></div><div class="cause"><h3>Il Visualizer non mostra la luce della&nbsp;centralina</h3><p>Senza l’interruttore <strong>Live DMX</strong> attivo, l’anteprima 3D non mostra la luce della centralina. MaestroDMX deve anche inviare Art-Net (versione 1.5 o successiva).</p><p class="fix"><strong>Cosa fare:</strong> attiva l’Art-Net in MaestroDMX, attiva Live DMX nella barra degli strumenti del Visualizer e aspetta la spia&nbsp;verde.</p></div><div class="cause"><h3>Scegliere una cue non ha&nbsp;nessun&nbsp;effetto</h3><p>Il Mac e la centralina devono essere sulla stessa rete. Altrimenti il numero della cue non arriva mai alla&nbsp;centralina.</p><p class="fix"><strong>Cosa fare:</strong> controlla che entrambi siano collegati allo stesso&nbsp;router.</p></div><div class="cause"><h3>Velvet Light DJ non&nbsp;invia&nbsp;nulla</h3><p>L’interruttore <strong>Auto lights</strong> parte in pausa. Finché è in pausa, l’app non invia&nbsp;nulla.</p><p class="fix"><strong>Cosa fare:</strong> attiva Auto&nbsp;lights.</p></div><div class="cause"><h3>Il numero della cue parte, ma la centralina non&nbsp;reagisce</h3><p>La porta del messaggio OSC si può regolare nelle app. Se la porta dell’app non è quella che la centralina si aspetta, il messaggio&nbsp;va&nbsp;perso.</p><p class="fix"><strong>Cosa fare:</strong> confronta le due&nbsp;porte.</p><p>Per impostazione predefinita, la porta è la <strong>7672</strong> sia in Velvet Show sia in Velvet Light&nbsp;DJ. Cambiala solo se hai cambiato la porta di&nbsp;MaestroDMX.</p></div><div class="cause"><h3>Le cue si sovrappongono o&nbsp;vanno&nbsp;a&nbsp;caso</h3><p>Velvet Show e Velvet Light DJ mandano entrambi delle cue alla centralina. Se funzionano insieme, la centralina riceve ordini&nbsp;contrastanti.</p><p class="fix"><strong>Cosa fare:</strong> usa una sola delle due app per&nbsp;volta.</p></div><div class="cause"><h3>La luce non segue le pause o i salti&nbsp;in&nbsp;djay</h3><p>Velvet Light DJ segue la posizione del brano in djay grazie al permesso «&nbsp;Accessibilità&nbsp;» di macOS. Senza, l’app conta il tempo da sola: una pausa o un salto in avanti la manda fuori&nbsp;sincrono.</p><p class="fix"><strong>Cosa fare:</strong> consenti Velvet Light DJ in Impostazioni di Sistema ▸ Privacy e sicurezza ▸ Accessibilità.</p></div><div class="cause"><h3>Altre cause&nbsp;possibili</h3><p>Cavi audio, alimentazione dei proiettori, router, Wi-Fi sovraccarico: dipendono dalla tua&nbsp;attrezzatura.</p><p class="fix"><strong>Cosa fare:</strong> controllali per ultimi, dopo aver superato le tre domande&nbsp;iniziali.</p></div><div class="pager"><a class="btn" href="/it/luci-di-scena-3-configurare.html">← 3&nbsp;· Impostare</a><span></span></div>
+</div></section>
+<footer>
+  <div class="wrap">
+    <p>Prima versione della guida. Un errore, un’idea?<br><a href="mailto:contact@loveandlive.fr">contact@loveandlive.fr</a></p>
+    <p>© Alexandre Chalon ·&nbsp;Velvet</p>
+  </div>
+</footer>
+<script src="/assets/guide-motion.js" defer></script>
+</body>
+</html>

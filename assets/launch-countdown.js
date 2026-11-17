@@ -19,13 +19,15 @@
   // Avant la fin : « il reste N jours » (le dernier jour d'achat à ce prix est le 25 novembre).
   var days = Math.ceil((END - Date.now()) / 86400000);
   var text;
-  if (lang === 'fr') {
-    text = days <= 1 ? 'Dernier jour au prix de lancement (fin le 25 novembre).'
-                     : 'Prix de lancement\u00a0: plus\u00a0que\u00a0' + days + '\u00a0jours.';
-  } else {
-    text = days <= 1 ? 'Last day at the launch price (ends 25 November).'
-                     : 'Launch price: ' + days + '\u00a0days\u00a0left.';
-  }
+  var MSG = {
+    fr: ['Dernier jour au prix de lancement (fin le 25 novembre).', 'Prix de lancement\u00a0: plus\u00a0que\u00a0', '\u00a0jours.'],
+    de: ['Letzter Tag zum Einführungspreis (endet am 25. November).', 'Einführungspreis:\u00a0noch\u00a0', '\u00a0Tage.'],
+    es: ['Último día al precio de lanzamiento (termina el 25 de noviembre).', 'Precio de lanzamiento:\u00a0quedan\u00a0', '\u00a0días.'],
+    it: ['Ultimo giorno al prezzo di lancio (termina il 25 novembre).', 'Prezzo di lancio:\u00a0ancora\u00a0', '\u00a0giorni.'],
+    en: ['Last day at the launch price (ends 25 November).', 'Launch price: ', '\u00a0days\u00a0left.']
+  };
+  var m = MSG[lang] || MSG.en;
+  text = days <= 1 ? m[0] : m[1] + days + m[2];
   document.querySelectorAll('[data-launch-countdown]').forEach(function (el) {
     el.textContent = text;
     el.hidden = false;

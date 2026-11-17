@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://velvetshow.app/de/buehnenbeleuchtung-4-fehlersuche.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-4-depanner.html">
+<link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-4-fehlersuche.html">
+<link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-4-solucionar-problemas.html">
+<link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-4-risolvere-problemi.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Velvet"><meta property="og:locale" content="en_US"><meta property="og:url" content="https://velvetshow.app/de/buehnenbeleuchtung-4-fehlersuche.html"><meta property="og:title" content="DMX-Licht reagiert nicht? Fehlersuche Schritt für Schritt"><meta property="og:description" content="Warum bewegen sich meine Lichter nicht? Die Ursachen der Reihe nach prüfen: Ton, Netzwerk, Art-Net, OSC – mit der Lösung für jede.">
+<title>DMX-Licht reagiert nicht? Fehlersuche Schritt für Schritt</title>
+<meta name="description" content="Warum bewegen sich meine Lichter nicht? Die Ursachen der Reihe nach prüfen: Ton, Netzwerk, Art-Net, OSC – mit der Lösung für jede.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/guide-lumiere.css">
+<link rel="stylesheet" href="/assets/guide-motion.css">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/de/buehnenbeleuchtung-in-5-minuten.html" class="nav__brand">GUIDE <span>LICHT</span></a>
+    <div class="nav__links"><a href="/de/buehnenbeleuchtung-1-grundlagen.html">1&nbsp;· Verstehen</a><a href="/de/buehnenbeleuchtung-2-anschliessen.html">2&nbsp;· Anschließen</a><a href="/de/buehnenbeleuchtung-3-einrichten.html">3&nbsp;· Einrichten</a><a href="/de/buehnenbeleuchtung-4-fehlersuche.html" class="on">4&nbsp;· Fehlersuche</a><span class="langs" style="display:inline-flex;gap:10px;align-items:center"><a href="/stage-lighting-4-troubleshoot.html" hreflang="en" lang="en" title="English">EN</a> <a href="/fr/lumiere-4-depanner.html" hreflang="fr" lang="fr" title="Français">FR</a> <span aria-current="true" style="font-size:13px;font-weight:600;color:var(--text,#fff)">DE</span> <a href="/es/iluminacion-escenica-4-solucionar-problemas.html" hreflang="es" lang="es" title="Español">ES</a> <a href="/it/luci-di-scena-4-risolvere-problemi.html" hreflang="it" lang="it" title="Italiano">IT</a></span></div>
+  </nav>
+</header>
+<section class="hero hero--small"><div class="hero__inner">
+<p class="soon">Erste&nbsp;Version</p><p class="eyebrow">Teil&nbsp;4&nbsp;von&nbsp;4</p>
+<h1>DMX-Licht: Fehlersuche</h1>
+<p class="lead">„Warum bewegen sich meine&nbsp;Lichter nicht?“ Die&nbsp;Ursachen, die&nbsp;du&nbsp;prüfen solltest, der&nbsp;Reihe nach.</p>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-orange">Zuerst</p>
+<h2 class="sec-title">Drei Fragen, die&nbsp;das&nbsp;Problem eingrenzen</h2>
+<p class="sec-sub">Jede Frage prüft einen Abschnitt des&nbsp;Schaubilds. Beantworte sie&nbsp;der&nbsp;Reihe nach.</p>
+<ol class="olist"><li><strong>Hört die&nbsp;Box die&nbsp;Musik?</strong> Ist&nbsp;das&nbsp;Mischpult eingeschaltet, und&nbsp;schickt es&nbsp;Ton an&nbsp;den&nbsp;Line-Eingang?</li><li><strong>Kommen die&nbsp;Befehle an?</strong> Sind&nbsp;der Mac und&nbsp;die&nbsp;Box im&nbsp;gleichen&nbsp;Netzwerk?</li><li><strong>Siehst du&nbsp;das&nbsp;Licht im&nbsp;Visualizer?</strong> Ist&nbsp;der Schalter Live DMX eingeschaltet&nbsp;(grünes&nbsp;Licht)?</li></ol>
+</div></section>
+<section class="feature"><div class="wrap narrow">
+<p class="lbl lbl-pink">Die&nbsp;Ursachen</p>
+<h2 class="sec-title">Die&nbsp;echten Ursachen, eine nach&nbsp;der&nbsp;anderen</h2>
+<div class="cause"><h3>Die&nbsp;Beams stehen still, obwohl die&nbsp;Musik läuft</h3><p>Die&nbsp;Box hört nur auf&nbsp;ihren Line-Eingang. Wenn&nbsp;das&nbsp;Mischpult aus&nbsp;ist&nbsp;oder&nbsp;ihr&nbsp;keinen Ton schickt, bewegt sie&nbsp;sich nicht mehr, <strong>selbst wenn&nbsp;die Cues stimmen</strong>.</p><p class="fix"><strong>Was&nbsp;du&nbsp;tun&nbsp;kannst:</strong> Schalte das&nbsp;Mischpult ein&nbsp;und&nbsp;prüfe, ob&nbsp;es&nbsp;Ton an&nbsp;den&nbsp;Line-Eingang der&nbsp;Box schickt.</p></div><div class="cause"><h3>Der&nbsp;Visualizer zeigt kein&nbsp;Licht von&nbsp;der&nbsp;Box</h3><p>Ist&nbsp;der Schalter <strong>Live DMX</strong> aus, zeigt die&nbsp;3D-Vorschau das&nbsp;Licht der&nbsp;Box nicht an. Außerdem muss MaestroDMX Art-Net senden (Version 1.5 oder&nbsp;neuer).</p><p class="fix"><strong>Was&nbsp;du&nbsp;tun&nbsp;kannst:</strong> Schalte Art-Net in&nbsp;MaestroDMX ein, schalte Live&nbsp;DMX in&nbsp;der&nbsp;Symbolleiste des&nbsp;Visualizers ein&nbsp;und&nbsp;warte auf&nbsp;das&nbsp;grüne&nbsp;Licht.</p></div><div class="cause"><h3>Die&nbsp;Wahl eines Cues bewirkt nichts</h3><p>Der&nbsp;Mac und&nbsp;die&nbsp;Box müssen im&nbsp;gleichen Netzwerk sein. Sonst erreicht die&nbsp;Cue-Nummer die&nbsp;Box nie.</p><p class="fix"><strong>Was&nbsp;du&nbsp;tun&nbsp;kannst:</strong> Prüfe, ob&nbsp;beide am&nbsp;selben&nbsp;Router hängen.</p></div><div class="cause"><h3>Velvet Light DJ&nbsp;sendet&nbsp;nichts</h3><p>Der&nbsp;Schalter <strong>Auto-Licht</strong> startet pausiert. Solange er&nbsp;pausiert, sendet die&nbsp;App&nbsp;nichts.</p><p class="fix"><strong>Was&nbsp;du&nbsp;tun&nbsp;kannst:</strong> Schalte Auto-Licht&nbsp;ein.</p></div><div class="cause"><h3>Die&nbsp;Cue-Nummer geht raus, aber&nbsp;die&nbsp;Box reagiert nicht</h3><p>Der&nbsp;Port der&nbsp;OSC-Nachricht lässt sich in&nbsp;den&nbsp;Apps einstellen. Wenn&nbsp;der Port der&nbsp;App nicht der&nbsp;ist, den&nbsp;die&nbsp;Box erwartet, geht&nbsp;die&nbsp;Nachricht verloren.</p><p class="fix"><strong>Was&nbsp;du&nbsp;tun&nbsp;kannst:</strong> Vergleiche die&nbsp;beiden&nbsp;Ports.</p><p>Standardmäßig ist&nbsp;der Port in&nbsp;Velvet Show und&nbsp;in&nbsp;Velvet Light&nbsp;DJ <strong>7672</strong>. Ändere ihn nur, wenn&nbsp;du&nbsp;den&nbsp;Port von&nbsp;MaestroDMX geändert hast.</p></div><div class="cause"><h3>Cues kommen sich in&nbsp;die&nbsp;Quere oder&nbsp;laufen wild durcheinander</h3><p>Velvet Show und&nbsp;Velvet Light&nbsp;DJ schicken beide Cues an&nbsp;die&nbsp;Box. Laufen beide gleichzeitig, bekommt sie&nbsp;widersprüchliche&nbsp;Befehle.</p><p class="fix"><strong>Was&nbsp;du&nbsp;tun&nbsp;kannst:</strong> Nutze immer nur eine der&nbsp;beiden Apps.</p></div><div class="cause"><h3>Das&nbsp;Licht folgt Pausen oder&nbsp;Sprüngen in&nbsp;djay nicht</h3><p>Velvet Light&nbsp;DJ folgt der&nbsp;Position des&nbsp;Tracks in&nbsp;djay dank der&nbsp;macOS-Berechtigung „Bedienungshilfen“. Ohne&nbsp;sie&nbsp;zählt die&nbsp;App die&nbsp;Zeit selbst: Eine Pause oder&nbsp;ein&nbsp;Sprung nach&nbsp;vorn bringt sie&nbsp;aus&nbsp;dem&nbsp;Takt.</p><p class="fix"><strong>Was&nbsp;du&nbsp;tun&nbsp;kannst:</strong> Erlaube Velvet Light&nbsp;DJ unter Systemeinstellungen ▸ Datenschutz &amp; Sicherheit ▸ Bedienungshilfen.</p></div><div class="cause"><h3>Weitere mögliche&nbsp;Ursachen</h3><p>Audiokabel, Stromversorgung der&nbsp;Scheinwerfer, Router, überlastetes WLAN: Das&nbsp;hängt von&nbsp;deinem Equipment ab.</p><p class="fix"><strong>Was&nbsp;du&nbsp;tun&nbsp;kannst:</strong> Prüfe sie&nbsp;zuletzt, wenn&nbsp;die&nbsp;drei Fragen oben&nbsp;abgehakt sind.</p></div><div class="pager"><a class="btn" href="/de/buehnenbeleuchtung-3-einrichten.html">← 3&nbsp;· Einrichten</a><span></span></div>
+</div></section>
+<footer>
+  <div class="wrap">
+    <p>Erste Version des&nbsp;Guides. Ein&nbsp;Fehler, eine Idee?<br><a href="mailto:contact@loveandlive.fr">contact@loveandlive.fr</a></p>
+    <p>© Alexandre Chalon ·&nbsp;Velvet</p>
+  </div>
+</footer>
+<script src="/assets/guide-motion.js" defer></script>
+</body>
+</html>

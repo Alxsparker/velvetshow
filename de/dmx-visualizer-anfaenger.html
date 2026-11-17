@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMX Visualizer für Einsteiger — Velvet Visualizer in 5 Minuten</title>
+  <meta name="description" content="DMX Visualizer für Einsteiger: Bühne laden, Licht in 3D sehen, Scheinwerfer hinzufügen und deine Lichtsoftware per Art-Net verbinden. Schritt für Schritt.">
+  <link rel="canonical" href="https://velvetshow.app/de/dmx-visualizer-anfaenger.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-for-beginners.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/guide-debutant-visualizer.html">
+<link rel="alternate" hreflang="de" href="https://velvetshow.app/de/dmx-visualizer-anfaenger.html">
+<link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizador-dmx-principiantes.html">
+<link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-dmx-principianti.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/visualizer-for-beginners.html">
+  <meta property="og:title" content="DMX Visualizer für Einsteiger — Velvet Visualizer in 5 Minuten">
+  <meta property="og:description" content="App öffnen, Bühne laden, dein Licht in 3D sehen, Lichtsoftware verbinden. Schritt für Schritt, mit Screenshots.">
+  <meta property="og:image" content="https://velvetshow.app/screenshots/og-visualizer.jpg">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .lp { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .lp h1 { font-family: 'Oswald', sans-serif; font-size: clamp(2rem,5vw,3rem); font-weight: 700; color: var(--text); margin-bottom: 1rem; text-wrap: balance; }
+    .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--text); margin: 3rem 0 .75rem; letter-spacing: .02em; text-wrap: balance; }
+    .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: 1rem; text-wrap: pretty; }
+    .lp li { color: var(--text-muted); line-height: 1.8; font-size: 1rem; }
+    .lp ul, .lp ol { padding-left: 1.25rem; margin-bottom: 1.25rem; }
+    .lp .step-n { display: inline-block; min-width: 2rem; height: 2rem; line-height: 2rem; text-align: center; border-radius: 50%; background: rgba(255,255,255,.1); margin-right: .6rem; font-size: 1rem; }
+    .lp figure { margin: 1.25rem 0 1.5rem; }
+    .lp figure img { width: 100%; height: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,.12); display: block; }
+    .lp figcaption { color: var(--text-muted); font-size: .85rem; margin-top: .5rem; opacity: .85; }
+    .lp .tip { border-left: 3px solid #f2bd57; padding: .6rem 1rem; background: rgba(242,189,87,.07); border-radius: 0 8px 8px 0; margin: 1rem 0 1.25rem; color: var(--text-muted); line-height: 1.7; }
+    .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+  </style>
+<meta property="og:locale" content="de_DE"><meta property="og:locale:alternate" content="en_US"><meta property="og:locale:alternate" content="fr_FR"><meta property="og:locale:alternate" content="es_ES"><meta property="og:locale:alternate" content="it_IT">
+</head>
+<body>
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--red"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span>
+        <span class="menubar__title">VELVET VISUALIZER</span>
+      </div>
+      <nav class="menubar__nav" aria-label="Hauptnavigation">
+        <a href="/de/">Startseite</a>
+        <a href="/de/velvet-visualizer.html">Velvet Visualizer</a>
+        <a href="/de/dmx-visualizer-anleitung.html">Ausführliche Anleitung</a>
+      <span class="langs" style="display:inline-flex;gap:10px;align-items:center"><a href="/visualizer-for-beginners.html" hreflang="en" lang="en" title="English">EN</a> <a href="/fr/guide-debutant-visualizer.html" hreflang="fr" lang="fr" title="Français">FR</a> <span aria-current="true" style="font-size:13px;font-weight:600;color:var(--text,#fff)">DE</span> <a href="/es/visualizador-dmx-principiantes.html" hreflang="es" lang="es" title="Español">ES</a> <a href="/it/visualizer-dmx-principianti.html" hreflang="it" lang="it" title="Italiano">IT</a></span></nav>
+    </div>
+  </header>
+  <div class="lp">
+    <p class="eyebrow">Einsteiger-Anleitung</p>
+    <h1>DMX Visualizer für Einsteiger: deine ersten 5 Minuten mit Velvet Visualizer</h1>
+    <p>Du brauchst keine Vorkenntnisse zu Lichtpulten. Am Ende dieser Seite hast du eine Bühne auf dem Bildschirm, dein Licht spielt in 3D, und du weißt, wie du deine eigene Lichtsoftware anschließt.</p>
+
+    <h2><span class="step-n">0</span>Zum Laufen bringen</h2>
+    <ol>
+      <li><a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip" target="_blank" rel="noopener">Lade die kostenlose Testversion herunter</a> (eine .zip-Datei). Sie läuft auf einem Mac mit macOS 14 oder neuer.</li>
+      <li>Doppelklicke auf die .zip-Datei, um sie zu entpacken, und zieh dann <strong>Velvet Visualizer</strong> in deinen Ordner <strong>Programme</strong>.</li>
+      <li>Öffne die App. Du hast <strong>30 Tage</strong>, um alles auszuprobieren, ohne Konto und ohne Karte.</li>
+    </ol>
+
+    <h2><span class="step-n">1</span>Einen Startpunkt wählen</h2>
+    <p>Beim ersten Öffnen der App fragt dich eine Willkommenskarte, wie du starten möchtest. Am einfachsten ist <strong>DJ</strong>: eine fertige Bühne mit DJ-Pult und ein paar Scheinwerfern.</p>
+    <figure>
+      <img src="/screenshots/guide/01-welcome.jpg" alt="Velvet Visualizer welcome card with the options Import my lighting file, Describe my gear, Connection guide, Empty stage, DJ, Band, Electro show and Rock show" loading="lazy">
+      <figcaption>Die Willkommenskarte. Klicke auf <strong>DJ</strong>, um loszulegen, oder auf <strong>Electro show</strong> / <strong>Rock show</strong>, um eine Demo anzusehen.</figcaption>
+    </figure>
+    <div class="tip">Du nutzt MaestroDMX? Wähle stattdessen <strong>Import my lighting file (JSON)</strong>, dann werden deine Scheinwerfer für dich platziert.</div>
+
+    <h2><span class="step-n">2</span>Sieh dir deine Bühne an</h2>
+    <p>Deine Bühne erscheint mit ihren Scheinwerfern. Klicke auf einen Scheinwerfer und zieh ihn, um ihn zu verschieben. Im Feld unten steht <em>Stage ready</em>, wenn alles an seinem Platz ist.</p>
+    <figure>
+      <img src="/screenshots/guide/02-dj-layout.jpg" alt="The DJ stage loaded in Velvet Visualizer: a DJ booth, a truss with moving heads and spots, and the Stage ready message" loading="lazy">
+      <figcaption>Der Startpunkt DJ: ein Pult, eine Traverse und fünf Scheinwerfer.</figcaption>
+    </figure>
+
+    <h2><span class="step-n">3</span>Licht an: der Show-Modus</h2>
+    <p>Klicke oben links auf <strong>Show</strong>. Der Raum wird dunkel, damit du die Lichtstrahlen siehst, wie bei einem echten Gig. Ein kleines Feld <em>Audience View</em> lässt dich von links, aus der Mitte oder von rechts schauen. Klicke noch einmal auf <strong>Show</strong>, um zurückzukehren.</p>
+    <figure>
+      <img src="/screenshots/guide/03-show-mode.jpg" alt="Show mode: the dark stage with coloured beams from the truss and the Audience View panel" loading="lazy">
+      <figcaption>Show-Modus: das, was dein Publikum sehen würde.</figcaption>
+    </figure>
+
+    <h2><span class="step-n">4</span>Eigene Scheinwerfer hinzufügen</h2>
+    <p>Klicke auf <strong>Library</strong> (oben links). Tippe den Namen deines Scheinwerfers in das Suchfeld unter <em>Real fixtures</em>. Nichts gefunden? Klicke auf <strong>Search online</strong>: Tausende Modelle stehen zur Verfügung. Immer noch nichts? Mit <strong>Create…</strong> beschreibst du ihn selbst.</p>
+    <figure>
+      <img src="/screenshots/guide/04-library.jpg" alt="The Library panel open on the left: quick starts, demo shows and structures" loading="lazy">
+      <figcaption>Die Library: Schnellstarts, Demo-Shows, Bühnenelemente und deine Scheinwerfer.</figcaption>
+    </figure>
+
+    <h2><span class="step-n">5</span>Lichtsoftware verbinden</h2>
+    <p>Dieser Schritt sorgt dafür, dass die Bühne auf <em>deine</em> Show reagiert. Klicke auf das kleine <strong>?</strong> neben dem Schalter <strong>Live DMX</strong>: Der Art-Net-Einrichtungsassistent öffnet sich.</p>
+    <figure>
+      <img src="/screenshots/guide/05-artnet-assistant.jpg" alt="The Art-Net Setup Assistant: this Mac's address, the listening status, and the settings to enter in your lighting software" loading="lazy">
+      <figcaption>Der Einrichtungsassistent. Schritt 1 zeigt die Netzwerkadresse dieses Mac (hier ausgeblendet).</figcaption>
+    </figure>
+    <ol>
+      <li><strong>Kopiere die Adresse</strong>, die in Schritt 1 steht.</li>
+      <li>Schalte in deiner Lichtsoftware (MaestroDMX, SoundSwitch, QLC+ …) den <strong>Art-Net</strong>-Ausgang ein und trage diese Adresse als Ziel ein.</li>
+      <li>Klicke zurück in Velvet Visualizer auf <strong>Turn on Live DMX to test</strong>. Spiel in deiner Software ein Licht ab: Jeder Schritt im Assistenten wird grün, sobald das Signal ankommt.</li>
+    </ol>
+    <div class="tip">Eine andere App nutzt den Art-Net-Port schon (zum Beispiel SoundSwitch)? Velvet Visualizer wechselt von selbst in einen lokalen Modus und zeigt ein blaues <strong>LOCAL</strong>-Licht. Dann empfängt es, was von diesem Mac aus gesendet wird.</div>
+
+    <h2>Speichern und teilen</h2>
+    <p>Im Menü <strong>Project</strong> (oben rechts) speicherst du deine Bühne oder exportierst einen PDF-Plan für deinen Techniker oder deinen Kunden.</p>
+
+    <h2>Hängst du fest?</h2>
+    <p>Alles steht in der <a href="/de/dmx-visualizer-anleitung.html">ausführlichen Anleitung</a>. Du kannst mir auch direkt schreiben: Ich bin Einzelentwickler und lese alles.</p>
+
+    <div class="cta-row">
+      <a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip" class="btn btn--primary" target="_blank" rel="noopener">Herunterladen — 30 Tage gratis testen</a>
+      <a href="/de/velvet-visualizer.html" class="btn btn--ghost">Alle Funktionen ansehen</a>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand"><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="footer__name">Velvet Visualizer</span></div>
+      <p class="footer__copy">&copy; 2026 Velvet Visualizer &middot; <a href="/de/">velvetshow.app</a></p>
+    </div>
+  </footer>
+  <script src="/stats.js"></script>
+</body>
+</html>

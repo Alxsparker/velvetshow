@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Velvet Visualizer — Simulatore luci 3D e DMX per Mac</title>
+<link rel="canonical" href="https://velvetshow.app/it/velvet-visualizer.html">
+<link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-visualizer.html">
+<link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-visualizer.html">
+<link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-visualizer.html">
+<link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-visualizer.html">
+<link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-visualizer.html">
+<link rel="alternate" hreflang="x-default" href="https://velvetshow.app/velvet-visualizer.html">
+<meta name="description" content="Simulatore luci 3D per Mac: vedi il tuo light show prima del concerto. Art-Net, sACN, USB DMX, import QLC+, QLab, GDTF. Prova gratuita di 30 giorni.">
+<meta property="og:title" content="Velvet Visualizer — Vedi lo show prima che esista">
+<meta property="og:image" content="https://velvetshow.app/screenshots/og-visualizer.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://velvetshow.app/screenshots/og-visualizer.jpg">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d0e12;--panel:#15171d;--line:#262a33;--text:#eceef3;--mut:#9aa1b0;--dim:#565c6e;--gold:#f0bd57;--blue:#4d8fff;--purple:#9b6bff;--green:#34d17a;--orange:#ff6b35}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;background:rgba(13,14,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:100}
+.nav{max-width:1080px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav__brand{font-family:Oswald,sans-serif;font-size:15px;font-weight:700;letter-spacing:.1em;display:flex;align-items:center;gap:10px}
+.nav__brand img{width:28px;height:28px;border-radius:6px}
+.nav__links{display:flex;align-items:center;gap:18px}
+.nav__links a{font-size:13px;color:var(--mut);transition:color .2s}
+.nav__links a:hover{color:var(--text)}
+.btn{display:inline-block;padding:10px 20px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid var(--line);transition:all .2s}
+.btn-p{background:var(--gold);color:#1a1405;border-color:var(--gold)}
+.btn-p:hover{opacity:.88;transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.05);color:var(--text)}
+.btn-g:hover{background:rgba(255,255,255,.1);transform:translateY(-1px)}
+.hero{background:linear-gradient(180deg,#080a0f 0%,var(--bg) 100%);padding:80px 20px 60px;text-align:center;border-bottom:1px solid var(--line)}
+.hero__inner{max-width:780px;margin:0 auto}
+.hero__icon{width:80px;height:80px;border-radius:18px;margin:0 auto 24px;display:block;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.hero h1{font-family:Oswald,sans-serif;font-size:clamp(2.2rem,5.5vw,4rem);font-weight:700;line-height:1.08;margin-bottom:20px}
+.hero p{font-size:1rem;color:var(--mut);max-width:560px;margin:0 auto 32px;font-weight:300;line-height:1.7}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.08em}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
+.reveal.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.lbl-gold{color:var(--gold)}.lbl-blue{color:var(--blue)}.lbl-purple{color:var(--purple)}.lbl-green{color:var(--green)}.lbl-orange{color:var(--orange)}
+.sec-title{font-family:Oswald,sans-serif;font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:700;line-height:1.1;margin-bottom:12px}
+.sec-sub{font-size:.93rem;color:var(--mut);line-height:1.7;font-weight:300;max-width:520px}
+.feature{padding:72px 0;border-top:1px solid var(--line)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.fg-r{direction:rtl}.fg-r>*{direction:ltr}
+@media(max-width:760px){.fg{grid-template-columns:1fr;gap:32px}.fg-r{direction:ltr}}
+.fcopy{display:flex;flex-direction:column;gap:14px}
+.flist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.flist li{font-size:.84rem;color:var(--mut);line-height:1.6;padding-left:16px;position:relative}
+.flist li::before{content:'—';color:var(--dim);position:absolute;left:0;top:0}
+.flist li strong{color:var(--text)}
+.frame{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5);transition:transform .4s;min-width:0;max-width:100%}
+.frame:hover{transform:translateY(-4px) scale(1.02)}
+.frame-bar{height:36px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 12px;gap:6px}
+.d{width:10px;height:10px;border-radius:50%}
+.dr{background:#ff5f57}.dy{background:#ffbd2e}.dg{background:#28c840}
+.flabel{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--dim);margin-left:6px;letter-spacing:.08em}
+.frame img{display:block;width:100%;height:auto}
+.pipeline{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:20px}
+.prow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pc{font-size:.75rem;padding:5px 12px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--mut)}
+.pc-s{background:rgba(240,189,87,.1);border-color:rgba(240,189,87,.25);color:var(--gold)}
+.pc-m{background:rgba(232,160,32,.1);border-color:rgba(232,160,32,.25);color:#e8a020}
+.pa{color:var(--dim);font-size:.8rem}
+.panic{display:inline-flex;align-items:center;gap:8px;background:rgba(229,72,77,.1);border:1px solid rgba(229,72,77,.28);border-radius:7px;padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:.73rem;color:#e5484d;letter-spacing:.06em;margin-top:10px}
+.pcard{background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:36px 28px;max-width:380px;margin:36px auto 0;box-shadow:0 0 0 1px var(--gold),0 0 50px rgba(240,189,87,.07);text-align:center}
+.pamount{font-family:Oswald,sans-serif;font-size:58px;font-weight:700;line-height:1;margin:14px 0 4px}
+.pperiod{font-size:.8rem;color:var(--mut);margin-bottom:24px}
+.pfeats{list-style:none;text-align:left;display:flex;flex-direction:column;gap:9px;margin-bottom:24px}
+.pfeats li{font-size:.84rem;color:var(--mut);display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.pfeats li::before{content:'✓';color:var(--green);flex-shrink:0;font-weight:700}
+.pricing{padding:72px 0;border-top:1px solid var(--line);text-align:center}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mut);font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
+
+.badge-trial{display:inline-flex;align-items:center;gap:8px;border-radius:100px;padding:6px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;margin-bottom:20px;background:rgba(52,209,122,.1);border:1px solid rgba(52,209,122,.3);color:var(--green)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+@media(max-width:700px){.grid3{grid-template-columns:1fr}}
+.card3{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card3__icon{font-size:1.3rem;margin-bottom:8px}
+.card3__title{font-family:Oswald,sans-serif;font-size:.9rem;font-weight:600;letter-spacing:.04em;margin-bottom:5px}
+.card3__body{font-size:.78rem;color:var(--mut);line-height:1.5}
+.views-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ai-block{background:linear-gradient(135deg,rgba(155,107,255,.08),rgba(255,107,53,.06));border:1px solid rgba(155,107,255,.2);border-radius:12px;padding:20px;margin-top:18px}
+.ai-prompt{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--mut);line-height:1.6;margin-bottom:8px}
+.ai-prompt span{color:var(--purple)}
+</style>
+<link rel="stylesheet" href="/assets/motion/visualizer-motion.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Velvet Visualizer",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "3D DMX lighting visualizer",
+  "operatingSystem": "macOS 14 or later",
+  "description": "Visualizer 3D per luci di scena su Mac. Riceve Art-Net e sACN, importa i file di palco di MaestroDMX e i proiettori GDTF, così puoi vedere in anteprima un light show prima del concerto. Prova gratuita di 30 giorni, acquisto una tantum.",
+  "url": "https://velvetshow.app/it/velvet-visualizer.html",
+  "image": "https://velvetshow.app/screenshots/og-visualizer.jpg",
+  "inLanguage": "it",
+  "downloadUrl": "https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip",
+  "author": {
+    "@type": "Person",
+    "name": "Alexandre Chalon"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "69.00",
+    "priceCurrency": "EUR",
+    "priceValidUntil": "2026-11-26",
+    "availability": "https://schema.org/InStock",
+    "url": "https://velvetshow.app/it/velvet-visualizer.html",
+    "description": "Prezzo di lancio, poi 99 EUR. Prova gratuita di 30 giorni, acquisto una tantum, nessun abbonamento."
+  }
+}
+</script>
+<meta property="og:locale" content="it_IT"><meta property="og:locale:alternate" content="en_US"><meta property="og:locale:alternate" content="fr_FR"><meta property="og:locale:alternate" content="de_DE"><meta property="og:locale:alternate" content="es_ES">
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="/it/" class="nav__brand">
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAAAAMEBQYHAgEI/8QAOBAAAQMDAAUICAYDAAAAAAAAAQACAwQFEQYSITGBBxMyQVFhcbEUIiQzQpHB0SNFUpPh8BVig//EABoBAAIDAQEAAAAAAAAAAAAAAAMEAAEFAgb/xAAiEQACAgIBBQADAAAAAAAAAAAAAQIDBBFBBRIhIjETUYH/2gAMAwEAAhEDEQA/AMLUxbNHpa9pkllbBEN5cMn5KNp2gygnqOz+/NW60ziVuoAPVGNXuR64KT0xnHpVj8iQ0aswGHXGoJ6yIhjzQdG7IPzGo/bH3XtxifS1Gqei8Zae5RElU5pIJXUoKL0yra+x6JJ2j9lH5hP+2Pukn2Ozt3V85/5j7qLdVO7Vy2dziBlc6Qs3ofSWm1gerVz574x90yq7U6BnORSCWPwwQpG3UUldWNiaNg2uPYBvKeXhraKLVxhztjR3Iyx9xchWWWlNQX0qWEJSUeuShLDaewiOHDx+ilLfWei1LH7xnaO0KHedVuR1H6JRkuRkFdQlpjFNjg9o0yttzbtaDzO2ZrdeIj4h2cfNZ7WZDw7t3+Kumh10M1O6m1vxqf12f7M6xwO3im2m9i9FfHcadvslXlwwNjJB0m8d6dtSsrU0bGbRG2hXw/pSC85Tuhj15NYjIbtTTUOstA5PNGxdK11XUs9ho8SSk7nO+FvHyCWph3S0eUzblTW5MsNg0fFrsgmqAG1FQ3nHl3wM3jPn8lnF8rxX3KWRuyIHDB2AblpPKDevQbNzDXYqa/Jx+mIH6nyKx6SXGSSncuxRSrjwZHSqp2OWRZ9fw8ecvPBCTjOtkntQsw9CvCPJvd8fokWuIOwpaf3fFNwqOkTNkuklsucFWzaY3ZLf1DrHELcbdbqPSK1z2WR49GroxLRzH4H72n6HivnuI7Vs3JfcTW0JoC72ijdz0HaWE+sOB28SmarNJpmthXt1ypfJQHaN18d9dan07xWNm5kxY262cYW6RWan0btFLYWPa0RNM9fMNxdjLj4ADA8Fcm6PW6W7x6UOhBrmwau7YXYwHeONizLlOujrXZJKcO9suTiXnrbED9T5I2POKba4PKdWplZqH7ZkOl9+ffL9U1nRiJ1YmfpYNjR8lWXuJO0peodlxTYpSyTb2x2mtQgorgcQdE+KF5T9E+KENBzqf3fFN2sJTmQZy3t3eKQa8sKnJa1yOqejlkcNVpWk8nVtudFf6SshjBDHjWBeAC07CN/Ys5p7hJCQWvI8CrFaNKKuGdg55+AetxKPDs15NLF/Bv2b2fYLIo/RAwe7IzwXz1ynWe73K+1FW6D8HoxgPB1WjYBvV3puUqKPRIOLhz7RqglY9e9Oq+eokDah7WknoOI8kTFjGCbmzF6lTdGaUfJTaygngcQ9hCjnsIO0KVrLtNVOJkkc495yo17y8oVvZv1JV369hSn6J8ULqIYGPmhCQcHjIwknbekM9/WhCpkOMN7HJRkhjOW5/vFCFRabQ8/zFWIea1zqdmP5TN8rpDl2fl/KEK9sjbl9OMDvXTRjcMd6EKihZg1QhCF0Q//Z" alt="Velvet Visualizer">
+      VELVET VISUALIZER
+    </a>
+    <div class="nav__links">
+      <a href="#scene">Palco 3D</a>
+      <a href="#artnet">ArtNet</a>
+      <a href="#library">Proiettori</a>
+      <a href="#export">Esporta</a>
+      <a href="#pricing">Prezzi</a>
+      <a href="/it/visualizer-dmx-principianti.html">Principianti</a>
+      <a href="/it/guida-visualizer-dmx.html">Guida</a>
+      <span class="langs" style="display:inline-flex;gap:10px;align-items:center"><a href="/velvet-visualizer.html" hreflang="en" lang="en" title="English">EN</a> <a href="/fr/velvet-visualizer.html" hreflang="fr" lang="fr" title="Français">FR</a> <a href="/de/velvet-visualizer.html" hreflang="de" lang="de" title="Deutsch">DE</a> <a href="/es/velvet-visualizer.html" hreflang="es" lang="es" title="Español">ES</a> <span aria-current="true" style="font-size:13px;font-weight:600;color:var(--text,#fff)">IT</span></span>
+      <a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip" class="btn btn-p" style="padding:7px 16px;font-size:13px">Prova gratuita</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero__inner">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBUODAsLDBkSEw8VHhsgHx4bHR0hJTApISMtJB0dKjkqLTEzNjY2ICg7Pzo0PjA1NjP/2wBDAQkJCQwLDBgODhgzIh0iMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzP/wAARCABIAEgDASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAAAAMEBQYHAgEI/8QAOBAAAQMDAAUICAYDAAAAAAAAAQACAwQFEQYSITGBBxMyQVFhcbEUIiQzQpHB0SNFUpPh8BVig//EABoBAAIDAQEAAAAAAAAAAAAAAAMEAAEFAgb/xAAiEQACAgIBBQADAAAAAAAAAAAAAQIDBBFBBRIhIjETUYH/2gAMAwEAAhEDEQA/AMLUxbNHpa9pkllbBEN5cMn5KNp2gygnqOz+/NW60ziVuoAPVGNXuR64KT0xnHpVj8iQ0aswGHXGoJ6yIhjzQdG7IPzGo/bH3XtxifS1Gqei8Zae5RElU5pIJXUoKL0yra+x6JJ2j9lH5hP+2Pukn2Ozt3V85/5j7qLdVO7Vy2dziBlc6Qs3ofSWm1gerVz574x90yq7U6BnORSCWPwwQpG3UUldWNiaNg2uPYBvKeXhraKLVxhztjR3Iyx9xchWWWlNQX0qWEJSUeuShLDaewiOHDx+ilLfWei1LH7xnaO0KHedVuR1H6JRkuRkFdQlpjFNjg9o0yttzbtaDzO2ZrdeIj4h2cfNZ7WZDw7t3+Kumh10M1O6m1vxqf12f7M6xwO3im2m9i9FfHcadvslXlwwNjJB0m8d6dtSsrU0bGbRG2hXw/pSC85Tuhj15NYjIbtTTUOstA5PNGxdK11XUs9ho8SSk7nO+FvHyCWph3S0eUzblTW5MsNg0fFrsgmqAG1FQ3nHl3wM3jPn8lnF8rxX3KWRuyIHDB2AblpPKDevQbNzDXYqa/Jx+mIH6nyKx6SXGSSncuxRSrjwZHSqp2OWRZ9fw8ecvPBCTjOtkntQsw9CvCPJvd8fokWuIOwpaf3fFNwqOkTNkuklsucFWzaY3ZLf1DrHELcbdbqPSK1z2WR49GroxLRzH4H72n6HivnuI7Vs3JfcTW0JoC72ijdz0HaWE+sOB28SmarNJpmthXt1ypfJQHaN18d9dan07xWNm5kxY262cYW6RWan0btFLYWPa0RNM9fMNxdjLj4ADA8Fcm6PW6W7x6UOhBrmwau7YXYwHeONizLlOujrXZJKcO9suTiXnrbED9T5I2POKba4PKdWplZqH7ZkOl9+ffL9U1nRiJ1YmfpYNjR8lWXuJO0peodlxTYpSyTb2x2mtQgorgcQdE+KF5T9E+KENBzqf3fFN2sJTmQZy3t3eKQa8sKnJa1yOqejlkcNVpWk8nVtudFf6SshjBDHjWBeAC07CN/Ys5p7hJCQWvI8CrFaNKKuGdg55+AetxKPDs15NLF/Bv2b2fYLIo/RAwe7IzwXz1ynWe73K+1FW6D8HoxgPB1WjYBvV3puUqKPRIOLhz7RqglY9e9Oq+eokDah7WknoOI8kTFjGCbmzF6lTdGaUfJTaygngcQ9hCjnsIO0KVrLtNVOJkkc495yo17y8oVvZv1JV369hSn6J8ULqIYGPmhCQcHjIwknbekM9/WhCpkOMN7HJRkhjOW5/vFCFRabQ8/zFWIea1zqdmP5TN8rpDl2fl/KEK9sjbl9OMDvXTRjcMd6EKihZg1QhCF0Q//Z" alt="Velvet Visualizer" class="hero__icon">
+    <div class="badge-trial">● Prova gratuita di 30 giorni</div>
+    <p class="eyebrow" style="color:var(--orange)">macOS · Visualizer DMX 3D</p>
+    <h1>Vedi lo show<br>prima che esista.</h1>
+    <p>Velvet Visualizer ricostruisce il tuo palco in 3D — americana, proiettori, musicisti. Concerto, DJ set, matrimonio: posiziona le luci, collega la tua consolle e vedi esattamente cosa succederà prima di arrivare in sala.</p>
+    <div class="hero-btns">
+      <a href="https://github.com/Alxsparker/VELVET-VISUALIZER-releases/releases/latest/download/VELVET-VISUALIZER.zip" class="btn btn-p" style="background:var(--orange);border-color:var(--orange)">Scarica — Prova gratuita di 30 giorni</a>
+      <a href="/it/velvet-show.html" class="btn btn-g">Scopri Velvet Show →</a>
+    </div>
+    <p class="meta">macOS 14+ · prova di 30 giorni · <span data-launch-after="99 € (≈ 110 $)"><s>99 €</s> 69 € (≈ 77 $) lancio</span> · <span data-launch-after="Pacchetto Duo 139 € (≈ 155 $)">Pacchetto Duo <s>139 €</s> 109 € (≈ 122 $)</span></p>
+    <p data-launch-countdown hidden style="color:var(--orange);font-weight:600;font-size:15px;margin:8px 0 0;text-align:center"></p>
+    <p class="meta" style="margin-top:6px">Aggiornato spesso: le nuove funzioni arrivano su richiesta degli utenti.</p>
+    <figure class="hero-demo">
+      <div class="hero-demo__frame"><video class="mo-demo" muted loop playsinline preload="none" poster="/assets/video/velvet-visualizer-poster.jpg" aria-label="Demo di Velvet Visualizer: un palco da DJ con teste mobili, fasci di luce e uno schermo LED animato"><source src="/assets/video/velvet-visualizer-demo.webm" type="video/webm"><source src="/assets/video/velvet-visualizer-demo.mp4" type="video/mp4"></video><span class="mo-live" aria-hidden="true">Demo dal vivo</span></div>
+      <figcaption>Demo dal vivo — una serata DJ, resa in Velvet Visualizer</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="feature" id="scene">
+  <div class="wrap">
+    <div class="fg">
+      <div class="fcopy reveal">
+        <p class="lbl lbl-orange">Il cuore del programma</p>
+        <h2 class="sec-title">Palco 3D,<br>in tempo reale.</h2>
+        <p class="sec-sub">Posiziona proiettori e scenografia e vedi subito il risultato, come se fossi lì. Tre modalità di rendering a seconda dell'uso.</p>
+        <ul class="flist">
+          <li><strong>Rendering diurno</strong> — lo stesso impianto in piena luce, per vendere lo show</li>
+          <li><strong>Rendering notte / show</strong> — atmosfera da concerto con i fasci di luce</li>
+          <li><strong>Rendering tecnico</strong> — configurazione, indirizzi, distanze</li>
+          <li><strong>Viste rapide</strong> — frontale, dall'alto, prospettiva, pubblico, FOH, palco sinistra/destra</li>
+          <li><strong>Viste camera salvate</strong> — richiama le tue inquadrature preferite con un clic</li>
+          <li><strong>Camera cinematografica</strong> — durante le demo la camera passa da sola tra campi larghi, dall'alto, in carrellata e dal basso</li>
+          <li><strong>Esportazione video</strong> — il tuo show con la musica in MP4 (HD o Full HD, da 10 a 30 secondi)</li>
+          <li>Più layout in un unico progetto</li>
+          <li>Dimensioni reali della sala — larghezza, profondità, altezza del soffitto</li>
+          <li>Foschia (haze) regolabile per visualizzare i fasci di luce</li>
+        </ul>
+      </div>
+      <div class="reveal d1">
+        <div class="views-grid">
+          <div class="frame">
+            <div class="frame-bar"><div class="d dr"></div><div class="d dy"></div><div class="d dg"></div><span class="flabel">Audience View · Center · Mid</span></div>
+            <img src="/assets/screenshots/visualizer/audience.jpg" alt="Velvet Visualizer audience view" width="1500" height="886" loading="lazy" decoding="async">
+          </div>
+          <div class="frame">
+            <div class="frame-bar"><div class="d dr"></div><div class="d dy"></div><div class="d dg"></div><span class="flabel">Camera cinematografica · Modalità show</span></div>
+            <img src="/assets/screenshots/visualizer/cinematic.jpg" alt="Velvet Visualizer cinematic camera during a show" width="1500" height="886" loading="lazy" decoding="async">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="artnet">
+  <div class="wrap">
+    <div class="fg fg-r">
+      <div class="fcopy reveal">
+        <p class="lbl lbl-blue">Collegato all'hardware reale</p>
+        <h2 class="sec-title">Quello che invia la consolle<br>compare in 3D.</h2>
+        <p class="sec-sub">Ricezione DMX dal vivo via Art-Net e sACN — qualunque cosa invii il tuo software luci compare sul palco 3D, proiettore per proiettore.</p>
+        <ul class="flist">
+          <li><strong>Art-Net e sACN</strong> — Wi-Fi o Ethernet</li>
+          <li>Compatibile con <strong>MaestroDMX, SoundSwitch, QLC+, QLab</strong> e qualsiasi software Art-Net</li>
+          <li><strong><a href="/it/maestrodmx-visualizer.html" style="color:inherit;text-decoration:underline;text-underline-offset:3px">Importazione diretta del patch MaestroDMX</a></strong> — non devi rifare tutto a mano</li>
+          <li><strong>Importazione di progetti QLC+</strong> — apri il tuo file .qxw: proiettori, universi e indirizzi DMX arrivano già a posto</li>
+          <li><strong>Ingresso USB DMX</strong> — un box di tipo DMX USB Pro (Enttec) invia a Velvet il DMX della tua consolle, senza rete (prima versione)</li>
+          <li><strong>Registra uno snapshot DMX e riproducilo</strong> senza hardware</li>
+          <li><strong>DMX monitor</strong> — valori canale per canale in tempo reale</li>
+          <li>Assistente Art-Net integrato se non ricevi nulla</li>
+          <li><strong>Visibile dalla tua consolle</strong> — Velvet risponde al discovery Art-Net (ArtPoll), quindi compare nell'elenco dei dispositivi di SoundSwitch, QLC+ o Lightkey</li>
+        </ul>
+        <div class="pipeline">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:12px">Con Velvet Show</p>
+          <div class="prow">
+            <span class="pc pc-s">Velvet Show</span>
+            <span class="pa">→ MIDI/OSC</span>
+            <span class="pc pc-m">MaestroDMX</span>
+            <span class="pa">→ Art-Net</span>
+            <span class="pc" style="background:rgba(255,107,53,.1);border-color:rgba(255,107,53,.25);color:var(--orange)">Velvet Visualizer</span>
+          </div>
+        </div>
+      </div>
+      <div class="reveal d1">
+        <div class="frame">
+          <div class="frame-bar"><div class="d dr"></div><div class="d dy"></div><div class="d dg"></div><span class="flabel">Inspector · Moving Head 2 · U1 / 32–47</span></div>
+          <img src="/assets/screenshots/visualizer/inspector-en.jpg" alt="DMX Inspector" width="1500" height="886" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="library">
+  <div class="wrap">
+    <div class="fg">
+      <div class="fcopy reveal">
+        <p class="lbl lbl-gold">Libreria proiettori</p>
+        <h2 class="sec-title">Il tuo proiettore<br>è probabilmente già qui.</h2>
+        <p class="sec-sub">Sono inclusi 645 proiettori reali, con le loro dimensioni reali, senza bisogno di Internet. Per un proiettore specifico, importa il suo file GDTF ufficiale. E se non esiste, costruiscitelo.</p>
+        <ul class="flist">
+          <li><strong>645 proiettori reali inclusi</strong> — Open Fixture Library, offline: scrivi «gigbar» o «martin mac», clicca su Add e te lo ritrovi sul palco</li>
+          <li><strong>PAR, teste mobili, wash, beam, barre LED, tubi pixel, GigBAR</strong> — Chauvet, ADJ, Martin, Cameo, BeamZ, Astera...</li>
+          <li><strong>Importazione GDTF</strong> — file della specifica ufficiale, con ricerca online su GDTF Share</li>
+          <li><strong>Costruttore di proiettori personalizzati</strong> — descrivi i canali una volta sola, disponibili in tutti i progetti</li>
+          <li>Gobo e prismi</li>
+          <li><strong>Schermi LED</strong> — immagine, GIF animata, video in loop o una delle 8 animazioni integrate che si muovono a tempo di musica</li>
+          <li><strong>Effetti</strong> — macchine a scintille fredde e fumo basso, attivati da DMX o con un pulsante</li>
+          <li><strong>Aim at a point</strong> — clicca sul pavimento o su un oggetto e la testa mobile ci si orienta</li>
+        </ul>
+      </div>
+      <div class="reveal d1">
+        <div class="frame" style="max-width:360px">
+          <div class="frame-bar"><div class="d dr"></div><div class="d dy"></div><div class="d dg"></div><span class="flabel">Libreria semplice · Quick starts</span></div>
+          <img src="/assets/screenshots/visualizer/library-en.jpg" alt="Velvet Visualizer library" width="560" height="1172" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="quickstart">
+  <div class="wrap">
+    <div class="fg fg-r">
+      <div class="fcopy reveal">
+        <p class="lbl lbl-purple">Avvio rapido · IA</p>
+        <h2 class="sec-title">Scene già pronte<br>per partire subito.</h2>
+        <p class="sec-sub">Musicisti, DJ e pubblico posizionati in automatico in 3D, senza collisioni. Oppure descrivi la sala all'IA: ti propone una configurazione di partenza.</p>
+        <ul class="flist">
+          <li><strong>Empty stage</strong> — parti da zero</li>
+          <li><strong>DJ</strong> — consolle e luci adatte</li>
+          <li><strong>DJ + screen + audience</strong></li>
+          <li><strong>Band dal vivo</strong> — chitarra, basso, batteria, tastiere, voce</li>
+          <li><strong>Americana + totem</strong></li>
+          <li><strong>Matrimonio / evento privato</strong></li>
+          <li><strong>Locale per feste</strong> — una sala con bar, tavoli, divani e una pista da ballo che puoi spostare e allungare fino a 30 × 20 m</li>
+          <li><strong>Concerto con palco a diamante</strong> — una band su un palco a punta di diamante, teste mobili, fasci di luce, macchine a scintille e schermi animati</li>
+          <li><strong>Assistente IA</strong> — descrivi o fotografa la sala, ti propone un allestimento</li>
+          <li><strong>Modalità Ascolto</strong> — fai suonare la tua musica in sala, il microfono del Mac ascolta e le luci seguono, senza consolle</li>
+        </ul>
+        <div class="ai-block">
+          <div class="ai-prompt"><span>IA</span> → «Costruisci una scena rock con 2 teste mobili blu in controluce e 6 PAR wash rossi»</div>
+          <p style="font-size:.8rem;color:var(--mut);line-height:1.6">I proiettori vengono posizionati, orientati e colorati in automatico nella vista 3D.</p>
+        </div>
+      </div>
+      <div class="reveal d1">
+        <div class="grid3">
+          <div class="card3"><div class="card3__icon">🎸</div><div class="card3__title">Band dal vivo</div><div class="card3__body">Musicisti posizionati in automatico</div></div>
+          <div class="card3"><div class="card3__icon">🎛️</div><div class="card3__title">DJ</div><div class="card3__body">Consolle, luci, pubblico</div></div>
+          <div class="card3"><div class="card3__icon">💍</div><div class="card3__title">Matrimonio</div><div class="card3__body">Evento privato, atmosfera soffusa</div></div>
+          <div class="card3"><div class="card3__icon">⚡</div><div class="card3__title">Electro show</div><div class="card3__body">Demo con musica sincronizzata</div></div>
+          <div class="card3"><div class="card3__icon">🎸</div><div class="card3__title">Rock show</div><div class="card3__body">Demo con musica sincronizzata</div></div>
+          <div class="card3"><div class="card3__icon">□</div><div class="card3__title">Empty stage</div><div class="card3__body">Tela bianca</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="export">
+  <div class="wrap">
+    <div class="fg">
+      <div class="fcopy reveal">
+        <p class="lbl lbl-green">Esporta · Documenti</p>
+        <h2 class="sec-title">Un vero documento<br>per il cliente.</h2>
+        <p class="sec-sub">Pianta del palco, elenco proiettori, patch DMX — tutto pronto da inviare o da mostrare in sala.</p>
+        <ul class="flist">
+          <li><strong>PDF</strong> — pianta del palco + elenco proiettori, peso, assorbimento</li>
+          <li><strong>CSV</strong> — patch DMX esportato come foglio di calcolo</li>
+          <li><strong>PNG</strong> — esportazione dell'immagine del palco 3D</li>
+        </ul>
+        <div class="grid3" style="margin-top:0">
+          <div class="card3"><div class="card3__icon">👤</div><div class="card3__title">Profilo Cliente</div><div class="card3__body">Panoramica, viste 3D, atmosfere</div></div>
+          <div class="card3"><div class="card3__icon">🔧</div><div class="card3__title">Profilo Tecnico</div><div class="card3__body">Patch completo, indirizzi DMX, peso</div></div>
+          <div class="card3"><div class="card3__icon">📐</div><div class="card3__title">Profilo Rigger</div><div class="card3__body">Pianta quotata, misure del palco</div></div>
+        </div>
+      </div>
+      <div class="reveal d1">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="card3"><div class="card3__icon">⌘Z</div><div class="card3__title">Annulla / Ripeti</div><div class="card3__body">Su tutte le operazioni</div></div>
+          <div class="card3"><div class="card3__icon">💾</div><div class="card3__title">Salvataggio automatico</div><div class="card3__body">Recupero dopo un crash</div></div>
+          <div class="card3"><div class="card3__icon">🔒</div><div class="card3__title">Nascondi · Blocca · Raggruppa</div><div class="card3__body">Allinea e distribuisci gli oggetti</div></div>
+          <div class="card3"><div class="card3__icon">📋</div><div class="card3__title">Copia / Incolla</div><div class="card3__body">Proiettori e indirizzi DMX</div></div>
+          <div class="card3"><div class="card3__icon">🌐</div><div class="card3__title">EN / FR</div><div class="card3__body">Interfaccia bilingue</div></div>
+          <div class="card3"><div class="card3__icon">⌨️</div><div class="card3__title">Scorciatoie da tastiera</div><div class="card3__body">⌘S · ⌘O · ⌘/ per l'elenco</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <p class="lbl lbl-orange reveal" style="text-align:center">Prezzi</p>
+    <h2 class="sec-title reveal d1" style="text-align:center">Prova gratuita di 30 giorni.<br>Prezzo una tantum.</h2>
+    <p class="sec-sub reveal d2" style="margin:0 auto;text-align:center">Acquisto una tantum. Nessun abbonamento. Prova gratuita di 30 giorni.</p>
+    <div class="pcard reveal d2" style="border-color:var(--orange);box-shadow:0 0 0 1px var(--orange),0 0 50px rgba(255,107,53,.07)">
+      <p class="eyebrow" style="color:var(--orange)">Velvet Visualizer</p>
+      <p data-launch-hide style="text-align:center;color:var(--mut);font-size:14px;margin:0 0 4px"><s>99 € (≈ 110 $)</s> Prezzo di lancio — fino al 25 novembre</p>
+      <p data-launch-countdown hidden style="text-align:center;color:var(--orange);font-size:14px;font-weight:600;margin:0 0 6px"></p>
+      <div class="pamount" data-launch-after='99 <span style="font-size:26px;color:var(--mut)">€ (≈ 110 $)</span>'>69 <span style="font-size:26px;color:var(--mut)">€ (≈ $77)</span></div>
+      <p class="pperiod">Acquisto una tantum</p>
+      <ul class="pfeats">
+        <li>Palco 3D con dimensioni reali</li>
+        <li>Art-Net e sACN nativi</li>
+        <li>645 proiettori reali inclusi + GDTF + costruttore di proiettori personalizzati</li>
+        <li>Foglio di calcolo del patch DMX — esportazione CSV</li>
+        <li>PDF Cliente / Tecnico / Rigger</li>
+        <li>IA — generazione di scene da una descrizione</li>
+        <li>Prova gratuita di 30 giorni</li>
+        <li>Licenza valida su 2 Mac</li>
+      </ul>
+      <a href="https://velvetshow.lemonsqueezy.com/checkout/buy/9d48e0fc-d518-4ebb-9990-a52e0edfdc38?checkout[discount_code]=EXMZU0OA" class="btn btn-p" style="background:var(--orange);border-color:var(--orange);width:100%;display:block;text-align:center" data-launch-after="Acquista Velvet Visualizer — 99 € (≈ 110 $)">Acquista Velvet Visualizer — 69 € (≈ 77 $)</a>
+      <p style="margin-top:12px;font-size:12px;color:var(--dim);text-align:center">
+        Disponibile anche — <a href="https://velvetshow.lemonsqueezy.com/checkout/buy/39998983-76a4-47a1-bcef-d954c5709493?checkout[discount_code]=GXMJU1MG" style="color:var(--gold)" data-launch-after="Velvet Duo (Show + Visualizer) a 139 € (≈ 155 $)">Velvet Duo (Show + Visualizer) a 109 € (≈ 122 $)</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a href="/it/">← Home</a>
+      <a href="/it/velvet-light-dj.html" style="margin-left:20px">Velvet Light DJ →</a>
+      <a href="/it/velvet-show.html" style="margin-left:20px">← Velvet Show</a>
+    </div>
+    <p><a href="https://gdtf-share.com" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;color:inherit;text-decoration:none"><img src="/assets/gdtf-logo.svg" alt="GDTF" width="28" height="21" style="display:block"><span>Powered by GDTF</span></a></p>
+    <p>© Alexandre Chalon · Velvet · contact@loveandlive.fr</p>
+  </div>
+</footer>
+<script>
+(function(){
+  const els=document.querySelectorAll('.reveal');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}});
+  },{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(el=>obs.observe(el));
+})();
+</script>
+  <script src="/stats.js"></script>
+  <script src="/assets/launch-countdown.js" defer></script>
+<script src="/assets/motion/visualizer-motion.js" defer></script>
+</body>
+</html>

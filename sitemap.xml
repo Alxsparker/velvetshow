@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <!-- Pages principales FR -->
   <url><loc>https://velvetshow.app/fr/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
@@ -57,4 +57,381 @@
   <url><loc>https://velvetshow.app/stage-lighting-2-connect.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://velvetshow.app/stage-lighting-3-setup.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://velvetshow.app/stage-lighting-4-troubleshoot.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- Versions allemande, espagnole, italienne + page iPad -->
+  <url><loc>https://velvetshow.app/de/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/"/><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://velvetshow.app/es/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/"/><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://velvetshow.app/it/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/"/><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://velvetshow.app/de/velvet-show.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-show.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/es/velvet-show.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-show.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/it/velvet-show.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-show.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-show.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/de/velvet-visualizer.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-visualizer.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/es/velvet-visualizer.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-visualizer.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/it/velvet-visualizer.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-visualizer.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/de/velvet-light-dj.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-light-dj.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/es/velvet-light-dj.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-light-dj.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/it/velvet-light-dj.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/velvet-light-dj.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/velvet-light-dj.html"/><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://velvetshow.app/de/dmx-visualizer-anfaenger.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-for-beginners.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/guide-debutant-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/dmx-visualizer-anfaenger.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizador-dmx-principiantes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-dmx-principianti.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/visualizador-dmx-principiantes.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-for-beginners.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/guide-debutant-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/dmx-visualizer-anfaenger.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizador-dmx-principiantes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-dmx-principianti.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/visualizer-dmx-principianti.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-for-beginners.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/guide-debutant-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/dmx-visualizer-anfaenger.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/visualizador-dmx-principiantes.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/visualizer-dmx-principianti.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/dmx-visualizer-anleitung.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-guide.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/guide-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/dmx-visualizer-anleitung.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/guia-visualizador-dmx.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/guida-visualizer-dmx.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/guia-visualizador-dmx.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-guide.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/guide-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/dmx-visualizer-anleitung.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/guia-visualizador-dmx.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/guida-visualizer-dmx.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/guida-visualizer-dmx.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-guide.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/guide-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/dmx-visualizer-anleitung.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/guia-visualizador-dmx.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/guida-visualizer-dmx.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/buehnenbeleuchtung-1-grundlagen.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-1-understand.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-1-comprendre.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-1-grundlagen.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-1-entender.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-1-capire.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/iluminacion-escenica-1-entender.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-1-understand.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-1-comprendre.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-1-grundlagen.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-1-entender.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-1-capire.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/luci-di-scena-1-capire.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-1-understand.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-1-comprendre.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-1-grundlagen.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-1-entender.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-1-capire.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/buehnenbeleuchtung-2-anschliessen.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-2-connect.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-2-brancher.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-2-anschliessen.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-2-conectar.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-2-collegare.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/iluminacion-escenica-2-conectar.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-2-connect.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-2-brancher.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-2-anschliessen.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-2-conectar.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-2-collegare.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/luci-di-scena-2-collegare.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-2-connect.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-2-brancher.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-2-anschliessen.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-2-conectar.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-2-collegare.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/buehnenbeleuchtung-3-einrichten.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-3-setup.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-3-regler.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-3-einrichten.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-3-configurar.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-3-configurare.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/iluminacion-escenica-3-configurar.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-3-setup.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-3-regler.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-3-einrichten.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-3-configurar.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-3-configurare.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/luci-di-scena-3-configurare.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-3-setup.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-3-regler.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-3-einrichten.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-3-configurar.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-3-configurare.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/buehnenbeleuchtung-4-fehlersuche.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-4-depanner.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-4-fehlersuche.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-4-solucionar-problemas.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-4-risolvere-problemi.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/iluminacion-escenica-4-solucionar-problemas.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-4-depanner.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-4-fehlersuche.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-4-solucionar-problemas.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-4-risolvere-problemi.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/luci-di-scena-4-risolvere-problemi.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-4-troubleshoot.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-4-depanner.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-4-fehlersuche.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-4-solucionar-problemas.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-4-risolvere-problemi.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/buehnenbeleuchtung-in-5-minuten.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-in-5-minutes.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-de-scene-en-5-minutes.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-in-5-minuten.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-en-5-minutos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-in-5-minuti.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/iluminacion-escenica-en-5-minutos.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-in-5-minutes.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-de-scene-en-5-minutes.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-in-5-minuten.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-en-5-minutos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-in-5-minuti.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/luci-di-scena-in-5-minuti.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stage-lighting-in-5-minutes.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/lumiere-de-scene-en-5-minutes.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/buehnenbeleuchtung-in-5-minuten.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/iluminacion-escenica-en-5-minutos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/luci-di-scena-in-5-minuti.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/showbuddy-alternative.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/showbuddy-alternative"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/alternative-showbuddy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/showbuddy-alternative.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/alternativa-showbuddy.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/alternativa-showbuddy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/alternativa-showbuddy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/showbuddy-alternative"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/alternative-showbuddy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/showbuddy-alternative.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/alternativa-showbuddy.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/alternativa-showbuddy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/alternativa-showbuddy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/showbuddy-alternative"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/alternative-showbuddy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/showbuddy-alternative.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/alternativa-showbuddy.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/alternativa-showbuddy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/stagetraxx-alternative.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stagetraxx-alternative"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/alternative-stage-traxx"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/stagetraxx-alternative.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/alternativa-stagetraxx.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/alternativa-stagetraxx.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/alternativa-stagetraxx.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stagetraxx-alternative"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/alternative-stage-traxx"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/stagetraxx-alternative.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/alternativa-stagetraxx.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/alternativa-stagetraxx.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/alternativa-stagetraxx.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/stagetraxx-alternative"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/alternative-stage-traxx"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/stagetraxx-alternative.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/alternativa-stagetraxx.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/alternativa-stagetraxx.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/backing-track-software.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/backing-track-software"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/logiciel-backing-track"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/backing-track-software.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/software-backing-track.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/software-basi-musicali.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/software-backing-track.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/backing-track-software"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/logiciel-backing-track"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/backing-track-software.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/software-backing-track.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/software-basi-musicali.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/software-basi-musicali.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/backing-track-software"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/logiciel-backing-track"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/backing-track-software.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/software-backing-track.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/software-basi-musicali.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/midi-show-control-software.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/midi-show-control-software"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/logiciel-show-control-midi"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/midi-show-control-software.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/software-midi-show-control.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/software-midi-show-control.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/software-midi-show-control.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/midi-show-control-software"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/logiciel-show-control-midi"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/midi-show-control-software.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/software-midi-show-control.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/software-midi-show-control.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/software-midi-show-control.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/midi-show-control-software"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/logiciel-show-control-midi"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/midi-show-control-software.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/software-midi-show-control.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/software-midi-show-control.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/teleprompter-songtexte-musiker.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/lyrics-prompter-for-musicians"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/prompteur-paroles-musicien"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/teleprompter-songtexte-musiker.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/teleprompter-letras-musicos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/teleprompter-testi-musicisti.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/teleprompter-letras-musicos.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/lyrics-prompter-for-musicians"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/prompteur-paroles-musicien"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/teleprompter-songtexte-musiker.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/teleprompter-letras-musicos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/teleprompter-testi-musicisti.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/teleprompter-testi-musicisti.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/lyrics-prompter-for-musicians"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/prompteur-paroles-musicien"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/teleprompter-songtexte-musiker.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/teleprompter-letras-musicos.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/teleprompter-testi-musicisti.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/maestrodmx-visualizer.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/maestrodmx-visualizer"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualiseur-maestrodmx"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/maestrodmx-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/maestrodmx-visualizador.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/maestrodmx-visualizer.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/maestrodmx-visualizador.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/maestrodmx-visualizer"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualiseur-maestrodmx"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/maestrodmx-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/maestrodmx-visualizador.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/maestrodmx-visualizer.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/maestrodmx-visualizer.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/maestrodmx-visualizer"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualiseur-maestrodmx"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/maestrodmx-visualizer.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/maestrodmx-visualizador.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/maestrodmx-visualizer.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/ezquiel.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/ezquiel.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/ezquiel.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/ezquiel.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/ezquiel.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/ezquiel.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/ezquiel.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/ezquiel-datenschutz.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel-confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/ezquiel-datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/ezquiel-privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/ezquiel-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/ezquiel-privacidad.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel-confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/ezquiel-datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/ezquiel-privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/ezquiel-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/ezquiel-privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel-confidentialite.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/ezquiel-datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/ezquiel-privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/ezquiel-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/ezquiel-hilfe.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel-support.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel-aide.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/ezquiel-hilfe.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/ezquiel-soporte.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/ezquiel-assistenza.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/ezquiel-soporte.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel-support.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel-aide.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/ezquiel-hilfe.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/ezquiel-soporte.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/ezquiel-assistenza.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/ezquiel-assistenza.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/ezquiel-support.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/ezquiel-aide.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/ezquiel-hilfe.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/ezquiel-soporte.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/ezquiel-assistenza.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/de/datenschutz.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/informativa-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/es/privacidad.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/informativa-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://velvetshow.app/it/informativa-privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/informativa-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
