@@ -434,4 +434,70 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz.html"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad.html"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/informativa-privacy.html"/><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- Versions allemande, espagnole, italienne + page iPad -->
+
+  <!-- Versions allemande, espagnole, italienne + page iPad -->
+
+  <!-- Mentions légales et confidentialité du site (5 langues) -->
+  <url><loc>https://velvetshow.app/legal-notice.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/legal-notice.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/impressum.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/aviso-legal.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/note-legali.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://velvetshow.app/fr/mentions-legales.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/legal-notice.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/impressum.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/aviso-legal.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/note-legali.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://velvetshow.app/de/impressum.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/legal-notice.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/impressum.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/aviso-legal.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/note-legali.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://velvetshow.app/es/aviso-legal.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/legal-notice.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/impressum.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/aviso-legal.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/note-legali.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://velvetshow.app/it/note-legali.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/legal-notice.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/mentions-legales.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/impressum.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/aviso-legal.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/note-legali.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://velvetshow.app/website-privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/website-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/confidentialite-du-site.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz-website.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad-del-sitio.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/privacy-del-sito.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://velvetshow.app/fr/confidentialite-du-site.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/website-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/confidentialite-du-site.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz-website.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad-del-sitio.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/privacy-del-sito.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://velvetshow.app/de/datenschutz-website.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/website-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/confidentialite-du-site.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz-website.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad-del-sitio.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/privacy-del-sito.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://velvetshow.app/es/privacidad-del-sitio.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/website-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/confidentialite-du-site.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz-website.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad-del-sitio.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/privacy-del-sito.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://velvetshow.app/it/privacy-del-sito.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://velvetshow.app/website-privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/confidentialite-du-site.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://velvetshow.app/de/datenschutz-website.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://velvetshow.app/es/privacidad-del-sitio.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://velvetshow.app/it/privacy-del-sito.html"/><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

@@ -17,9 +17,7 @@
   <meta property="og:image" content="https://velvetshow.app/screenshots/og-visualizer.jpg">
   <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="/assets/fonts/fonts.css">
   <link rel="stylesheet" href="styles.css">
   <style>
     .lp { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
@@ -46,7 +44,7 @@
       <nav class="menubar__nav" aria-label="Primary">
         <a href="/">Home</a>
         <a href="/velvet-visualizer.html">Velvet Visualizer</a>
-        <a href="/visualizer-guide.html">Full user guide</a><span class="langs" style="display:inline-flex;gap:10px;align-items:center"><span aria-current="true" style="font-size:13px;font-weight:600;color:var(--text,#fff)">EN</span> <a href="/fr/guide-debutant-visualizer.html" hreflang="fr" lang="fr" title="Français">FR</a> <a href="/de/dmx-visualizer-anfaenger.html" hreflang="de" lang="de" title="Deutsch">DE</a> <a href="/es/visualizador-dmx-principiantes.html" hreflang="es" lang="es" title="Español">ES</a> <a href="/it/visualizer-dmx-principianti.html" hreflang="it" lang="it" title="Italiano">IT</a></span></nav>
+        <a href="/visualizer-guide.html">Full user guide</a><details class="langs" style="position:relative;display:inline-block;order:-1"><summary aria-label="Language" style="cursor:pointer;list-style:none;font-size:13px;font-weight:600;color:var(--text,#fff);white-space:nowrap">EN &#9662;</summary><div style="position:absolute;left:0;top:100%;margin-top:8px;background:#15171d;border:1px solid #262a33;border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;gap:8px;z-index:300;font-size:13px"><a href="/fr/guide-debutant-visualizer.html" hreflang="fr" lang="fr" style="color:#9aa1b0;white-space:nowrap">Français</a><a href="/de/dmx-visualizer-anfaenger.html" hreflang="de" lang="de" style="color:#9aa1b0;white-space:nowrap">Deutsch</a><a href="/es/visualizador-dmx-principiantes.html" hreflang="es" lang="es" style="color:#9aa1b0;white-space:nowrap">Español</a><a href="/it/visualizer-dmx-principianti.html" hreflang="it" lang="it" style="color:#9aa1b0;white-space:nowrap">Italiano</a></div></details></nav>
     </div>
   </header>
   <div class="lp">
@@ -119,7 +117,8 @@
       <div class="footer__brand"><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="dot dot--idle"></span><span class="footer__name">Velvet Visualizer</span></div>
       <p class="footer__copy">&copy; 2026 Velvet Visualizer &middot; <a href="/">velvetshow.app</a></p>
     </div>
-  </footer>
+<p data-legal style="text-align:center;font-size:12px;margin:14px 0 0;opacity:.85"><a href="/legal-notice.html">Legal notice</a> · <a href="/website-privacy.html">Website privacy</a></p>
+</footer>
   <script src="stats.js"></script>
 </body>
 </html>
