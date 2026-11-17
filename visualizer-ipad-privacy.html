@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy — Velvet Visualizer for iPad</title>
+  <meta name="description" content="What Velvet Visualizer for iPad does with your data.">
+  <link rel="canonical" href="https://velvetshow.app/visualizer-ipad-privacy.html">
+  <link rel="alternate" hreflang="en" href="https://velvetshow.app/visualizer-ipad-privacy.html">
+  <link rel="alternate" hreflang="fr" href="https://velvetshow.app/fr/visualizer-ipad-confidentialite.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .privacy {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 120px 24px 100px;
+    }
+    .privacy h1 {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin: 0 0 12px;
+    }
+    .privacy .updated {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin: 0 0 56px;
+    }
+    .privacy h2 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 48px 0 12px;
+    }
+    .privacy p, .privacy li {
+      font-size: 16px;
+      color: var(--text-soft);
+      line-height: 1.7;
+    }
+    .privacy ul {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+    .privacy a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+    .privacy a:hover { text-decoration: underline; }
+    .privacy .highlight {
+      background: var(--card);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-md);
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 16px;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="menubar">
+    <div class="menubar__inner">
+      <div class="menubar__brand">
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="menubar__title"><a href="/" style="text-decoration:none;color:inherit;">VELVET SHOW</a></span>
+      </div>
+      <nav class="menubar__nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/fr/visualizer-ipad-confidentialite.html" hreflang="fr">Français</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="privacy">
+    <h1>Privacy Policy — Velvet Visualizer for iPad</h1>
+    <p class="updated">Last updated: November 17, 2026</p>
+
+    <div class="highlight">In short: no account, no ads, no tracking. Your scenes stay on your iPad. The app uses the Internet only to download fixture files from the online catalogue when you ask for them.</div>
+
+    <h2>What stays on your iPad</h2>
+    <ul>
+      <li><strong>Your scenes</strong> (.velvet files) and the fixture files you import are stored only in the app's folder on your iPad (visible in the Files app). They are never sent anywhere, unless you choose to share a file yourself (AirDrop, Files, Mail).</li>
+      <li><strong>Your settings</strong> (last scene opened, panel position, whether the purchase was made) are stored on the iPad.</li>
+      <li><strong>Local network.</strong> The app uses your local network only to receive the Art-Net and sACN lighting signals sent by your console or computer. These signals stay on your network and are not recorded.</li>
+    </ul>
+
+    <h2>What goes over the Internet</h2>
+    <ul>
+      <li><strong>Online fixture catalogue.</strong> When you open the online catalogue, or pick a fixture that is not yet on your iPad, the app downloads the fixture index and the file you asked for from <code>velvet-gdtf.pages.dev</code> (a server hosted by Cloudflare). The files are manufacturers' fixture descriptions published on GDTF Share. As with any website, that server sees your IP address and the app's name, and its host may keep them in technical logs. The app sends nothing else about you: no name, no identifier, no scene.</li>
+      <li><strong>Purchase.</strong> The one-time unlock goes through Apple's App Store. We never see your card or your identity; the app only learns from Apple that the purchase was made.</li>
+    </ul>
+
+    <h2>What there isn't</h2>
+    <ul>
+      <li>No account, no sign-in.</li>
+      <li>No advertising and no third-party analytics or trackers.</li>
+      <li>No selling or sharing of data.</li>
+    </ul>
+
+    <h2>Your rights</h2>
+    <p>We do not hold personal data about you. Deleting the app erases everything it stored on your iPad. If you have a question about this policy, write to the address below. In the EU you can also contact your data protection authority.</p>
+
+    <h2>Contact</h2>
+    <p>If you have any questions about this privacy policy, contact us at:</p>
+    <p><a href="mailto:alexandre.chalon@gmail.com">alexandre.chalon@gmail.com</a></p>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="dot dot--idle"></span>
+        <span class="footer__name">Velvet Show</span>
+      </div>
+      <p class="footer__credit">Created by Alexandre Chalon</p>
+      <p class="footer__copy">© 2026 Velvet Show. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
