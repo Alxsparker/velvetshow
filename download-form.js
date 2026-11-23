@@ -1,6 +1,6 @@
-/* Velvet Visualizer — petit formulaire « e-mail » avant le téléchargement de l'essai.
+/* Velvet (Visualizer, Show, Light DJ) — petit formulaire « e-mail » avant le téléchargement de l'essai.
  *
- * Ce que ça fait : quand quelqu'un clique sur « Télécharger l'essai » du Visualizer, une fenêtre demande son e-mail
+ * Ce que ça fait : quand quelqu'un clique sur « Télécharger l'essai » d'une des trois apps, une fenêtre demande son e-mail
  * (+ une case, décochée, pour recevoir les nouveautés). L'adresse est envoyée au petit programme « velvet-signup »
  * (Cloudflare), qui la range dans Resend et envoie un e-mail de confirmation si la case est cochée.
  *
@@ -13,7 +13,16 @@
   'use strict';
 
   var ENDPOINT = 'https://velvet-signup.alexandre-chalon.workers.dev/subscribe';
-  var LINK_RE = /VELVET-VISUALIZER-releases\/releases\/latest\/download\/VELVET-VISUALIZER\.zip/;
+  // Les trois liens de téléchargement de l'essai et l'app qu'ils désignent (même nom de produit que le programme velvet-signup).
+  var PRODUCTS = [
+    { id: 'visualizer', name: 'Velvet Visualizer', re: /VELVET-VISUALIZER-releases\/releases\/latest\/download\/VELVET-VISUALIZER\.zip/ },
+    { id: 'show', name: 'Velvet Show', re: /Alxsparker\/velvetshow\/releases\/latest\/download\/VELVET\.SHOW\.zip/ },
+    { id: 'light-dj', name: 'Velvet Light DJ', re: /VELVET-LIGHT-DJ-releases\/releases\/latest\/download\/VELVET-LIGHT-DJ\.zip/ }
+  ];
+  function productOf(url) {
+    for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].re.test(url)) return PRODUCTS[i];
+    return null;
+  }
   var MIN_FORM_MS = 1400;   // le programme ignore les envois faits en moins de 1,2 s (robots) : on attend un peu
   var TIMEOUT_MS = 6000;    // au-delà, le téléchargement part quand même
   var DONE_KEY = 'velvetDlFormDone';
@@ -24,7 +33,7 @@
       title: 'Télécharger l’essai gratuit',
       intro: 'Entrez votre e-mail : le téléchargement démarre tout de suite, et je peux vous répondre si vous avez une question.',
       label: 'Votre e-mail',
-      consent: 'Oui, je veux recevoir quelques e-mails d’Alex sur Velvet Visualizer et les autres apps Velvet (3 e-mails pendant l’essai). Je peux me désinscrire à tout moment.',
+      consent: 'Oui, je veux recevoir quelques e-mails d’Alex sur {app} et les autres apps Velvet (3 e-mails pendant l’essai). Je peux me désinscrire à tout moment.',
       button: 'Télécharger',
       wait: 'Un instant…',
       done: 'Le téléchargement démarre.',
@@ -39,7 +48,7 @@
       title: 'Download the free trial',
       intro: 'Enter your email: the download starts right away, and I can answer you if you have a question.',
       label: 'Your email',
-      consent: 'Yes, I would like to receive a few emails from Alex about Velvet Visualizer and the other Velvet apps (3 emails during the trial). I can unsubscribe at any time.',
+      consent: 'Yes, I would like to receive a few emails from Alex about {app} and the other Velvet apps (3 emails during the trial). I can unsubscribe at any time.',
       button: 'Download',
       wait: 'One moment…',
       done: 'The download is starting.',
@@ -53,7 +62,7 @@
       title: 'Kostenlose Testversion herunterladen',
       intro: 'Geben Sie Ihre E-Mail-Adresse ein: Der Download startet sofort, und ich kann Ihnen bei Fragen antworten.',
       label: 'Ihre E-Mail-Adresse',
-      consent: 'Ja, ich möchte einige E-Mails von Alex zu Velvet Visualizer und den anderen Velvet-Apps erhalten (3 E-Mails während der Testphase). Ich kann mich jederzeit abmelden.',
+      consent: 'Ja, ich möchte einige E-Mails von Alex zu {app} und den anderen Velvet-Apps erhalten (3 E-Mails während der Testphase). Ich kann mich jederzeit abmelden.',
       button: 'Herunterladen',
       wait: 'Einen Moment…',
       done: 'Der Download startet.',
@@ -67,7 +76,7 @@
       title: 'Descargar la prueba gratuita',
       intro: 'Escriba su correo: la descarga empieza enseguida, y puedo responderle si tiene alguna pregunta.',
       label: 'Su correo electrónico',
-      consent: 'Sí, quiero recibir algunos correos de Alex sobre Velvet Visualizer y las demás apps Velvet (3 correos durante la prueba). Puedo darme de baja en cualquier momento.',
+      consent: 'Sí, quiero recibir algunos correos de Alex sobre {app} y las demás apps Velvet (3 correos durante la prueba). Puedo darme de baja en cualquier momento.',
       button: 'Descargar',
       wait: 'Un momento…',
       done: 'La descarga está empezando.',
@@ -81,7 +90,7 @@
       title: 'Scarica la prova gratuita',
       intro: 'Inserisci la tua e-mail: il download parte subito, e posso risponderti se hai una domanda.',
       label: 'La tua e-mail',
-      consent: 'Sì, voglio ricevere alcune e-mail di Alex su Velvet Visualizer e sulle altre app Velvet (3 e-mail durante la prova). Posso annullare l’iscrizione in qualsiasi momento.',
+      consent: 'Sì, voglio ricevere alcune e-mail di Alex su {app} e sulle altre app Velvet (3 e-mail durante la prova). Posso annullare l’iscrizione in qualsiasi momento.',
       button: 'Scarica',
       wait: 'Un attimo…',
       done: 'Il download sta per iniziare.',
@@ -126,7 +135,7 @@
     '.vdf-hp{position:absolute!important;left:-9999px!important;top:auto!important;width:1px;height:1px;overflow:hidden}'
   ].join('');
 
-  var overlay = null, lastFocus = null, openedAt = 0, busy = false, href = '';
+  var overlay = null, lastFocus = null, openedAt = 0, busy = false, href = '', product = PRODUCTS[0];
 
   function el(tag, attrs, text) {
     var n = document.createElement(tag);
@@ -163,9 +172,10 @@
     }
   }
 
-  function open(url) {
+  function open(url, prod) {
     if (overlay) return;
     href = url;
+    product = prod;
     lastFocus = document.activeElement;
     openedAt = Date.now();
 
@@ -191,7 +201,7 @@
     var cWrap = el('label', { 'class': 'vdf-c' });
     var cb = el('input', { type: 'checkbox', name: 'consent' });   // volontairement décochée
     cWrap.appendChild(cb);
-    cWrap.appendChild(el('span', null, typo(T.consent)));
+    cWrap.appendChild(el('span', null, typo(T.consent.replace('{app}', product.name))));
     var err = el('p', { 'class': 'vdf-err', role: 'alert' });
     var btn = el('button', { type: 'submit', 'class': 'vdf-btn' }, typo(T.button));
     var pv = el('a', { href: T.privacyUrl, 'class': 'vdf-pv', target: '_blank', rel: 'noopener' }, typo(T.privacy));
@@ -216,7 +226,7 @@
       btn.textContent = T.wait;
       submit(value, cb.checked, hp.value, function (consentSent) {
         // Quoi qu'il arrive (succès, panne, délai dépassé), le téléchargement démarre.
-        try { sessionStorage.setItem(DONE_KEY, '1'); } catch (e2) {}
+        try { sessionStorage.setItem(DONE_KEY + ':' + product.id, '1'); } catch (e2) {}
         if (!overlay) { startDownload(href); return; }
         var m = el('p', { 'class': 'vdf-msg', role: 'status' }, typo(consentSent ? T.doneConfirm : T.done));
         form.parentNode.replaceChild(m, form);
@@ -239,7 +249,7 @@
         fetch(ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email, consent: consent, lang: lang, product: 'visualizer', website: honeypot, t: Date.now() - openedAt }),
+          body: JSON.stringify({ email: email, consent: consent, lang: lang, product: product.id, website: honeypot, t: Date.now() - openedAt }),
           signal: ctrl ? ctrl.signal : undefined,
           keepalive: true
         }).then(function (r) { return r.json().catch(function () { return {}; }); })
@@ -255,11 +265,12 @@
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
     if (!a) return;
     var url = a.getAttribute('href') || '';
-    if (!LINK_RE.test(url)) return;
+    var prod = productOf(url);
+    if (!prod) return;
     var already = false;
-    try { already = sessionStorage.getItem(DONE_KEY) === '1'; } catch (err) {}
+    try { already = sessionStorage.getItem(DONE_KEY + ':' + prod.id) === '1'; } catch (err) {}
     if (already) return;               // déjà passé par la fenêtre dans cette visite : lien direct
     e.preventDefault();
-    open(url);
+    open(url, prod);
   }, true);
 })();
