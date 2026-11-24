@@ -21,6 +21,7 @@
     .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 .75rem; text-transform: uppercase; letter-spacing: .04em; }
     .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: .95rem; }
     .lp ul { color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem; font-size: .95rem; }
+    .lp h3 { font-family: 'Oswald', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 .4rem; }
     .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
   </style>
 <meta property="og:locale" content="de_DE"><meta property="og:locale:alternate" content="en_US"><meta property="og:locale:alternate" content="fr_FR"><meta property="og:locale:alternate" content="es_ES"><meta property="og:locale:alternate" content="it_IT">
@@ -40,6 +41,54 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Welche MIDI-Nachrichten kann Velvet Show senden?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Program Changes, Control Changes und Note On/Off. Du platzierst sie überall auf der Wellenform-Timeline, und sie werden während der Wiedergabe automatisch ausgelöst."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kann es auch OSC senden?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. MIDI- und OSC-Cues liegen auf derselben Timeline und können gleichzeitig ausgelöst werden. Zwischen den Songs kannst du außerdem MIDI- und OSC-Nachrichten von Hand senden."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Funktioniert es mit MaestroDMX?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. Du kannst deine MaestroDMX-Cue-Liste direkt in die Timeline importieren und die Master-Helligkeit steuern. Velvet Show sendet MIDI oder OSC, und MaestroDMX bleibt die DMX-Engine."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ersetzt es meine Lichtsoftware?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nein. Velvet Show sagt deinem Lichtsystem per MIDI oder OSC, was es wann tun soll. Das Gleiche gilt für jedes andere MIDI- oder OSC-kompatible Gerät in deinem Setup."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Gibt es eine kostenlose Testversion, und ist es ein Abo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Es gibt eine kostenlose 30-Tage-Testversion. Velvet Show ist ein Einmalkauf, ohne Abo."
+      }
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <header class="menubar">
@@ -76,6 +125,17 @@
     <p>Velvet Show sendet MIDI und OSC – es ersetzt nicht deine Lichtsoftware. <strong>MaestroDMX</strong> bleibt die DMX-Engine. Velvet Show sagt ihr, was sie wann tun soll. Dasselbe gilt für jedes andere MIDI- oder OSC-fähige Gerät in deinem Setup. Du willst das Ergebnis vor dem Gig in 3D sehen? <a href="/de/maestrodmx-visualizer.html">Sieh dir deine MaestroDMX-Show vorab auf dem Mac an</a>.</p>
     <h2>Im Vergleich zu QLab</h2>
     <p>QLab ist leistungsstark, aber komplex, teuer und auf Theaterproduktionen ausgelegt. Velvet Show ist für arbeitende Musiker gebaut, die MIDI-Automation wollen, ohne ein komplettes Produktionssystem zu verwalten. Wenn du dreimal die Woche spielst und das Licht der Musik automatisch folgen soll – dann ist Velvet Show das richtige Werkzeug.</p>
+    <h2>Fragen zur MIDI Show Control</h2>
+    <h3>Welche MIDI-Nachrichten kann Velvet Show senden?</h3>
+    <p>Program Changes, Control Changes und Note On/Off. Du platzierst sie überall auf der Wellenform-Timeline, und sie werden während der Wiedergabe automatisch ausgelöst.</p>
+    <h3>Kann es auch OSC senden?</h3>
+    <p>Ja. MIDI- und OSC-Cues liegen auf derselben Timeline und können gleichzeitig ausgelöst werden. Zwischen den Songs kannst du außerdem MIDI- und OSC-Nachrichten von Hand senden.</p>
+    <h3>Funktioniert es mit MaestroDMX?</h3>
+    <p>Ja. Du kannst deine MaestroDMX-Cue-Liste direkt in die Timeline importieren und die Master-Helligkeit steuern. Velvet Show sendet MIDI oder OSC, und MaestroDMX bleibt die DMX-Engine.</p>
+    <h3>Ersetzt es meine Lichtsoftware?</h3>
+    <p>Nein. Velvet Show sagt deinem Lichtsystem per MIDI oder OSC, was es wann tun soll. Das Gleiche gilt für jedes andere MIDI- oder OSC-kompatible Gerät in deinem Setup.</p>
+    <h3>Gibt es eine kostenlose Testversion, und ist es ein Abo?</h3>
+    <p>Es gibt eine kostenlose 30-Tage-Testversion. Velvet Show ist ein Einmalkauf, ohne Abo.</p>
     <div class="cta-row">
       <a href="/de/#beta" id="dl-hero" class="btn btn--primary" target="_blank" rel="noopener">Velvet Show herunterladen – kostenlos</a>
       <a href="/de/" class="btn btn--ghost">Alle Funktionen ansehen</a>
