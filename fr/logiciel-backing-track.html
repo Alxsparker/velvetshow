@@ -21,6 +21,7 @@
     .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 .75rem; text-transform: uppercase; letter-spacing: .04em; }
     .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: .95rem; }
     .lp ul { color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem; font-size: .95rem; }
+    .lp h3 { font-family: 'Oswald', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 .4rem; }
     .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
     .compare { width: 100%; border-collapse: collapse; margin: 1.5rem 0 2rem; font-size: .85rem; }
     .compare th { background: var(--panel); color: var(--text-muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; padding: .6rem 1rem; text-align: left; border-bottom: 1px solid var(--hairline); }
@@ -42,6 +43,62 @@
   <meta name="twitter:title" content="Logiciel Backing Track pour Musiciens Live — Velvet Show">
   <meta name="twitter:description" content="Velvet Show est un logiciel de backing track pour musiciens live sur macOS : MIDI, OSC, prompteur de paroles, lumières et télécommande iPhone.">
   <meta name="twitter:image" content="https://velvetshow.app/screenshots/hero-poster.jpg">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Quels formats audio puis-je importer ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Les formats courants : MP3, WAV, AIFF et AAC."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Est-ce plus qu'un simple lecteur de backing tracks ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui. Chaque morceau a sa propre timeline, et vous y placez non seulement l'audio mais aussi des cues MIDI, des messages OSC, des paroles, des accords et des notes de scène : lumières, paroles et télécommande fonctionnent depuis la même application."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Les morceaux peuvent-ils s'enchaîner tout seuls ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui. Avec le mode AUTO, Velvet Show enchaîne les morceaux avec un fondu enchaîné. Vous pouvez choisir le suivant à l'avance : il démarre tout seul à la fin du morceau en cours."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Puis-je le piloter depuis mon téléphone ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui. Velvet Remote, une app gratuite, permet de lancer, mettre en pause et passer au morceau suivant depuis votre iPhone, et affiche les paroles sur un iPad."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Combien de shows et de morceaux puis-je avoir ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Il n'y a pas de limite de shows, de sets ni de morceaux."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Y a-t-il un essai gratuit, et est-ce un abonnement ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Il y a un essai gratuit de 30 jours. Velvet Show est un achat unique, sans abonnement."
+      }
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <header class="menubar">
@@ -78,6 +135,19 @@
     <p>Solistes, duos, groupes, musiciens de mariage et professionnels du show control. Toute personne qui joue avec des backing tracks en live et veut que ses lumières, ses paroles et sa télécommande fonctionnent depuis la même application — sans gérer trois outils séparés.</p>
     <h2>Comparatif avec les alternatives</h2>
     <p>Si vous utilisez <strong>ShowBuddy</strong>, <strong>Stage Traxx</strong>, <strong>BandHelper</strong> ou une configuration basée sur QLab, Velvet Show couvre le workflow de base des backing tracks et réunit cues MIDI, OSC et télécommande iPhone dans une seule application macOS.</p>
+    <h2>Questions sur le logiciel de backing track</h2>
+    <h3>Quels formats audio puis-je importer ?</h3>
+    <p>Les formats courants : MP3, WAV, AIFF et AAC.</p>
+    <h3>Est-ce plus qu'un simple lecteur de backing tracks ?</h3>
+    <p>Oui. Chaque morceau a sa propre timeline, et vous y placez non seulement l'audio mais aussi des cues MIDI, des messages OSC, des paroles, des accords et des notes de scène : lumières, paroles et télécommande fonctionnent depuis la même application.</p>
+    <h3>Les morceaux peuvent-ils s'enchaîner tout seuls ?</h3>
+    <p>Oui. Avec le mode AUTO, Velvet Show enchaîne les morceaux avec un fondu enchaîné. Vous pouvez choisir le suivant à l'avance : il démarre tout seul à la fin du morceau en cours.</p>
+    <h3>Puis-je le piloter depuis mon téléphone ?</h3>
+    <p>Oui. Velvet Remote, une app gratuite, permet de lancer, mettre en pause et passer au morceau suivant depuis votre iPhone, et affiche les paroles sur un iPad.</p>
+    <h3>Combien de shows et de morceaux puis-je avoir ?</h3>
+    <p>Il n'y a pas de limite de shows, de sets ni de morceaux.</p>
+    <h3>Y a-t-il un essai gratuit, et est-ce un abonnement ?</h3>
+    <p>Il y a un essai gratuit de 30 jours. Velvet Show est un achat unique, sans abonnement.</p>
     <div class="cta-row">
       <a href="/#beta" id="dl-hero" class="btn btn--primary" target="_blank" rel="noopener">Télécharger Velvet Show — Gratuit</a>
       <a href="/" class="btn btn--ghost">Voir toutes les fonctionnalités</a>

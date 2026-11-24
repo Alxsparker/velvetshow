@@ -21,6 +21,7 @@
     .lp h2 { font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 .75rem; text-transform: uppercase; letter-spacing: .04em; }
     .lp p { color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; font-size: .95rem; }
     .lp ul { color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem; font-size: .95rem; }
+    .lp h3 { font-family: 'Oswald', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 .4rem; }
     .lp .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
     .compare { width: 100%; border-collapse: collapse; margin: 1.5rem 0 2rem; font-size: .85rem; }
     .compare th { background: var(--panel); color: var(--text-muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; padding: .6rem 1rem; text-align: left; border-bottom: 1px solid var(--hairline); }
@@ -42,6 +43,54 @@
   <meta name="twitter:title" content="Prompteur de Paroles pour Musiciens Live — Velvet Show">
   <meta name="twitter:description" content="Prompteur de paroles pour musiciens live : paroles et accords défilent pendant les backing tracks. Écran iPad de scène, télécommande iPhone, macOS.">
   <meta name="twitter:image" content="https://velvetshow.app/screenshots/hero-poster.jpg">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Les paroles défilent-elles toutes seules ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui. Chaque morceau de Velvet Show a sa timeline. Vous placez les blocs de paroles à l'endroit exact où ils doivent apparaître, et ils suivent le backing track sans intervention, avec les accords, les changements de tonalité et les notes de scène. Vous ne touchez jamais un bouton de défilement en plein morceau."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Puis-je utiliser un iPad comme prompteur de scène ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui. Velvet Remote, l'app gratuite pour iPad, se connecte à Velvet Show par le WiFi local et affiche les paroles en temps réel, en plein écran, avec les commandes de lecture en bas. Velvet Show peut aussi envoyer l'écran de scène vers un iPad utilisé comme second écran, ou vers n'importe quel moniteur externe."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment ajouter mes paroles ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Importez-les depuis du texte brut en un clic, puis placez les blocs de paroles sur la forme d'onde du morceau."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Que se passe-t-il si l'iPad perd la connexion ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Velvet Show a un bouton PANIC qui affiche le prompteur sur le Mac à la place."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Y a-t-il un essai gratuit, et est-ce un abonnement ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Il y a un essai gratuit de 30 jours. Velvet Show est un achat unique, sans abonnement."
+      }
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <header class="menubar">
@@ -76,6 +125,17 @@
     <p>Velvet Show envoie vers un second affichage — votre iPad, un moniteur en fond de scène, ou tout écran externe. L'écran de scène affiche le titre du morceau en cours, un compteur dégressif, le morceau suivant et le bloc de paroles actuel en grande typographie lisible. Vous pouvez aussi utiliser <strong>Velvet Remote</strong> sur votre iPad : il se connecte à Velvet Show via WiFi local et affiche les paroles en temps réel, avec les commandes de lecture en bas.</p>
     <h2>Plus jamais de PDFs à faire défiler en plein set</h2>
     <p>Si vous gérez vos paroles dans un lecteur PDF, une application de notes ou un second appareil à faire défiler manuellement pendant les concerts — Velvet Show remplace tout ça. Une seule application, une seule timeline, tout est synchronisé.</p>
+    <h2>Questions sur le prompteur de paroles</h2>
+    <h3>Les paroles défilent-elles toutes seules ?</h3>
+    <p>Oui. Chaque morceau de Velvet Show a sa timeline. Vous placez les blocs de paroles à l'endroit exact où ils doivent apparaître, et ils suivent le backing track sans intervention, avec les accords, les changements de tonalité et les notes de scène. Vous ne touchez jamais un bouton de défilement en plein morceau.</p>
+    <h3>Puis-je utiliser un iPad comme prompteur de scène ?</h3>
+    <p>Oui. Velvet Remote, l'app gratuite pour iPad, se connecte à Velvet Show par le WiFi local et affiche les paroles en temps réel, en plein écran, avec les commandes de lecture en bas. Velvet Show peut aussi envoyer l'écran de scène vers un iPad utilisé comme second écran, ou vers n'importe quel moniteur externe.</p>
+    <h3>Comment ajouter mes paroles ?</h3>
+    <p>Importez-les depuis du texte brut en un clic, puis placez les blocs de paroles sur la forme d'onde du morceau.</p>
+    <h3>Que se passe-t-il si l'iPad perd la connexion ?</h3>
+    <p>Velvet Show a un bouton PANIC qui affiche le prompteur sur le Mac à la place.</p>
+    <h3>Y a-t-il un essai gratuit, et est-ce un abonnement ?</h3>
+    <p>Il y a un essai gratuit de 30 jours. Velvet Show est un achat unique, sans abonnement.</p>
     <div class="cta-row">
       <a href="/#beta" id="dl-hero" class="btn btn--primary" target="_blank" rel="noopener">Télécharger Velvet Show — Gratuit</a>
       <a href="/" class="btn btn--ghost">Voir toutes les fonctionnalités</a>
