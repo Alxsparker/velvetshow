@@ -1,0 +1,38 @@
+# Velvet
+
+> Velvet is a family of Mac apps for live musicians, DJs and lighting designers, made by Alexandre Chalon (independent developer, France). Velvet Show, Velvet Visualizer and Velvet Light DJ each have a free 30-day trial and are one-time purchases, with no subscription. Current prices are on each product page.
+
+## Apps
+
+- [Velvet Show](https://velvetshow.app/velvet-show.html): macOS app for live musicians. Plays backing tracks, syncs lyrics and chords, fires MIDI and OSC cues from one timeline, automates MaestroDMX lighting. Velvet Remote (free iPhone/iPad app) is the remote and the lyrics prompter.
+- [Velvet Visualizer](https://velvetshow.app/velvet-visualizer.html): stage lighting simulator for Mac (macOS 14 or later). See a light show in 3D before the gig. Receives Art-Net and sACN, supports USB DMX, QLC+ import, QLab and GDTF fixtures.
+- [Velvet Visualizer for iPad](https://velvetshow.app/visualizer-ipad.html): 3D stage lighting simulator for iPad. Place fixtures, receive Art-Net and sACN from a console, open Mac scenes. Free up to 6 fixtures, one-time unlock.
+- [Velvet Light DJ](https://velvetshow.app/velvet-light-dj.html): macOS app that reads the track started in djay or Serato and fires the matching MaestroDMX cue, stepping up on the first drop. Works with MaestroDMX only.
+- [EzQuiel](https://velvetshow.app/ezquiel.html): iPhone app that listens to a room with the phone microphone and suggests EQ corrections. 3 free analyses.
+
+## Guides
+
+- [Velvet Visualizer for beginners](https://velvetshow.app/visualizer-for-beginners.html): first 5 minutes with the Visualizer.
+- [Velvet Visualizer user guide](https://velvetshow.app/visualizer-guide.html): scene building, fixture library, Art-Net/sACN, MaestroDMX import, exports, licensing.
+- [MaestroDMX Visualizer for Mac](https://velvetshow.app/maestrodmx-visualizer): preview a MaestroDMX show in 3D over Art-Net.
+- [Stage lighting in 5 minutes](https://velvetshow.app/stage-lighting-in-5-minutes.html): beginner's guide to DMX, Art-Net, cues, connecting and troubleshooting.
+
+## Comparisons and use cases
+
+- [Backing track software for live musicians](https://velvetshow.app/backing-track-software)
+- [Lyrics prompter for live musicians](https://velvetshow.app/lyrics-prompter-for-musicians)
+- [MIDI show control software](https://velvetshow.app/midi-show-control-software)
+- [ShowBuddy alternative for macOS](https://velvetshow.app/showbuddy-alternative)
+- [Stage Traxx alternative for macOS](https://velvetshow.app/stagetraxx-alternative)
+
+## Facts
+
+- Platforms: Velvet Show, Velvet Visualizer and Velvet Light DJ are macOS apps (Velvet Visualizer: macOS 14 or newer). There is no Windows version of Velvet Visualizer yet.
+- Licences: one licence works on 2 Macs. 1.x updates are included.
+- Languages of the website: English, French, German, Spanish, Italian (see the language menu on each page).
+- [French home](https://velvetshow.app/fr/)
+- Source of truth for prices, versions and downloads: the product pages above. Release downloads are published on GitHub.
+
+## Optional
+
+- [Website privacy](https://velvetshow.app/website-privacy.html)
