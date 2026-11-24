@@ -10,9 +10,9 @@
 
   // Après la fin : on retire ce qui parle du lancement, et on remet le vrai prix.
   if (expired) {
-    document.querySelectorAll('[data-launch-hide]').forEach(function (el) { el.hidden = true; });
+    document.querySelectorAll('[data-launch-hide]').forEach(function (el) { el.hidden = true; el.style.display = 'none'; }); // display:none en plus : un style de page (display:block) annulait l'attribut hidden
     document.querySelectorAll('[data-launch-after]').forEach(function (el) { el.innerHTML = el.getAttribute('data-launch-after'); });
-    document.querySelectorAll('[data-launch-countdown]').forEach(function (el) { el.hidden = true; });
+    document.querySelectorAll('[data-launch-countdown]').forEach(function (el) { el.hidden = true; el.style.display = 'none'; });
     return;
   }
 
